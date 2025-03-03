@@ -6,6 +6,10 @@ declare module '@mui/material/styles' {
     // Add your custom properties here
     trellone: {
       navBarHeight: string
+      workspaceDrawerWidth: string
+      boardDrawerWidth: string
+      boardBarHeight: string
+      boardContentHeight: string
     }
   }
   // allow configuration using `createTheme`
@@ -13,16 +17,31 @@ declare module '@mui/material/styles' {
     // Add your custom properties here
     trellone: {
       navBarHeight: string
+      workspaceDrawerWidth: string
+      boardDrawerWidth: string
+      boardBarHeight: string
+      boardContentHeight: string
     }
   }
 }
 
 const NAV_BAR_HEIGHT = '58px'
+const WORKSPACE_DRAWER_WIDTH = '300px'
+const BOARD_DRAWER_WIDTH = '300px'
+const BOARD_BAR_HEIGHT = '60px'
+const BOARD_CONTENT_HEIGHT = `calc(100vh - ${BOARD_BAR_HEIGHT})`
 
 // A custom theme for this app
 const theme = extendTheme({
   trellone: {
-    navBarHeight: NAV_BAR_HEIGHT
+    navBarHeight: NAV_BAR_HEIGHT,
+    workspaceDrawerWidth: WORKSPACE_DRAWER_WIDTH,
+    boardDrawerWidth: BOARD_DRAWER_WIDTH,
+    boardBarHeight: BOARD_BAR_HEIGHT,
+    boardContentHeight: BOARD_CONTENT_HEIGHT
+  },
+  typography: {
+    fontFamily: 'Rubik, sans-serif'
   },
   colorSchemes: {
     light: {
@@ -64,12 +83,28 @@ const theme = extendTheme({
         }
       }
     },
+    MuiAppBar: {
+      styleOverrides: {
+        root: ({ theme }) =>
+          theme.unstable_sx({
+            backgroundColor: theme.palette.mode === 'dark' ? '' : '#ffffff',
+            color: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+            boxShadow: 'none'
+          })
+      }
+    },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          textDecoration: 'none'
+        }
+      }
+    },
     MuiButton: {
       styleOverrides: {
         root: {
           textTransform: 'none',
           borderWidth: '0.5px',
-          fontWeight: 600,
           '&:hover': { borderWidth: '0.5px' }
         }
       }
