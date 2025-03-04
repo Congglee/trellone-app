@@ -26,7 +26,7 @@ export default function Profiles() {
 
   return (
     <Box>
-      <Tooltip title='Account settings'>
+      <Tooltip title='Account settings' placement='bottom-start'>
         <IconButton
           onClick={handleClick}
           size='small'

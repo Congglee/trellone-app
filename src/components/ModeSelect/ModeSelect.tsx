@@ -7,6 +7,7 @@ import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { type SelectChangeEvent } from '@mui/material/Select'
+import { Mode } from '~/types/utils.type'
 
 interface ModeSelectProps {
   styles?: React.CSSProperties
@@ -15,8 +16,8 @@ interface ModeSelectProps {
 export default function ModeSelect({ styles }: ModeSelectProps) {
   const { mode, setMode } = useColorScheme()
 
-  const handleChange = (event: SelectChangeEvent<'light' | 'dark' | 'system'>) => {
-    const activeMode = event.target.value as 'light' | 'dark' | 'system'
+  const handleChange = (event: SelectChangeEvent<Mode>) => {
+    const activeMode = event.target.value as Mode
     setMode(activeMode)
   }
 
