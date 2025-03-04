@@ -13,7 +13,7 @@ import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
 import Tooltip from '@mui/material/Tooltip'
 import AppBar from '~/components/AppBar'
-import BoardUserGroup from '~/pages/Boards/components/BoardUserGroup'
+import BoardUserGroup from '~/pages/Boards/BoardDetails/components/BoardUserGroup'
 import { capitalizeFirstLetter } from '~/utils/formatters'
 
 interface BoardBarProps {
@@ -28,9 +28,14 @@ const MENU_STYLES = {
   border: 'none',
   paddingX: '5px',
   borderRadius: '4px',
+  '.MuiSvgIcon-root': {
+    color: 'text.primary'
+  },
   '&:hover': {
     bgcolor: 'primary.50'
-  }
+  },
+  fontSize: '0.875rem',
+  fontWeight: 500
 }
 
 export default function BoardBar({
