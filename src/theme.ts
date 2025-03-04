@@ -9,7 +9,10 @@ declare module '@mui/material/styles' {
       workspaceDrawerWidth: string
       boardDrawerWidth: string
       boardBarHeight: string
+      boardMainHeight: string
       boardContentHeight: string
+      columnHeaderHeight: string
+      columnFooterHeight: string
     }
   }
   // allow configuration using `createTheme`
@@ -20,7 +23,10 @@ declare module '@mui/material/styles' {
       workspaceDrawerWidth: string
       boardDrawerWidth: string
       boardBarHeight: string
+      boardMainHeight: string
       boardContentHeight: string
+      columnHeaderHeight: string
+      columnFooterHeight: string
     }
   }
 }
@@ -29,7 +35,11 @@ const NAV_BAR_HEIGHT = '58px'
 const WORKSPACE_DRAWER_WIDTH = '300px'
 const BOARD_DRAWER_WIDTH = '300px'
 const BOARD_BAR_HEIGHT = '60px'
-const BOARD_CONTENT_HEIGHT = `calc(100vh - ${BOARD_BAR_HEIGHT})`
+const BOARD_MAIN_HEIGHT = `calc(100vh - ${BOARD_BAR_HEIGHT})`
+const BOARD_CONTENT_HEIGHT = `calc(100vh - ${NAV_BAR_HEIGHT} - ${BOARD_BAR_HEIGHT})`
+
+const COLUMN_HEADER_HEIGHT = '50px'
+const COLUMN_FOOTER_HEIGHT = '56px'
 
 // A custom theme for this app
 const theme = extendTheme({
@@ -38,7 +48,10 @@ const theme = extendTheme({
     workspaceDrawerWidth: WORKSPACE_DRAWER_WIDTH,
     boardDrawerWidth: BOARD_DRAWER_WIDTH,
     boardBarHeight: BOARD_BAR_HEIGHT,
-    boardContentHeight: BOARD_CONTENT_HEIGHT
+    boardMainHeight: BOARD_MAIN_HEIGHT,
+    boardContentHeight: BOARD_CONTENT_HEIGHT,
+    columnHeaderHeight: COLUMN_HEADER_HEIGHT,
+    columnFooterHeight: COLUMN_FOOTER_HEIGHT
   },
   typography: {
     fontFamily: 'Rubik, sans-serif'

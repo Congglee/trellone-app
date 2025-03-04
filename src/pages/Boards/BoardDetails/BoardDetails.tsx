@@ -26,8 +26,7 @@ export default function BoardDetails() {
           position: 'relative',
           backgroundImage: 'url(https://images6.alphacoders.com/138/thumbbig-1386838.webp)',
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          display: 'flex'
+          backgroundPosition: 'center'
         }}
       >
         {isDarkMode && (
@@ -56,7 +55,8 @@ export default function BoardDetails() {
             boardDrawerOpen={boardDrawerOpen}
             sx={{
               overflowX: 'auto',
-              height: theme.trellone.boardContentHeight
+              overflowY: 'hidden',
+              height: theme.trellone.boardMainHeight
             }}
           >
             <DrawerHeader />
