@@ -8,16 +8,36 @@ import CardActions from '@mui/material/CardActions'
 import CommentIcon from '@mui/icons-material/Comment'
 import AttachmentIcon from '@mui/icons-material/Attachment'
 import Typography from '@mui/material/Typography'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSSProperties } from 'react'
+import { CSS } from '@dnd-kit/utilities'
 
 interface CardProps {
   card: CardType
 }
 
 export default function Card({ card }: CardProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: card._id,
+    data: { ...card }
+  })
+
+  const dndKitCardStyles: CSSProperties = {
+    touchAction: 'none',
+    transform: CSS.Translate.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : undefined,
+    border: isDragging ? '1px solid #2ecc71' : undefined
+  }
+
   const shouldShowCardActions = !!card.members?.length || !!card.comments?.length || !!card.attachments?.length
 
   return (
     <MuiCard
+      ref={setNodeRef}
+      style={dndKitCardStyles}
+      {...attributes}
+      {...listeners}
       sx={{
         cursor: 'pointer',
         boxShadow: '0 1px 1px rgba(0, 0, 0, 0.2)',
