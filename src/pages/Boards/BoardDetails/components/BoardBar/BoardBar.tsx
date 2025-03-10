@@ -14,6 +14,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Tooltip from '@mui/material/Tooltip'
 import AppBar from '~/components/AppBar'
 import BoardUserGroup from '~/pages/Boards/BoardDetails/components/BoardUserGroup'
+import { Board } from '~/types/board.type'
 import { capitalizeFirstLetter } from '~/utils/formatters'
 
 interface BoardBarProps {
@@ -21,6 +22,7 @@ interface BoardBarProps {
   onWorkspaceDrawerOpen: (open: boolean) => void
   boardDrawerOpen: boolean
   onBoardDrawerOpen: (open: boolean) => void
+  board: Board
 }
 
 const MENU_STYLES = {
@@ -42,7 +44,8 @@ export default function BoardBar({
   workspaceDrawerOpen,
   onWorkspaceDrawerOpen,
   boardDrawerOpen,
-  onBoardDrawerOpen
+  onBoardDrawerOpen,
+  board
 }: BoardBarProps) {
   return (
     <AppBar
@@ -77,8 +80,8 @@ export default function BoardBar({
           >
             <MenuIcon />
           </IconButton>
-          <Tooltip title='Your board description'>
-            <Chip sx={MENU_STYLES} icon={<SpaceDashboardIcon />} label='Your board name' clickable />
+          <Tooltip title={board.description}>
+            <Chip sx={MENU_STYLES} icon={<SpaceDashboardIcon />} label={board.title} clickable />
           </Tooltip>
           <Tooltip title={capitalizeFirstLetter('public')}>
             <IconButton color='inherit'>

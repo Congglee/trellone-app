@@ -17,8 +17,14 @@ import Cloud from '@mui/icons-material/Cloud'
 import CardsList from '~/pages/Boards/BoardDetails/components/CardsList'
 import Button from '@mui/material/Button'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
+import { Column as ColumnType } from '~/types/column.type'
+import { mapOrder } from '~/utils/sorts'
 
-export default function Column() {
+interface ColumnProps {
+  column: ColumnType
+}
+
+export default function Column({ column }: ColumnProps) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | SVGSVGElement | null>(null)
   const open = Boolean(anchorEl)
 
@@ -29,6 +35,8 @@ export default function Column() {
   const handleClose = () => {
     setAnchorEl(null)
   }
+
+  const sortedCards = mapOrder(column.cards, column.card_order_ids, '_id')
 
   return (
     <Box
@@ -55,7 +63,7 @@ export default function Column() {
         }}
       >
         <Typography variant='h6' sx={{ fontSize: '1rem', fontWeight: '600', cursor: 'pointer' }}>
-          Column Title
+          {column.title}
         </Typography>
         <Box>
           <Tooltip title='More options'>
@@ -119,7 +127,7 @@ export default function Column() {
       </Box>
 
       {/* List Cards */}
-      <CardsList />
+      <CardsList cards={sortedCards} />
 
       {/* Box Column Footer */}
       <Box

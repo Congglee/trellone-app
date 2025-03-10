@@ -2,8 +2,13 @@ import Box from '@mui/material/Box'
 import Column from '~/pages/Boards/BoardDetails/components/Column/Column'
 import Button from '@mui/material/Button'
 import NoteAddIcon from '@mui/icons-material/NoteAdd'
+import { Column as ColumnType } from '~/types/column.type'
 
-export default function ColumnsList() {
+interface ColumnsListProps {
+  columns: ColumnType[]
+}
+
+export default function ColumnsList({ columns }: ColumnsListProps) {
   return (
     <Box
       sx={{
@@ -16,10 +21,9 @@ export default function ColumnsList() {
         '&::-webkit-scrollbar-track': { m: 2 }
       }}
     >
-      <Column />
-      <Column />
-      <Column />
-      {/* <Column /> */}
+      {columns.map((column) => (
+        <Column key={column._id} column={column} />
+      ))}
 
       {/* Box Add new column CTA */}
       <Box

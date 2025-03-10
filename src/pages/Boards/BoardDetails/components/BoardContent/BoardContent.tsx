@@ -1,7 +1,15 @@
 import Box from '@mui/material/Box'
 import ColumnsList from '~/pages/Boards/BoardDetails/components/ColumnsList'
+import { Board } from '~/types/board.type'
+import { mapOrder } from '~/utils/sorts'
 
-export default function BoardContent() {
+interface BoardContentProps {
+  board: Board
+}
+
+export default function BoardContent({ board }: BoardContentProps) {
+  const sortedColumns = mapOrder(board.columns, board.column_order_ids, '_id')
+
   return (
     <Box
       sx={{
@@ -13,7 +21,7 @@ export default function BoardContent() {
         })
       }}
     >
-      <ColumnsList />
+      <ColumnsList columns={sortedColumns} />
     </Box>
   )
 }

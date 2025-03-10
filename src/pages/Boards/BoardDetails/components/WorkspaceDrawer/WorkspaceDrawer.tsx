@@ -16,7 +16,7 @@ import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import DrawerHeader from '~/components/DrawerHeader'
-import { workspaceBoards } from '~/constants/mock-data'
+import { mockBoardsList } from '~/constants/mock-data'
 import WorkspaceAvatar from '~/pages/Boards/BoardDetails/components/WorkspaceAvatar'
 
 interface WorkspaceDrawerProps {
@@ -89,13 +89,13 @@ export default function WorkspaceDrawer({ open, onOpen }: WorkspaceDrawerProps) 
         Your Boards
       </Typography>
       <List>
-        {workspaceBoards.map((board) => (
+        {mockBoardsList.map((board) => (
           <ListItem key={board._id} disablePadding>
             <ListItemButton onClick={() => {}}>
               <ListItemIcon>
-                <Avatar sx={{ width: 24, height: 24 }} variant='square' src={board.coverUrls.thumb} />
+                <Avatar sx={{ width: 24, height: 24 }} variant='square' src={board.cover_photo} />
               </ListItemIcon>
-              <ListItemText secondary={board.name} />
+              <ListItemText secondary={board.title} />
             </ListItemButton>
           </ListItem>
         ))}

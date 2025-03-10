@@ -1,7 +1,12 @@
 import Box from '@mui/material/Box'
 import Card from '~/pages/Boards/BoardDetails/components/Card/Card'
+import { Card as CardType } from '~/types/card.type'
 
-export default function CardsList() {
+interface CardsListProps {
+  cards: CardType[]
+}
+
+export default function CardsList({ cards }: CardsListProps) {
   return (
     <Box
       sx={{
@@ -20,13 +25,9 @@ export default function CardsList() {
         '&::-webkit-scrollbar-thumb:hover': { backgroundColor: '#bfc2cf' }
       }}
     >
-      <Card />
-      <Card tempHideMedia />
-      <Card tempHideMedia />
-      <Card tempHideMedia />
-      <Card tempHideMedia />
-      <Card tempHideMedia />
-      <Card tempHideMedia />
+      {cards.map((card) => (
+        <Card key={card._id} card={card} />
+      ))}
     </Box>
   )
 }

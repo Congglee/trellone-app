@@ -5,6 +5,7 @@ import { useState } from 'react'
 import DrawerHeader from '~/components/DrawerHeader'
 import Main from '~/components/Main'
 import NavBar from '~/components/NavBar'
+import { mockBoardDetails } from '~/constants/mock-data'
 import BoardBar from '~/pages/Boards/BoardDetails/components/BoardBar'
 import BoardContent from '~/pages/Boards/BoardDetails/components/BoardContent'
 import BoardDrawer from '~/pages/Boards/BoardDetails/components/BoardDrawer'
@@ -49,6 +50,7 @@ export default function BoardDetails() {
             onWorkspaceDrawerOpen={setWorkspaceDrawerOpen}
             boardDrawerOpen={boardDrawerOpen}
             onBoardDrawerOpen={setBoardDrawerOpen}
+            board={mockBoardDetails}
           />
           <Main
             workspaceDrawerOpen={workspaceDrawerOpen}
@@ -61,7 +63,7 @@ export default function BoardDetails() {
           >
             <DrawerHeader />
             {isScreenBelowMedium && <DrawerHeader />}
-            <BoardContent />
+            <BoardContent board={mockBoardDetails} />
           </Main>
           <BoardDrawer open={boardDrawerOpen} onOpen={setBoardDrawerOpen} />
         </Box>
