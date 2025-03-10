@@ -20,4 +20,6 @@ export interface Card {
   _destroy: boolean
   created_at: string
   updated_at: string
+
+  FE_PlaceholderCard?: boolean
 }

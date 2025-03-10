@@ -1,4 +1,6 @@
 import {
+  Active,
+  closestCenter,
   closestCorners,
   defaultDropAnimationSideEffects,
   DndContext,
@@ -6,7 +8,11 @@ import {
   DragOverEvent,
   DragOverlay,
   DragStartEvent,
+  DroppableContainer,
+  getFirstCollision,
   MouseSensor,
+  Over,
+  pointerWithin,
   TouchSensor,
   UniqueIdentifier,
   useSensor,
@@ -14,15 +20,16 @@ import {
 } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
-import { cloneDeep } from 'lodash'
-import { useEffect, useState } from 'react'
+import { cloneDeep, isEmpty } from 'lodash'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Card from '~/pages/Boards/BoardDetails/components/Card'
 import Column from '~/pages/Boards/BoardDetails/components/Column'
 import ColumnsList from '~/pages/Boards/BoardDetails/components/ColumnsList'
 import { Board } from '~/types/board.type'
+import { Card as CardType } from '~/types/card.type'
 import { Column as ColumnType } from '~/types/column.type'
 import { mapOrder } from '~/utils/sorts'
-import { Card as CardType } from '~/types/card.type'
+import { generatePlaceholderCard } from '~/utils/utils'
 
 interface BoardContentProps {
   board: Board
@@ -51,12 +58,73 @@ export default function BoardContent({ board }: BoardContentProps) {
   const [activeDragItemData, setActiveDragItemData] = useState<any | null>(null)
   const [oldColumnWhenDraggingCard, setOldColumnWhenDraggingCard] = useState<ColumnType | null>(null)
 
+  const lastOverId = useRef<UniqueIdentifier | null>(null)
+
   useEffect(() => {
     setSortedColumns(mapOrder(board.columns, board.column_order_ids, '_id'))
   }, [board])
 
   const findColumnByCardId = (cardId: UniqueIdentifier) => {
     return sortedColumns.find((column) => column?.cards?.map((card) => card._id).includes(cardId as string))
+  }
+
+  const moveCardBetweenDifferentColumns = ({
+    overColumn,
+    overCardId,
+    active,
+    over,
+    activeColumn,
+    activeDraggingCardId,
+    activeDraggingCardData
+  }: {
+    overColumn: ColumnType
+    overCardId: UniqueIdentifier
+    active: Active
+    over: Over
+    activeColumn: ColumnType
+    activeDraggingCardId: UniqueIdentifier
+    activeDraggingCardData: CardType
+  }) => {
+    setSortedColumns((prevColumns) => {
+      const overCardIndex = overColumn?.cards?.findIndex((card) => card._id === overCardId) ?? -1
+
+      let newCardIndex: number
+      const isBelowOverItem =
+        active.rect.current.translated && active.rect.current.translated.top > over.rect.top + over.rect.height
+      const modifier = isBelowOverItem ? 1 : 0
+      newCardIndex = overCardIndex >= 0 ? overCardIndex + modifier : (overColumn?.cards?.length ?? 0) + 1
+
+      const nextColumns = cloneDeep(prevColumns)
+      const nextActiveColumn = nextColumns.find((column) => column._id === activeColumn._id)
+      const nextOverColumn = nextColumns.find((column) => column._id === overColumn._id)
+
+      if (nextActiveColumn) {
+        nextActiveColumn.cards = nextActiveColumn.cards?.filter((card) => card._id !== activeDraggingCardId)
+
+        if (isEmpty(nextActiveColumn.cards)) {
+          nextActiveColumn.cards = [generatePlaceholderCard(nextActiveColumn)]
+        }
+
+        nextActiveColumn.card_order_ids = nextActiveColumn.cards?.map((card) => card._id) as string[]
+      }
+
+      if (nextOverColumn) {
+        nextOverColumn.cards = nextOverColumn.cards?.filter((card) => card._id !== activeDraggingCardId)
+
+        const rebuildActiveDraggingCardData = {
+          ...activeDraggingCardData,
+          column_id: nextOverColumn._id
+        }
+
+        nextOverColumn.cards = nextOverColumn.cards?.toSpliced(newCardIndex, 0, rebuildActiveDraggingCardData)
+
+        nextOverColumn.cards = nextOverColumn.cards?.filter((card) => !card.FE_PlaceholderCard)
+
+        nextOverColumn.card_order_ids = nextOverColumn.cards?.map((card) => card._id) as string[]
+      }
+
+      return nextColumns
+    })
   }
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -97,34 +165,14 @@ export default function BoardContent({ board }: BoardContentProps) {
     }
 
     if (activeColumn._id !== overColumn._id) {
-      setSortedColumns((prevColumns) => {
-        const overCardIndex = overColumn?.cards?.findIndex((card) => card._id === overCardId) ?? -1
-
-        let newCardIndex: number
-        const isBelowOverItem =
-          active.rect.current.translated && active.rect.current.translated.top > over.rect.top + over.rect.height
-        const modifier = isBelowOverItem ? 1 : 0
-        newCardIndex = overCardIndex >= 0 ? overCardIndex + modifier : (overColumn?.cards?.length ?? 0) + 1
-
-        const nextColumns = cloneDeep(prevColumns)
-        const nextActiveColumn = nextColumns.find((column) => column._id === activeColumn._id)
-        const nextOverColumn = nextColumns.find((column) => column._id === overColumn._id)
-
-        if (nextActiveColumn) {
-          nextActiveColumn.cards = nextActiveColumn.cards?.filter((card) => card._id !== activeDraggingCardId)
-
-          nextActiveColumn.card_order_ids = nextActiveColumn.cards?.map((card) => card._id) as string[]
-        }
-
-        if (nextOverColumn) {
-          nextOverColumn.cards = nextOverColumn.cards?.filter((card) => card._id !== activeDraggingCardId)
-
-          nextOverColumn.cards = nextOverColumn.cards?.toSpliced(newCardIndex, 0, activeDraggingCardData as CardType)
-
-          nextOverColumn.card_order_ids = nextOverColumn.cards?.map((card) => card._id) as string[]
-        }
-
-        return nextColumns
+      moveCardBetweenDifferentColumns({
+        overColumn,
+        overCardId,
+        active,
+        over,
+        activeColumn,
+        activeDraggingCardId,
+        activeDraggingCardData: activeDraggingCardData as CardType
       })
     }
   }
@@ -151,7 +199,15 @@ export default function BoardContent({ board }: BoardContentProps) {
       }
 
       if (oldColumnWhenDraggingCard && oldColumnWhenDraggingCard._id !== overColumn._id) {
-        //
+        moveCardBetweenDifferentColumns({
+          overColumn,
+          overCardId,
+          active,
+          over,
+          activeColumn,
+          activeDraggingCardId,
+          activeDraggingCardData: activeDraggingCardData as CardType
+        })
       } else {
         const oldCardIndex =
           oldColumnWhenDraggingCard?.cards?.findIndex((card) => card._id === activeDraggingCardId) ?? -1
@@ -192,16 +248,51 @@ export default function BoardContent({ board }: BoardContentProps) {
 
   const customDropAnimation = {
     sideEffects: defaultDropAnimationSideEffects({
-      styles: {
-        active: { opacity: '0.5' }
-      }
+      styles: { active: { opacity: '0.5' } }
     })
   }
+
+  const collisionDetectionStrategy = useCallback(
+    (args: any) => {
+      if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN) {
+        return closestCorners({ ...args })
+      }
+
+      const pointerIntersections = pointerWithin(args)
+
+      if (!pointerIntersections?.length) {
+        return []
+      }
+
+      let overId = getFirstCollision(pointerIntersections, 'id')
+
+      if (overId) {
+        const checkColumn = sortedColumns.find((column) => column._id === overId)
+
+        if (checkColumn) {
+          // Can use `closestCenter` or `closestCorners` here
+          overId = closestCenter({
+            ...args,
+            droppableContainers: args.droppableContainers.filter((container: DroppableContainer) => {
+              return container.id !== overId && checkColumn?.card_order_ids?.includes(container.id as string)
+            })
+          })[0]?.id
+        }
+
+        lastOverId.current = overId
+
+        return [{ id: overId }]
+      }
+
+      return lastOverId.current ? [{ id: lastOverId.current }] : []
+    },
+    [activeDragItemType, sortedColumns]
+  )
 
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCorners}
+      collisionDetection={collisionDetectionStrategy}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}

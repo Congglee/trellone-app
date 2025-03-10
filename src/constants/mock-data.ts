@@ -24,7 +24,7 @@ export const mockBoardDetails: Board = {
   type: 'public',
   cover_photo: 'https://images6.alphacoders.com/138/thumbbig-1386838.webp',
   workspace_id: 'workspace-id-01',
-  column_order_ids: ['column-id-01', 'column-id-02', 'column-id-03'],
+  column_order_ids: ['column-id-01', 'column-id-02', 'column-id-03', 'column-id-04'],
   owners: [],
   members: [],
   columns: [
@@ -262,6 +262,32 @@ export const mockBoardDetails: Board = {
           _destroy: false,
           created_at: '2023-10-01T00:00:00.000Z',
           updated_at: '2023-10-01T00:00:00.000Z'
+        }
+      ],
+      _destroy: false,
+      created_at: '2023-10-01T00:00:00.000Z',
+      updated_at: '2023-10-01T00:00:00.000Z'
+    },
+    {
+      _id: 'column-id-04',
+      board_id: 'board-id-01',
+      title: 'Archived',
+      card_order_ids: ['column-id-04-placeholder-card'],
+      cards: [
+        {
+          _id: 'column-id-04-placeholder-card',
+          board_id: 'board-id-01',
+          column_id: 'column-id-04',
+          title: 'Placeholder Card',
+          description: 'This is a placeholder card',
+          cover_photo: '',
+          members: [],
+          comments: [],
+          attachments: [],
+          _destroy: false,
+          created_at: '2023-10-01T00:00:00.000Z',
+          updated_at: '2023-10-01T00:00:00.000Z',
+          FE_PlaceholderCard: true
         }
       ],
       _destroy: false,
