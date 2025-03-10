@@ -41,7 +41,12 @@ export default function Card({ card }: CardProps) {
       sx={{
         cursor: 'pointer',
         boxShadow: '0 1px 1px rgba(0, 0, 0, 0.2)',
-        overflow: 'unset'
+        display: card.FE_PlaceholderCard ? 'none' : 'block',
+        border: '1px solid transparent',
+        '&:hover': { borderColor: (theme) => theme.palette.primary.main },
+        overflow: card.FE_PlaceholderCard ? 'hidden' : 'unset',
+        opacity: card.FE_PlaceholderCard ? '0' : '1',
+        visibility: card.FE_PlaceholderCard ? 'hidden' : 'visible'
       }}
     >
       {card.cover_photo && <CardMedia sx={{ height: 140 }} image={card.cover_photo} title='green iguana' />}
