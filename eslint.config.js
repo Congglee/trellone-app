@@ -36,7 +36,9 @@ export default tseslint.config(
           jsxSingleQuote: true
         }
       ],
-      '@typescript-eslint/no-empty-object-type': 'warn'
+      '@typescript-eslint/no-empty-object-type': 'warn',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'prefer-const': 'off'
     }
   }
 )
