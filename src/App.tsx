@@ -1,7 +1,12 @@
-import Button from '@mui/material/Button'
+import { Route, Routes } from 'react-router-dom'
+import BoardDetails from '~/pages/Boards/BoardDetails'
 
 function App() {
-  return <Button variant='contained'>Hello World</Button>
+  return (
+    <Routes>
+      <Route path='/' element={<BoardDetails />} />
+    </Routes>
+  )
 }
 
 export default App
