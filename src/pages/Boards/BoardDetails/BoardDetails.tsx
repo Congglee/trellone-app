@@ -2,7 +2,9 @@ import { useMediaQuery, useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 import DrawerHeader from '~/components/DrawerHeader'
+import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import Main from '~/components/Main'
 import NavBar from '~/components/NavBar'
 import { mockBoardDetails } from '~/constants/mock-data'
@@ -10,6 +12,7 @@ import BoardBar from '~/pages/Boards/BoardDetails/components/BoardBar'
 import BoardContent from '~/pages/Boards/BoardDetails/components/BoardContent'
 import BoardDrawer from '~/pages/Boards/BoardDetails/components/BoardDrawer'
 import WorkspaceDrawer from '~/pages/Boards/BoardDetails/components/WorkspaceDrawer'
+import { useGetBoardQuery } from '~/queries/boards'
 
 export default function BoardDetails() {
   const theme = useTheme()
@@ -18,6 +21,16 @@ export default function BoardDetails() {
 
   const [workspaceDrawerOpen, setWorkspaceDrawerOpen] = useState(true)
   const [boardDrawerOpen, setBoardDrawerOpen] = useState(false)
+
+  const { boardId } = useParams()
+
+  const { data: boardData } = useGetBoardQuery(boardId!)
+
+  const board = boardData?.result
+
+  if (!board) {
+    return <PageLoadingSpinner caption='Loading board...' />
+  }
 
   return (
     <Container disableGutters maxWidth={false} sx={{ height: '100vh' }}>
@@ -50,7 +63,7 @@ export default function BoardDetails() {
             onWorkspaceDrawerOpen={setWorkspaceDrawerOpen}
             boardDrawerOpen={boardDrawerOpen}
             onBoardDrawerOpen={setBoardDrawerOpen}
-            board={mockBoardDetails}
+            board={board}
           />
           <Main
             workspaceDrawerOpen={workspaceDrawerOpen}
@@ -63,7 +76,10 @@ export default function BoardDetails() {
           >
             <DrawerHeader />
             {isScreenBelowMedium && <DrawerHeader />}
-            <BoardContent board={mockBoardDetails} />
+            <BoardContent
+              // board={board}
+              board={mockBoardDetails}
+            />
           </Main>
           <BoardDrawer open={boardDrawerOpen} onOpen={setBoardDrawerOpen} />
         </Box>

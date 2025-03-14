@@ -5,6 +5,7 @@ import rootReducer from '~/store/root.reducer'
 // Configure Redux-Persist
 import storage from 'redux-persist/lib/storage'
 import { persistReducer, persistStore } from 'redux-persist'
+import { boardApi } from '~/queries/boards'
 
 // Persist configuration
 const rootPersistConfig = {
@@ -18,7 +19,8 @@ const persistedReducers = persistReducer(rootPersistConfig, rootReducer)
 
 export const store = configureStore({
   reducer: persistedReducers,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ serializableCheck: false }).concat([boardApi.middleware]),
   devTools: process.env.NODE_ENV !== 'production'
 })
 
