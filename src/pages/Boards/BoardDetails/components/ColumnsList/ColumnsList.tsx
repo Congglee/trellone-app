@@ -27,7 +27,6 @@ export default function ColumnsList({ columns }: ColumnsListProps) {
           <Column key={column._id} column={column} />
         ))}
 
-        {/* Box Add new column CTA */}
         <Box
           sx={{
             minWidth: '200px',

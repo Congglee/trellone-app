@@ -42,9 +42,7 @@ const ACTIVE_DRAG_ITEM_TYPE = {
 
 export default function BoardContent({ board }: BoardContentProps) {
   const mouseSensor = useSensor(MouseSensor, {
-    activationConstraint: {
-      distance: 10
-    }
+    activationConstraint: { distance: 10 }
   })
   const touchSensor = useSensor(TouchSensor, {
     activationConstraint: { delay: 250, tolerance: 500 }

@@ -67,7 +67,6 @@ export default function Column({ column }: ColumnProps) {
           maxHeight: (theme) => `calc(${theme.trellone.boardContentHeight} - ${theme.spacing(5)})`
         }}
       >
-        {/* Box Column Header */}
         <Box
           sx={{
             height: (theme) => theme.trellone.columnHeaderHeight,
@@ -141,10 +140,8 @@ export default function Column({ column }: ColumnProps) {
           </Box>
         </Box>
 
-        {/* List Cards */}
         <CardsList cards={sortedCards} />
 
-        {/* Box Column Footer */}
         <Box
           sx={{
             height: (theme) => theme.trellone.columnFooterHeight,
