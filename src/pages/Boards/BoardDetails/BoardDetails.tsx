@@ -7,7 +7,7 @@ import DrawerHeader from '~/components/DrawerHeader'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import Main from '~/components/Main'
 import NavBar from '~/components/NavBar'
-import { mockBoardDetails } from '~/constants/mock-data'
+// import { mockBoardDetails } from '~/constants/mock-data'
 import BoardBar from '~/pages/Boards/BoardDetails/components/BoardBar'
 import BoardContent from '~/pages/Boards/BoardDetails/components/BoardContent'
 import BoardDrawer from '~/pages/Boards/BoardDetails/components/BoardDrawer'
@@ -76,10 +76,7 @@ export default function BoardDetails() {
           >
             <DrawerHeader />
             {isScreenBelowMedium && <DrawerHeader />}
-            <BoardContent
-              // board={board}
-              board={mockBoardDetails}
-            />
+            <BoardContent board={board} />
           </Main>
           <BoardDrawer open={boardDrawerOpen} onOpen={setBoardDrawerOpen} />
         </Box>

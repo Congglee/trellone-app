@@ -8,6 +8,7 @@ import { useState } from 'react'
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import { useClickAway } from '@uidotdev/usehooks'
+import { toast } from 'react-toastify'
 
 interface ColumnsListProps {
   columns: ColumnType[]
@@ -28,6 +29,7 @@ export default function ColumnsList({ columns }: ColumnsListProps) {
 
   const addNewColumn = () => {
     if (!newColumnTitle) {
+      toast.error('Please enter a column title')
       return
     }
 

@@ -24,6 +24,7 @@ import { CSS } from '@dnd-kit/utilities'
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import { useClickAway } from '@uidotdev/usehooks'
+import { toast } from 'react-toastify'
 
 interface ColumnProps {
   column: ColumnType
@@ -68,6 +69,7 @@ export default function Column({ column }: ColumnProps) {
 
   const addNewCard = () => {
     if (!newCardTitle) {
+      toast.error('Please enter a card title', { position: 'bottom-right' })
       return
     }
 
