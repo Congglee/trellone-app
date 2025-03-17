@@ -10,10 +10,8 @@ import {
   DragStartEvent,
   DroppableContainer,
   getFirstCollision,
-  MouseSensor,
   Over,
   pointerWithin,
-  TouchSensor,
   UniqueIdentifier,
   useSensor,
   useSensors
@@ -22,6 +20,7 @@ import { arrayMove } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
 import { cloneDeep, isEmpty } from 'lodash'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { MouseSensor, TouchSensor } from '~/lib/dnd-kit'
 import Card from '~/pages/Boards/BoardDetails/components/Card'
 import Column from '~/pages/Boards/BoardDetails/components/Column'
 import ColumnsList from '~/pages/Boards/BoardDetails/components/ColumnsList'

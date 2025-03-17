@@ -21,6 +21,9 @@ import { Column as ColumnType } from '~/types/column.type'
 import { mapOrder } from '~/utils/sorts'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import TextField from '@mui/material/TextField'
+import CloseIcon from '@mui/icons-material/Close'
+import { useClickAway } from '@uidotdev/usehooks'
 
 interface ColumnProps {
   column: ColumnType
@@ -43,12 +46,33 @@ export default function Column({ column }: ColumnProps) {
     opacity: isDragging ? 0.5 : undefined
   }
 
-  const handleClick = (event: React.MouseEvent<SVGSVGElement>) => {
+  const [newCardFormOpen, setNewCardFormOpen] = useState(false)
+  const [newCardTitle, setNewCardTitle] = useState('')
+
+  const newCardClickAwayRef = useClickAway(() => {
+    setNewCardFormOpen(false)
+    setNewCardTitle('')
+  })
+
+  const handleExpandClick = (event: React.MouseEvent<SVGSVGElement>) => {
     setAnchorEl(event.currentTarget)
   }
 
   const handleClose = () => {
     setAnchorEl(null)
+  }
+
+  const toggleNewCardForm = () => {
+    setNewCardFormOpen(!newCardFormOpen)
+  }
+
+  const addNewCard = () => {
+    if (!newCardTitle) {
+      return
+    }
+
+    toggleNewCardForm()
+    setNewCardTitle('')
   }
 
   const sortedCards = mapOrder(column.cards, column.card_order_ids, '_id')
@@ -87,7 +111,7 @@ export default function Column({ column }: ColumnProps) {
                 aria-controls={open ? 'basic-menu-column-dropdown' : undefined}
                 aria-haspopup='true'
                 aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
+                onClick={handleExpandClick}
               />
             </Tooltip>
             <Menu
@@ -145,16 +169,92 @@ export default function Column({ column }: ColumnProps) {
         <Box
           sx={{
             height: (theme) => theme.trellone.columnFooterHeight,
-            p: 2,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
+            p: 2
           }}
         >
-          <Button startIcon={<AddCardIcon />}>Add new card</Button>
-          <Tooltip title='Drag to move'>
-            <DragHandleIcon sx={{ cursor: 'pointer' }} />
-          </Tooltip>
+          {!newCardFormOpen ? (
+            <Box
+              sx={{
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
+              <Button startIcon={<AddCardIcon />} onClick={toggleNewCardForm}>
+                Add new card
+              </Button>
+              <Tooltip title='Drag to move'>
+                <DragHandleIcon sx={{ cursor: 'pointer' }} />
+              </Tooltip>
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1
+              }}
+              ref={newCardClickAwayRef}
+            >
+              <TextField
+                label='Enter card title...'
+                type='text'
+                size='small'
+                variant='outlined'
+                autoFocus
+                data-no-dnd='true'
+                value={newCardTitle}
+                onChange={(e) => setNewCardTitle(e.target.value)}
+                sx={{
+                  bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#22272b' : '#fff'),
+                  '& label': { color: 'text.primary' },
+                  '& label.Mui-focused': {
+                    color: (theme) => theme.palette.primary.main
+                  },
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: (theme) => theme.palette.primary.main
+                    },
+                    '&:hover fieldset': {
+                      borderColor: (theme) => theme.palette.primary.main
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: (theme) => theme.palette.primary.main
+                    }
+                  },
+                  '& .MuiOutlinedInput-input': {
+                    borderRadius: 1
+                  }
+                }}
+                inputProps={{
+                  style: { fontWeight: '400', fontSize: '0.875rem', lineHeight: '1.43', letterSpacing: '0.01071em' }
+                }}
+              />
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Button
+                  onClick={addNewCard}
+                  variant='contained'
+                  size='small'
+                  sx={{
+                    boxShadow: 'none',
+                    border: '0.5px solid'
+                  }}
+                >
+                  Add
+                </Button>
+                <CloseIcon
+                  fontSize='small'
+                  sx={{
+                    color: (theme) => theme.palette.warning.light,
+                    cursor: 'pointer'
+                  }}
+                  onClick={toggleNewCardForm}
+                />
+              </Box>
+            </Box>
+          )}
         </Box>
       </Box>
     </div>
