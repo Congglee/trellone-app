@@ -1,6 +1,6 @@
-import { Board } from '~/types/board.type'
+import { BoardResType } from '~/schemas/board.schema'
 
-export const mockBoardsList: Board[] = [
+export const mockBoardsList: BoardResType['result'][] = [
   {
     _id: 'board-id-01',
     title: 'Conggglee Trellone Board',
@@ -12,12 +12,12 @@ export const mockBoardsList: Board[] = [
     owners: [],
     members: [],
     _destroy: false,
-    created_at: '2023-10-01T00:00:00.000Z',
-    updated_at: '2023-10-01T00:00:00.000Z'
+    created_at: new Date('2023-10-01T00:00:00.000Z'),
+    updated_at: new Date('2023-10-01T00:00:00.000Z')
   }
 ]
 
-export const mockBoardDetails: Board = {
+export const mockBoardDetails: BoardResType['result'] = {
   _id: 'board-id-01',
   title: 'Conggglee Trellone Board',
   description: 'This is a board description',
@@ -57,7 +57,7 @@ export const mockBoardDetails: Board = {
               user_avatar: '',
               user_display_name: 'Test User 01',
               content: 'This is a comment',
-              commented_at: '2023-10-01T00:00:00.000Z'
+              commented_at: new Date('2023-10-01T00:00:00.000Z')
             },
             {
               user_id: 'user-id-01',
@@ -65,13 +65,13 @@ export const mockBoardDetails: Board = {
               user_avatar: '',
               user_display_name: 'Test User 01',
               content: 'This is another comment',
-              commented_at: '2023-10-01T00:00:00.000Z'
+              commented_at: new Date('2023-10-01T00:00:00.000Z')
             }
           ],
           attachments: ['test attachment 01', 'test attachment 02'],
           _destroy: false,
-          created_at: '2023-10-01T00:00:00.000Z',
-          updated_at: '2023-10-01T00:00:00.000Z'
+          created_at: new Date('2023-10-01T00:00:00.000Z'),
+          updated_at: new Date('2023-10-01T00:00:00.000Z')
         },
         {
           _id: 'card-id-02',
@@ -84,8 +84,8 @@ export const mockBoardDetails: Board = {
           comments: [],
           attachments: [],
           _destroy: false,
-          created_at: '2023-10-01T00:00:00.000Z',
-          updated_at: '2023-10-01T00:00:00.000Z'
+          created_at: new Date('2023-10-01T00:00:00.000Z'),
+          updated_at: new Date('2023-10-01T00:00:00.000Z')
         },
         {
           _id: 'card-id-03',
@@ -98,8 +98,8 @@ export const mockBoardDetails: Board = {
           comments: [],
           attachments: [],
           _destroy: false,
-          created_at: '2023-10-01T00:00:00.000Z',
-          updated_at: '2023-10-01T00:00:00.000Z'
+          created_at: new Date('2023-10-01T00:00:00.000Z'),
+          updated_at: new Date('2023-10-01T00:00:00.000Z')
         },
         {
           _id: 'card-id-04',
@@ -112,8 +112,8 @@ export const mockBoardDetails: Board = {
           comments: [],
           attachments: [],
           _destroy: false,
-          created_at: '2023-10-01T00:00:00.000Z',
-          updated_at: '2023-10-01T00:00:00.000Z'
+          created_at: new Date('2023-10-01T00:00:00.000Z'),
+          updated_at: new Date('2023-10-01T00:00:00.000Z')
         },
         {
           _id: 'card-id-05',
@@ -126,8 +126,8 @@ export const mockBoardDetails: Board = {
           comments: [],
           attachments: [],
           _destroy: false,
-          created_at: '2023-10-01T00:00:00.000Z',
-          updated_at: '2023-10-01T00:00:00.000Z'
+          created_at: new Date('2023-10-01T00:00:00.000Z'),
+          updated_at: new Date('2023-10-01T00:00:00.000Z')
         },
         {
           _id: 'card-id-06',
@@ -140,8 +140,8 @@ export const mockBoardDetails: Board = {
           comments: [],
           attachments: [],
           _destroy: false,
-          created_at: '2023-10-01T00:00:00.000Z',
-          updated_at: '2023-10-01T00:00:00.000Z'
+          created_at: new Date('2023-10-01T00:00:00.000Z'),
+          updated_at: new Date('2023-10-01T00:00:00.000Z')
         },
         {
           _id: 'card-id-07',
@@ -154,13 +154,13 @@ export const mockBoardDetails: Board = {
           comments: [],
           attachments: [],
           _destroy: false,
-          created_at: '2023-10-01T00:00:00.000Z',
-          updated_at: '2023-10-01T00:00:00.000Z'
+          created_at: new Date('2023-10-01T00:00:00.000Z'),
+          updated_at: new Date('2023-10-01T00:00:00.000Z')
         }
       ],
       _destroy: false,
-      created_at: '2023-10-01T00:00:00.000Z',
-      updated_at: '2023-10-01T00:00:00.000Z'
+      created_at: new Date('2023-10-01T00:00:00.000Z'),
+      updated_at: new Date('2023-10-01T00:00:00.000Z')
     },
     {
       _id: 'column-id-02',
@@ -179,8 +179,8 @@ export const mockBoardDetails: Board = {
           comments: [],
           attachments: [],
           _destroy: false,
-          created_at: '2023-10-01T00:00:00.000Z',
-          updated_at: '2023-10-01T00:00:00.000Z'
+          created_at: new Date('2023-10-01T00:00:00.000Z'),
+          updated_at: new Date('2023-10-01T00:00:00.000Z')
         },
         {
           _id: 'card-id-09',
@@ -193,8 +193,8 @@ export const mockBoardDetails: Board = {
           comments: [],
           attachments: [],
           _destroy: false,
-          created_at: '2023-10-01T00:00:00.000Z',
-          updated_at: '2023-10-01T00:00:00.000Z'
+          created_at: new Date('2023-10-01T00:00:00.000Z'),
+          updated_at: new Date('2023-10-01T00:00:00.000Z')
         },
         {
           _id: 'card-id-10',
@@ -207,13 +207,13 @@ export const mockBoardDetails: Board = {
           comments: [],
           attachments: [],
           _destroy: false,
-          created_at: '2023-10-01T00:00:00.000Z',
-          updated_at: '2023-10-01T00:00:00.000Z'
+          created_at: new Date('2023-10-01T00:00:00.000Z'),
+          updated_at: new Date('2023-10-01T00:00:00.000Z')
         }
       ],
       _destroy: false,
-      created_at: '2023-10-01T00:00:00.000Z',
-      updated_at: '2023-10-01T00:00:00.000Z'
+      created_at: new Date('2023-10-01T00:00:00.000Z'),
+      updated_at: new Date('2023-10-01T00:00:00.000Z')
     },
     {
       _id: 'column-id-03',
@@ -232,8 +232,8 @@ export const mockBoardDetails: Board = {
           comments: [],
           attachments: [],
           _destroy: false,
-          created_at: '2023-10-01T00:00:00.000Z',
-          updated_at: '2023-10-01T00:00:00.000Z'
+          created_at: new Date('2023-10-01T00:00:00.000Z'),
+          updated_at: new Date('2023-10-01T00:00:00.000Z')
         },
         {
           _id: 'card-id-12',
@@ -246,8 +246,8 @@ export const mockBoardDetails: Board = {
           comments: [],
           attachments: [],
           _destroy: false,
-          created_at: '2023-10-01T00:00:00.000Z',
-          updated_at: '2023-10-01T00:00:00.000Z'
+          created_at: new Date('2023-10-01T00:00:00.000Z'),
+          updated_at: new Date('2023-10-01T00:00:00.000Z')
         },
         {
           _id: 'card-id-13',
@@ -260,13 +260,13 @@ export const mockBoardDetails: Board = {
           comments: [],
           attachments: [],
           _destroy: false,
-          created_at: '2023-10-01T00:00:00.000Z',
-          updated_at: '2023-10-01T00:00:00.000Z'
+          created_at: new Date('2023-10-01T00:00:00.000Z'),
+          updated_at: new Date('2023-10-01T00:00:00.000Z')
         }
       ],
       _destroy: false,
-      created_at: '2023-10-01T00:00:00.000Z',
-      updated_at: '2023-10-01T00:00:00.000Z'
+      created_at: new Date('2023-10-01T00:00:00.000Z'),
+      updated_at: new Date('2023-10-01T00:00:00.000Z')
     },
     {
       _id: 'column-id-04',
@@ -285,17 +285,17 @@ export const mockBoardDetails: Board = {
           comments: [],
           attachments: [],
           _destroy: false,
-          created_at: '2023-10-01T00:00:00.000Z',
-          updated_at: '2023-10-01T00:00:00.000Z',
+          created_at: new Date('2023-10-01T00:00:00.000Z'),
+          updated_at: new Date('2023-10-01T00:00:00.000Z'),
           FE_PlaceholderCard: true
         }
       ],
       _destroy: false,
-      created_at: '2023-10-01T00:00:00.000Z',
-      updated_at: '2023-10-01T00:00:00.000Z'
+      created_at: new Date('2023-10-01T00:00:00.000Z'),
+      updated_at: new Date('2023-10-01T00:00:00.000Z')
     }
   ],
   _destroy: false,
-  created_at: '2023-10-01T00:00:00.000Z',
-  updated_at: '2023-10-01T00:00:00.000Z'
+  created_at: new Date('2023-10-01T00:00:00.000Z'),
+  updated_at: new Date('2023-10-01T00:00:00.000Z')
 }

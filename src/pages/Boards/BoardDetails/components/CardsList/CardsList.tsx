@@ -1,7 +1,7 @@
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
 import Card from '~/pages/Boards/BoardDetails/components/Card/Card'
-import { Card as CardType } from '~/types/card.type'
+import { CardType } from '~/schemas/card.schema'
 
 interface CardsListProps {
   cards: CardType[]

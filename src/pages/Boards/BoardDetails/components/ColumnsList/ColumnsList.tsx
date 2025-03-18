@@ -2,13 +2,13 @@ import Box from '@mui/material/Box'
 import Column from '~/pages/Boards/BoardDetails/components/Column/Column'
 import Button from '@mui/material/Button'
 import NoteAddIcon from '@mui/icons-material/NoteAdd'
-import { Column as ColumnType } from '~/types/column.type'
 import { horizontalListSortingStrategy, SortableContext } from '@dnd-kit/sortable'
 import { useState } from 'react'
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import { useClickAway } from '@uidotdev/usehooks'
 import { toast } from 'react-toastify'
+import { ColumnType } from '~/schemas/column.schema'
 
 interface ColumnsListProps {
   columns: ColumnType[]

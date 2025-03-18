@@ -24,14 +24,14 @@ import { MouseSensor, TouchSensor } from '~/lib/dnd-kit'
 import Card from '~/pages/Boards/BoardDetails/components/Card'
 import Column from '~/pages/Boards/BoardDetails/components/Column'
 import ColumnsList from '~/pages/Boards/BoardDetails/components/ColumnsList'
-import { Board } from '~/types/board.type'
-import { Card as CardType } from '~/types/card.type'
-import { Column as ColumnType } from '~/types/column.type'
+import { BoardResType } from '~/schemas/board.schema'
+import { CardType } from '~/schemas/card.schema'
+import { ColumnType } from '~/schemas/column.schema'
 import { mapOrder } from '~/utils/sorts'
 import { generatePlaceholderCard } from '~/utils/utils'
 
 interface BoardContentProps {
-  board: Board
+  board: BoardResType['result']
 }
 
 const ACTIVE_DRAG_ITEM_TYPE = {
