@@ -23,8 +23,8 @@ import { CSS } from '@dnd-kit/utilities'
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import { useClickAway } from '@uidotdev/usehooks'
-import { toast } from 'react-toastify'
 import { ColumnType } from '~/schemas/column.schema'
+import { useAddCardMutation } from '~/queries/cards'
 
 interface ColumnProps {
   column: ColumnType
@@ -55,26 +55,29 @@ export default function Column({ column }: ColumnProps) {
     setNewCardTitle('')
   })
 
-  const handleExpandClick = (event: React.MouseEvent<SVGSVGElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
-
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
-
   const toggleNewCardForm = () => {
     setNewCardFormOpen(!newCardFormOpen)
   }
 
-  const addNewCard = () => {
-    if (!newCardTitle) {
-      toast.error('Please enter a card title', { position: 'bottom-right' })
+  const reset = () => {
+    toggleNewCardForm()
+    setNewCardTitle('')
+  }
+
+  const [addCardMutation] = useAddCardMutation()
+
+  const addNewCard = async () => {
+    if (!newCardTitle || newCardTitle.trim() === '') {
       return
     }
 
-    toggleNewCardForm()
-    setNewCardTitle('')
+    await addCardMutation({
+      title: newCardTitle,
+      column_id: column._id,
+      board_id: column.board_id
+    })
+
+    reset()
   }
 
   const sortedCards = mapOrder(column.cards, column.card_order_ids, '_id')
@@ -113,14 +116,14 @@ export default function Column({ column }: ColumnProps) {
                 aria-controls={open ? 'basic-menu-column-dropdown' : undefined}
                 aria-haspopup='true'
                 aria-expanded={open ? 'true' : undefined}
-                onClick={handleExpandClick}
+                onClick={(e) => setAnchorEl(e.currentTarget)}
               />
             </Tooltip>
             <Menu
               id='basic-menu-column-dropdown'
               anchorEl={anchorEl}
               open={open}
-              onClose={handleClose}
+              onClose={() => setAnchorEl(null)}
               MenuListProps={{
                 'aria-labelledby': 'basic-column-dropdown'
               }}

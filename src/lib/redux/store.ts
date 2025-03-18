@@ -7,6 +7,7 @@ import storage from 'redux-persist/lib/storage'
 import { persistReducer, persistStore } from 'redux-persist'
 import { boardApi } from '~/queries/boards'
 import { columnApi } from '~/queries/columns'
+import { cardApi } from '~/queries/cards'
 
 // Persist configuration
 const rootPersistConfig = {
@@ -18,7 +19,7 @@ const rootPersistConfig = {
 
 const persistedReducers = persistReducer(rootPersistConfig, rootReducer)
 
-const apiMiddlewares = [boardApi.middleware, columnApi.middleware]
+const apiMiddlewares = [boardApi.middleware, columnApi.middleware, cardApi.middleware]
 
 export const store = configureStore({
   reducer: persistedReducers,
