@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { BoardTypeValues } from '~/constants/type'
+import { BoardType, BoardTypeValues } from '~/constants/type'
 import { ColumnSchema } from '~/schemas/column.schema'
 
 export const BoardSchema = z.object({
@@ -29,3 +29,18 @@ export const BoardRes = z.object({
 })
 
 export type BoardResType = z.TypeOf<typeof BoardRes>
+
+export const CreateBoardBody = z.object({
+  title: z
+    .string()
+    .min(3, { message: 'Title must be at least 3 characters long' })
+    .max(50, { message: 'Title must be at most 50 characters long' }),
+  description: z
+    .string()
+    .min(3, { message: 'Description must be at least 3 characters long' })
+    .max(256, { message: 'Description must be at most 256 characters long' })
+    .optional(),
+  type: z.enum(BoardTypeValues, { message: 'Type must be either public or private' }).default(BoardType.Public)
+})
+
+export type CreateBoardBodyType = z.TypeOf<typeof CreateBoardBody>

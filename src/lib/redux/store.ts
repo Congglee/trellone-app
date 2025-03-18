@@ -6,6 +6,7 @@ import rootReducer from '~/store/root.reducer'
 import storage from 'redux-persist/lib/storage'
 import { persistReducer, persistStore } from 'redux-persist'
 import { boardApi } from '~/queries/boards'
+import { columnApi } from '~/queries/columns'
 
 // Persist configuration
 const rootPersistConfig = {
@@ -17,10 +18,11 @@ const rootPersistConfig = {
 
 const persistedReducers = persistReducer(rootPersistConfig, rootReducer)
 
+const apiMiddlewares = [boardApi.middleware, columnApi.middleware]
+
 export const store = configureStore({
   reducer: persistedReducers,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ serializableCheck: false }).concat([boardApi.middleware]),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }).concat(apiMiddlewares),
   devTools: process.env.NODE_ENV !== 'production'
 })
 

@@ -24,12 +24,16 @@ export default function BoardDetails() {
 
   const { boardId } = useParams()
 
-  const { data: boardData } = useGetBoardQuery(boardId!)
+  const { data: boardData, isLoading, isFetching } = useGetBoardQuery(boardId!)
 
   const board = boardData?.result
 
-  if (!board) {
+  if (isLoading || isFetching) {
     return <PageLoadingSpinner caption='Loading board...' />
+  }
+
+  if (!board) {
+    return null
   }
 
   return (
