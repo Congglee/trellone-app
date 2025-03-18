@@ -17,3 +17,20 @@ export const ColumnSchema = z.object({
 })
 
 export type ColumnType = z.TypeOf<typeof ColumnSchema>
+
+export const ColumnRes = z.object({
+  result: ColumnSchema,
+  message: z.string()
+})
+
+export type ColumnResType = z.TypeOf<typeof ColumnRes>
+
+export const CreateColumnBody = z.object({
+  title: z
+    .string()
+    .min(3, { message: 'Title must be at least 3 characters long' })
+    .max(50, { message: 'Title must be at most 50 characters long' }),
+  board_id: z.string().min(1, { message: 'Board ID is required' })
+})
+
+export type CreateColumnBodyType = z.TypeOf<typeof CreateColumnBody>

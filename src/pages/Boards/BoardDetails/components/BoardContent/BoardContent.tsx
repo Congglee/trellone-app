@@ -304,7 +304,7 @@ export default function BoardContent({ board }: BoardContentProps) {
           })
         }}
       >
-        <ColumnsList columns={sortedColumns} />
+        <ColumnsList boardId={board._id} columns={sortedColumns} />
         <DragOverlay dropAnimation={customDropAnimation}>
           {!activeDragItemType && null}
           {activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN && <Column column={activeDragItemData} />}

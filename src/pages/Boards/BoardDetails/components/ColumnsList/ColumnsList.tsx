@@ -7,14 +7,15 @@ import { useState } from 'react'
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import { useClickAway } from '@uidotdev/usehooks'
-import { toast } from 'react-toastify'
 import { ColumnType } from '~/schemas/column.schema'
+import { useAddColumnMutation } from '~/queries/columns'
 
 interface ColumnsListProps {
   columns: ColumnType[]
+  boardId: string
 }
 
-export default function ColumnsList({ columns }: ColumnsListProps) {
+export default function ColumnsList({ columns, boardId }: ColumnsListProps) {
   const [newColumnFormOpen, setNewColumnFormOpen] = useState(false)
   const [newColumnTitle, setNewColumnTitle] = useState('')
 
@@ -27,14 +28,21 @@ export default function ColumnsList({ columns }: ColumnsListProps) {
     setNewColumnFormOpen(!newColumnFormOpen)
   }
 
-  const addNewColumn = () => {
-    if (!newColumnTitle) {
-      toast.error('Please enter a column title')
+  const [addColumnMutation] = useAddColumnMutation()
+
+  const reset = () => {
+    toggleNewColumnForm()
+    setNewColumnTitle('')
+  }
+
+  const addNewColumn = async () => {
+    if (!newColumnTitle || newColumnTitle.trim() === '') {
       return
     }
 
-    toggleNewColumnForm()
-    setNewColumnTitle('')
+    await addColumnMutation({ title: newColumnTitle, board_id: boardId })
+
+    reset()
   }
 
   return (
@@ -127,10 +135,7 @@ export default function ColumnsList({ columns }: ColumnsListProps) {
                   cursor: 'pointer',
                   '&:hover': { color: (theme) => theme.palette.warning.light }
                 }}
-                onClick={() => {
-                  toggleNewColumnForm()
-                  setNewColumnTitle('')
-                }}
+                onClick={reset}
               />
             </Box>
           </Box>
