@@ -1,4 +1,4 @@
-import { Column } from '~/types/column.type'
+import { ColumnType } from '~/schemas/column.schema'
 
 export const generateColorFromString = (string: string) => {
   let hash = 0
@@ -15,20 +15,20 @@ export const generateColorFromString = (string: string) => {
   return color
 }
 
-export const generatePlaceholderCard = (column: Column) => {
+export const generatePlaceholderCard = (column: ColumnType) => {
   return {
     _id: `${column._id}-placeholder-card`,
     board_id: column.board_id,
     column_id: column._id,
-    title: 'Title of card',
-    description: 'Description of card',
+    title: 'Placeholder Card Title',
+    description: 'Placeholder Card Description',
     cover_photo: '',
     members: [],
     comments: [],
     attachments: [],
     _destroy: false,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
+    created_at: new Date(),
+    updated_at: new Date(),
     FE_PlaceholderCard: true
   }
 }

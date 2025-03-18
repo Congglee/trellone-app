@@ -17,7 +17,6 @@ import Cloud from '@mui/icons-material/Cloud'
 import CardsList from '~/pages/Boards/BoardDetails/components/CardsList'
 import Button from '@mui/material/Button'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
-import { Column as ColumnType } from '~/types/column.type'
 import { mapOrder } from '~/utils/sorts'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -25,6 +24,7 @@ import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import { useClickAway } from '@uidotdev/usehooks'
 import { toast } from 'react-toastify'
+import { ColumnType } from '~/schemas/column.schema'
 
 interface ColumnProps {
   column: ColumnType

@@ -14,7 +14,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Tooltip from '@mui/material/Tooltip'
 import AppBar from '~/components/AppBar'
 import BoardUserGroup from '~/pages/Boards/BoardDetails/components/BoardUserGroup'
-import { Board } from '~/types/board.type'
+import { BoardResType } from '~/schemas/board.schema'
 import { capitalizeFirstLetter } from '~/utils/formatters'
 
 interface BoardBarProps {
@@ -22,7 +22,7 @@ interface BoardBarProps {
   onWorkspaceDrawerOpen: (open: boolean) => void
   boardDrawerOpen: boolean
   onBoardDrawerOpen: (open: boolean) => void
-  board: Board
+  board: BoardResType['result']
 }
 
 const MENU_STYLES = {
