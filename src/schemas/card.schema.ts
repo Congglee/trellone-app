@@ -31,3 +31,21 @@ export const CardSchema = z.object({
 })
 
 export type CardType = z.TypeOf<typeof CardSchema>
+
+export const CardRes = z.object({
+  result: CardSchema,
+  message: z.string()
+})
+
+export type CardResType = z.TypeOf<typeof CardRes>
+
+export const CreateCardBody = z.object({
+  title: z
+    .string()
+    .min(3, { message: 'Title must be at least 3 characters long' })
+    .max(50, { message: 'Title must be at most 50 characters long' }),
+  board_id: z.string().min(1, { message: 'Board ID is required' }),
+  column_id: z.string().min(1, { message: 'Column ID is required' })
+})
+
+export type CreateCardBodyType = z.TypeOf<typeof CreateCardBody>

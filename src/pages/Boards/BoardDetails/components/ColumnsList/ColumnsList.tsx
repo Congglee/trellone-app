@@ -28,12 +28,12 @@ export default function ColumnsList({ columns, boardId }: ColumnsListProps) {
     setNewColumnFormOpen(!newColumnFormOpen)
   }
 
-  const [addColumnMutation] = useAddColumnMutation()
-
   const reset = () => {
     toggleNewColumnForm()
     setNewColumnTitle('')
   }
+
+  const [addColumnMutation] = useAddColumnMutation()
 
   const addNewColumn = async () => {
     if (!newColumnTitle || newColumnTitle.trim() === '') {

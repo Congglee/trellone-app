@@ -33,6 +33,7 @@ declare module '@mui/material/styles' {
 
 const NAV_BAR_HEIGHT = '58px'
 const WORKSPACE_DRAWER_WIDTH = '300px'
+
 const BOARD_DRAWER_WIDTH = '300px'
 const BOARD_BAR_HEIGHT = '60px'
 const BOARD_MAIN_HEIGHT = `calc(100vh - ${BOARD_BAR_HEIGHT})`
