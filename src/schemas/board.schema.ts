@@ -49,14 +49,18 @@ export const UpdateBoardBody = z.object({
   title: z
     .string()
     .min(3, { message: 'Title must be at least 3 characters long' })
-    .max(50, { message: 'Title must be at most 50 characters long' }),
+    .max(50, { message: 'Title must be at most 50 characters long' })
+    .optional(),
   description: z
     .string()
     .min(3, { message: 'Description must be at least 3 characters long' })
     .max(256, { message: 'Description must be at most 256 characters long' })
     .optional(),
-  type: z.enum(BoardTypeValues, { message: 'Type must be either public or private' }).default(BoardType.Public),
-  column_order_ids: z.array(z.string())
+  type: z
+    .enum(BoardTypeValues, { message: 'Type must be either public or private' })
+    .default(BoardType.Public)
+    .optional(),
+  column_order_ids: z.array(z.string()).optional()
 })
 
 export type UpdateBoardBodyType = z.TypeOf<typeof UpdateBoardBody>

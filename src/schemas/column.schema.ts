@@ -34,3 +34,14 @@ export const CreateColumnBody = z.object({
 })
 
 export type CreateColumnBodyType = z.TypeOf<typeof CreateColumnBody>
+
+export const UpdateColumnBody = z.object({
+  title: z
+    .string()
+    .min(3, { message: 'Title must be at least 3 characters long' })
+    .max(50, { message: 'Title must be at most 50 characters long' })
+    .optional(),
+  card_order_ids: z.array(z.string()).optional()
+})
+
+export type UpdateColumnBodyType = z.TypeOf<typeof UpdateColumnBody>

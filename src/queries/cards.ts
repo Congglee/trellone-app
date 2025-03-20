@@ -24,7 +24,7 @@ export const cardApi = createApi({
           // Optimistically update the board's columns and cards in the cache
           dispatch(
             boardApi.util.updateQueryData('getBoard', board_id, (draft) => {
-              if (draft?.result) {
+              if (draft.result) {
                 const newCard = data.result
                 const columnToUpdate = draft.result.columns?.find((column) => column._id === newCard.column_id)
 
