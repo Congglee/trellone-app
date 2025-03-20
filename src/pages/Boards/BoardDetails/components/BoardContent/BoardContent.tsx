@@ -24,6 +24,7 @@ import { MouseSensor, TouchSensor } from '~/lib/dnd-kit'
 import Card from '~/pages/Boards/BoardDetails/components/Card'
 import Column from '~/pages/Boards/BoardDetails/components/Column'
 import ColumnsList from '~/pages/Boards/BoardDetails/components/ColumnsList'
+import { useUpdateBoardMutation } from '~/queries/boards'
 import { BoardResType } from '~/schemas/board.schema'
 import { CardType } from '~/schemas/card.schema'
 import { ColumnType } from '~/schemas/column.schema'
@@ -57,12 +58,32 @@ export default function BoardContent({ board }: BoardContentProps) {
 
   const lastOverId = useRef<UniqueIdentifier | null>(null)
 
+  const [updateBoardMutation] = useUpdateBoardMutation()
+
   useEffect(() => {
     setSortedColumns(mapOrder(board.columns, board.column_order_ids, '_id'))
   }, [board])
 
   const findColumnByCardId = (cardId: UniqueIdentifier) => {
     return sortedColumns.find((column) => column?.cards?.map((card) => card._id).includes(cardId as string))
+  }
+
+  const moveColumns = async (dndOrderedColumns: ColumnType[]) => {
+    const boardColumnOrderIds = dndOrderedColumns.map((column) => column._id)
+
+    // Actually, on the Back-end server side, there is a `filterMiddleware` used to filter out the unnecessary fields
+    // So we can write like this
+    // const body = { ...board, column_order_ids: boardColumnOrderIds }
+
+    // But we should still send the body with the required fields only to prevent unnecessary data transfer
+    const body = {
+      title: board.title,
+      description: board.description,
+      type: board.type,
+      column_order_ids: boardColumnOrderIds
+    }
+
+    await updateBoardMutation({ id: board._id, dndOrderedColumns, body })
   }
 
   const moveCardBetweenDifferentColumns = ({
@@ -232,6 +253,8 @@ export default function BoardContent({ board }: BoardContentProps) {
         const newColumnIndex = sortedColumns.findIndex((column) => column._id === over.id)
 
         const dndOrderedColumns = arrayMove(sortedColumns, oldColumnIndex, newColumnIndex)
+
+        moveColumns(dndOrderedColumns)
 
         setSortedColumns(dndOrderedColumns)
       }
