@@ -25,10 +25,10 @@ import Card from '~/pages/Boards/BoardDetails/components/Card'
 import Column from '~/pages/Boards/BoardDetails/components/Column'
 import ColumnsList from '~/pages/Boards/BoardDetails/components/ColumnsList'
 import { useUpdateBoardMutation } from '~/queries/boards'
+import { useUpdateColumnMutation } from '~/queries/columns'
 import { BoardResType } from '~/schemas/board.schema'
 import { CardType } from '~/schemas/card.schema'
 import { ColumnType } from '~/schemas/column.schema'
-import { mapOrder } from '~/utils/sorts'
 import { generatePlaceholderCard } from '~/utils/utils'
 
 interface BoardContentProps {
@@ -59,9 +59,10 @@ export default function BoardContent({ board }: BoardContentProps) {
   const lastOverId = useRef<UniqueIdentifier | null>(null)
 
   const [updateBoardMutation] = useUpdateBoardMutation()
+  const [updateColumnMutation] = useUpdateColumnMutation()
 
   useEffect(() => {
-    setSortedColumns(mapOrder(board.columns, board.column_order_ids, '_id'))
+    setSortedColumns(board.columns!)
   }, [board])
 
   const findColumnByCardId = (cardId: UniqueIdentifier) => {
@@ -71,19 +72,28 @@ export default function BoardContent({ board }: BoardContentProps) {
   const moveColumns = async (dndOrderedColumns: ColumnType[]) => {
     const boardColumnOrderIds = dndOrderedColumns.map((column) => column._id)
 
-    // Actually, on the Back-end server side, there is a `filterMiddleware` used to filter out the unnecessary fields
-    // So we can write like this
-    // const body = { ...board, column_order_ids: boardColumnOrderIds }
+    await updateBoardMutation({
+      id: board._id,
+      body: {
+        column_order_ids: boardColumnOrderIds,
+        dnd_ordered_columns: dndOrderedColumns
+      }
+    })
+  }
 
-    // But we should still send the body with the required fields only to prevent unnecessary data transfer
-    const body = {
-      title: board.title,
-      description: board.description,
-      type: board.type,
-      column_order_ids: boardColumnOrderIds
-    }
-
-    await updateBoardMutation({ id: board._id, dndOrderedColumns, body })
+  const moveCardInTheSameColumn = async (
+    dndOrderedCards: CardType[],
+    dndOrderedCardsIds: string[],
+    columnId: string
+  ) => {
+    await updateColumnMutation({
+      id: columnId,
+      body: {
+        card_order_ids: dndOrderedCardsIds,
+        board_id: board._id,
+        dnd_ordered_cards: dndOrderedCards
+      }
+    })
   }
 
   const moveCardBetweenDifferentColumns = ({
@@ -232,18 +242,21 @@ export default function BoardContent({ board }: BoardContentProps) {
         const newCardIndex = overColumn?.cards?.findIndex((card) => card._id === overCardId) ?? -1
         const oldColumnCards = oldColumnWhenDraggingCard?.cards ?? []
 
-        const dndSortedCards = arrayMove(oldColumnCards, oldCardIndex, newCardIndex)
+        const dndOrderedCards = arrayMove(oldColumnCards, oldCardIndex, newCardIndex)
+        const dndOrderedCardsIds = dndOrderedCards.map((card) => card._id)
 
         setSortedColumns((prevColumns) => {
           const nextColumns = cloneDeep(prevColumns)
 
           const targetColumn = nextColumns.find((column) => column._id === overColumn._id) as ColumnType
 
-          targetColumn.cards = dndSortedCards
-          targetColumn.card_order_ids = dndSortedCards.map((card) => card._id)
+          targetColumn.cards = dndOrderedCards
+          targetColumn.card_order_ids = dndOrderedCardsIds
 
           return nextColumns
         })
+
+        moveCardInTheSameColumn(dndOrderedCards, dndOrderedCardsIds, (oldColumnWhenDraggingCard as ColumnType)._id)
       }
     }
 
@@ -254,9 +267,9 @@ export default function BoardContent({ board }: BoardContentProps) {
 
         const dndOrderedColumns = arrayMove(sortedColumns, oldColumnIndex, newColumnIndex)
 
-        moveColumns(dndOrderedColumns)
-
         setSortedColumns(dndOrderedColumns)
+
+        moveColumns(dndOrderedColumns)
       }
     }
 

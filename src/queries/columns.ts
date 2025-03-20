@@ -2,7 +2,8 @@ import { createApi } from '@reduxjs/toolkit/query/react'
 import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
 import { boardApi } from '~/queries/boards'
-import { ColumnResType, CreateColumnBodyType } from '~/schemas/column.schema'
+import { CardType } from '~/schemas/card.schema'
+import { ColumnResType, CreateColumnBodyType, UpdateColumnBodyType } from '~/schemas/column.schema'
 import { generatePlaceholderCard } from '~/utils/utils'
 
 const COLUMN_API_URL = '/columns' as const
@@ -39,7 +40,7 @@ export const columnApi = createApi({
           dispatch(
             boardApi.util.updateQueryData('getBoard', board_id, (draft) => {
               // If draft exists and has columns property, update it with the new column
-              if (draft?.result) {
+              if (draft.result) {
                 const newColumn = data.result
 
                 // Add the new column to the board's columns
@@ -66,11 +67,56 @@ export const columnApi = createApi({
         }
       },
       invalidatesTags: [{ type: 'Column', id: 'LIST' }]
+    }),
+
+    updateColumn: build.mutation<
+      ColumnResType,
+      {
+        id: string
+        body: UpdateColumnBodyType & { board_id: string; dnd_ordered_cards?: CardType[] }
+      }
+    >({
+      query: ({ id, body }) => ({ url: `${COLUMN_API_URL}/${id}`, method: 'PUT', data: body }),
+      async onQueryStarted({ id, body }, { dispatch, queryFulfilled }) {
+        const { board_id } = body
+
+        const updateColumnResult = dispatch(
+          boardApi.util.updateQueryData('getBoard', board_id, (draft) => {
+            if (draft.result) {
+              const columnToUpdate = draft.result.columns?.find((column) => column._id === id)
+              const dndOrderedCards = body.dnd_ordered_cards
+              const dndOrderedCardsIds = body.card_order_ids
+
+              if (columnToUpdate) {
+                if (dndOrderedCards) {
+                  columnToUpdate.cards = dndOrderedCards
+                }
+
+                if (dndOrderedCardsIds) {
+                  columnToUpdate.card_order_ids = dndOrderedCardsIds
+                }
+
+                Object.assign(columnToUpdate, body)
+              }
+            }
+          })
+        )
+
+        try {
+          await queryFulfilled
+        } catch (error) {
+          // Rollback the optimistic update if the query fails
+          updateColumnResult.undo()
+
+          toast.error('There was an error updating the column')
+          console.error(error)
+        }
+      }
     })
   })
 })
 
-export const { useAddColumnMutation } = columnApi
+export const { useAddColumnMutation, useUpdateColumnMutation } = columnApi
 
 const columnApiReducer = columnApi.reducer
 
