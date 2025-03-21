@@ -9,15 +9,21 @@ import CloseIcon from '@mui/icons-material/Close'
 import { useClickAway } from '@uidotdev/usehooks'
 import { ColumnType } from '~/schemas/column.schema'
 import { useAddColumnMutation } from '~/queries/columns'
+import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
+import { generatePlaceholderCard } from '~/utils/utils'
+import { cloneDeep } from 'lodash'
+import { updateActiveBoard } from '~/store/slices/board.slice'
 
 interface ColumnsListProps {
   columns: ColumnType[]
-  boardId: string
 }
 
-export default function ColumnsList({ columns, boardId }: ColumnsListProps) {
+export default function ColumnsList({ columns }: ColumnsListProps) {
   const [newColumnFormOpen, setNewColumnFormOpen] = useState(false)
   const [newColumnTitle, setNewColumnTitle] = useState('')
+
+  const { activeBoard } = useAppSelector((state) => state.board)
+  const dispatch = useAppDispatch()
 
   const newColumnClickAwayRef = useClickAway(() => {
     setNewColumnFormOpen(false)
@@ -40,7 +46,23 @@ export default function ColumnsList({ columns, boardId }: ColumnsListProps) {
       return
     }
 
-    await addColumnMutation({ title: newColumnTitle, board_id: boardId })
+    const addNewColumnRes = await addColumnMutation({
+      title: newColumnTitle,
+      board_id: activeBoard?._id as string
+    }).unwrap()
+
+    const newColumn = cloneDeep(addNewColumnRes.result)
+
+    const placeholderCard = generatePlaceholderCard(newColumn)
+    newColumn.cards = [placeholderCard]
+    newColumn.card_order_ids = [placeholderCard._id]
+
+    const newActiveBoard = cloneDeep(activeBoard)
+
+    newActiveBoard?.columns?.push(newColumn)
+    newActiveBoard?.column_order_ids.push(newColumn._id)
+
+    dispatch(updateActiveBoard(newActiveBoard))
 
     reset()
   }

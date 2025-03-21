@@ -24,6 +24,9 @@ import CloseIcon from '@mui/icons-material/Close'
 import { useClickAway } from '@uidotdev/usehooks'
 import { ColumnType } from '~/schemas/column.schema'
 import { useAddCardMutation } from '~/queries/cards'
+import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
+import { cloneDeep } from 'lodash'
+import { updateActiveBoard } from '~/store/slices/board.slice'
 
 interface ColumnProps {
   column: ColumnType
@@ -49,6 +52,9 @@ export default function Column({ column }: ColumnProps) {
   const [newCardFormOpen, setNewCardFormOpen] = useState(false)
   const [newCardTitle, setNewCardTitle] = useState('')
 
+  const { activeBoard } = useAppSelector((state) => state.board)
+  const dispatch = useAppDispatch()
+
   const newCardClickAwayRef = useClickAway(() => {
     setNewCardFormOpen(false)
     setNewCardTitle('')
@@ -70,11 +76,28 @@ export default function Column({ column }: ColumnProps) {
       return
     }
 
-    await addCardMutation({
+    const addNewCardRes = await addCardMutation({
       title: newCardTitle,
       column_id: column._id,
       board_id: column.board_id
-    })
+    }).unwrap()
+
+    const newCard = cloneDeep(addNewCardRes.result)
+
+    const newActiveBoard = cloneDeep(activeBoard)
+    const columnToUpdate = newActiveBoard?.columns?.find((column) => column._id === newCard.column_id)
+
+    if (columnToUpdate) {
+      if (columnToUpdate.cards?.some((card) => card.FE_PlaceholderCard)) {
+        columnToUpdate.cards = [newCard]
+        columnToUpdate.card_order_ids = [newCard._id]
+      } else {
+        columnToUpdate.cards?.push(newCard)
+        columnToUpdate.card_order_ids?.push(newCard._id)
+      }
+    }
+
+    dispatch(updateActiveBoard(newActiveBoard))
 
     reset()
   }

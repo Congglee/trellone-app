@@ -1,17 +1,23 @@
 import { useMediaQuery, useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import { useState } from 'react'
+import { cloneDeep } from 'lodash'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import DrawerHeader from '~/components/DrawerHeader'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import Main from '~/components/Main'
 import NavBar from '~/components/NavBar'
+import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import BoardBar from '~/pages/Boards/BoardDetails/components/BoardBar'
 import BoardContent from '~/pages/Boards/BoardDetails/components/BoardContent'
 import BoardDrawer from '~/pages/Boards/BoardDetails/components/BoardDrawer'
 import WorkspaceDrawer from '~/pages/Boards/BoardDetails/components/WorkspaceDrawer'
-import { useGetBoardQuery } from '~/queries/boards'
+import { useUpdateBoardMutation } from '~/queries/boards'
+import { useUpdateColumnMutation } from '~/queries/columns'
+import { CardType } from '~/schemas/card.schema'
+import { ColumnType } from '~/schemas/column.schema'
+import { getBoardDetails, updateActiveBoard } from '~/store/slices/board.slice'
 
 export default function BoardDetails() {
   const theme = useTheme()
@@ -23,15 +29,53 @@ export default function BoardDetails() {
 
   const { boardId } = useParams()
 
-  const { data: boardData, isLoading, isFetching } = useGetBoardQuery(boardId!)
+  const dispatch = useAppDispatch()
+  const { activeBoard, loading } = useAppSelector((state) => state.board)
 
-  const board = boardData?.result
+  const [updateBoardMutation] = useUpdateBoardMutation()
+  const [updateColumnMutation] = useUpdateColumnMutation()
 
-  if (isLoading || isFetching) {
+  useEffect(() => {
+    dispatch(getBoardDetails(boardId!))
+  }, [dispatch, boardId])
+
+  const onMoveColumns = (dndOrderedColumns: ColumnType[]) => {
+    const dndOrderedCardsIds = dndOrderedColumns.map((column) => column._id)
+
+    const newActiveBoard = { ...activeBoard! }
+    newActiveBoard.columns = dndOrderedColumns
+    newActiveBoard.column_order_ids = dndOrderedCardsIds
+
+    dispatch(updateActiveBoard(newActiveBoard))
+
+    updateBoardMutation({
+      id: newActiveBoard._id,
+      body: { column_order_ids: newActiveBoard.column_order_ids }
+    })
+  }
+
+  const onMoveCardInTheSameColumn = (dndOrderedCards: CardType[], dndOrderedCardsIds: string[], columnId: string) => {
+    const newActiveBoard = cloneDeep(activeBoard)
+    const columnToUpdate = newActiveBoard?.columns?.find((column) => column._id === columnId)
+
+    if (columnToUpdate) {
+      columnToUpdate.cards = dndOrderedCards
+      columnToUpdate.card_order_ids = dndOrderedCardsIds
+    }
+
+    dispatch(updateActiveBoard(newActiveBoard))
+
+    updateColumnMutation({
+      id: columnId,
+      body: { card_order_ids: dndOrderedCardsIds }
+    })
+  }
+
+  if (loading === 'pending') {
     return <PageLoadingSpinner caption='Loading board...' />
   }
 
-  if (!board) {
+  if (!activeBoard) {
     return null
   }
 
@@ -66,7 +110,7 @@ export default function BoardDetails() {
             onWorkspaceDrawerOpen={setWorkspaceDrawerOpen}
             boardDrawerOpen={boardDrawerOpen}
             onBoardDrawerOpen={setBoardDrawerOpen}
-            board={board}
+            board={activeBoard}
           />
           <Main
             workspaceDrawerOpen={workspaceDrawerOpen}
@@ -79,7 +123,11 @@ export default function BoardDetails() {
           >
             <DrawerHeader />
             {isScreenBelowMedium && <DrawerHeader />}
-            <BoardContent board={board} />
+            <BoardContent
+              board={activeBoard}
+              onMoveColumns={onMoveColumns}
+              onMoveCardInTheSameColumn={onMoveCardInTheSameColumn}
+            />
           </Main>
           <BoardDrawer open={boardDrawerOpen} onOpen={setBoardDrawerOpen} />
         </Box>
