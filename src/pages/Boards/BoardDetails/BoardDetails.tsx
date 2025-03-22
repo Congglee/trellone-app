@@ -13,7 +13,7 @@ import BoardBar from '~/pages/Boards/BoardDetails/components/BoardBar'
 import BoardContent from '~/pages/Boards/BoardDetails/components/BoardContent'
 import BoardDrawer from '~/pages/Boards/BoardDetails/components/BoardDrawer'
 import WorkspaceDrawer from '~/pages/Boards/BoardDetails/components/WorkspaceDrawer'
-import { useUpdateBoardMutation } from '~/queries/boards'
+import { useMoveCardToDifferentColumnMutation, useUpdateBoardMutation } from '~/queries/boards'
 import { useUpdateColumnMutation } from '~/queries/columns'
 import { CardType } from '~/schemas/card.schema'
 import { ColumnType } from '~/schemas/column.schema'
@@ -34,6 +34,7 @@ export default function BoardDetails() {
 
   const [updateBoardMutation] = useUpdateBoardMutation()
   const [updateColumnMutation] = useUpdateColumnMutation()
+  const [moveCardToDifferentColumnMutation] = useMoveCardToDifferentColumnMutation()
 
   useEffect(() => {
     dispatch(getBoardDetails(boardId!))
@@ -68,6 +69,36 @@ export default function BoardDetails() {
     updateColumnMutation({
       id: columnId,
       body: { card_order_ids: dndOrderedCardsIds }
+    })
+  }
+
+  const onMoveCardToDifferentColumn = (
+    currentCardId: string,
+    prevColumnId: string,
+    nextColumnId: string,
+    dndOrderedColumns: ColumnType[]
+  ) => {
+    const dndOrderedColumnsIds = dndOrderedColumns.map((column) => column._id)
+
+    const newActiveBoard = { ...activeBoard! }
+
+    newActiveBoard.columns = dndOrderedColumns
+    newActiveBoard.column_order_ids = dndOrderedColumnsIds
+
+    dispatch(updateActiveBoard(newActiveBoard))
+
+    let prevCardOrderIds = dndOrderedColumns.find((column) => column._id === prevColumnId)?.card_order_ids as string[]
+
+    if (prevCardOrderIds[0]?.includes('placeholder-card')) {
+      prevCardOrderIds = []
+    }
+
+    moveCardToDifferentColumnMutation({
+      current_card_id: currentCardId,
+      prev_column_id: prevColumnId,
+      prev_card_order_ids: prevCardOrderIds,
+      next_column_id: nextColumnId,
+      next_card_order_ids: dndOrderedColumns.find((column) => column._id === nextColumnId)?.card_order_ids as string[]
     })
   }
 
@@ -127,6 +158,7 @@ export default function BoardDetails() {
               board={activeBoard}
               onMoveColumns={onMoveColumns}
               onMoveCardInTheSameColumn={onMoveCardInTheSameColumn}
+              onMoveCardToDifferentColumn={onMoveCardToDifferentColumn}
             />
           </Main>
           <BoardDrawer open={boardDrawerOpen} onOpen={setBoardDrawerOpen} />
