@@ -328,12 +328,15 @@ export default function BoardContent({
     >
       <Box
         sx={{
+          display: 'flex',
+          flexDirection: 'column',
           width: '100%',
-          p: 1.25,
-          height: (theme) => ({
-            xs: `calc(100vh - ${theme.trellone.navBarHeight} - 2 * ${theme.trellone.boardBarHeight})`,
-            md: theme.trellone.boardContentHeight
-          })
+          p: 1.25
+
+          // height: (theme) => ({
+          //   xs: `calc(100vh - ${theme.trellone.navBarHeight} - 2 * ${theme.trellone.boardBarHeight})`,
+          //   md: theme.trellone.boardContentHeight
+          // })
         }}
       >
         <ColumnsList columns={sortedColumns} />

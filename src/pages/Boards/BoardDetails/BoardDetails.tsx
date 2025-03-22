@@ -149,7 +149,8 @@ export default function BoardDetails() {
             sx={{
               overflowX: 'auto',
               overflowY: 'hidden',
-              height: theme.trellone.boardMainHeight
+              height: (theme) => theme.trellone.boardMainHeight,
+              '&::-webkit-scrollbar-track': { m: 2 }
             }}
           >
             <DrawerHeader />

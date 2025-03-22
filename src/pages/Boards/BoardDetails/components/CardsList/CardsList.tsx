@@ -19,11 +19,15 @@ export default function CardsList({ cards }: CardsListProps) {
           gap: 1,
           overflowX: 'hidden',
           overflowY: 'auto',
+
           maxHeight: (theme) => ({
             xs: `calc(${theme.trellone.boardContentHeight} - ${theme.trellone.boardBarHeight} - ${theme.spacing(5)} - ${theme.trellone.columnHeaderHeight} - ${theme.trellone.columnFooterHeight})`,
-
             md: `calc(${theme.trellone.boardContentHeight} - ${theme.spacing(5)} - ${theme.trellone.columnHeaderHeight} - ${theme.trellone.columnFooterHeight})`
           }),
+
+          // maxHeight: (theme) =>
+          //   `calc(${theme.trellone.boardContentHeight} - ${theme.spacing(5)} - ${theme.trellone.columnHeaderHeight} - ${theme.trellone.columnFooterHeight})`,
+
           '&::-webkit-scrollbar-thumb': { backgroundColor: '#ced0da' },
           '&::-webkit-scrollbar-thumb:hover': { backgroundColor: '#bfc2cf' }
         }}
