@@ -45,3 +45,9 @@ export const UpdateColumnBody = z.object({
 })
 
 export type UpdateColumnBodyType = z.TypeOf<typeof UpdateColumnBody>
+
+export const DeleteColumnRes = z.object({
+  message: z.string()
+})
+
+export type DeleteColumnResType = z.TypeOf<typeof DeleteColumnRes>

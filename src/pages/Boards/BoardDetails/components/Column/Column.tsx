@@ -27,6 +27,8 @@ import { useAddCardMutation } from '~/queries/cards'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { cloneDeep } from 'lodash'
 import { updateActiveBoard } from '~/store/slices/board.slice'
+import { useConfirm } from 'material-ui-confirm'
+import { useDeleteColumnMutation } from '~/queries/columns'
 
 interface ColumnProps {
   column: ColumnType
@@ -55,6 +57,8 @@ export default function Column({ column }: ColumnProps) {
   const { activeBoard } = useAppSelector((state) => state.board)
   const dispatch = useAppDispatch()
 
+  const sortedCards = column.cards!
+
   const newCardClickAwayRef = useClickAway(() => {
     setNewCardFormOpen(false)
     setNewCardTitle('')
@@ -70,6 +74,7 @@ export default function Column({ column }: ColumnProps) {
   }
 
   const [addCardMutation] = useAddCardMutation()
+  const [deleteColumnMutation] = useDeleteColumnMutation()
 
   const addNewCard = async () => {
     if (!newCardTitle || newCardTitle.trim() === '') {
@@ -102,7 +107,27 @@ export default function Column({ column }: ColumnProps) {
     reset()
   }
 
-  const sortedCards = column.cards!
+  const confirmDeleteColumn = useConfirm()
+
+  const deleteColumn = () => {
+    confirmDeleteColumn({
+      title: 'Delete Column?',
+      description: 'This action will permanently delete your Column and its Cards! Are you sure?',
+      confirmationText: 'Confirm',
+      cancellationText: 'Cancel'
+    })
+      .then(() => {
+        const newActiveBoard = { ...activeBoard! }
+
+        newActiveBoard.columns = newActiveBoard.columns?.filter((col) => col._id !== column._id)
+        newActiveBoard.column_order_ids = newActiveBoard.column_order_ids?.filter((_id) => _id !== column._id)
+
+        dispatch(updateActiveBoard(newActiveBoard))
+
+        deleteColumnMutation(column._id)
+      })
+      .catch(() => {})
+  }
 
   return (
     <div ref={setNodeRef} style={dndKitColumnsStyles} {...attributes}>
@@ -175,7 +200,7 @@ export default function Column({ column }: ColumnProps) {
                 <ListItemText>Paste</ListItemText>
               </MenuItem>
               <Divider />
-              <MenuItem>
+              <MenuItem onClick={deleteColumn}>
                 <ListItemIcon>
                   <DeleteForeverIcon fontSize='small' />
                 </ListItemIcon>
