@@ -1,6 +1,9 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import path from '~/constants/path'
 import NotFound from '~/pages/404/NotFound'
+import AuthLayout from '~/pages/Auth/layouts/AuthLayout'
+import Login from '~/pages/Auth/Login'
+import Register from '~/pages/Auth/Register'
 import BoardDetails from '~/pages/Boards/BoardDetails'
 
 function App() {
@@ -11,6 +14,12 @@ function App() {
 
       {/* Board Details */}
       <Route path={path.boardDetails} element={<BoardDetails />} />
+
+      {/* Authentication */}
+      <Route element={<AuthLayout />}>
+        <Route path={path.login} element={<Login />} />
+        <Route path={path.register} element={<Register />} />
+      </Route>
 
       {/* 404 not found page */}
       <Route path='*' element={<NotFound />} />

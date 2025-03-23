@@ -38,6 +38,14 @@ export default function Column({ column }: ColumnProps) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | SVGSVGElement | null>(null)
   const open = Boolean(anchorEl)
 
+  const handleMenuClick = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleMenuClose = () => {
+    setAnchorEl(null)
+  }
+
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: column._id,
     data: { ...column }
@@ -109,14 +117,19 @@ export default function Column({ column }: ColumnProps) {
 
   const confirmDeleteColumn = useConfirm()
 
-  const deleteColumn = () => {
-    confirmDeleteColumn({
-      title: 'Delete Column?',
-      description: 'This action will permanently delete your Column and its Cards! Are you sure?',
-      confirmationText: 'Confirm',
-      cancellationText: 'Cancel'
-    })
-      .then(() => {
+  const deleteColumn = async () => {
+    try {
+      // Close the menu to prevent aria-hidden conflicts
+      handleMenuClose()
+
+      const { confirmed } = await confirmDeleteColumn({
+        title: 'Delete Column?',
+        description: 'This action will permanently delete your Column and its Cards! Are you sure?',
+        confirmationText: 'Confirm',
+        cancellationText: 'Cancel'
+      })
+
+      if (confirmed) {
         const newActiveBoard = { ...activeBoard! }
 
         newActiveBoard.columns = newActiveBoard.columns?.filter((col) => col._id !== column._id)
@@ -124,9 +137,12 @@ export default function Column({ column }: ColumnProps) {
 
         dispatch(updateActiveBoard(newActiveBoard))
 
-        deleteColumnMutation(column._id)
-      })
-      .catch(() => {})
+        await deleteColumnMutation(column._id)
+      }
+    } catch (error: any) {
+      // User canceled the operation or there was an error
+      console.log('Column deletion canceled or failed', error)
+    }
   }
 
   return (
@@ -163,14 +179,15 @@ export default function Column({ column }: ColumnProps) {
                 aria-controls={open ? 'basic-menu-column-dropdown' : undefined}
                 aria-haspopup='true'
                 aria-expanded={open ? 'true' : undefined}
-                onClick={(e) => setAnchorEl(e.currentTarget)}
+                onClick={handleMenuClick}
               />
             </Tooltip>
             <Menu
               id='basic-menu-column-dropdown'
               anchorEl={anchorEl}
               open={open}
-              onClose={() => setAnchorEl(null)}
+              onClick={handleMenuClose}
+              onClose={handleMenuClose}
               MenuListProps={{
                 'aria-labelledby': 'basic-column-dropdown'
               }}
