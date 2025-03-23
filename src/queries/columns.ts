@@ -1,7 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
-import { ColumnResType, CreateColumnBodyType, UpdateColumnBodyType } from '~/schemas/column.schema'
+import { ColumnResType, CreateColumnBodyType, DeleteColumnResType, UpdateColumnBodyType } from '~/schemas/column.schema'
 
 const COLUMN_API_URL = '/columns' as const
 
@@ -37,11 +37,24 @@ export const columnApi = createApi({
           console.error(error)
         }
       }
+    }),
+
+    deleteColumn: build.mutation<DeleteColumnResType, string>({
+      query: (id) => ({ url: `${COLUMN_API_URL}/${id}`, method: 'DELETE' }),
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled
+          toast.success(data.message || 'Column deleted successfully')
+        } catch (error) {
+          toast.error('There was an error deleting the column')
+          console.error(error)
+        }
+      }
     })
   })
 })
 
-export const { useAddColumnMutation, useUpdateColumnMutation } = columnApi
+export const { useAddColumnMutation, useUpdateColumnMutation, useDeleteColumnMutation } = columnApi
 
 const columnApiReducer = columnApi.reducer
 
