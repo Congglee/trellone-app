@@ -7,17 +7,20 @@ import Button from '@mui/material/Button'
 import CardActions from '@mui/material/CardActions'
 import Typography from '@mui/material/Typography'
 import Zoom from '@mui/material/Zoom'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
+import { useLoginMutation } from '~/queries/auth'
 import { LoginBody, LoginBodyType } from '~/schemas/auth.schema'
+import { isUnprocessableEntityError } from '~/utils/error-handlers'
 
 export default function Login() {
   const {
     register,
-    // setError,
+    setError,
     handleSubmit,
     formState: { errors }
   } = useForm<LoginBodyType>({
@@ -25,9 +28,32 @@ export default function Login() {
     defaultValues: { email: '', password: '' }
   })
 
+  const navigate = useNavigate()
+
+  const [loginMutation, { isError, error }] = useLoginMutation()
+
   const onSubmit = handleSubmit((values) => {
-    console.log('values', values)
+    loginMutation(values).then((res) => {
+      if (!res.error) {
+        navigate('/')
+      }
+    })
   })
+
+  useEffect(() => {
+    if (isError && isUnprocessableEntityError<LoginBodyType>(error)) {
+      const formError = error.data.errors
+
+      if (formError) {
+        for (const [key, value] of Object.entries(formError)) {
+          setError(key as keyof LoginBodyType, {
+            type: value.type,
+            message: value.msg
+          })
+        }
+      }
+    }
+  }, [isError, error, setError])
 
   return (
     <form onSubmit={onSubmit}>
