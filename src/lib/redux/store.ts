@@ -10,18 +10,25 @@ import { boardApi } from '~/queries/boards'
 import { columnApi } from '~/queries/columns'
 import { cardApi } from '~/queries/cards'
 import { authApi } from '~/queries/auth'
+import { userApi } from '~/queries/users'
 
 // Persist configuration
 const rootPersistConfig = {
   key: 'root',
   storage,
-  whitelist: []
+  whitelist: ['auth']
   // blacklist: [],
 }
 
 const persistedReducers = persistReducer(rootPersistConfig, rootReducer)
 
-const apiMiddlewares = [boardApi.middleware, columnApi.middleware, cardApi.middleware, authApi.middleware]
+const apiMiddlewares = [
+  boardApi.middleware,
+  columnApi.middleware,
+  cardApi.middleware,
+  authApi.middleware,
+  userApi.middleware
+]
 
 export const store = configureStore({
   reducer: persistedReducers,
