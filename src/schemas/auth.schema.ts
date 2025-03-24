@@ -40,3 +40,13 @@ export const RegisterBody = z
   })
 
 export type RegisterBodyType = z.TypeOf<typeof RegisterBody>
+
+export const AuthRes = z.object({
+  result: z.object({
+    access_token: z.string(),
+    refresh_token: z.string()
+  }),
+  message: z.string()
+})
+
+export type AuthResType = z.TypeOf<typeof AuthRes>

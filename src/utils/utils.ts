@@ -32,3 +32,21 @@ export const generatePlaceholderCard = (column: ColumnType) => {
     FE_PlaceholderCard: true
   }
 }
+
+interface InterceptorLoadingElement extends HTMLElement {
+  style: CSSStyleDeclaration
+}
+
+export const interceptorLoadingElements = (calling: boolean) => {
+  const elements: NodeListOf<InterceptorLoadingElement> = document.querySelectorAll('.interceptor-loading')
+
+  for (let i = 0; i < elements.length; i++) {
+    if (calling) {
+      elements[i].style.opacity = '0.5'
+      elements[i].style.pointerEvents = 'none'
+    } else {
+      elements[i].style.opacity = 'initial'
+      elements[i].style.pointerEvents = 'initial'
+    }
+  }
+}
