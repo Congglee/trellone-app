@@ -1,7 +1,8 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import axiosBaseQuery from '~/lib/redux/helpers'
+import { userApi } from '~/queries/users'
 import { AuthResType, LoginBodyType } from '~/schemas/auth.schema'
-import { setAuthenticated } from '~/store/slices/auth.slice'
+import { setAuthenticated, setProfile } from '~/store/slices/auth.slice'
 
 const AUTH_API_URL = '/auth' as const
 
@@ -18,7 +19,15 @@ export const authApi = createApi({
       async onQueryStarted(_args, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled
-          dispatch(setAuthenticated(true))
+
+          dispatch(userApi.endpoints.getMe.initiate(undefined)).then((res) => {
+            if (!res.error) {
+              const result = res.data?.result
+
+              dispatch(setAuthenticated(true))
+              dispatch(setProfile(result))
+            }
+          })
         } catch (error: any) {
           console.error(error)
         }
