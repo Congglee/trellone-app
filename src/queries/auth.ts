@@ -4,7 +4,7 @@ import { userApi } from '~/queries/users'
 import { AuthResType, LoginBodyType, LogoutResType } from '~/schemas/auth.schema'
 import { setAuthenticated, setProfile } from '~/store/slices/auth.slice'
 
-const AUTH_API_URL = '/auth' as const
+export const AUTH_API_URL = '/auth' as const
 
 const reducerPath = 'auth/api' as const
 const tagTypes = ['Auth'] as const

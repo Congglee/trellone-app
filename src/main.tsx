@@ -11,8 +11,11 @@ import 'react-toastify/dist/ReactToastify.css'
 import { PersistGate } from 'redux-persist/integration/react'
 import App from '~/App'
 import '~/index.css'
+import { injectStore } from '~/lib/http'
 import { persistor, store } from '~/lib/redux/store'
 import theme from '~/theme'
+
+injectStore(store)
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
