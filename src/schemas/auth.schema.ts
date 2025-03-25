@@ -50,3 +50,9 @@ export const AuthRes = z.object({
 })
 
 export type AuthResType = z.TypeOf<typeof AuthRes>
+
+export const LogoutRes = z.object({
+  message: z.string()
+})
+
+export type LogoutResType = z.TypeOf<typeof LogoutRes>

@@ -1,7 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import axiosBaseQuery from '~/lib/redux/helpers'
 import { userApi } from '~/queries/users'
-import { AuthResType, LoginBodyType } from '~/schemas/auth.schema'
+import { AuthResType, LoginBodyType, LogoutResType } from '~/schemas/auth.schema'
 import { setAuthenticated, setProfile } from '~/store/slices/auth.slice'
 
 const AUTH_API_URL = '/auth' as const
@@ -32,11 +32,25 @@ export const authApi = createApi({
           console.error(error)
         }
       }
+    }),
+
+    logout: build.mutation<LogoutResType, void>({
+      query: () => ({ url: `${AUTH_API_URL}/logout`, method: 'POST' }),
+      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled
+
+          dispatch(setAuthenticated(false))
+          dispatch(setProfile(null))
+        } catch (error: any) {
+          console.error(error)
+        }
+      }
     })
   })
 })
 
-export const { useLoginMutation } = authApi
+export const { useLoginMutation, useLogoutMutation } = authApi
 
 const authApiReducer = authApi.reducer
 

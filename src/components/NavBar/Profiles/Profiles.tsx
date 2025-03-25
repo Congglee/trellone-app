@@ -11,6 +11,8 @@ import Divider from '@mui/material/Divider'
 import Logout from '@mui/icons-material/Logout'
 import PersonAdd from '@mui/icons-material/PersonAdd'
 import Settings from '@mui/icons-material/Settings'
+import { useLogoutMutation } from '~/queries/auth'
+import { useConfirm } from 'material-ui-confirm'
 
 export default function Profiles() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -22,6 +24,28 @@ export default function Profiles() {
 
   const handleClose = () => {
     setAnchorEl(null)
+  }
+
+  const [logoutMutation] = useLogoutMutation()
+
+  const confirmLogout = useConfirm()
+
+  const logout = async () => {
+    try {
+      handleClose()
+
+      const { confirmed } = await confirmLogout({
+        title: 'Are you sure you want to logout?',
+        confirmationText: 'Confirm',
+        cancellationText: 'Cancel'
+      })
+
+      if (confirmed) {
+        await logoutMutation()
+      }
+    } catch (error: any) {
+      console.log('Logout canceled or failed', error)
+    }
   }
 
   return (
@@ -68,7 +92,7 @@ export default function Profiles() {
           Settings
         </MenuItem>
         <MenuItem
-          onClick={() => {}}
+          onClick={logout}
           sx={{
             '&:hover': {
               color: 'warning.dark',
