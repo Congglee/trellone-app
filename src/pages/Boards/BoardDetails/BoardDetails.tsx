@@ -12,6 +12,7 @@ import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import BoardBar from '~/pages/Boards/BoardDetails/components/BoardBar'
 import BoardContent from '~/pages/Boards/BoardDetails/components/BoardContent'
 import BoardDrawer from '~/pages/Boards/BoardDetails/components/BoardDrawer'
+import BoardNotFound from '~/pages/Boards/BoardDetails/components/BoardNotFound'
 import WorkspaceDrawer from '~/pages/Boards/BoardDetails/components/WorkspaceDrawer'
 import { useMoveCardToDifferentColumnMutation, useUpdateBoardMutation } from '~/queries/boards'
 import { useUpdateColumnMutation } from '~/queries/columns'
@@ -107,7 +108,7 @@ export default function BoardDetails() {
   }
 
   if (!activeBoard) {
-    return null
+    return <BoardNotFound />
   }
 
   return (
