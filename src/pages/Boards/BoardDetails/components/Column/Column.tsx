@@ -38,11 +38,11 @@ export default function Column({ column }: ColumnProps) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | SVGSVGElement | null>(null)
   const open = Boolean(anchorEl)
 
-  const handleMenuClick = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+  const handleClick = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     setAnchorEl(event.currentTarget)
   }
 
-  const handleMenuClose = () => {
+  const handleClose = () => {
     setAnchorEl(null)
   }
 
@@ -120,7 +120,7 @@ export default function Column({ column }: ColumnProps) {
   const deleteColumn = async () => {
     try {
       // Close the menu to prevent aria-hidden conflicts
-      handleMenuClose()
+      handleClose()
 
       const { confirmed } = await confirmDeleteColumn({
         title: 'Delete Column?',
@@ -179,15 +179,15 @@ export default function Column({ column }: ColumnProps) {
                 aria-controls={open ? 'basic-menu-column-dropdown' : undefined}
                 aria-haspopup='true'
                 aria-expanded={open ? 'true' : undefined}
-                onClick={handleMenuClick}
+                onClick={handleClick}
               />
             </Tooltip>
             <Menu
               id='basic-menu-column-dropdown'
               anchorEl={anchorEl}
               open={open}
-              onClick={handleMenuClose}
-              onClose={handleMenuClose}
+              onClick={handleClose}
+              onClose={handleClose}
               MenuListProps={{
                 'aria-labelledby': 'basic-column-dropdown'
               }}
