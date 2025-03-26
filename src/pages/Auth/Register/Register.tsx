@@ -8,7 +8,7 @@ import CardActions from '@mui/material/CardActions'
 import Typography from '@mui/material/Typography'
 import Zoom from '@mui/material/Zoom'
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
@@ -16,11 +16,15 @@ import { RegisterBody, RegisterBodyType } from '~/schemas/auth.schema'
 import { Link as MuiLink } from '@mui/material'
 import Divider from '@mui/material/Divider'
 import GoogleIcon from '@mui/icons-material/Google'
+import { useRegisterMutation } from '~/queries/auth'
+import { isUnprocessableEntityError } from '~/utils/error-handlers'
+import { useEffect } from 'react'
+import path from '~/constants/path'
 
 export default function Register() {
   const {
     register,
-    // setError,
+    setError,
     handleSubmit,
     formState: { errors }
   } = useForm<RegisterBodyType>({
@@ -28,9 +32,32 @@ export default function Register() {
     defaultValues: { email: '', password: '', confirm_password: '' }
   })
 
+  const navigate = useNavigate()
+
+  const [registerMutation, { isError, error }] = useRegisterMutation()
+
   const onSubmit = handleSubmit((values) => {
-    console.log('values', values)
+    registerMutation(values).then((res) => {
+      if (!res.error) {
+        navigate(`${path.login}?registered_email=${values.email}`)
+      }
+    })
   })
+
+  useEffect(() => {
+    if (isError && isUnprocessableEntityError<RegisterBodyType>(error)) {
+      const formError = error.data.errors
+
+      if (formError) {
+        for (const [key, value] of Object.entries(formError)) {
+          setError(key as keyof RegisterBodyType, {
+            type: value.type,
+            message: value.msg
+          })
+        }
+      }
+    }
+  }, [isError, error, setError])
 
   return (
     <form onSubmit={onSubmit}>
@@ -120,9 +147,11 @@ export default function Register() {
               Sign in with Google
             </Button>
             <Typography sx={{ textAlign: 'center' }}>
-              Already have an account?
+              Already have an account?{' '}
               <Link to='/login' style={{ textDecoration: 'none' }}>
-                <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Log in!</Typography>
+                <Typography component='span' sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>
+                  Log in!
+                </Typography>
               </Link>
             </Typography>
           </Box>
