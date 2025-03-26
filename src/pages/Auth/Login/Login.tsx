@@ -19,6 +19,11 @@ import { isUnprocessableEntityError } from '~/utils/error-handlers'
 import { Link as MuiLink } from '@mui/material'
 import Divider from '@mui/material/Divider'
 import GoogleIcon from '@mui/icons-material/Google'
+import useQueryConfig from '~/hooks/use-query-config'
+import { AuthQueryParams } from '~/types/query-params.type'
+import Alert from '@mui/material/Alert'
+import RefreshIcon from '@mui/icons-material/Refresh'
+import IconButton from '@mui/material/IconButton'
 
 export default function Login() {
   const {
@@ -32,6 +37,7 @@ export default function Login() {
   })
 
   const navigate = useNavigate()
+  const { registered_email, verified_email } = useQueryConfig<AuthQueryParams>()
 
   const [loginMutation, { isError, error }] = useLoginMutation()
 
@@ -89,7 +95,41 @@ export default function Login() {
               padding: '0 1em'
             }}
           >
-            {/* Send and verify email */}
+            {verified_email && (
+              <Alert severity='success' sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
+                Your email&nbsp;
+                <Typography component='span' sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>
+                  {verified_email}
+                </Typography>
+                &nbsp;has been verified.
+                <br />
+                Now you can login to enjoy our services! Have a good day! 😊
+              </Alert>
+            )}
+            {registered_email && (
+              <Alert
+                severity='info'
+                sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}
+                action={
+                  <IconButton
+                    aria-label='resend'
+                    color='inherit'
+                    size='small'
+                    onClick={() => alert('Resend verification email')}
+                    title='Resend verification email'
+                  >
+                    <RefreshIcon fontSize='inherit' />
+                  </IconButton>
+                }
+              >
+                An email has been sent to&nbsp;
+                <Typography component='span' sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>
+                  {registered_email}
+                </Typography>
+                <br />
+                Please check and verify your account before logging in!
+              </Alert>
+            )}
           </Box>
           <Box sx={{ padding: '0 1em 1em 1em' }}>
             <Box sx={{ marginTop: '1em' }}>
@@ -149,7 +189,9 @@ export default function Login() {
             <Typography sx={{ textAlign: 'center' }}>
               Don&apos;t have an account?{' '}
               <Link to='/register' style={{ textDecoration: 'none' }}>
-                <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Create account!</Typography>
+                <Typography component='span' sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>
+                  Create account!
+                </Typography>
               </Link>
             </Typography>
           </Box>

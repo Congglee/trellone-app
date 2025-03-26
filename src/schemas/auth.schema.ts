@@ -49,6 +49,12 @@ export const RegisterBody = z
 
 export type RegisterBodyType = z.TypeOf<typeof RegisterBody>
 
+export const RegisterRes = z.object({
+  message: z.string()
+})
+
+export type RegisterResType = z.TypeOf<typeof RegisterRes>
+
 export const AuthRes = z.object({
   result: z.object({
     access_token: z.string(),
@@ -59,8 +65,16 @@ export const AuthRes = z.object({
 
 export type AuthResType = z.TypeOf<typeof AuthRes>
 
-export const LogoutRes = z.object({
-  message: z.string()
-})
+export const LogoutRes = RegisterRes
 
 export type LogoutResType = z.TypeOf<typeof LogoutRes>
+
+export const VerifyEmailBody = z.object({
+  email_verify_token: z.string()
+})
+
+export type VerifyEmailBodyType = z.TypeOf<typeof VerifyEmailBody>
+
+export const VerifyEmailRes = AuthRes
+
+export type VerifyEmailResType = z.TypeOf<typeof VerifyEmailRes>
