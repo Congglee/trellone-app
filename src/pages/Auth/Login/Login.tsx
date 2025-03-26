@@ -16,6 +16,9 @@ import TextFieldInput from '~/components/Form/TextFieldInput'
 import { useLoginMutation } from '~/queries/auth'
 import { LoginBody, LoginBodyType } from '~/schemas/auth.schema'
 import { isUnprocessableEntityError } from '~/utils/error-handlers'
+import { Link as MuiLink } from '@mui/material'
+import Divider from '@mui/material/Divider'
+import GoogleIcon from '@mui/icons-material/Google'
 
 export default function Login() {
   const {
@@ -110,7 +113,15 @@ export default function Login() {
               <FieldErrorAlert errorMessage={errors.password?.message} />
             </Box>
           </Box>
-          <CardActions sx={{ padding: '0 1em 1em 1em' }}>
+          <CardActions
+            sx={{
+              padding: '0 1em 1em 1em',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+              alignItems: 'center'
+            }}
+          >
             <Button
               className='interceptor-loading'
               type='submit'
@@ -121,12 +132,26 @@ export default function Login() {
             >
               Login
             </Button>
+            <MuiLink component='button' type='button' variant='body2'>
+              Forgot your password?
+            </MuiLink>
           </CardActions>
-          <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
-            <Typography>New to Trellone?</Typography>
-            <Link to='/register' style={{ textDecoration: 'none' }}>
-              <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Create account!</Typography>
-            </Link>
+          <Divider>or</Divider>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '1em' }}>
+            <Button
+              fullWidth
+              variant='outlined'
+              onClick={() => alert('Sign in with Google')}
+              startIcon={<GoogleIcon />}
+            >
+              Sign in with Google
+            </Button>
+            <Typography sx={{ textAlign: 'center' }}>
+              Don&apos;t have an account?{' '}
+              <Link to='/register' style={{ textDecoration: 'none' }}>
+                <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Create account!</Typography>
+              </Link>
+            </Typography>
           </Box>
         </MuiCard>
       </Zoom>

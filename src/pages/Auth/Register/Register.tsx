@@ -13,6 +13,9 @@ import TrelloneIcon from '~/assets/trello.svg?react'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
 import { RegisterBody, RegisterBodyType } from '~/schemas/auth.schema'
+import { Link as MuiLink } from '@mui/material'
+import Divider from '@mui/material/Divider'
+import GoogleIcon from '@mui/icons-material/Google'
 
 export default function Register() {
   const {
@@ -83,9 +86,17 @@ export default function Register() {
               <FieldErrorAlert errorMessage={errors.confirm_password?.message} />
             </Box>
           </Box>
-          <CardActions sx={{ padding: '0 1em 1em 1em' }}>
+          <CardActions
+            sx={{
+              padding: '0 1em 1em 1em',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+              alignItems: 'center'
+            }}
+          >
             <Button
-              // className='interceptor-loading'
+              className='interceptor-loading'
               type='submit'
               variant='contained'
               color='primary'
@@ -94,12 +105,26 @@ export default function Register() {
             >
               Register
             </Button>
+            <MuiLink component='button' type='button' variant='body2'>
+              Forgot your password?
+            </MuiLink>
           </CardActions>
-          <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
-            <Typography>Already have an account?</Typography>
-            <Link to='/login' style={{ textDecoration: 'none' }}>
-              <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Log in!</Typography>
-            </Link>
+          <Divider>or</Divider>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '1em' }}>
+            <Button
+              fullWidth
+              variant='outlined'
+              onClick={() => alert('Sign in with Google')}
+              startIcon={<GoogleIcon />}
+            >
+              Sign in with Google
+            </Button>
+            <Typography sx={{ textAlign: 'center' }}>
+              Already have an account?
+              <Link to='/login' style={{ textDecoration: 'none' }}>
+                <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Log in!</Typography>
+              </Link>
+            </Typography>
           </Box>
         </MuiCard>
       </Zoom>

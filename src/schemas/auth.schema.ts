@@ -8,7 +8,11 @@ export const LoginBody = z
     password: z
       .string()
       .min(6, 'Password must be at least 6 characters')
-      .max(100, 'Password must be at most 100 characters')
+      .max(50, 'Password must be at most 50 characters')
+      .regex(/[a-z]/, { message: 'Password must contain at least 1 lowercase letter' })
+      .regex(/[A-Z]/, { message: 'Password must contain at least 1 uppercase letter' })
+      .regex(/[0-9]/, { message: 'Password must contain at least 1 number' })
+      .regex(/[^a-zA-Z0-9]/, { message: 'Password must contain at least 1 symbol' })
   })
   .strict()
 
@@ -22,11 +26,15 @@ export const RegisterBody = z
     password: z
       .string()
       .min(6, 'Password must be at least 6 characters')
-      .max(100, 'Password must be at most 100 characters'),
+      .max(50, 'Password must be at most 50 characters')
+      .regex(/[a-z]/, { message: 'Password must contain at least 1 lowercase letter' })
+      .regex(/[A-Z]/, { message: 'Password must contain at least 1 uppercase letter' })
+      .regex(/[0-9]/, { message: 'Password must contain at least 1 number' })
+      .regex(/[^a-zA-Z0-9]/, { message: 'Password must contain at least 1 symbol' }),
     confirm_password: z
       .string()
       .min(6, 'Confirm password must be at least 6 characters')
-      .max(100, 'Confirm password must be at most 100 characters')
+      .max(50, 'Confirm password must be at most 50 characters')
   })
   .strict()
   .superRefine(({ confirm_password, password }, ctx) => {

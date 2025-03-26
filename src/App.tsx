@@ -22,7 +22,7 @@ function App() {
   return (
     <Routes>
       {/* Redirect Route */}
-      <Route path='/' element={<Navigate to='/boards/67dcfe028020577bb00a7048' replace={true} />} />
+      <Route path='/' element={<Navigate to='/boards/67e2e902157d1f8cceb3f70c' replace={true} />} />
 
       {/* Protected Routes */}
       <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} profile={profile} />}>
