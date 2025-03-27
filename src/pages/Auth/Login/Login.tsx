@@ -24,6 +24,9 @@ import { AuthQueryParams } from '~/types/query-params.type'
 import Alert from '@mui/material/Alert'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import IconButton from '@mui/material/IconButton'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import path from '~/constants/path'
 
 export default function Login() {
   const {
@@ -76,16 +79,9 @@ export default function Login() {
               <TrelloneIcon />
             </Avatar>
           </Box>
-          <Box
-            sx={{
-              marginTop: '1em',
-              display: 'flex',
-              justifyContent: 'center',
-              color: (theme) => theme.palette.grey[500]
-            }}
-          >
-            Author: Conggglee
-          </Box>
+          <Typography sx={{ textAlign: 'center', fontSize: '1.5rem', fontWeight: 'medium' }} variant='h1'>
+            Sign in to your account
+          </Typography>
           <Box
             sx={{
               marginTop: '1em',
@@ -162,6 +158,34 @@ export default function Login() {
               alignItems: 'center'
             }}
           >
+            <Box
+              sx={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap'
+              }}
+            >
+              <FormControlLabel
+                value='remember-me'
+                control={<Checkbox />}
+                label='Remember me'
+                labelPlacement='end'
+                sx={{
+                  '& span': {
+                    fontSize: '0.875rem',
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    '& .MuiSvgIcon-root': {
+                      fontSize: '1.25rem'
+                    }
+                  }
+                }}
+              />
+              <MuiLink component={Link} to={path.forgotPassword} variant='body2' sx={{ fontSize: '0.75rem' }}>
+                Forgot your password?
+              </MuiLink>
+            </Box>
             <Button
               className='interceptor-loading'
               type='submit'
@@ -172,9 +196,6 @@ export default function Login() {
             >
               Login
             </Button>
-            <MuiLink component='button' type='button' variant='body2'>
-              Forgot your password?
-            </MuiLink>
           </CardActions>
           <Divider>or</Divider>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '1em' }}>
