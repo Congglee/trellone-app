@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
+import path from '~/constants/path'
 import useQueryConfig from '~/hooks/use-query-config'
 import { useVerifyEmailMutation } from '~/queries/auth'
 import { AuthQueryParams } from '~/types/query-params.type'
@@ -8,7 +9,7 @@ import { AuthQueryParams } from '~/types/query-params.type'
 export default function AccountVerification() {
   const { token, email } = useQueryConfig<AuthQueryParams>()
 
-  const [verifyEmailMutation, { isLoading }] = useVerifyEmailMutation()
+  const [verifyEmailMutation, { isLoading, isSuccess }] = useVerifyEmailMutation()
 
   useEffect(() => {
     if (token && email) {
@@ -16,6 +17,7 @@ export default function AccountVerification() {
     }
   }, [token, email])
 
+  // Prevent users from accessing this page by entering the URL directly
   if (!token || !email) {
     return <Navigate to='/404' />
   }
@@ -24,5 +26,5 @@ export default function AccountVerification() {
     return <PageLoadingSpinner caption='Verifying your account...' />
   }
 
-  return <Navigate to={`/login?verified_email=${email}`} />
+  return isSuccess ? <Navigate to={`${path.login}?verified_email=${email}`} /> : <Navigate to={path.login} />
 }

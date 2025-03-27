@@ -69,12 +69,43 @@ export const LogoutRes = RegisterRes
 
 export type LogoutResType = z.TypeOf<typeof LogoutRes>
 
-export const VerifyEmailBody = z.object({
-  email_verify_token: z.string()
-})
-
-export type VerifyEmailBodyType = z.TypeOf<typeof VerifyEmailBody>
-
-export const VerifyEmailRes = AuthRes
+export const VerifyEmailRes = RegisterRes
 
 export type VerifyEmailResType = z.TypeOf<typeof VerifyEmailRes>
+
+export const ForgotPasswordBody = z.object({
+  email: z.string().min(1, { message: 'Email is required' }).email({
+    message: 'Invalid email'
+  })
+})
+
+export type ForgotPasswordBodyType = z.TypeOf<typeof ForgotPasswordBody>
+
+export const ForgotPasswordRes = RegisterRes
+
+export type ForgotPasswordResType = z.TypeOf<typeof ForgotPasswordRes>
+
+export const VerifyForgotPasswordRes = RegisterRes
+
+export type VerifyForgotPasswordResType = z.TypeOf<typeof VerifyForgotPasswordRes>
+
+export const ResetPasswordBody = z.object({
+  password: z
+    .string()
+    .min(6, 'Password must be at least 6 characters')
+    .max(50, 'Password must be at most 50 characters')
+    .regex(/[a-z]/, { message: 'Password must contain at least 1 lowercase letter' })
+    .regex(/[A-Z]/, { message: 'Password must contain at least 1 uppercase letter' })
+    .regex(/[0-9]/, { message: 'Password must contain at least 1 number' })
+    .regex(/[^a-zA-Z0-9]/, { message: 'Password must contain at least 1 symbol' }),
+  confirm_password: z
+    .string()
+    .min(6, 'Confirm password must be at least 6 characters')
+    .max(50, 'Confirm password must be at most 50 characters')
+})
+
+export type ResetPasswordBodyType = z.TypeOf<typeof ResetPasswordBody>
+
+export const ResetPasswordRes = RegisterRes
+
+export type ResetPasswordResType = z.TypeOf<typeof ResetPasswordRes>

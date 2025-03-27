@@ -1,61 +1,73 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { Navigate, useNavigate } from 'react-router-dom'
+import useQueryConfig from '~/hooks/use-query-config'
+import { useResetPasswordMutation, useVerifyForgotPasswordMutation } from '~/queries/auth'
+import { ResetPasswordBody, ResetPasswordBodyType } from '~/schemas/auth.schema'
+import { AuthQueryParams } from '~/types/query-params.type'
+import { isUnprocessableEntityError } from '~/utils/error-handlers'
 import LockIcon from '@mui/icons-material/Lock'
 import { Card as MuiCard } from '@mui/material'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CardActions from '@mui/material/CardActions'
+import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import Zoom from '@mui/material/Zoom'
-import { useForm } from 'react-hook-form'
-import { createSearchParams, Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
-import { RegisterBody, RegisterBodyType } from '~/schemas/auth.schema'
-import { Link as MuiLink } from '@mui/material'
-import Divider from '@mui/material/Divider'
-import GoogleIcon from '@mui/icons-material/Google'
-import { useRegisterMutation } from '~/queries/auth'
-import { isUnprocessableEntityError } from '~/utils/error-handlers'
-import { useEffect } from 'react'
 import path from '~/constants/path'
-import Checkbox from '@mui/material/Checkbox'
-import FormControlLabel from '@mui/material/FormControlLabel'
 
-export default function Register() {
+export default function ResetPassword() {
+  const { forgot_password_token } = useQueryConfig<AuthQueryParams>()
+  const navigate = useNavigate()
+
   const {
     register,
     setError,
     handleSubmit,
     formState: { errors }
-  } = useForm<RegisterBodyType>({
-    resolver: zodResolver(RegisterBody),
-    defaultValues: { email: '', password: '', confirm_password: '' }
+  } = useForm<ResetPasswordBodyType>({
+    resolver: zodResolver(ResetPasswordBody),
+    defaultValues: { password: '', confirm_password: '' }
   })
 
-  const navigate = useNavigate()
+  const [verifyForgotPasswordMutation] = useVerifyForgotPasswordMutation()
+  const [resetPasswordMutation, { isError, error }] = useResetPasswordMutation()
 
-  const [registerMutation, { isError, error }] = useRegisterMutation()
+  // Prevent users from accessing this page by entering the URL directly
+  useEffect(() => {
+    if (forgot_password_token) {
+      verifyForgotPasswordMutation({ forgot_password_token }).then((res) => {
+        if (res.error) {
+          navigate('/404')
+        }
+      })
+    }
+  }, [forgot_password_token, navigate])
 
   const onSubmit = handleSubmit((values) => {
-    registerMutation(values).then((res) => {
+    resetPasswordMutation({
+      ...values,
+      forgot_password_token: forgot_password_token as string
+    }).then((res) => {
       if (!res.error) {
-        navigate({
-          pathname: path.login,
-          search: createSearchParams({ registered_email: values.email }).toString()
-        })
+        navigate(path.login)
       }
     })
   })
 
   useEffect(() => {
-    if (isError && isUnprocessableEntityError<RegisterBodyType>(error)) {
+    if (isError && isUnprocessableEntityError<ResetPasswordBodyType>(error)) {
       const formError = error.data.errors
 
       if (formError) {
         for (const [key, value] of Object.entries(formError)) {
-          setError(key as keyof RegisterBodyType, {
+          setError(key as keyof ResetPasswordBodyType, {
             type: value.type,
             message: value.msg
           })
@@ -63,6 +75,10 @@ export default function Register() {
       }
     }
   }, [isError, error, setError])
+
+  if (!forgot_password_token) {
+    return <Navigate to='/404' />
+  }
 
   return (
     <form onSubmit={onSubmit}>
@@ -77,19 +93,9 @@ export default function Register() {
             </Avatar>
           </Box>
           <Typography sx={{ textAlign: 'center', fontSize: '1.5rem', fontWeight: 'medium' }} variant='h1'>
-            Sign up for your account
+            Reset your password
           </Typography>
           <Box sx={{ padding: '1em' }}>
-            <Box sx={{ marginTop: '1em' }}>
-              <TextFieldInput
-                name='email'
-                register={register}
-                type='email'
-                label='Enter Email...'
-                error={!!errors['email']}
-              />
-              <FieldErrorAlert errorMessage={errors.email?.message} />
-            </Box>
             <Box sx={{ marginTop: '1em' }}>
               <TextFieldInput
                 name='password'
@@ -120,34 +126,6 @@ export default function Register() {
               alignItems: 'center'
             }}
           >
-            <Box
-              sx={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap'
-              }}
-            >
-              <FormControlLabel
-                value='remember-me'
-                control={<Checkbox />}
-                label='Remember me'
-                labelPlacement='end'
-                sx={{
-                  '& span': {
-                    fontSize: '0.875rem',
-                    color: 'rgba(255, 255, 255, 0.7)',
-                    '& .MuiSvgIcon-root': {
-                      fontSize: '1.25rem'
-                    }
-                  }
-                }}
-              />
-              <MuiLink component={Link} to={path.forgotPassword} variant='body2' sx={{ fontSize: '0.75rem' }}>
-                Forgot your password?
-              </MuiLink>
-            </Box>
             <Button
               className='interceptor-loading'
               type='submit'
@@ -156,21 +134,13 @@ export default function Register() {
               size='large'
               fullWidth
             >
-              Register
+              Reset password
             </Button>
           </CardActions>
           <Divider>or</Divider>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '1em' }}>
-            <Button
-              fullWidth
-              variant='outlined'
-              onClick={() => alert('Sign in with Google')}
-              startIcon={<GoogleIcon />}
-            >
-              Sign in with Google
-            </Button>
             <Typography sx={{ textAlign: 'center' }}>
-              Already have an account?{' '}
+              Go back to{' '}
               <Link to={path.login} style={{ textDecoration: 'none' }}>
                 <Typography component='span' sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>
                   Log in!

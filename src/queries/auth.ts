@@ -4,12 +4,16 @@ import axiosBaseQuery from '~/lib/redux/helpers'
 import { userApi } from '~/queries/users'
 import {
   AuthResType,
+  ForgotPasswordBodyType,
+  ForgotPasswordResType,
   LoginBodyType,
   LogoutResType,
   RegisterBodyType,
   RegisterResType,
-  VerifyEmailBodyType,
-  VerifyEmailResType
+  ResetPasswordBodyType,
+  ResetPasswordResType,
+  VerifyEmailResType,
+  VerifyForgotPasswordResType
 } from '~/schemas/auth.schema'
 import { setAuthenticated, setProfile } from '~/store/slices/auth.slice'
 
@@ -55,8 +59,36 @@ export const authApi = createApi({
       }
     }),
 
-    verifyEmail: build.mutation<VerifyEmailResType, VerifyEmailBodyType>({
+    verifyEmail: build.mutation<VerifyEmailResType, { email_verify_token: string }>({
       query: (body) => ({ url: `${AUTH_API_URL}/verify-email`, method: 'POST', data: body }),
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled
+          toast.success(data.message)
+        } catch (error: any) {
+          console.error(error)
+        }
+      }
+    }),
+
+    forgotPassword: build.mutation<ForgotPasswordResType, ForgotPasswordBodyType>({
+      query: (body) => ({ url: `${AUTH_API_URL}/forgot-password`, method: 'POST', data: body }),
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled
+          toast.success(data.message)
+        } catch (error: any) {
+          console.error(error)
+        }
+      }
+    }),
+
+    verifyForgotPassword: build.mutation<VerifyForgotPasswordResType, { forgot_password_token: string }>({
+      query: (body) => ({ url: `${AUTH_API_URL}/verify-forgot-password`, method: 'POST', data: body })
+    }),
+
+    resetPassword: build.mutation<ResetPasswordResType, ResetPasswordBodyType & { forgot_password_token: string }>({
+      query: (body) => ({ url: `${AUTH_API_URL}/reset-password`, method: 'POST', data: body }),
       async onQueryStarted(_args, { queryFulfilled }) {
         try {
           const { data } = await queryFulfilled
@@ -83,7 +115,15 @@ export const authApi = createApi({
   })
 })
 
-export const { useLoginMutation, useLogoutMutation, useRegisterMutation, useVerifyEmailMutation } = authApi
+export const {
+  useLoginMutation,
+  useLogoutMutation,
+  useRegisterMutation,
+  useVerifyEmailMutation,
+  useForgotPasswordMutation,
+  useVerifyForgotPasswordMutation,
+  useResetPasswordMutation
+} = authApi
 
 const authApiReducer = authApi.reducer
 
