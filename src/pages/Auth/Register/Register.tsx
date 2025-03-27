@@ -22,6 +22,7 @@ import { useEffect } from 'react'
 import path from '~/constants/path'
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import { getGoogleAuthUrl } from '~/utils/oauth'
 
 export default function Register() {
   const {
@@ -37,6 +38,8 @@ export default function Register() {
   const navigate = useNavigate()
 
   const [registerMutation, { isError, error }] = useRegisterMutation()
+
+  const googleOAuthUrl = getGoogleAuthUrl()
 
   const onSubmit = handleSubmit((values) => {
     registerMutation(values).then((res) => {
@@ -161,12 +164,7 @@ export default function Register() {
           </CardActions>
           <Divider>or</Divider>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '1em' }}>
-            <Button
-              fullWidth
-              variant='outlined'
-              onClick={() => alert('Sign in with Google')}
-              startIcon={<GoogleIcon />}
-            >
+            <Button fullWidth variant='outlined' href={googleOAuthUrl} startIcon={<GoogleIcon />}>
               Sign in with Google
             </Button>
             <Typography sx={{ textAlign: 'center' }}>

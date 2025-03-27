@@ -27,6 +27,7 @@ import IconButton from '@mui/material/IconButton'
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import path from '~/constants/path'
+import { getGoogleAuthUrl } from '~/utils/oauth'
 
 export default function Login() {
   const {
@@ -43,6 +44,8 @@ export default function Login() {
   const { registered_email, verified_email } = useQueryConfig<AuthQueryParams>()
 
   const [loginMutation, { isError, error }] = useLoginMutation()
+
+  const googleOAuthUrl = getGoogleAuthUrl()
 
   const onSubmit = handleSubmit((values) => {
     loginMutation(values).then((res) => {
@@ -199,12 +202,7 @@ export default function Login() {
           </CardActions>
           <Divider>or</Divider>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '1em' }}>
-            <Button
-              fullWidth
-              variant='outlined'
-              onClick={() => alert('Sign in with Google')}
-              startIcon={<GoogleIcon />}
-            >
+            <Button fullWidth variant='outlined' startIcon={<GoogleIcon />} href={googleOAuthUrl}>
               Sign in with Google
             </Button>
             <Typography sx={{ textAlign: 'center' }}>

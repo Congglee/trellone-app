@@ -7,6 +7,7 @@ import ForgotPassword from '~/pages/Auth/ForgotPassword'
 import ForgotPasswordVerification from '~/pages/Auth/ForgotPasswordVerification'
 import AuthLayout from '~/pages/Auth/layouts/AuthLayout'
 import Login from '~/pages/Auth/Login'
+import OAuth from '~/pages/Auth/OAuth'
 import Register from '~/pages/Auth/Register'
 import ResetPassword from '~/pages/Auth/ResetPassword'
 import BoardDetails from '~/pages/Boards/BoardDetails'
@@ -53,6 +54,9 @@ function App() {
         <Route path={path.accountVerification} element={<AccountVerification />} />
         <Route path={path.forgotPasswordVerification} element={<ForgotPasswordVerification />} />
       </Route>
+
+      {/* OAuth */}
+      <Route path={path.oauth} element={<OAuth />} />
 
       {/* 404 not found page */}
       <Route path='*' element={<NotFound />} />

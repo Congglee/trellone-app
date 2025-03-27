@@ -1,6 +1,7 @@
 const path = {
   boardDetails: '/boards/:boardId',
   login: '/login',
+  oauth: '/login/oauth',
   register: '/register',
   accountVerification: '/account/verification',
   forgotPassword: '/forgot-password',
