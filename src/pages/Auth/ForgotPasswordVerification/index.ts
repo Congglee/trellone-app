@@ -1,0 +1,3 @@
+import ForgotPasswordVerification from '~/pages/Auth/ForgotPasswordVerification/ForgotPasswordVerification'
+
+export default ForgotPasswordVerification

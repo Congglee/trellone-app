@@ -35,30 +35,30 @@ interface MenuDrawerProps {
 
 export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
   // Separate state for each section
-  const [openWorkspaces, setOpenWorkspaces] = useState(false)
-  const [openRecent, setOpenRecent] = useState(false)
-  const [openStarred, setOpenStarred] = useState(false)
-  const [openTemplates, setOpenTemplates] = useState(false)
+  const [workspacesOpen, setWorkspacesOpen] = useState(false)
+  const [recentOpen, setRecentOpen] = useState(false)
+  const [starredOpen, setStarredOpen] = useState(false)
+  const [templatesOpen, setTemplatesOpen] = useState(false)
 
   // Handle click for each section
   const handleWorkspacesClick = (e: React.MouseEvent) => {
     e.stopPropagation() // Prevent drawer from closing
-    setOpenWorkspaces(!openWorkspaces)
+    setWorkspacesOpen(!workspacesOpen)
   }
 
   const handleRecentClick = (e: React.MouseEvent) => {
     e.stopPropagation() // Prevent drawer from closing
-    setOpenRecent(!openRecent)
+    setRecentOpen(!recentOpen)
   }
 
   const handleStarredClick = (e: React.MouseEvent) => {
     e.stopPropagation() // Prevent drawer from closing
-    setOpenStarred(!openStarred)
+    setStarredOpen(!starredOpen)
   }
 
   const handleTemplatesClick = (e: React.MouseEvent) => {
     e.stopPropagation() // Prevent drawer from closing
-    setOpenTemplates(!openTemplates)
+    setTemplatesOpen(!templatesOpen)
   }
 
   return (
@@ -114,15 +114,14 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
       >
         <Divider sx={{ my: 0.25 }} />
 
-        {/* Workspaces Section */}
         <ListItemButton onClick={handleWorkspacesClick}>
           <ListItemIcon>
             <WorkspacesIcon />
           </ListItemIcon>
           <ListItemText primary='Workspaces' />
-          {openWorkspaces ? <ExpandLess /> : <ExpandMore />}
+          {workspacesOpen ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
-        <Collapse in={openWorkspaces} timeout='auto' unmountOnExit>
+        <Collapse in={workspacesOpen} timeout='auto' unmountOnExit>
           <List component='div' disablePadding>
             <ListItemButton sx={{ pl: 4 }}>
               <ListItemIcon>
@@ -152,15 +151,14 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
           </List>
         </Collapse>
 
-        {/* Recent Section */}
         <ListItemButton onClick={handleRecentClick}>
           <ListItemIcon>
             <HistoryIcon />
           </ListItemIcon>
           <ListItemText primary='Recent' />
-          {openRecent ? <ExpandLess /> : <ExpandMore />}
+          {recentOpen ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
-        <Collapse in={openRecent} timeout='auto' unmountOnExit>
+        <Collapse in={recentOpen} timeout='auto' unmountOnExit>
           <List component='div' disablePadding>
             <ListItemButton sx={{ pl: 4 }}>
               <ListItemText inset primary='Marketing Campaign' />
@@ -184,15 +182,14 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
           </List>
         </Collapse>
 
-        {/* Starred Section */}
         <ListItemButton onClick={handleStarredClick}>
           <ListItemIcon>
             <StarBorder />
           </ListItemIcon>
           <ListItemText primary='Starred' />
-          {openStarred ? <ExpandLess /> : <ExpandMore />}
+          {starredOpen ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
-        <Collapse in={openStarred} timeout='auto' unmountOnExit>
+        <Collapse in={starredOpen} timeout='auto' unmountOnExit>
           <List component='div' disablePadding>
             <ListItemButton sx={{ pl: 4 }}>
               <ListItemText inset primary='Important Project' />
@@ -210,15 +207,14 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
           </List>
         </Collapse>
 
-        {/* Templates Section */}
         <ListItemButton onClick={handleTemplatesClick}>
           <ListItemIcon>
             <ContentCopy />
           </ListItemIcon>
           <ListItemText primary='Templates' />
-          {openTemplates ? <ExpandLess /> : <ExpandMore />}
+          {templatesOpen ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
-        <Collapse in={openTemplates} timeout='auto' unmountOnExit>
+        <Collapse in={templatesOpen} timeout='auto' unmountOnExit>
           <List component='div' disablePadding>
             <ListItemButton sx={{ pl: 4 }}>
               <ListItemText inset primary='Project Management' />
@@ -242,7 +238,6 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
           </List>
         </Collapse>
 
-        {/* Create Button */}
         <ListItem sx={{ mt: 1 }}>
           <Button variant='contained' fullWidth startIcon={<LibraryAddIcon />}>
             Create

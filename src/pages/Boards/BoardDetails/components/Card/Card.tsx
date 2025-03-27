@@ -1,7 +1,6 @@
 import { Card as MuiCard } from '@mui/material'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
-import { Card as CardType } from '~/types/card.type'
 import GroupIcon from '@mui/icons-material/Group'
 import Button from '@mui/material/Button'
 import CardActions from '@mui/material/CardActions'
@@ -11,6 +10,7 @@ import Typography from '@mui/material/Typography'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSSProperties } from 'react'
 import { CSS } from '@dnd-kit/utilities'
+import { CardType } from '~/schemas/card.schema'
 
 interface CardProps {
   card: CardType

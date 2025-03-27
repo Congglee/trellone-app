@@ -17,10 +17,18 @@ import Cloud from '@mui/icons-material/Cloud'
 import CardsList from '~/pages/Boards/BoardDetails/components/CardsList'
 import Button from '@mui/material/Button'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
-import { Column as ColumnType } from '~/types/column.type'
-import { mapOrder } from '~/utils/sorts'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import TextField from '@mui/material/TextField'
+import CloseIcon from '@mui/icons-material/Close'
+import { useClickAway } from '@uidotdev/usehooks'
+import { ColumnType } from '~/schemas/column.schema'
+import { useAddCardMutation } from '~/queries/cards'
+import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
+import { cloneDeep } from 'lodash'
+import { updateActiveBoard } from '~/store/slices/board.slice'
+import { useConfirm } from 'material-ui-confirm'
+import { useDeleteColumnMutation } from '~/queries/columns'
 
 interface ColumnProps {
   column: ColumnType
@@ -29,6 +37,14 @@ interface ColumnProps {
 export default function Column({ column }: ColumnProps) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | SVGSVGElement | null>(null)
   const open = Boolean(anchorEl)
+
+  const handleClick = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: column._id,
@@ -43,15 +59,91 @@ export default function Column({ column }: ColumnProps) {
     opacity: isDragging ? 0.5 : undefined
   }
 
-  const handleClick = (event: React.MouseEvent<SVGSVGElement>) => {
-    setAnchorEl(event.currentTarget)
+  const [newCardFormOpen, setNewCardFormOpen] = useState(false)
+  const [newCardTitle, setNewCardTitle] = useState('')
+
+  const { activeBoard } = useAppSelector((state) => state.board)
+  const dispatch = useAppDispatch()
+
+  const sortedCards = column.cards!
+
+  const newCardClickAwayRef = useClickAway(() => {
+    setNewCardFormOpen(false)
+    setNewCardTitle('')
+  })
+
+  const toggleNewCardForm = () => {
+    setNewCardFormOpen(!newCardFormOpen)
   }
 
-  const handleClose = () => {
-    setAnchorEl(null)
+  const reset = () => {
+    toggleNewCardForm()
+    setNewCardTitle('')
   }
 
-  const sortedCards = mapOrder(column.cards, column.card_order_ids, '_id')
+  const [addCardMutation] = useAddCardMutation()
+  const [deleteColumnMutation] = useDeleteColumnMutation()
+
+  const addNewCard = async () => {
+    if (!newCardTitle || newCardTitle.trim() === '') {
+      return
+    }
+
+    const addNewCardRes = await addCardMutation({
+      title: newCardTitle,
+      column_id: column._id,
+      board_id: column.board_id
+    }).unwrap()
+
+    const newCard = cloneDeep(addNewCardRes.result)
+
+    const newActiveBoard = cloneDeep(activeBoard)
+    const columnToUpdate = newActiveBoard?.columns?.find((column) => column._id === newCard.column_id)
+
+    if (columnToUpdate) {
+      if (columnToUpdate.cards?.some((card) => card.FE_PlaceholderCard)) {
+        columnToUpdate.cards = [newCard]
+        columnToUpdate.card_order_ids = [newCard._id]
+      } else {
+        columnToUpdate.cards?.push(newCard)
+        columnToUpdate.card_order_ids?.push(newCard._id)
+      }
+    }
+
+    dispatch(updateActiveBoard(newActiveBoard))
+
+    reset()
+  }
+
+  const confirmDeleteColumn = useConfirm()
+
+  const deleteColumn = async () => {
+    try {
+      // Close the menu to prevent aria-hidden conflicts
+      handleClose()
+
+      const { confirmed } = await confirmDeleteColumn({
+        title: 'Delete Column?',
+        description: 'This action will permanently delete your Column and its Cards! Are you sure?',
+        confirmationText: 'Confirm',
+        cancellationText: 'Cancel'
+      })
+
+      if (confirmed) {
+        const newActiveBoard = { ...activeBoard! }
+
+        newActiveBoard.columns = newActiveBoard.columns?.filter((col) => col._id !== column._id)
+        newActiveBoard.column_order_ids = newActiveBoard.column_order_ids?.filter((_id) => _id !== column._id)
+
+        dispatch(updateActiveBoard(newActiveBoard))
+
+        await deleteColumnMutation(column._id)
+      }
+    } catch (error: any) {
+      // User canceled the operation or there was an error
+      console.log('Column deletion canceled or failed', error)
+    }
+  }
 
   return (
     <div ref={setNodeRef} style={dndKitColumnsStyles} {...attributes}>
@@ -67,7 +159,6 @@ export default function Column({ column }: ColumnProps) {
           maxHeight: (theme) => `calc(${theme.trellone.boardContentHeight} - ${theme.spacing(5)})`
         }}
       >
-        {/* Box Column Header */}
         <Box
           sx={{
             height: (theme) => theme.trellone.columnHeaderHeight,
@@ -95,6 +186,7 @@ export default function Column({ column }: ColumnProps) {
               id='basic-menu-column-dropdown'
               anchorEl={anchorEl}
               open={open}
+              onClick={handleClose}
               onClose={handleClose}
               MenuListProps={{
                 'aria-labelledby': 'basic-column-dropdown'
@@ -125,7 +217,7 @@ export default function Column({ column }: ColumnProps) {
                 <ListItemText>Paste</ListItemText>
               </MenuItem>
               <Divider />
-              <MenuItem>
+              <MenuItem onClick={deleteColumn}>
                 <ListItemIcon>
                   <DeleteForeverIcon fontSize='small' />
                 </ListItemIcon>
@@ -141,23 +233,97 @@ export default function Column({ column }: ColumnProps) {
           </Box>
         </Box>
 
-        {/* List Cards */}
         <CardsList cards={sortedCards} />
 
-        {/* Box Column Footer */}
         <Box
           sx={{
             height: (theme) => theme.trellone.columnFooterHeight,
-            p: 2,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
+            p: 2
           }}
         >
-          <Button startIcon={<AddCardIcon />}>Add new card</Button>
-          <Tooltip title='Drag to move'>
-            <DragHandleIcon sx={{ cursor: 'pointer' }} />
-          </Tooltip>
+          {!newCardFormOpen ? (
+            <Box
+              sx={{
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
+              <Button startIcon={<AddCardIcon />} onClick={toggleNewCardForm}>
+                Add new card
+              </Button>
+              <Tooltip title='Drag to move'>
+                <DragHandleIcon sx={{ cursor: 'pointer' }} />
+              </Tooltip>
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1
+              }}
+              ref={newCardClickAwayRef}
+            >
+              <TextField
+                label='Enter card title...'
+                type='text'
+                size='small'
+                variant='outlined'
+                autoFocus
+                data-no-dnd='true'
+                value={newCardTitle}
+                onChange={(e) => setNewCardTitle(e.target.value)}
+                sx={{
+                  bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#22272b' : '#fff'),
+                  '& label': { color: 'text.primary' },
+                  '& label.Mui-focused': {
+                    color: (theme) => theme.palette.primary.main
+                  },
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: (theme) => theme.palette.primary.main
+                    },
+                    '&:hover fieldset': {
+                      borderColor: (theme) => theme.palette.primary.main
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: (theme) => theme.palette.primary.main
+                    }
+                  },
+                  '& .MuiOutlinedInput-input': {
+                    borderRadius: 1
+                  }
+                }}
+                inputProps={{
+                  style: { fontWeight: '400', fontSize: '0.875rem', lineHeight: '1.43', letterSpacing: '0.01071em' }
+                }}
+              />
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Button
+                  onClick={addNewCard}
+                  variant='contained'
+                  size='small'
+                  sx={{
+                    boxShadow: 'none',
+                    border: '0.5px solid'
+                  }}
+                >
+                  Add
+                </Button>
+                <CloseIcon
+                  fontSize='small'
+                  sx={{
+                    color: (theme) => theme.palette.warning.light,
+                    cursor: 'pointer'
+                  }}
+                  onClick={toggleNewCardForm}
+                />
+              </Box>
+            </Box>
+          )}
         </Box>
       </Box>
     </div>
