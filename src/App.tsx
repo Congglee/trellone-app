@@ -11,6 +11,7 @@ import OAuth from '~/pages/Auth/OAuth'
 import Register from '~/pages/Auth/Register'
 import ResetPassword from '~/pages/Auth/ResetPassword'
 import BoardDetails from '~/pages/Boards/BoardDetails'
+import Settings from '~/pages/Settings'
 import { UserType } from '~/schemas/user.schema'
 
 const ProtectedRoute = ({ profile, isAuthenticated }: { profile: UserType | null; isAuthenticated: boolean }) => {
@@ -41,6 +42,10 @@ function App() {
       <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} profile={profile} />}>
         {/* Board Details */}
         <Route path={path.boardDetails} element={<BoardDetails />} />
+
+        {/* User Settings */}
+        <Route path={path.accountSettings} element={<Settings />} />
+        <Route path={path.securitySettings} element={<Settings />} />
       </Route>
 
       {/* Authentication */}

@@ -6,7 +6,10 @@ const path = {
   accountVerification: '/account/verification',
   forgotPassword: '/forgot-password',
   forgotPasswordVerification: '/forgot-password/verification',
-  resetPassword: '/reset-password'
+  resetPassword: '/reset-password',
+
+  accountSettings: '/settings/account',
+  securitySettings: '/settings/security'
 } as const
 
 export default path

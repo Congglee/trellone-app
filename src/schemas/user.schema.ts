@@ -26,3 +26,14 @@ export const UserRes = z.object({
 })
 
 export type UserResType = z.TypeOf<typeof UserRes>
+
+export const UpdateMeBody = z.object({
+  display_name: z
+    .string()
+    .trim()
+    .min(1, 'Display name is required')
+    .max(100, 'Display name must be less than 100 characters'),
+  avatar: z.string().url().optional()
+})
+
+export type UpdateMeBodyType = z.TypeOf<typeof UpdateMeBody>

@@ -23,3 +23,9 @@ export const UserVerifyStatusValues = [
   UserVerifyStatus.Verified,
   UserVerifyStatus.Banned
 ] as const
+
+export const MediaType = {
+  Image: 0
+} as const
+
+export const MediaTypeValues = [MediaType.Image, 1] as const

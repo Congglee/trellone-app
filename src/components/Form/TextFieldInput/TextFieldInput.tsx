@@ -4,7 +4,7 @@ import TextField, { TextFieldProps } from '@mui/material/TextField'
 interface TextFieldInputProps<TFieldValues extends FieldValues> extends Omit<TextFieldProps, 'name'> {
   register?: UseFormRegister<TFieldValues>
   rules?: RegisterOptions<TFieldValues, FieldPath<TFieldValues>>
-  name: FieldPath<TFieldValues>
+  name?: FieldPath<TFieldValues>
 }
 
 export default function TextFieldInput<TFieldValues extends FieldValues = FieldValues>({
