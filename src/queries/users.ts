@@ -1,7 +1,8 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
-import { UpdateMeBodyType, UserResType } from '~/schemas/user.schema'
+import { authApi } from '~/queries/auth'
+import { ChangePasswordBodyType, ChangePasswordResType, UpdateMeBodyType, UserResType } from '~/schemas/user.schema'
 import { setProfile } from '~/store/slices/auth.slice'
 
 const USERS_API_URL = '/users' as const
@@ -18,6 +19,7 @@ export const userApi = createApi({
       query: () => ({ url: `${USERS_API_URL}/me`, method: 'GET' }),
       providesTags: (result) => (result ? [{ type: 'User', id: result.result._id }] : tagTypes)
     }),
+
     updateMe: build.mutation<UserResType, UpdateMeBodyType>({
       query: (body) => ({ url: `${USERS_API_URL}/me`, method: 'PATCH', data: body }),
       async onQueryStarted(_args, { dispatch, queryFulfilled }) {
@@ -33,11 +35,25 @@ export const userApi = createApi({
         }
       },
       invalidatesTags: (result) => (result ? [{ type: 'User', id: result.result._id }] : tagTypes)
+    }),
+
+    changePassword: build.mutation<ChangePasswordResType, ChangePasswordBodyType>({
+      query: (body) => ({ url: `${USERS_API_URL}/change-password`, method: 'PUT', data: body }),
+      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled
+          toast.success(data.message)
+
+          dispatch(authApi.endpoints.logout.initiate(undefined))
+        } catch (error: any) {
+          console.error(error)
+        }
+      }
     })
   })
 })
 
-export const { useGetMeQuery, useUpdateMeMutation } = userApi
+export const { useGetMeQuery, useUpdateMeMutation, useChangePasswordMutation } = userApi
 
 const userApiReducer = userApi.reducer
 
