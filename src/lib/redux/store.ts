@@ -11,6 +11,7 @@ import { columnApi } from '~/queries/columns'
 import { cardApi } from '~/queries/cards'
 import { authApi } from '~/queries/auth'
 import { userApi } from '~/queries/users'
+import { mediaApi } from '~/queries/medias'
 
 // Persist configuration
 const rootPersistConfig = {
@@ -27,7 +28,8 @@ const apiMiddlewares = [
   columnApi.middleware,
   cardApi.middleware,
   authApi.middleware,
-  userApi.middleware
+  userApi.middleware,
+  mediaApi.middleware
 ]
 
 export const store = configureStore({
