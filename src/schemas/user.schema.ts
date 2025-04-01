@@ -37,3 +37,45 @@ export const UpdateMeBody = z.object({
 })
 
 export type UpdateMeBodyType = z.TypeOf<typeof UpdateMeBody>
+
+export const ChangePasswordBody = z
+  .object({
+    old_password: z
+      .string()
+      .min(6, 'Old password must be at least 6 characters')
+      .max(50, 'Old password must be at most 50 characters')
+      .regex(/[a-z]/, { message: 'Old password must contain at least 1 lowercase letter' })
+      .regex(/[A-Z]/, { message: 'Old password must contain at least 1 uppercase letter' })
+      .regex(/[0-9]/, { message: 'Old password must contain at least 1 number' })
+      .regex(/[^a-zA-Z0-9]/, { message: 'Old password must contain at least 1 symbol' }),
+    password: z
+      .string()
+      .min(6, 'New password must be at least 6 characters')
+      .max(50, 'New password must be at most 50 characters')
+      .regex(/[a-z]/, { message: 'New password must contain at least 1 lowercase letter' })
+      .regex(/[A-Z]/, { message: 'New password must contain at least 1 uppercase letter' })
+      .regex(/[0-9]/, { message: 'New password must contain at least 1 number' })
+      .regex(/[^a-zA-Z0-9]/, { message: 'New password must contain at least 1 symbol' }),
+    confirm_password: z
+      .string()
+      .min(6, 'Confirm password must be at least 6 characters')
+      .max(50, 'Confirm password must be at most 50 characters')
+  })
+  .strict()
+  .superRefine(({ confirm_password, password }, ctx) => {
+    if (confirm_password !== password) {
+      ctx.addIssue({
+        code: 'custom',
+        message: "New passwords don't match",
+        path: ['confirm_password']
+      })
+    }
+  })
+
+export type ChangePasswordBodyType = z.TypeOf<typeof ChangePasswordBody>
+
+export const ChangePasswordRes = z.object({
+  message: z.string()
+})
+
+export type ChangePasswordResType = z.TypeOf<typeof ChangePasswordRes>
