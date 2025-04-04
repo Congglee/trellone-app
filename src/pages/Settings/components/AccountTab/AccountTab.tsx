@@ -23,6 +23,8 @@ import { useUploadImageMutation } from '~/queries/medias'
 import { useUpdateMeMutation } from '~/queries/users'
 import { UpdateMeBody, UpdateMeBodyType } from '~/schemas/user.schema'
 import { isUnprocessableEntityError } from '~/utils/error-handlers'
+import IconButton from '@mui/material/IconButton'
+import RestartAltSharpIcon from '@mui/icons-material/RestartAltSharp'
 
 export default function AccountTab() {
   const theme = useTheme()
@@ -66,8 +68,8 @@ export default function AccountTab() {
     }
   }, [profile, reset])
 
-  const handleChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+  const handleChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
 
     if (file && (file.size >= config.maxSizeUploadAvatar || !file.type.includes('image'))) {
       toast.error('Maximum file size is 3MB and file type must be an image.', { position: 'top-center' })
@@ -166,6 +168,15 @@ export default function AccountTab() {
                   startAdornment: (
                     <InputAdornment position='start'>
                       <MailIcon fontSize='small' />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position='start'>
+                      <Tooltip title='Resend verification email'>
+                        <IconButton edge='end'>
+                          <RestartAltSharpIcon fontSize='small' />
+                        </IconButton>
+                      </Tooltip>
                     </InputAdornment>
                   )
                 }}

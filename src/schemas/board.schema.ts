@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { BoardType, BoardTypeValues } from '~/constants/type'
 import { ColumnSchema } from '~/schemas/column.schema'
+import { UserSchema } from '~/schemas/user.schema'
 
 export const BoardSchema = z.object({
   _id: z.string(),
@@ -12,15 +13,17 @@ export const BoardSchema = z.object({
   workspace_id: z.string(),
   column_order_ids: z.array(z.string()),
 
-  owners: z.array(z.string()),
-  members: z.array(z.string()),
+  owners: z.array(UserSchema),
+  members: z.array(UserSchema),
 
   columns: z.array(ColumnSchema).optional(),
 
   _destroy: z.boolean(),
 
   created_at: z.date(),
-  updated_at: z.date()
+  updated_at: z.date(),
+
+  FE_AllUsers: z.array(UserSchema).optional()
 })
 
 export const BoardRes = z.object({

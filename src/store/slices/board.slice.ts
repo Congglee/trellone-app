@@ -3,6 +3,7 @@ import { isEmpty } from 'lodash'
 import { envConfig } from '~/constants/config'
 import http from '~/lib/http'
 import { BoardResType } from '~/schemas/board.schema'
+import { CardType } from '~/schemas/card.schema'
 import { mapOrder } from '~/utils/sorts'
 import { generatePlaceholderCard } from '~/utils/utils'
 
@@ -30,6 +31,21 @@ export const boardSlice = createSlice({
     updateActiveBoard: (state, action: PayloadAction<BoardResType['result'] | null>) => {
       const board = action.payload
       state.activeBoard = board
+    },
+    updateCardInBoard: (state, action: PayloadAction<CardType>) => {
+      const incomingCard = action.payload
+
+      const column = state.activeBoard?.columns?.find((col) => col._id === incomingCard?.column_id)
+
+      if (column) {
+        const card = column.cards?.find((item) => item._id === incomingCard._id)
+
+        if (card) {
+          Object.keys(incomingCard).forEach((key) => {
+            ;(card as Record<string, any>)[key] = incomingCard[key as keyof CardType]
+          })
+        }
+      }
     }
   },
   extraReducers: (builder) => {
@@ -47,6 +63,8 @@ export const boardSlice = createSlice({
           state.loading = 'idle'
 
           let board = action.payload.result
+
+          board.FE_AllUsers = board.owners.concat(board.members)
 
           board.columns = mapOrder(board.columns, board.column_order_ids, '_id')
 
@@ -75,7 +93,7 @@ export const boardSlice = createSlice({
   }
 })
 
-export const { updateActiveBoard } = boardSlice.actions
+export const { updateActiveBoard, updateCardInBoard } = boardSlice.actions
 
 const boardReducer = boardSlice.reducer
 

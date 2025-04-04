@@ -14,6 +14,7 @@ import Settings from '@mui/icons-material/Settings'
 import { useLogoutMutation } from '~/queries/auth'
 import { useConfirm } from 'material-ui-confirm'
 import { useAppSelector } from '~/lib/redux/hooks'
+import path from '~/constants/path'
 
 export default function Profiles() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -71,11 +72,9 @@ export default function Profiles() {
         open={open}
         onClose={handleClose}
         onClick={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button-profiles'
-        }}
+        MenuListProps={{ 'aria-labelledby': 'basic-button-profiles' }}
       >
-        <Link to='/settings/account' style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Link to={path.accountSettings} style={{ textDecoration: 'none', color: 'inherit' }}>
           <MenuItem sx={{ '&:hover': { color: 'success.light' } }}>
             <Avatar sx={{ width: 28, height: 28, mr: 2 }} alt={profile?.display_name} src={profile?.avatar} />
             <span>{profile?.display_name}</span>

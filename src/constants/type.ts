@@ -29,3 +29,10 @@ export const MediaType = {
 } as const
 
 export const MediaTypeValues = [MediaType.Image, 1] as const
+
+export const CardMemberAction = {
+  Add: 'ADD',
+  Remove: 'REMOVE'
+} as const
+
+export const CardMemberActionValues = [CardMemberAction.Add, CardMemberAction.Remove] as const

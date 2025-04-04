@@ -8,11 +8,13 @@ import userApiReducer, { userApi } from '~/queries/users'
 import appReducer from '~/store/slices/app.slice'
 import authReducer from '~/store/slices/auth.slice'
 import boardReducer from '~/store/slices/board.slice'
+import cardReducer from '~/store/slices/card.slice'
 
 const rootReducer = combineReducers({
   app: appReducer,
   board: boardReducer,
   auth: authReducer,
+  card: cardReducer,
 
   [boardApi.reducerPath]: boardApiReducer,
 
