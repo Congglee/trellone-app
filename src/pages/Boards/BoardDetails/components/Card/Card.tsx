@@ -11,6 +11,8 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSSProperties } from 'react'
 import { CSS } from '@dnd-kit/utilities'
 import { CardType } from '~/schemas/card.schema'
+import { useAppDispatch } from '~/lib/redux/hooks'
+import { showActiveCardModal, updateActiveCard } from '~/store/slices/card.slice'
 
 interface CardProps {
   card: CardType
@@ -30,10 +32,18 @@ export default function Card({ card }: CardProps) {
     border: isDragging ? '1px solid #2ecc71' : undefined
   }
 
+  const dispatch = useAppDispatch()
+
+  const handleSetActiveCard = () => {
+    dispatch(updateActiveCard(card))
+    dispatch(showActiveCardModal())
+  }
+
   const shouldShowCardActions = !!card.members?.length || !!card.comments?.length || !!card.attachments?.length
 
   return (
     <MuiCard
+      onClick={handleSetActiveCard}
       ref={setNodeRef}
       style={dndKitCardStyles}
       {...attributes}

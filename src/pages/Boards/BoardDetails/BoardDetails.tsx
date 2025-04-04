@@ -4,6 +4,7 @@ import Container from '@mui/material/Container'
 import { cloneDeep } from 'lodash'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import ActiveCard from '~/components/Modal/ActiveCard'
 import DrawerHeader from '~/components/DrawerHeader'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import Main from '~/components/Main'
@@ -114,6 +115,7 @@ export default function BoardDetails() {
   return (
     <Container disableGutters maxWidth={false} sx={{ height: '100vh' }}>
       <NavBar />
+      <ActiveCard />
       <Box
         sx={{
           position: 'relative',

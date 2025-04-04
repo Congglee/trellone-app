@@ -41,23 +41,23 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
   const [templatesOpen, setTemplatesOpen] = useState(false)
 
   // Handle click for each section
-  const handleWorkspacesClick = (e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent drawer from closing
+  const handleWorkspacesClick = (event: React.MouseEvent) => {
+    event.stopPropagation() // Prevent drawer from closing
     setWorkspacesOpen(!workspacesOpen)
   }
 
-  const handleRecentClick = (e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent drawer from closing
+  const handleRecentClick = (event: React.MouseEvent) => {
+    event.stopPropagation() // Prevent drawer from closing
     setRecentOpen(!recentOpen)
   }
 
-  const handleStarredClick = (e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent drawer from closing
+  const handleStarredClick = (event: React.MouseEvent) => {
+    event.stopPropagation() // Prevent drawer from closing
     setStarredOpen(!starredOpen)
   }
 
-  const handleTemplatesClick = (e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent drawer from closing
+  const handleTemplatesClick = (event: React.MouseEvent) => {
+    event.stopPropagation() // Prevent drawer from closing
     setTemplatesOpen(!templatesOpen)
   }
 
@@ -96,7 +96,6 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
                 </Typography>
               </Box>
             </Link>
-
             <IconButton
               size='small'
               sx={{
@@ -113,7 +112,6 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
         }
       >
         <Divider sx={{ my: 0.25 }} />
-
         <ListItemButton onClick={handleWorkspacesClick}>
           <ListItemIcon>
             <WorkspacesIcon />
@@ -150,7 +148,6 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
             </ListItemButton>
           </List>
         </Collapse>
-
         <ListItemButton onClick={handleRecentClick}>
           <ListItemIcon>
             <HistoryIcon />
@@ -181,7 +178,6 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
             </ListItemButton>
           </List>
         </Collapse>
-
         <ListItemButton onClick={handleStarredClick}>
           <ListItemIcon>
             <StarBorder />
@@ -206,7 +202,6 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
             </ListItemButton>
           </List>
         </Collapse>
-
         <ListItemButton onClick={handleTemplatesClick}>
           <ListItemIcon>
             <ContentCopy />
@@ -237,17 +232,14 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
             </ListItemButton>
           </List>
         </Collapse>
-
         <ListItem sx={{ mt: 1 }}>
           <Button variant='contained' fullWidth startIcon={<LibraryAddIcon />}>
             Create
           </Button>
         </ListItem>
-
         <ListItem>
           <ModeSelect styles={{ minWidth: '100%' }} />
         </ListItem>
-
         <ListItem>
           <SearchBar styles={{ minWidth: '100%' }} />
         </ListItem>
