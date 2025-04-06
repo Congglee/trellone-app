@@ -12,6 +12,7 @@ import { cardApi } from '~/queries/cards'
 import { authApi } from '~/queries/auth'
 import { userApi } from '~/queries/users'
 import { mediaApi } from '~/queries/medias'
+import { invitationApi } from '~/queries/invitations'
 
 // Persist configuration
 const rootPersistConfig = {
@@ -29,7 +30,8 @@ const apiMiddlewares = [
   cardApi.middleware,
   authApi.middleware,
   userApi.middleware,
-  mediaApi.middleware
+  mediaApi.middleware,
+  invitationApi.middleware
 ]
 
 export const store = configureStore({

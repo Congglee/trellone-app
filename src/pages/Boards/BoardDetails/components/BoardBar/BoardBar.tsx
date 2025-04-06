@@ -3,17 +3,16 @@ import BoltIcon from '@mui/icons-material/Bolt'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import MenuIcon from '@mui/icons-material/Menu'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard'
 import VpnLockIcon from '@mui/icons-material/VpnLock'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
 import Tooltip from '@mui/material/Tooltip'
 import AppBar from '~/components/AppBar'
 import BoardUserGroup from '~/pages/Boards/BoardDetails/components/BoardUserGroup'
+import InviteBoardUser from '~/pages/Boards/BoardDetails/components/InviteBoardUser'
 import { BoardResType } from '~/schemas/board.schema'
 import { capitalizeFirstLetter } from '~/utils/formatters'
 
@@ -104,15 +103,7 @@ export default function BoardBar({
           </Tooltip>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, ml: 'auto' }}>
-          <Button
-            size='small'
-            color='secondary'
-            variant='contained'
-            startIcon={<PersonAddAltIcon />}
-            onClick={() => {}}
-          >
-            Invite
-          </Button>
+          <InviteBoardUser boardId={board._id} />
           <BoardUserGroup />
           <IconButton
             color='inherit'

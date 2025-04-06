@@ -3,6 +3,7 @@ import authApiReducer, { authApi } from '~/queries/auth'
 import boardApiReducer, { boardApi } from '~/queries/boards'
 import cardApiReducer, { cardApi } from '~/queries/cards'
 import columnApiReducer, { columnApi } from '~/queries/columns'
+import invitationApiReducer, { invitationApi } from '~/queries/invitations'
 import mediaApiReducer, { mediaApi } from '~/queries/medias'
 import userApiReducer, { userApi } from '~/queries/users'
 import appReducer from '~/store/slices/app.slice'
@@ -26,7 +27,9 @@ const rootReducer = combineReducers({
 
   [userApi.reducerPath]: userApiReducer,
 
-  [mediaApi.reducerPath]: mediaApiReducer
+  [mediaApi.reducerPath]: mediaApiReducer,
+
+  [invitationApi.reducerPath]: invitationApiReducer
 })
 
 export default rootReducer
