@@ -71,6 +71,18 @@ export const authApi = createApi({
       }
     }),
 
+    resendVerifyEmail: build.mutation<VerifyEmailResType, void>({
+      query: () => ({ url: `${AUTH_API_URL}/resend-verify-email`, method: 'POST' }),
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled
+          toast.success(data.message)
+        } catch (error: any) {
+          console.error(error)
+        }
+      }
+    }),
+
     forgotPassword: build.mutation<ForgotPasswordResType, ForgotPasswordBodyType>({
       query: (body) => ({ url: `${AUTH_API_URL}/forgot-password`, method: 'POST', data: body }),
       async onQueryStarted(_args, { queryFulfilled }) {
@@ -122,7 +134,8 @@ export const {
   useVerifyEmailMutation,
   useForgotPasswordMutation,
   useVerifyForgotPasswordMutation,
-  useResetPasswordMutation
+  useResetPasswordMutation,
+  useResendVerifyEmailMutation
 } = authApi
 
 const authApiReducer = authApi.reducer

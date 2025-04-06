@@ -3,10 +3,13 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox'
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import MailIcon from '@mui/icons-material/Mail'
+import RestartAltSharpIcon from '@mui/icons-material/RestartAltSharp'
+import VerifiedIcon from '@mui/icons-material/Verified'
 import { useMediaQuery } from '@mui/material'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import { useTheme } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
@@ -19,12 +22,11 @@ import TextFieldInput from '~/components/Form/TextFieldInput'
 import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
 import { config } from '~/constants/config'
 import { useAppSelector } from '~/lib/redux/hooks'
+import { useResendVerifyEmailMutation } from '~/queries/auth'
 import { useUploadImageMutation } from '~/queries/medias'
 import { useUpdateMeMutation } from '~/queries/users'
 import { UpdateMeBody, UpdateMeBodyType } from '~/schemas/user.schema'
 import { isUnprocessableEntityError } from '~/utils/error-handlers'
-import IconButton from '@mui/material/IconButton'
-import RestartAltSharpIcon from '@mui/icons-material/RestartAltSharp'
 
 export default function AccountTab() {
   const theme = useTheme()
@@ -55,8 +57,11 @@ export default function AccountTab() {
 
   const { profile } = useAppSelector((state) => state.auth)
 
+  const isEmailVerified = Boolean(profile?.verify)
+
   const [updateMeMutation, { isError, error }] = useUpdateMeMutation()
   const [uploadImageMutation] = useUploadImageMutation()
+  const [resendVerifyEmailMutation] = useResendVerifyEmailMutation()
 
   useEffect(() => {
     if (profile) {
@@ -67,6 +72,10 @@ export default function AccountTab() {
       })
     }
   }, [profile, reset])
+
+  const handleResendVerifyEmail = async () => {
+    await resendVerifyEmailMutation()
+  }
 
   const handleChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -172,11 +181,19 @@ export default function AccountTab() {
                   ),
                   endAdornment: (
                     <InputAdornment position='start'>
-                      <Tooltip title='Resend verification email'>
-                        <IconButton edge='end'>
-                          <RestartAltSharpIcon fontSize='small' />
-                        </IconButton>
-                      </Tooltip>
+                      {isEmailVerified ? (
+                        <Tooltip title='Email verified'>
+                          <IconButton edge='end'>
+                            <VerifiedIcon fontSize='small' color='success' />
+                          </IconButton>
+                        </Tooltip>
+                      ) : (
+                        <Tooltip title='Resend verification email'>
+                          <IconButton edge='end' onClick={handleResendVerifyEmail}>
+                            <RestartAltSharpIcon fontSize='small' />
+                          </IconButton>
+                        </Tooltip>
+                      )}
                     </InputAdornment>
                   )
                 }}
