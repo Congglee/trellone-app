@@ -36,3 +36,21 @@ export const CardMemberAction = {
 } as const
 
 export const CardMemberActionValues = [CardMemberAction.Add, CardMemberAction.Remove] as const
+
+export const InvitationType = {
+  BoardInvitation: 'BOARD_INVITATION'
+}
+
+export const InvitationTypeValues = [InvitationType.BoardInvitation] as const
+
+export const BoardInvitationStatus = {
+  Pending: 'PENDING',
+  Accepted: 'ACCEPTED',
+  Rejected: 'REJECTED'
+}
+
+export const BoardInvitationStatusValues = [
+  BoardInvitationStatus.Pending,
+  BoardInvitationStatus.Accepted,
+  BoardInvitationStatus.Rejected
+] as const
