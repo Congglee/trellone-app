@@ -186,7 +186,7 @@ export default function ActiveCard() {
               </Box>
 
               <CardDescriptionMdEditor
-                description={activeCard?.description}
+                description={activeCard?.description as string}
                 onUpdateCardDescription={onUpdateCardDescription}
               />
             </Box>

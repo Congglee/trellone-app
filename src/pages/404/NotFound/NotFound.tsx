@@ -6,6 +6,7 @@ import HomeIcon from '@mui/icons-material/Home'
 import PlanetSvg from '~/assets/404/planet.svg?react'
 import AstronautSvg from '~/assets/404/astronaut.svg?react'
 import { Link } from 'react-router-dom'
+import path from '~/constants/path'
 
 export default function NotFound() {
   return (
@@ -92,7 +93,7 @@ export default function NotFound() {
           />
           <PlanetSvg />
         </Box>
-        <Link to='/' style={{ textDecoration: 'none' }}>
+        <Link to={path.home} style={{ textDecoration: 'none' }}>
           <Button
             variant='outlined'
             startIcon={<HomeIcon />}

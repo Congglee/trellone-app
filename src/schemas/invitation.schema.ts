@@ -1,5 +1,7 @@
 import { z } from 'zod'
 import { BoardInvitationStatusValues, InvitationTypeValues } from '~/constants/type'
+import { BoardSchema } from '~/schemas/board.schema'
+import { UserSchema } from '~/schemas/user.schema'
 
 const BoardInvitationSchema = z.object({
   board_id: z.string(),
@@ -15,6 +17,10 @@ export const InvitationSchema = z.object({
 
   type: z.enum(InvitationTypeValues),
   board_invitation: BoardInvitationSchema.optional(),
+
+  inviter: UserSchema,
+  invitee: UserSchema,
+  board: BoardSchema,
 
   _destroy: z.boolean(),
 
@@ -36,3 +42,15 @@ export const CreateNewBoardInvitationBody = z.object({
 })
 
 export type CreateNewBoardInvitationBodyType = z.TypeOf<typeof CreateNewBoardInvitationBody>
+
+export const InvitationListRes = z.object({
+  result: z.object({
+    invitations: z.array(InvitationSchema),
+    limit: z.number(),
+    page: z.number(),
+    total_page: z.number()
+  }),
+  message: z.string()
+})
+
+export type InvitationListResType = z.TypeOf<typeof InvitationListRes>

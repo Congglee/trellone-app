@@ -1,4 +1,5 @@
 const path = {
+  home: '/',
   boardDetails: '/boards/:boardId',
   login: '/login',
   oauth: '/login/oauth',
