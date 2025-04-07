@@ -50,7 +50,7 @@ export default function Login() {
   const onSubmit = handleSubmit((values) => {
     loginMutation(values).then((res) => {
       if (!res.error) {
-        navigate('/')
+        navigate(path.home)
       }
     })
   })

@@ -12,6 +12,8 @@ import Register from '~/pages/Auth/Register'
 import ResetPassword from '~/pages/Auth/ResetPassword'
 import BoardDetails from '~/pages/Boards/BoardDetails'
 import Settings from '~/pages/Settings'
+import Home from '~/pages/Workspaces/Home'
+import HomeLayout from '~/pages/Workspaces/layouts/HomeLayout'
 import { UserType } from '~/schemas/user.schema'
 
 const ProtectedRoute = ({ profile, isAuthenticated }: { profile: UserType | null; isAuthenticated: boolean }) => {
@@ -27,7 +29,7 @@ const RejectedRoute = ({ profile, isAuthenticated }: { profile: UserType | null;
     return <Outlet />
   }
 
-  return !isAuthenticated && !profile ? <Outlet /> : <Navigate to='/' />
+  return !isAuthenticated && !profile ? <Outlet /> : <Navigate to={path.home} />
 }
 
 function App() {
@@ -36,10 +38,15 @@ function App() {
   return (
     <Routes>
       {/* Redirect Route */}
-      <Route path='/' element={<Navigate to='/boards/67e4444eb85fdbf3be814557' replace={true} />} />
+      <Route path={path.home} element={<Navigate to='/boards/67e4444eb85fdbf3be814557' replace={true} />} />
 
       {/* Protected Routes */}
       <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} profile={profile} />}>
+        {/* Workspaces */}
+        <Route path={path.home} element={<HomeLayout />}>
+          <Route index element={<Home />} />
+        </Route>
+
         {/* Board Details */}
         <Route path={path.boardDetails} element={<BoardDetails />} />
 

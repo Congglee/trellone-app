@@ -10,25 +10,21 @@ import appReducer from '~/store/slices/app.slice'
 import authReducer from '~/store/slices/auth.slice'
 import boardReducer from '~/store/slices/board.slice'
 import cardReducer from '~/store/slices/card.slice'
+import notificationReducer from '~/store/slices/notification.slice'
 
 const rootReducer = combineReducers({
   app: appReducer,
   board: boardReducer,
   auth: authReducer,
   card: cardReducer,
+  notification: notificationReducer,
 
   [boardApi.reducerPath]: boardApiReducer,
-
   [columnApi.reducerPath]: columnApiReducer,
-
   [cardApi.reducerPath]: cardApiReducer,
-
   [authApi.reducerPath]: authApiReducer,
-
   [userApi.reducerPath]: userApiReducer,
-
   [mediaApi.reducerPath]: mediaApiReducer,
-
   [invitationApi.reducerPath]: invitationApiReducer
 })
 

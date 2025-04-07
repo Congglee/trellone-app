@@ -1,6 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
+import { invitationApi } from '~/queries/invitations'
 import { userApi } from '~/queries/users'
 import {
   AuthResType,
@@ -32,6 +33,9 @@ export const authApi = createApi({
       async onQueryStarted(_args, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled
+
+          // Option 1: Force a fresh API call by using `forceRefetch: true`
+          // `dispatch(userApi.endpoints.getMe.initiate(undefined, { forceRefetch: true }))
 
           dispatch(userApi.endpoints.getMe.initiate(undefined)).then((res) => {
             if (!res.error) {
@@ -119,6 +123,14 @@ export const authApi = createApi({
 
           dispatch(setAuthenticated(false))
           dispatch(setProfile(null))
+
+          // Option 2: Reset API state on logout to clear any cached data
+          dispatch(userApi.util.resetApiState())
+          dispatch(authApi.util.resetApiState())
+          dispatch(invitationApi.util.resetApiState())
+
+          // If you have other APIs that need resetting:
+          // dispatch(otherApi.util.resetApiState())
         } catch (error: any) {
           console.error(error)
         }

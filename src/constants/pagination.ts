@@ -1,0 +1,5 @@
+export const DEFAULT_PAGINATION_LIMIT = 10
+export const DEFAULT_PAGINATION_PAGE = 1
+
+export const NOTIFICATION_LIMIT = 4
+export const NOTIFICATION_PAGE = 1

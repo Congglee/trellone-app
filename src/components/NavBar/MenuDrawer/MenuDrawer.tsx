@@ -26,8 +26,9 @@ import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
-import ModeSelect from '~/components/ModeSelect'
+import ModeSelect from '~/components/NavBar/ModeSelect'
 import SearchBar from '~/components/NavBar/SearchBar'
+import path from '~/constants/path'
 
 interface MenuDrawerProps {
   onToggleDrawer: (open: boolean) => void
@@ -80,7 +81,7 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
         aria-labelledby='nested-list-subheader'
         subheader={
           <ListSubheader component='div' id='nested-list-subheader' sx={{ py: 1.5 }}>
-            <Link to='/' onClick={(e) => e.stopPropagation()}>
+            <Link to={path.home} onClick={(e) => e.stopPropagation()}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <SvgIcon
                   component={TrelloneIcon}

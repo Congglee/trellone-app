@@ -7,7 +7,7 @@ import Button from '@mui/material/Button'
 import EditNoteIcon from '@mui/icons-material/EditNote'
 
 interface CardDescriptionMdEditorProps {
-  description?: string
+  description: string
   onUpdateCardDescription: (description: string) => Promise<void>
 }
 
@@ -18,7 +18,7 @@ export default function CardDescriptionMdEditor({
   const { mode } = useColorScheme()
 
   const [markdownEditMode, setMarkdownEditMode] = useState(false)
-  const [cardDescription, setCardDescription] = useState<string>(description as string)
+  const [cardDescription, setCardDescription] = useState<string>(description)
 
   const updateCardDescription = () => {
     setMarkdownEditMode(false)
@@ -27,7 +27,7 @@ export default function CardDescriptionMdEditor({
 
   const reset = () => {
     setMarkdownEditMode(false)
-    setCardDescription(description as string)
+    setCardDescription(description)
   }
 
   return (
