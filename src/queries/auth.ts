@@ -36,7 +36,6 @@ export const authApi = createApi({
 
           // Option 1: Force a fresh API call by using `forceRefetch: true`
           // `dispatch(userApi.endpoints.getMe.initiate(undefined, { forceRefetch: true }))
-
           dispatch(userApi.endpoints.getMe.initiate(undefined)).then((res) => {
             if (!res.error) {
               const profile = res.data?.result
@@ -128,9 +127,6 @@ export const authApi = createApi({
           dispatch(userApi.util.resetApiState())
           dispatch(authApi.util.resetApiState())
           dispatch(invitationApi.util.resetApiState())
-
-          // If you have other APIs that need resetting:
-          // dispatch(otherApi.util.resetApiState())
         } catch (error: any) {
           console.error(error)
         }

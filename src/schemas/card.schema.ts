@@ -68,6 +68,7 @@ export const UpdateCardBody = z.object({
     .optional(),
   description: z.string().optional(),
   cover_photo: z.string().url().optional(),
+  _destroy: z.boolean().optional(),
   comment: CommentSchema.optional(),
   member: CardMemberPayloadSchema.optional()
 })

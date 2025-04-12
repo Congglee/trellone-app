@@ -22,6 +22,8 @@ export default function ColumnsList({ columns }: ColumnsListProps) {
   const [newColumnFormOpen, setNewColumnFormOpen] = useState(false)
   const [newColumnTitle, setNewColumnTitle] = useState('')
 
+  const activeColumns = columns.filter((column) => !column._destroy)
+
   const { activeBoard } = useAppSelector((state) => state.board)
   const dispatch = useAppDispatch()
 
@@ -68,9 +70,9 @@ export default function ColumnsList({ columns }: ColumnsListProps) {
   }
 
   return (
-    <SortableContext items={columns.map((column) => column._id)} strategy={horizontalListSortingStrategy}>
+    <SortableContext items={activeColumns.map((column) => column._id)} strategy={horizontalListSortingStrategy}>
       <Box sx={{ bgcolor: 'inherit', width: '100%', height: '100%', display: 'flex' }}>
-        {columns.map((column) => (
+        {activeColumns.map((column) => (
           <Column key={column._id} column={column} />
         ))}
 

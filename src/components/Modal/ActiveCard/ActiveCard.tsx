@@ -40,6 +40,8 @@ import { useUploadImageMutation } from '~/queries/medias'
 import { CardMemberPayloadType, CommentType, UpdateCardBodyType } from '~/schemas/card.schema'
 import { updateCardInBoard } from '~/store/slices/board.slice'
 import { clearAndHideActiveCardModal, updateActiveCard } from '~/store/slices/card.slice'
+import RestartAltIcon from '@mui/icons-material/RestartAlt'
+import RemoveIcon from '@mui/icons-material/Remove'
 
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -123,6 +125,10 @@ export default function ActiveCard() {
 
   const onUpdateCardMembers = async (member: CardMemberPayloadType) => {
     handleUpdateActiveCard({ member })
+  }
+
+  const onUpdateCardArchiveStatus = async (_destroy: boolean) => {
+    handleUpdateActiveCard({ _destroy })
   }
 
   return (
@@ -313,10 +319,43 @@ export default function ActiveCard() {
                 <AutoAwesomeOutlinedIcon fontSize='small' />
                 Make Template
               </SidebarItem>
-              <SidebarItem>
-                <ArchiveOutlinedIcon fontSize='small' />
-                Archive
+              <SidebarItem
+                className='active'
+                component='label'
+                onClick={() => onUpdateCardArchiveStatus(!activeCard?._destroy)}
+              >
+                {activeCard?._destroy ? (
+                  <>
+                    <RestartAltIcon fontSize='small' />
+                    Send to Board
+                  </>
+                ) : (
+                  <>
+                    <ArchiveOutlinedIcon fontSize='small' />
+                    Archive
+                  </>
+                )}
               </SidebarItem>
+              {activeCard?._destroy && (
+                <SidebarItem
+                  sx={{
+                    backgroundColor: (theme) => theme.palette.error.main,
+                    color: (theme) => theme.palette.error.contrastText,
+                    '&:hover': {
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === 'dark' ? theme.palette.error.dark : theme.palette.error.light,
+                      '&.active': {
+                        backgroundColor: (theme) =>
+                          theme.palette.mode === 'dark' ? theme.palette.error.dark : theme.palette.error.light,
+                        color: (theme) => theme.palette.error.contrastText
+                      }
+                    }
+                  }}
+                >
+                  <RemoveIcon fontSize='small' />
+                  Delete
+                </SidebarItem>
+              )}
               <SidebarItem>
                 <ShareOutlinedIcon fontSize='small' />
                 Share
