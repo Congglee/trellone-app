@@ -11,6 +11,7 @@ import OAuth from '~/pages/Auth/OAuth'
 import Register from '~/pages/Auth/Register'
 import ResetPassword from '~/pages/Auth/ResetPassword'
 import BoardDetails from '~/pages/Boards/BoardDetails'
+import BoardInvitationVerification from '~/pages/Boards/BoardInvitationVerification'
 import Settings from '~/pages/Settings'
 import Home from '~/pages/Workspaces/Home'
 import HomeLayout from '~/pages/Workspaces/layouts/HomeLayout'
@@ -54,6 +55,9 @@ function App() {
         <Route path={path.accountSettings} element={<Settings />} />
         <Route path={path.securitySettings} element={<Settings />} />
       </Route>
+
+      {/* Board Invitation Verification */}
+      <Route path={path.boardInvitationVerification} element={<BoardInvitationVerification />} />
 
       {/* Authentication */}
       <Route element={<RejectedRoute isAuthenticated={isAuthenticated} profile={profile} />}>
