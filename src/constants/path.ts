@@ -10,7 +10,9 @@ const path = {
   resetPassword: '/reset-password',
 
   accountSettings: '/settings/account',
-  securitySettings: '/settings/security'
+  securitySettings: '/settings/security',
+
+  boardInvitationVerification: '/board-invitation/verification'
 } as const
 
 export default path

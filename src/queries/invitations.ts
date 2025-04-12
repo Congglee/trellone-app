@@ -1,7 +1,12 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
-import { CreateNewBoardInvitationBodyType, InvitationListResType, InvitationResType } from '~/schemas/invitation.schema'
+import {
+  CreateNewBoardInvitationBodyType,
+  InvitationListResType,
+  InvitationResType,
+  VerifyBoardInvitationResType
+} from '~/schemas/invitation.schema'
 import { CommonQueryParams } from '~/types/query-params.type'
 
 const INVITATION_API_URL = '/invitations' as const
@@ -27,6 +32,10 @@ export const invitationApi = createApi({
       }
     }),
 
+    verifyBoardInvitation: build.mutation<VerifyBoardInvitationResType, { invite_token: string }>({
+      query: (body) => ({ url: `${INVITATION_API_URL}/verify-board-invitation`, method: 'POST', data: body })
+    }),
+
     getInvitations: build.query<InvitationListResType, CommonQueryParams>({
       query: (params) => ({ url: INVITATION_API_URL, method: 'GET', params }),
       providesTags: (result) =>
@@ -40,7 +49,8 @@ export const invitationApi = createApi({
   })
 })
 
-export const { useAddNewBoardInvitationMutation, useGetInvitationsQuery } = invitationApi
+export const { useAddNewBoardInvitationMutation, useGetInvitationsQuery, useVerifyBoardInvitationMutation } =
+  invitationApi
 
 export const invitationApiReducer = invitationApi.reducer
 

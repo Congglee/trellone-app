@@ -19,3 +19,7 @@ export interface OAuthQueryParams {
   new_user?: number
   verify?: UserType['verify']
 }
+
+export interface BoardInvitationQueryParams {
+  token?: string
+}

@@ -174,27 +174,28 @@ export default function Notifications() {
           </Box>
         ))}
 
-        <Divider />
-
         {showMoreButton && (
-          <Button
-            variant='text'
-            size='medium'
-            fullWidth
-            color='primary'
-            endIcon={<MoreHorizIcon />}
-            sx={{
-              textTransform: 'none',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              '&:hover': {
-                backgroundColor: 'rgba(25, 118, 210, 0.04)'
-              }
-            }}
-            onClick={getMoreNotifications}
-          >
-            More notifications
-          </Button>
+          <>
+            <Divider />
+            <Button
+              variant='text'
+              size='medium'
+              fullWidth
+              color='primary'
+              endIcon={<MoreHorizIcon />}
+              sx={{
+                textTransform: 'none',
+                fontSize: '0.875rem',
+                fontWeight: 500,
+                '&:hover': {
+                  backgroundColor: 'rgba(25, 118, 210, 0.04)'
+                }
+              }}
+              onClick={getMoreNotifications}
+            >
+              More notifications
+            </Button>
+          </>
         )}
       </Menu>
     </Box>

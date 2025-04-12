@@ -37,6 +37,12 @@ export const InvitationRes = z.object({
 
 export type InvitationResType = z.TypeOf<typeof InvitationRes>
 
+export const VerifyBoardInvitationRes = z.object({
+  message: z.string()
+})
+
+export type VerifyBoardInvitationResType = z.TypeOf<typeof VerifyBoardInvitationRes>
+
 export const CreateNewBoardInvitationBody = z.object({
   invitee_email: z.string().min(1, { message: 'Email is required' }).email({ message: 'Invalid email address' })
 })
