@@ -49,6 +49,12 @@ export const CreateNewBoardInvitationBody = z.object({
 
 export type CreateNewBoardInvitationBodyType = z.TypeOf<typeof CreateNewBoardInvitationBody>
 
+export const UpdateBoardInvitationBody = z.object({
+  status: z.enum(BoardInvitationStatusValues)
+})
+
+export type UpdateBoardInvitationBodyType = z.TypeOf<typeof UpdateBoardInvitationBody>
+
 export const InvitationListRes = z.object({
   result: z.object({
     invitations: z.array(InvitationSchema),

@@ -14,10 +14,12 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { format } from 'date-fns'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { NOTIFICATION_LIMIT, NOTIFICATION_PAGE } from '~/constants/pagination'
 import { BoardInvitationStatus } from '~/constants/type'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
-import { useGetInvitationsQuery } from '~/queries/invitations'
+import { useGetInvitationsQuery, useUpdateBoardInvitationMutation } from '~/queries/invitations'
+import { BoardInvitationType } from '~/schemas/invitation.schema'
 import { setNotifications } from '~/store/slices/notification.slice'
 
 export default function Notifications() {
@@ -35,6 +37,8 @@ export default function Notifications() {
     setAnchorEl(null)
   }
 
+  const navigate = useNavigate()
+
   const dispatch = useAppDispatch()
   const { notifications } = useAppSelector((state) => state.notification)
 
@@ -47,6 +51,20 @@ export default function Notifications() {
     page: pagination.page,
     limit: NOTIFICATION_LIMIT
   })
+
+  const [updateBoardInvitationMutation] = useUpdateBoardInvitationMutation()
+
+  const updateBoardInvitation = (status: BoardInvitationType['status'], invitationId: string) => {
+    updateBoardInvitationMutation({ id: invitationId, body: { status } }).then((res) => {
+      if (res.data) {
+        const boardInvitation = res.data.result.board_invitation
+
+        if (boardInvitation?.status === BoardInvitationStatus.Accepted) {
+          navigate(`/boards/${boardInvitation.board_id}`)
+        }
+      }
+    })
+  }
 
   useEffect(() => {
     if (invitationsData) {
@@ -137,7 +155,7 @@ export default function Notifications() {
                       variant='contained'
                       color='success'
                       size='small'
-                      onClick={() => {}}
+                      onClick={() => updateBoardInvitation(BoardInvitationStatus.Accepted, notification._id)}
                     >
                       Accept
                     </Button>
@@ -147,7 +165,7 @@ export default function Notifications() {
                       variant='contained'
                       color='secondary'
                       size='small'
-                      onClick={() => {}}
+                      onClick={() => updateBoardInvitation(BoardInvitationStatus.Rejected, notification._id)}
                     >
                       Reject
                     </Button>

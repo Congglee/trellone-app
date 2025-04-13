@@ -19,7 +19,7 @@ import { useMoveCardToDifferentColumnMutation, useUpdateBoardMutation } from '~/
 import { useUpdateColumnMutation } from '~/queries/columns'
 import { CardType } from '~/schemas/card.schema'
 import { ColumnType } from '~/schemas/column.schema'
-import { getBoardDetails, updateActiveBoard } from '~/store/slices/board.slice'
+import { clearActiveBoard, getBoardDetails, updateActiveBoard } from '~/store/slices/board.slice'
 
 export default function BoardDetails() {
   const theme = useTheme()
@@ -32,14 +32,20 @@ export default function BoardDetails() {
   const { boardId } = useParams()
 
   const dispatch = useAppDispatch()
-  const { activeBoard, loading } = useAppSelector((state) => state.board)
+  const { activeBoard, loading, error } = useAppSelector((state) => state.board)
 
   const [updateBoardMutation] = useUpdateBoardMutation()
   const [updateColumnMutation] = useUpdateColumnMutation()
   const [moveCardToDifferentColumnMutation] = useMoveCardToDifferentColumnMutation()
 
   useEffect(() => {
-    dispatch(getBoardDetails(boardId!))
+    if (boardId) {
+      dispatch(getBoardDetails(boardId))
+    }
+
+    return () => {
+      dispatch(clearActiveBoard())
+    }
   }, [dispatch, boardId])
 
   const onMoveColumns = (dndOrderedColumns: ColumnType[]) => {
@@ -108,7 +114,7 @@ export default function BoardDetails() {
     return <PageLoadingSpinner caption='Loading board...' />
   }
 
-  if (!activeBoard) {
+  if (error || !activeBoard) {
     return <BoardNotFound />
   }
 

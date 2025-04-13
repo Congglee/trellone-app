@@ -23,8 +23,11 @@ const ProtectedRoute = ({ profile, isAuthenticated }: { profile: UserType | null
 
 const RejectedRoute = ({ profile, isAuthenticated }: { profile: UserType | null; isAuthenticated: boolean }) => {
   const location = useLocation()
+
   const isVerificationPath =
-    location.pathname === path.accountVerification || location.pathname === path.forgotPasswordVerification
+    location.pathname === path.accountVerification ||
+    location.pathname === path.forgotPasswordVerification ||
+    location.pathname === path.boardInvitationVerification
 
   if (isVerificationPath) {
     return <Outlet />
@@ -56,9 +59,6 @@ function App() {
         <Route path={path.securitySettings} element={<Settings />} />
       </Route>
 
-      {/* Board Invitation Verification */}
-      <Route path={path.boardInvitationVerification} element={<BoardInvitationVerification />} />
-
       {/* Authentication */}
       <Route element={<RejectedRoute isAuthenticated={isAuthenticated} profile={profile} />}>
         <Route element={<AuthLayout />}>
@@ -69,6 +69,7 @@ function App() {
         </Route>
         <Route path={path.accountVerification} element={<AccountVerification />} />
         <Route path={path.forgotPasswordVerification} element={<ForgotPasswordVerification />} />
+        <Route path={path.boardInvitationVerification} element={<BoardInvitationVerification />} />
       </Route>
 
       {/* OAuth */}

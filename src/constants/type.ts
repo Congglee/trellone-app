@@ -1,3 +1,11 @@
+export const TokenType = {
+  AccessToken: 0,
+  RefreshToken: 1,
+  ForgotPasswordToken: 2,
+  EmailVerifyToken: 3,
+  InviteToken: 4
+} as const
+
 export const BoardType = {
   Public: 'public',
   Private: 'private'

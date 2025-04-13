@@ -200,7 +200,7 @@ export default function Login() {
               Login
             </Button>
           </CardActions>
-          <Divider>or</Divider>
+          <Divider>Or continue with</Divider>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '1em' }}>
             <Button fullWidth variant='outlined' startIcon={<GoogleIcon />} href={googleOAuthUrl}>
               Sign in with Google
