@@ -5,6 +5,7 @@ import {
   CreateNewBoardInvitationBodyType,
   InvitationListResType,
   InvitationResType,
+  UpdateBoardInvitationBodyType,
   VerifyBoardInvitationResType
 } from '~/schemas/invitation.schema'
 import { CommonQueryParams } from '~/types/query-params.type'
@@ -26,7 +27,6 @@ export const invitationApi = createApi({
           const { data } = await queryFulfilled
           toast.success(data.message)
         } catch (error) {
-          toast.error('There was an error sending the invitation')
           console.error(error)
         }
       }
@@ -34,6 +34,11 @@ export const invitationApi = createApi({
 
     verifyBoardInvitation: build.mutation<VerifyBoardInvitationResType, { invite_token: string }>({
       query: (body) => ({ url: `${INVITATION_API_URL}/verify-board-invitation`, method: 'POST', data: body })
+    }),
+
+    updateBoardInvitation: build.mutation<InvitationResType, { id: string; body: UpdateBoardInvitationBodyType }>({
+      query: ({ id, body }) => ({ url: `${INVITATION_API_URL}/board/${id}`, method: 'PUT', data: body }),
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'Invitation', id }]
     }),
 
     getInvitations: build.query<InvitationListResType, CommonQueryParams>({
@@ -49,8 +54,12 @@ export const invitationApi = createApi({
   })
 })
 
-export const { useAddNewBoardInvitationMutation, useGetInvitationsQuery, useVerifyBoardInvitationMutation } =
-  invitationApi
+export const {
+  useAddNewBoardInvitationMutation,
+  useGetInvitationsQuery,
+  useVerifyBoardInvitationMutation,
+  useUpdateBoardInvitationMutation
+} = invitationApi
 
 export const invitationApiReducer = invitationApi.reducer
 

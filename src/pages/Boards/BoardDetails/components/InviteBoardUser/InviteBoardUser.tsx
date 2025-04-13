@@ -51,9 +51,11 @@ export default function InviteBoardUser({ boardId }: InviteBoardUserProps) {
   const [addNewBoardInvitationMutation, { isError, error }] = useAddNewBoardInvitationMutation()
 
   const onSubmit = handleSubmit(async (values) => {
-    addNewBoardInvitationMutation({ ...values, board_id: boardId }).then(() => {
-      reset()
-      setAnchorPopoverElement(null)
+    addNewBoardInvitationMutation({ ...values, board_id: boardId }).then((res) => {
+      if (!res.error) {
+        reset()
+        setAnchorPopoverElement(null)
+      }
     })
   })
 

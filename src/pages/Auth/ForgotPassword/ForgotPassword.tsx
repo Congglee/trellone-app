@@ -98,7 +98,7 @@ export default function ForgotPassword() {
               Send reset instructions
             </Button>
           </CardActions>
-          <Divider>or</Divider>
+          <Divider>Or continue with</Divider>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '1em' }}>
             <Typography sx={{ textAlign: 'center' }}>
               Already have an account?{' '}

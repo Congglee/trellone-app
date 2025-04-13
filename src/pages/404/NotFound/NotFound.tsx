@@ -10,14 +10,7 @@ import path from '~/constants/path'
 
 export default function NotFound() {
   return (
-    <Box
-      sx={{
-        width: '100vw',
-        height: '100vh',
-        bgcolor: '#25344C',
-        color: 'white'
-      }}
-    >
+    <Box sx={{ minHeight: '100vh', bgcolor: '#25344C', color: 'white', py: 6 }}>
       <Box
         sx={{
           '@keyframes stars': {
@@ -74,7 +67,13 @@ export default function NotFound() {
           ?<br />
           Hmm, looks like that page doesn&apos;t exist.
         </Typography>
-        <Box sx={{ width: '390px', height: '390px', position: 'relative' }}>
+        <Box
+          sx={{
+            width: { xs: '100%', md: '390px' },
+            height: '100%',
+            position: 'relative'
+          }}
+        >
           <SvgIcon
             component={AstronautSvg}
             inheritViewBox

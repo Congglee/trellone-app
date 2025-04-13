@@ -104,7 +104,7 @@ export default function BoardBar({
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, ml: 'auto' }}>
           <InviteBoardUser boardId={board._id} />
-          <BoardUserGroup />
+          <BoardUserGroup boardUsers={board?.FE_AllUsers} />
           <IconButton
             color='inherit'
             aria-label='open board drawer'

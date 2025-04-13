@@ -22,4 +22,5 @@ export interface OAuthQueryParams {
 
 export interface BoardInvitationQueryParams {
   token?: string
+  board_id?: string
 }
