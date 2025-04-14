@@ -15,11 +15,15 @@ export const notificationSlice = createSlice({
   reducers: {
     setNotifications: (state, action: PayloadAction<InvitationType[]>) => {
       state.notifications = action.payload
+    },
+    addNotification: (state, action: PayloadAction<InvitationType>) => {
+      const incomingInvitation = action.payload
+      state.notifications.unshift(incomingInvitation)
     }
   }
 })
 
-export const { setNotifications } = notificationSlice.actions
+export const { setNotifications, addNotification } = notificationSlice.actions
 
 const notificationReducer = notificationSlice.reducer
 

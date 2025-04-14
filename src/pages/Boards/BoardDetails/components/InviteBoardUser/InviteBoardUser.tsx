@@ -12,6 +12,7 @@ import TextFieldInput from '~/components/Form/TextFieldInput'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import { useAddNewBoardInvitationMutation } from '~/queries/invitations'
 import { isUnprocessableEntityError } from '~/utils/error-handlers'
+import socket from '~/lib/socket'
 
 interface InviteBoardUserProps {
   boardId: string
@@ -55,6 +56,10 @@ export default function InviteBoardUser({ boardId }: InviteBoardUserProps) {
       if (!res.error) {
         reset()
         setAnchorPopoverElement(null)
+
+        const invitation = res.data?.result
+
+        socket.emit('CLIENT_USER_INVITED_TO_BOARD', invitation)
       }
     })
   })

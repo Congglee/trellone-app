@@ -18,19 +18,20 @@ import { useNavigate } from 'react-router-dom'
 import { NOTIFICATION_LIMIT, NOTIFICATION_PAGE } from '~/constants/pagination'
 import { BoardInvitationStatus } from '~/constants/type'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
+import socket from '~/lib/socket'
 import { useGetInvitationsQuery, useUpdateBoardInvitationMutation } from '~/queries/invitations'
-import { BoardInvitationType } from '~/schemas/invitation.schema'
-import { setNotifications } from '~/store/slices/notification.slice'
+import { BoardInvitationType, InvitationType } from '~/schemas/invitation.schema'
+import { addNotification, setNotifications } from '~/store/slices/notification.slice'
 
 export default function Notifications() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const [newNotification, setNewNotification] = useState(false)
+  const [hasNewNotification, setHasNewNotification] = useState(false)
 
   const open = Boolean(anchorEl)
 
   const handleClickNotificationIcon = (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     setAnchorEl(event.currentTarget)
-    setNewNotification(false)
+    setHasNewNotification(false)
   }
 
   const handleClose = () => {
@@ -40,6 +41,8 @@ export default function Notifications() {
   const navigate = useNavigate()
 
   const dispatch = useAppDispatch()
+
+  const { profile } = useAppSelector((state) => state.auth)
   const { notifications } = useAppSelector((state) => state.notification)
 
   const [pagination, setPagination] = useState({
@@ -78,7 +81,24 @@ export default function Notifications() {
         dispatch(setNotifications([...notifications, ...invitations]))
       }
     }
-  }, [invitationsData, dispatch])
+
+    const onReceiveNewInvitation = (invitation: InvitationType) => {
+      if (invitation.invitee_id === profile?._id) {
+        dispatch(addNotification(invitation))
+        setHasNewNotification(true)
+      }
+    }
+
+    socket.on('SERVER_USER_INVITED_TO_BOARD', onReceiveNewInvitation)
+
+    socket.on('disconnect', (reason) => {
+      console.log(reason)
+    })
+
+    return () => {
+      socket.off('SERVER_USER_INVITED_TO_BOARD', onReceiveNewInvitation)
+    }
+  }, [invitationsData, dispatch, profile])
 
   const getMoreNotifications = () => {
     if (pagination.page < pagination.total_page) {
@@ -93,7 +113,7 @@ export default function Notifications() {
       <Tooltip title='Notifications'>
         <Badge
           color='warning'
-          variant={newNotification ? 'dot' : 'standard'}
+          variant={hasNewNotification ? 'dot' : 'standard'}
           sx={{ cursor: 'pointer' }}
           id='basic-button-open-notification'
           aria-controls={open ? 'basic-notification-drop-down' : undefined}
@@ -101,7 +121,7 @@ export default function Notifications() {
           aria-expanded={open ? 'true' : undefined}
           onClick={handleClickNotificationIcon}
         >
-          <NotificationsNoneIcon sx={{ color: newNotification ? 'yellow' : 'inherit' }} />
+          <NotificationsNoneIcon sx={{ color: hasNewNotification ? 'yellow' : 'inherit' }} />
         </Badge>
       </Tooltip>
 

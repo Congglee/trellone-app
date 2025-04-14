@@ -38,7 +38,10 @@ export const invitationApi = createApi({
 
     updateBoardInvitation: build.mutation<InvitationResType, { id: string; body: UpdateBoardInvitationBodyType }>({
       query: ({ id, body }) => ({ url: `${INVITATION_API_URL}/board/${id}`, method: 'PUT', data: body }),
-      invalidatesTags: (_result, _error, { id }) => [{ type: 'Invitation', id }]
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Invitation', id },
+        { type: 'Invitation', id: 'LIST' }
+      ]
     }),
 
     getInvitations: build.query<InvitationListResType, CommonQueryParams>({
