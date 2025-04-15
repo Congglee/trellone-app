@@ -26,8 +26,8 @@ import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
+import AutoCompleteSearchBoard from '~/components/NavBar/AutoCompleteSearchBoard'
 import ModeSelect from '~/components/NavBar/ModeSelect'
-import SearchBar from '~/components/NavBar/SearchBar'
 import path from '~/constants/path'
 
 interface MenuDrawerProps {
@@ -70,10 +70,6 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
         display: 'grid'
       }}
       role='presentation'
-      // onClick={(e) => {
-      //   e.stopPropagation()
-      //   onToggleDrawer(false)
-      // }}
     >
       <List
         sx={{ width: '100%', height: '100%', bgcolor: 'background.paper' }}
@@ -242,7 +238,7 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
           <ModeSelect styles={{ minWidth: '100%' }} />
         </ListItem>
         <ListItem>
-          <SearchBar styles={{ minWidth: '100%' }} />
+          <AutoCompleteSearchBoard />
         </ListItem>
       </List>
     </Box>

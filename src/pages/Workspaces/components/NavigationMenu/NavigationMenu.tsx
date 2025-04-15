@@ -1,6 +1,7 @@
 import AddSharpIcon from '@mui/icons-material/AddSharp'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import HomeIcon from '@mui/icons-material/Home'
+import { useTheme } from '@mui/material/styles'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
@@ -10,6 +11,7 @@ import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import path from '~/constants/path'
 import CollapseList from '~/pages/Workspaces/components/NavigationMenu/CollapseList'
+import { useMediaQuery } from '@mui/material'
 
 const getActiveMenuFromPath = (pathname: string) => {
   switch (true) {
@@ -23,6 +25,9 @@ const getActiveMenuFromPath = (pathname: string) => {
 }
 
 export default function NavigationMenu() {
+  const theme = useTheme()
+  const isScreenAboveMobileScreen = useMediaQuery(theme.breakpoints.up('sm'))
+
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -46,9 +51,9 @@ export default function NavigationMenu() {
     <List
       sx={{
         pt: 5,
-        display: { xs: 'none', sm: 'block' },
+        // display: { xs: 'none', sm: 'block' },
         width: '100%',
-        maxWidth: 250,
+        maxWidth: { xs: '100%', sm: 250 },
         bgcolor: 'background.paper'
       }}
       component='nav'
@@ -68,16 +73,18 @@ export default function NavigationMenu() {
         <ListItemText primary='Boards' />
       </ListItemButton>
 
-      <Divider component='li' sx={{ my: '10px' }} />
-
-      <ListItemButton>
-        <ListItemText primary='Workspaces' />
-        <ListItemIcon sx={{ justifyContent: 'flex-end' }}>
-          <AddSharpIcon />
-        </ListItemIcon>
-      </ListItemButton>
-
-      <CollapseList activeMenu={activeMenu} onActiveMenuChange={onActiveMenuChange} />
+      {isScreenAboveMobileScreen && (
+        <>
+          <Divider component='li' sx={{ my: '10px' }} />
+          <ListItemButton>
+            <ListItemText primary='Workspaces' />
+            <ListItemIcon sx={{ justifyContent: 'flex-end' }}>
+              <AddSharpIcon />
+            </ListItemIcon>
+          </ListItemButton>
+          <CollapseList activeMenu={activeMenu} onActiveMenuChange={onActiveMenuChange} />
+        </>
+      )}
     </List>
   )
 }

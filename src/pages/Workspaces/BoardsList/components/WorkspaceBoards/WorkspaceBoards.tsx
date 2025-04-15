@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import randomColor from 'randomcolor'
 import { NavLink } from 'react-router-dom'
-import useQueryConfig from '~/hooks/use-query-config'
+import { useQueryConfig } from '~/hooks/use-query-config'
 import { useGetBoardsQuery } from '~/queries/boards'
 
 export default function WorkspaceBoards() {
@@ -65,7 +65,15 @@ export default function WorkspaceBoards() {
                   />
                 )}
                 <CardContent>
-                  <Typography variant='body1' fontWeight={700}>
+                  <Typography
+                    variant='body1'
+                    fontWeight={700}
+                    sx={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
                     {board?.title}
                   </Typography>
                 </CardContent>

@@ -14,12 +14,12 @@ import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
+import AutoCompleteSearchBoard from '~/components/NavBar/AutoCompleteSearchBoard'
 import MenuDrawer from '~/components/NavBar/MenuDrawer'
 import ModeSelect from '~/components/NavBar/ModeSelect'
 import Notifications from '~/components/NavBar/Notifications'
 import Profiles from '~/components/NavBar/Profiles'
 import Recent from '~/components/NavBar/Recent'
-import SearchBar from '~/components/NavBar/SearchBar'
 import Starred from '~/components/NavBar/Starred'
 import Templates from '~/components/NavBar/Templates'
 import Workspaces from '~/components/NavBar/Workspaces'
@@ -84,7 +84,7 @@ export default function NavBar() {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           {!isScreenBelowMedium && (
             <>
-              <SearchBar />
+              <AutoCompleteSearchBoard />
               <ModeSelect />
             </>
           )}

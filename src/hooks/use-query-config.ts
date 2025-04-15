@@ -1,13 +1,13 @@
 import { isUndefined, omitBy } from 'lodash'
 import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '~/constants/pagination'
-import useQueryParams from '~/hooks/use-query-params'
+import { useQueryParams } from '~/hooks/use-query-params'
 import { CommonQueryParams } from '~/types/query-params.type'
 
 export type QueryConfig<T = CommonQueryParams> = {
   [key in keyof T]: string
 }
 
-export default function useQueryConfig<T = CommonQueryParams>() {
+export const useQueryConfig = <T = CommonQueryParams>() => {
   const queryParams = useQueryParams()
 
   // Cast the queryParams to the generic type
