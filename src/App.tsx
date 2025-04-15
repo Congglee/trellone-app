@@ -13,6 +13,7 @@ import ResetPassword from '~/pages/Auth/ResetPassword'
 import BoardDetails from '~/pages/Boards/BoardDetails'
 import BoardInvitationVerification from '~/pages/Boards/BoardInvitationVerification'
 import Settings from '~/pages/Settings'
+import BoardsList from '~/pages/Workspaces/BoardsList'
 import Home from '~/pages/Workspaces/Home'
 import HomeLayout from '~/pages/Workspaces/layouts/HomeLayout'
 import { UserType } from '~/schemas/user.schema'
@@ -49,6 +50,7 @@ function App() {
         {/* Workspaces */}
         <Route path={path.home} element={<HomeLayout />}>
           <Route index element={<Home />} />
+          <Route path={path.boardsList} element={<BoardsList />} />
         </Route>
 
         {/* Board Details */}

@@ -33,6 +33,18 @@ export const BoardRes = z.object({
 
 export type BoardResType = z.TypeOf<typeof BoardRes>
 
+export const BoardListRes = z.object({
+  result: z.object({
+    boards: z.array(BoardSchema),
+    limit: z.number(),
+    page: z.number(),
+    total_page: z.number()
+  }),
+  message: z.string()
+})
+
+export type BoardListResType = z.TypeOf<typeof BoardListRes>
+
 export const CreateBoardBody = z.object({
   title: z
     .string()

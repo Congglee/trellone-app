@@ -2,11 +2,13 @@ import { createApi } from '@reduxjs/toolkit/query/react'
 import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
 import {
+  BoardListResType,
   BoardResType,
   MoveCardToDifferentColumnBodyType,
   MoveCardToDifferentColumnResType,
   UpdateBoardBodyType
 } from '~/schemas/board.schema'
+import { BoardQueryParams } from '~/types/query-params.type'
 
 const BOARD_API_URL = '/boards' as const
 
@@ -18,6 +20,17 @@ export const boardApi = createApi({
   tagTypes,
   baseQuery: axiosBaseQuery(),
   endpoints: (build) => ({
+    getBoards: build.query<BoardListResType, BoardQueryParams>({
+      query: (params) => ({ url: BOARD_API_URL, method: 'GET', params }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.result.boards.map(({ _id }) => ({ type: 'Board' as const, id: _id })),
+              { type: 'Board' as const, id: 'LIST' }
+            ]
+          : [{ type: 'Board' as const, id: 'LIST' }]
+    }),
+
     updateBoard: build.mutation<BoardResType, { id: string; body: UpdateBoardBodyType }>({
       query: ({ id, body }) => ({ url: `${BOARD_API_URL}/${id}`, method: 'PUT', data: body }),
       async onQueryStarted(_args, { queryFulfilled }) {
@@ -27,7 +40,11 @@ export const boardApi = createApi({
           toast.error('There was an error updating the board')
           console.error(error)
         }
-      }
+      },
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Board', id },
+        { type: 'Board', id: 'LIST' }
+      ]
     }),
 
     moveCardToDifferentColumn: build.mutation<MoveCardToDifferentColumnResType, MoveCardToDifferentColumnBodyType>({
@@ -44,7 +61,7 @@ export const boardApi = createApi({
   })
 })
 
-export const { useUpdateBoardMutation, useMoveCardToDifferentColumnMutation } = boardApi
+export const { useGetBoardsQuery, useUpdateBoardMutation, useMoveCardToDifferentColumnMutation } = boardApi
 
 const boardApiReducer = boardApi.reducer
 
