@@ -16,8 +16,8 @@ import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import DrawerHeader from '~/components/DrawerHeader'
+import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
 import { mockBoardsList } from '~/constants/mock-data'
-import WorkspaceAvatar from '~/pages/Boards/BoardDetails/components/WorkspaceAvatar'
 
 interface WorkspaceDrawerProps {
   open: boolean
