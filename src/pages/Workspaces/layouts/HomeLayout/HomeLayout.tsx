@@ -19,7 +19,8 @@ export default function HomeLayout() {
           <NavigationMenu />
           <Box
             sx={{
-              py: { xs: 0, sm: 5 },
+              py: 5,
+              pt: { xs: 0, sm: 5 },
               overflowY: 'auto',
               maxHeight: (theme) => `calc(100vh - ${theme.trellone.navBarHeight})`,
               width: '100%',

@@ -1,6 +1,8 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
+import { AppDispatch } from '~/lib/redux/store'
+import { boardApi } from '~/queries/boards'
 import { invitationApi } from '~/queries/invitations'
 import { userApi } from '~/queries/users'
 import {
@@ -22,6 +24,14 @@ export const AUTH_API_URL = '/auth' as const
 
 const reducerPath = 'auth/api' as const
 const tagTypes = ['Auth'] as const
+
+export const apiSlicesToReset = [boardApi, userApi, invitationApi]
+
+export const resetApiState = (dispatch: AppDispatch) => {
+  apiSlicesToReset.forEach((api) => {
+    dispatch(api.util.resetApiState())
+  })
+}
 
 export const authApi = createApi({
   reducerPath,
@@ -124,9 +134,8 @@ export const authApi = createApi({
           dispatch(setProfile(null))
 
           // Option 2: Reset API state on logout to clear any cached data
-          dispatch(userApi.util.resetApiState())
           dispatch(authApi.util.resetApiState())
-          dispatch(invitationApi.util.resetApiState())
+          resetApiState(dispatch)
         } catch (error: any) {
           console.error(error)
         }

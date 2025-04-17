@@ -6,8 +6,8 @@ import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { DEFAULT_PAGINATION_PAGE } from '~/constants/pagination'
 import { useDebounce } from '~/hooks/use-debounce'
-import { useQueryConfig } from '~/hooks/use-query-config'
 import { useGetBoardsQuery } from '~/queries/boards'
 import { BoardResType } from '~/schemas/board.schema'
 
@@ -15,10 +15,13 @@ export default function AutoCompleteSearchBoard() {
   const [open, setOpen] = useState(false)
   const [keyword, setKeyword] = useState('')
 
-  const queryConfig = useQueryConfig()
   const navigate = useNavigate()
 
-  const { data: boardsData, isLoading } = useGetBoardsQuery({ ...queryConfig, keyword })
+  const { data: boardsData, isLoading } = useGetBoardsQuery({
+    page: DEFAULT_PAGINATION_PAGE,
+    limit: 50,
+    keyword
+  })
 
   const boards = boardsData?.result.boards || []
 

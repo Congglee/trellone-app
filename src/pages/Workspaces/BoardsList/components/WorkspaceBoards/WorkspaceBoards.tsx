@@ -77,7 +77,9 @@ export default function WorkspaceBoards() {
                       sx={{
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap'
+                        display: '-webkit-box',
+                        WebkitLineClamp: '2',
+                        WebkitBoxOrient: 'vertical'
                       }}
                     >
                       {board?.title}
@@ -109,7 +111,10 @@ export default function WorkspaceBoards() {
                 component={NavLink}
                 to={{
                   pathname: path.boardsList,
-                  search: createSearchParams(queryConfig).toString()
+                  search: createSearchParams({
+                    ...queryConfig,
+                    page: item.page?.toString() as string
+                  }).toString()
                 }}
                 {...item}
               />
