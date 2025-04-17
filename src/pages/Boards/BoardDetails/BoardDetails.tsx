@@ -4,10 +4,10 @@ import Container from '@mui/material/Container'
 import { cloneDeep } from 'lodash'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import ActiveCard from '~/components/Modal/ActiveCard'
 import DrawerHeader from '~/components/DrawerHeader'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import Main from '~/components/Main'
+import ActiveCard from '~/components/Modal/ActiveCard'
 import NavBar from '~/components/NavBar'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import BoardBar from '~/pages/Boards/BoardDetails/components/BoardBar'
@@ -144,7 +144,7 @@ export default function BoardDetails() {
           />
         )}
         <Box sx={{ display: 'flex' }}>
-          <WorkspaceDrawer open={workspaceDrawerOpen} onOpen={setWorkspaceDrawerOpen} />
+          <WorkspaceDrawer open={workspaceDrawerOpen} onOpen={setWorkspaceDrawerOpen} boardId={boardId} />
           <BoardBar
             workspaceDrawerOpen={workspaceDrawerOpen}
             onWorkspaceDrawerOpen={setWorkspaceDrawerOpen}

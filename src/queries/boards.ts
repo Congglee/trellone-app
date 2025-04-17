@@ -4,6 +4,7 @@ import axiosBaseQuery from '~/lib/redux/helpers'
 import {
   BoardListResType,
   BoardResType,
+  CreateBoardBodyType,
   MoveCardToDifferentColumnBodyType,
   MoveCardToDifferentColumnResType,
   UpdateBoardBodyType
@@ -20,6 +21,19 @@ export const boardApi = createApi({
   tagTypes,
   baseQuery: axiosBaseQuery(),
   endpoints: (build) => ({
+    addBoard: build.mutation<BoardResType, CreateBoardBodyType>({
+      query: (body) => ({ url: BOARD_API_URL, method: 'POST', data: body }),
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          await queryFulfilled
+        } catch (error) {
+          toast.error('There was an error creating the board')
+          console.error(error)
+        }
+      },
+      invalidatesTags: [{ type: 'Board', id: 'LIST' }]
+    }),
+
     getBoards: build.query<BoardListResType, BoardQueryParams>({
       query: (params) => ({ url: BOARD_API_URL, method: 'GET', params }),
       providesTags: (result) =>
@@ -61,7 +75,8 @@ export const boardApi = createApi({
   })
 })
 
-export const { useGetBoardsQuery, useUpdateBoardMutation, useMoveCardToDifferentColumnMutation } = boardApi
+export const { useAddBoardMutation, useGetBoardsQuery, useUpdateBoardMutation, useMoveCardToDifferentColumnMutation } =
+  boardApi
 
 const boardApiReducer = boardApi.reducer
 

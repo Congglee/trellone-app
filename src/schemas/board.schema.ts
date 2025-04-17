@@ -52,9 +52,14 @@ export const CreateBoardBody = z.object({
     .max(50, { message: 'Title must be at most 50 characters long' }),
   description: z
     .string()
-    .min(3, { message: 'Description must be at least 3 characters long' })
-    .max(256, { message: 'Description must be at most 256 characters long' })
-    .optional(),
+    .transform((val) => (val === '' ? undefined : val))
+    .optional()
+    .refine((val) => val === undefined || val.length >= 3, {
+      message: 'Description must be at least 3 characters long'
+    })
+    .refine((val) => val === undefined || val.length <= 256, {
+      message: 'Description must be at most 256 characters long'
+    }),
   type: z.enum(BoardTypeValues, { message: 'Type must be either public or private' }).default(BoardType.Public)
 })
 

@@ -1,9 +1,7 @@
 import AppsIcon from '@mui/icons-material/Apps'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
-import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
 import { useMediaQuery } from '@mui/material'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
@@ -15,6 +13,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
 import AutoCompleteSearchBoard from '~/components/NavBar/AutoCompleteSearchBoard'
+import Create from '~/components/NavBar/Create'
 import MenuDrawer from '~/components/NavBar/MenuDrawer'
 import ModeSelect from '~/components/NavBar/ModeSelect'
 import Notifications from '~/components/NavBar/Notifications'
@@ -76,9 +75,7 @@ export default function NavBar() {
             <Recent />
             <Starred />
             <Templates />
-            <Button variant='contained' fullWidth startIcon={<LibraryAddIcon />}>
-              Create
-            </Button>
+            <Create />
           </Box>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
