@@ -107,16 +107,17 @@ export default function ActiveCard() {
 
     formData.append('image', file as File)
 
-    const uploadImageRes = await uploadImageMutation(formData).unwrap()
+    const uploadImageRes = await toast.promise(uploadImageMutation(formData).unwrap(), {
+      pending: 'Uploading...',
+      success: 'Upload successfully!',
+      error: 'Upload failed!'
+    })
     const imageUrl = uploadImageRes.result[0].url
 
-    toast.promise(
-      handleUpdateActiveCard({ cover_photo: imageUrl }).finally(() => {
-        // Clear the input value after upload
-        event.target.value = ''
-      }),
-      { pending: 'Uploading...', success: 'Upload successfully!' }
-    )
+    handleUpdateActiveCard({ cover_photo: imageUrl }).finally(() => {
+      // Clear the input value after upload
+      event.target.value = ''
+    })
   }
 
   const onAddCardComment = async (comment: CommentType) => {
@@ -260,7 +261,7 @@ export default function ActiveCard() {
               <SidebarItem className='active' component='label'>
                 <ImageOutlinedIcon fontSize='small' />
                 Cover
-                <VisuallyHiddenInput type='file' onChange={onUploadCardCoverPhoto} />
+                <VisuallyHiddenInput type='file' accept='image/*' onChange={onUploadCardCoverPhoto} />
               </SidebarItem>
 
               <SidebarItem>

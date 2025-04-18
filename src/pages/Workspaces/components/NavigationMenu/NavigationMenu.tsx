@@ -50,8 +50,6 @@ export default function NavigationMenu() {
   return (
     <List
       sx={{
-        pt: 5,
-        // display: { xs: 'none', sm: 'block' },
         width: '100%',
         maxWidth: { xs: '100%', sm: 250 },
         bgcolor: 'background.paper'
