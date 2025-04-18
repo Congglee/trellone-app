@@ -125,9 +125,10 @@ export default function BoardDetails() {
       <Box
         sx={{
           position: 'relative',
-          backgroundImage: 'url(https://images6.alphacoders.com/138/thumbbig-1386838.webp)',
+          backgroundImage: activeBoard.cover_photo ? `url(${activeBoard.cover_photo})` : 'none',
           backgroundSize: 'cover',
-          backgroundPosition: 'center'
+          backgroundPosition: 'center',
+          bgcolor: isDarkMode ? 'grey.900' : 'primary.main'
         }}
       >
         {isDarkMode && (

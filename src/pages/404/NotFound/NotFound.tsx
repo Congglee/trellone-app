@@ -24,7 +24,6 @@ export default function NotFound() {
           backgroundSize: 'contain',
           backgroundRepeat: 'repeat',
           backgroundPosition: 'center',
-          // boxShadow: 'inset 0 0 0 2000px rgba(0, 0, 0, 0.2)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',

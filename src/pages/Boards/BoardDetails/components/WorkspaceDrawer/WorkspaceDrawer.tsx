@@ -107,58 +107,17 @@ export default function WorkspaceDrawer({ open, onOpen, boardId }: WorkspaceDraw
           width: theme.trellone.workspaceDrawerWidth,
           boxSizing: 'border-box',
           top: 'auto',
-          height: `calc(100% - ${theme.trellone.navBarHeight})`
+          height: `calc(100vh - ${theme.trellone.navBarHeight})`
         }
       }}
       variant='persistent'
       anchor='left'
       open={open}
     >
-      <DrawerHeader sx={{ justifyContent: 'space-between', minHeight: '49px!important' }}>
-        <Stack ml={1} gap={1} alignItems='center' direction='row'>
-          <WorkspaceAvatar workspaceName='My Project' avatarSize={{ width: 30, height: 30 }} />
-          <Typography variant='subtitle1'>My Project</Typography>
-        </Stack>
-        <IconButton color='inherit' onClick={() => onOpen(false)}>
-          {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-        </IconButton>
-      </DrawerHeader>
-      <Divider />
-      <List>
-        <ListItem disablePadding>
-          <ListItemButton onClick={() => {}}>
-            <ListItemIcon>
-              <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText secondary='Boards' />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton onClick={() => {}}>
-            <ListItemIcon>
-              <GroupsIcon />
-            </ListItemIcon>
-            <ListItemText secondary='Members' />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton onClick={() => {}}>
-            <ListItemIcon>
-              <SettingsIcon />
-            </ListItemIcon>
-            <ListItemText secondary='Workspace Settings' />
-          </ListItemButton>
-        </ListItem>
-      </List>
-      <Divider />
-      <Typography variant='subtitle1' p={2} pb={1}>
-        Your Boards
-      </Typography>
       <Box
         ref={scrollableRef}
         sx={{
-          height: 'calc(100vh - 280px)',
-          overflowY: 'inherit',
+          overflowY: 'auto',
           '&::-webkit-scrollbar': { width: '8px' },
           '&::-webkit-scrollbar-thumb': {
             backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
@@ -167,6 +126,46 @@ export default function WorkspaceDrawer({ open, onOpen, boardId }: WorkspaceDraw
         }}
         id='scrollableDiv'
       >
+        <DrawerHeader sx={{ justifyContent: 'space-between', minHeight: '49px!important' }}>
+          <Stack ml={1} gap={1} alignItems='center' direction='row'>
+            <WorkspaceAvatar workspaceName='My Project' avatarSize={{ width: 30, height: 30 }} />
+            <Typography variant='subtitle1'>My Project</Typography>
+          </Stack>
+          <IconButton color='inherit' onClick={() => onOpen(false)}>
+            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          </IconButton>
+        </DrawerHeader>
+        <Divider />
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => {}}>
+              <ListItemIcon>
+                <DashboardIcon />
+              </ListItemIcon>
+              <ListItemText secondary='Boards' />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => {}}>
+              <ListItemIcon>
+                <GroupsIcon />
+              </ListItemIcon>
+              <ListItemText secondary='Members' />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => {}}>
+              <ListItemIcon>
+                <SettingsIcon />
+              </ListItemIcon>
+              <ListItemText secondary='Workspace Settings' />
+            </ListItemButton>
+          </ListItem>
+        </List>
+        <Divider />
+        <Typography variant='subtitle1' p={2} pb={1}>
+          Your Boards
+        </Typography>
         <InfiniteScroll
           dataLength={boards.length}
           next={getMoreBoards}

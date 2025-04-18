@@ -15,18 +15,9 @@ export default function HomeLayout() {
     <Container disableGutters maxWidth={false}>
       <NavBar />
       <Container maxWidth='lg'>
-        <Stack direction={isMobileScreen ? 'column' : 'row'} useFlexGap={true} spacing={2}>
+        <Stack direction={isMobileScreen ? 'column' : 'row'} useFlexGap={true} spacing={2} py={{ xs: 3, sm: 5 }}>
           <NavigationMenu />
-          <Box
-            sx={{
-              py: 5,
-              pt: { xs: 0, sm: 5 },
-              overflowY: 'auto',
-              maxHeight: (theme) => `calc(100vh - ${theme.trellone.navBarHeight})`,
-              width: '100%',
-              maxWidth: { xs: '100%', sm: '70vw' }
-            }}
-          >
+          <Box sx={{ width: '100%', maxWidth: { xs: '100%', sm: '70vw' } }}>
             <Outlet />
           </Box>
         </Stack>

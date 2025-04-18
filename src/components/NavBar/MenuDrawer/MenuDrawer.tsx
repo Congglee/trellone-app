@@ -35,30 +35,29 @@ interface MenuDrawerProps {
 }
 
 export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
-  // Separate state for each section
   const [workspacesOpen, setWorkspacesOpen] = useState(false)
   const [recentOpen, setRecentOpen] = useState(false)
   const [starredOpen, setStarredOpen] = useState(false)
   const [templatesOpen, setTemplatesOpen] = useState(false)
 
-  // Handle click for each section
   const handleWorkspacesClick = (event: React.MouseEvent) => {
-    event.stopPropagation() // Prevent drawer from closing
+    // Prevent drawer from closing
+    event.stopPropagation()
     setWorkspacesOpen(!workspacesOpen)
   }
 
   const handleRecentClick = (event: React.MouseEvent) => {
-    event.stopPropagation() // Prevent drawer from closing
+    event.stopPropagation()
     setRecentOpen(!recentOpen)
   }
 
   const handleStarredClick = (event: React.MouseEvent) => {
-    event.stopPropagation() // Prevent drawer from closing
+    event.stopPropagation()
     setStarredOpen(!starredOpen)
   }
 
   const handleTemplatesClick = (event: React.MouseEvent) => {
-    event.stopPropagation() // Prevent drawer from closing
+    event.stopPropagation()
     setTemplatesOpen(!templatesOpen)
   }
 

@@ -80,7 +80,8 @@ export const UpdateBoardBody = z.object({
     .enum(BoardTypeValues, { message: 'Type must be either public or private' })
     .default(BoardType.Public)
     .optional(),
-  column_order_ids: z.array(z.string()).optional()
+  column_order_ids: z.array(z.string()).optional(),
+  cover_photo: z.string().url().optional()
 })
 
 export type UpdateBoardBodyType = z.TypeOf<typeof UpdateBoardBody>

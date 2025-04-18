@@ -42,11 +42,6 @@ export const store = configureStore({
 
 export const persistor = persistStore(store)
 
-// export const makeStore = () => store
-
-// Infer the type of makeStore
-// export type AppStore = ReturnType<typeof makeStore>
-
 // Infer the type of the store
 export type AppStore = typeof store
 

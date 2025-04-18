@@ -4,7 +4,6 @@ const Main = styled('main', {
   shouldForwardProp: (prop) => prop !== 'workspaceDrawerOpen' && prop !== 'boardDrawerOpen'
 })<{ workspaceDrawerOpen?: boolean; boardDrawerOpen?: boolean }>(({ theme, workspaceDrawerOpen, boardDrawerOpen }) => ({
   flexGrow: 1,
-  // padding: theme.spacing(3),
 
   transition: theme.transitions.create('margin', {
     easing: theme.transitions.easing.sharp,
