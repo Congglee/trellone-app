@@ -329,13 +329,12 @@ export default function BoardContent({
       <Box
         sx={{
           display: 'flex',
-          // flexDirection: 'column',
           width: '100%',
           p: 1.25,
 
           // Fix bug that cannot drag empty column to a column with 2 or more cards
           // But this makes half of the screen unable to scroll horizontally on iPad, mobile devices, ... 😣
-          height: (theme) => `calc(100% - ${theme.trellone.navBarHeight} - 2 * ${theme.trellone.boardBarHeight})`
+          height: 'calc(100% - 254px)'
         }}
       >
         <ColumnsList columns={sortedColumns} />
