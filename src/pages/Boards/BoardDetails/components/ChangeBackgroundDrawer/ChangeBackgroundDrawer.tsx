@@ -1,5 +1,7 @@
+import AddIcon from '@mui/icons-material/Add'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import SearchIcon from '@mui/icons-material/Search'
 import { useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -9,24 +11,27 @@ import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import ImageList from '@mui/material/ImageList'
 import ImageListItem from '@mui/material/ImageListItem'
+import InputAdornment from '@mui/material/InputAdornment'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
+import { toast } from 'react-toastify'
 import DrawerHeader from '~/components/DrawerHeader'
+import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { useUpdateBoardMutation } from '~/queries/boards'
 import { useGetUnsplashSearchPhotosQuery, useUploadImageMutation } from '~/queries/medias'
 import { updateActiveBoard } from '~/store/slices/board.slice'
-import AddIcon from '@mui/icons-material/Add'
-import ListItemIcon from '@mui/material/ListItemIcon'
+import { useDebounce } from '~/hooks/use-debounce'
+import { singleFileValidator } from '~/utils/validators'
 
 // @ts-expect-error - Missing type definitions for mui-color-input package
 import { MuiColorInput, MuiColorInputValue } from 'mui-color-input'
-import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
-import { config } from '~/constants/config'
-import { toast } from 'react-toastify'
 
 interface ChangeBackgroundDrawerProps {
   open: boolean
@@ -37,15 +42,29 @@ export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroun
   const theme = useTheme()
 
   const [value, setValue] = useState<MuiColorInputValue>('')
+  const [query, setQuery] = useState('Wallpapers')
 
   const handleColorInputChange = (newValue: string) => {
     setValue(newValue)
   }
 
+  const handleInputSearchPhotosChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const value = event.target.value
+
+    if (!value || value.trim() === '') {
+      setQuery('Wallpapers')
+      return
+    }
+
+    setQuery(value)
+  }
+
+  const debounceSearchPhotos = useDebounce(handleInputSearchPhotosChange, 1500)
+
   const dispatch = useAppDispatch()
   const { activeBoard } = useAppSelector((state) => state.board)
 
-  const { data: searchPhotosData } = useGetUnsplashSearchPhotosQuery('Wallpapers')
+  const { data: searchPhotosData, isLoading } = useGetUnsplashSearchPhotosQuery(query)
   const searchPhotos = searchPhotosData?.result || []
 
   const [updateBoardMutation] = useUpdateBoardMutation()
@@ -66,8 +85,10 @@ export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroun
   const handleUploadBoardCoverPhoto = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
 
-    if (file && (file.size >= config.maxSizeUploadAvatar || !file.type.includes('image'))) {
-      toast.error('Maximum file size is 3MB and file type must be an image.', { position: 'top-center' })
+    const errorMessage = singleFileValidator(file as File)
+
+    if (errorMessage) {
+      toast.error(errorMessage, { position: 'top-center' })
       return
     }
 
@@ -127,7 +148,21 @@ export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroun
               Options
             </Typography>
 
-            <ImageList variant='standard' cols={3} gap={2}>
+            <TextField
+              fullWidth
+              size='small'
+              placeholder='Image'
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position='start'>
+                    <SearchIcon />
+                  </InputAdornment>
+                )
+              }}
+              onChange={debounceSearchPhotos}
+            />
+
+            <ImageList variant='standard' cols={3} gap={3} sx={{ mt: 1 }}>
               <ListItem disablePadding>
                 <ListItemButton
                   sx={{
@@ -160,6 +195,13 @@ export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroun
                     </ImageListItem>
                   )
                 })}
+
+              {isLoading &&
+                Array.from({ length: 8 }).map((_, index) => (
+                  <ImageListItem sx={{ p: 0 }} key={index}>
+                    <Skeleton animation='wave' variant='rectangular' width='100%' height='60px' />
+                  </ImageListItem>
+                ))}
             </ImageList>
           </Box>
         </Stack>

@@ -32,7 +32,6 @@ import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
 import CardActivitySection from '~/components/Modal/ActiveCard/CardActivitySection'
 import CardDescriptionMdEditor from '~/components/Modal/ActiveCard/CardDescriptionMdEditor'
 import CardUserGroup from '~/components/Modal/ActiveCard/CardUserGroup'
-import { config } from '~/constants/config'
 import { CardMemberAction } from '~/constants/type'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { useUpdateCardMutation } from '~/queries/cards'
@@ -42,6 +41,7 @@ import { updateCardInBoard } from '~/store/slices/board.slice'
 import { clearAndHideActiveCardModal, updateActiveCard } from '~/store/slices/card.slice'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import RemoveIcon from '@mui/icons-material/Remove'
+import { singleFileValidator } from '~/utils/validators'
 
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -98,8 +98,10 @@ export default function ActiveCard() {
   const onUploadCardCoverPhoto = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
 
-    if (file && (file.size >= config.maxSizeUploadAvatar || !file.type.includes('image'))) {
-      toast.error('Maximum file size is 3MB and file type must be an image.', { position: 'top-center' })
+    const errorMessage = singleFileValidator(file as File)
+
+    if (errorMessage) {
+      toast.error(errorMessage, { position: 'top-center' })
       return
     }
 
