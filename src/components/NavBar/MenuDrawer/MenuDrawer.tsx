@@ -24,11 +24,12 @@ import ListSubheader from '@mui/material/ListSubheader'
 import SvgIcon from '@mui/material/SvgIcon'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
 import AutoCompleteSearchBoard from '~/components/NavBar/AutoCompleteSearchBoard'
 import ModeSelect from '~/components/NavBar/ModeSelect'
 import path from '~/constants/path'
+import AppsIcon from '@mui/icons-material/Apps'
 
 interface MenuDrawerProps {
   onToggleDrawer: (open: boolean) => void
@@ -39,6 +40,8 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
   const [recentOpen, setRecentOpen] = useState(false)
   const [starredOpen, setStarredOpen] = useState(false)
   const [templatesOpen, setTemplatesOpen] = useState(false)
+
+  const navigate = useNavigate()
 
   const handleWorkspacesClick = (event: React.MouseEvent) => {
     // Prevent drawer from closing
@@ -108,6 +111,12 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
         }
       >
         <Divider sx={{ my: 0.25 }} />
+        <ListItemButton onClick={() => navigate(path.boardsList)}>
+          <ListItemIcon>
+            <AppsIcon />
+          </ListItemIcon>
+          <ListItemText primary='All Boards' />
+        </ListItemButton>
         <ListItemButton onClick={handleWorkspacesClick}>
           <ListItemIcon>
             <WorkspacesIcon />

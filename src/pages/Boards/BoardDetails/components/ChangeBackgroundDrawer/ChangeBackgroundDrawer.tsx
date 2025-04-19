@@ -132,7 +132,13 @@ export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroun
 
       <Container fixed sx={{ py: 1 }}>
         <Stack gap={1.5}>
-          <Button variant='contained' size='small' color='secondary' fullWidth>
+          <Button
+            variant='contained'
+            size='small'
+            color='secondary'
+            fullWidth
+            onClick={() => handleUpdateBoardCoverPhoto('')}
+          >
             Remove Cover
           </Button>
 

@@ -10,7 +10,7 @@ import SvgIcon from '@mui/material/SvgIcon'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
 import AutoCompleteSearchBoard from '~/components/NavBar/AutoCompleteSearchBoard'
 import Create from '~/components/NavBar/Create'
@@ -30,9 +30,13 @@ export default function NavBar() {
   const theme = useTheme()
   const isScreenBelowMedium = useMediaQuery(theme.breakpoints.down('md'))
 
+  const navigate = useNavigate()
+
   const toggleDrawer = (newOpen: boolean) => {
     if (isScreenBelowMedium) {
       setOpen(newOpen)
+    } else {
+      navigate(path.boardsList)
     }
   }
 
