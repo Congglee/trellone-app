@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { BoardType, BoardTypeValues } from '~/constants/type'
 import { ColumnSchema } from '~/schemas/column.schema'
+import { UserSchema } from '~/schemas/user.schema'
 
 export const BoardSchema = z.object({
   _id: z.string(),
@@ -12,15 +13,17 @@ export const BoardSchema = z.object({
   workspace_id: z.string(),
   column_order_ids: z.array(z.string()),
 
-  owners: z.array(z.string()),
-  members: z.array(z.string()),
+  owners: z.array(UserSchema),
+  members: z.array(UserSchema),
 
   columns: z.array(ColumnSchema).optional(),
 
   _destroy: z.boolean(),
 
   created_at: z.date(),
-  updated_at: z.date()
+  updated_at: z.date(),
+
+  FE_AllUsers: z.array(UserSchema).optional()
 })
 
 export const BoardRes = z.object({
@@ -30,6 +33,18 @@ export const BoardRes = z.object({
 
 export type BoardResType = z.TypeOf<typeof BoardRes>
 
+export const BoardListRes = z.object({
+  result: z.object({
+    boards: z.array(BoardSchema),
+    limit: z.number(),
+    page: z.number(),
+    total_page: z.number()
+  }),
+  message: z.string()
+})
+
+export type BoardListResType = z.TypeOf<typeof BoardListRes>
+
 export const CreateBoardBody = z.object({
   title: z
     .string()
@@ -37,9 +52,14 @@ export const CreateBoardBody = z.object({
     .max(50, { message: 'Title must be at most 50 characters long' }),
   description: z
     .string()
-    .min(3, { message: 'Description must be at least 3 characters long' })
-    .max(256, { message: 'Description must be at most 256 characters long' })
-    .optional(),
+    .transform((val) => (val === '' ? undefined : val))
+    .optional()
+    .refine((val) => val === undefined || val.length >= 3, {
+      message: 'Description must be at least 3 characters long'
+    })
+    .refine((val) => val === undefined || val.length <= 256, {
+      message: 'Description must be at most 256 characters long'
+    }),
   type: z.enum(BoardTypeValues, { message: 'Type must be either public or private' }).default(BoardType.Public)
 })
 
@@ -60,7 +80,8 @@ export const UpdateBoardBody = z.object({
     .enum(BoardTypeValues, { message: 'Type must be either public or private' })
     .default(BoardType.Public)
     .optional(),
-  column_order_ids: z.array(z.string()).optional()
+  column_order_ids: z.array(z.string()).optional(),
+  cover_photo: z.string().url().optional()
 })
 
 export type UpdateBoardBodyType = z.TypeOf<typeof UpdateBoardBody>

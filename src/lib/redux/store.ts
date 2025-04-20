@@ -11,6 +11,8 @@ import { columnApi } from '~/queries/columns'
 import { cardApi } from '~/queries/cards'
 import { authApi } from '~/queries/auth'
 import { userApi } from '~/queries/users'
+import { mediaApi } from '~/queries/medias'
+import { invitationApi } from '~/queries/invitations'
 
 // Persist configuration
 const rootPersistConfig = {
@@ -27,7 +29,9 @@ const apiMiddlewares = [
   columnApi.middleware,
   cardApi.middleware,
   authApi.middleware,
-  userApi.middleware
+  userApi.middleware,
+  mediaApi.middleware,
+  invitationApi.middleware
 ]
 
 export const store = configureStore({
@@ -37,11 +41,6 @@ export const store = configureStore({
 })
 
 export const persistor = persistStore(store)
-
-// export const makeStore = () => store
-
-// Infer the type of makeStore
-// export type AppStore = ReturnType<typeof makeStore>
 
 // Infer the type of the store
 export type AppStore = typeof store

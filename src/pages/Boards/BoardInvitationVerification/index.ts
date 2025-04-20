@@ -1,0 +1,3 @@
+import BoardInvitationVerification from '~/pages/Boards/BoardInvitationVerification/BoardInvitationVerification'
+
+export default BoardInvitationVerification

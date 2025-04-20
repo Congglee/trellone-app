@@ -1,7 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
-import { CardResType, CreateCardBodyType } from '~/schemas/card.schema'
+import { CardResType, CreateCardBodyType, UpdateCardBodyType } from '~/schemas/card.schema'
 
 const CARD_API_URL = '/cards' as const
 
@@ -24,11 +24,23 @@ export const cardApi = createApi({
           console.error(error)
         }
       }
+    }),
+
+    updateCard: build.mutation<CardResType, { id: string; body: UpdateCardBodyType }>({
+      query: ({ id, body }) => ({ url: `${CARD_API_URL}/${id}`, method: 'PUT', data: body }),
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          await queryFulfilled
+        } catch (error) {
+          toast.error('There was an error updating the card')
+          console.error(error)
+        }
+      }
     })
   })
 })
 
-export const { useAddCardMutation } = cardApi
+export const { useAddCardMutation, useUpdateCardMutation } = cardApi
 
 export const cardApiReducer = cardApi.reducer
 

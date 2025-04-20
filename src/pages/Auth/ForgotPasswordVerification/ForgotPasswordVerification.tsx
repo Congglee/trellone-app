@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
-import useQueryConfig from '~/hooks/use-query-config'
+import { useQueryConfig } from '~/hooks/use-query-config'
 import { useVerifyForgotPasswordMutation } from '~/queries/auth'
 import { AuthQueryParams } from '~/types/query-params.type'
 

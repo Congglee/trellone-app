@@ -38,6 +38,7 @@ export default tseslint.config(
       ],
       '@typescript-eslint/no-empty-object-type': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-expressions': 'off',
       'prefer-const': 'off',
       'no-extra-boolean-cast': 0
     }

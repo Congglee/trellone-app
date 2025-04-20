@@ -1,8 +1,8 @@
 import { UserType } from '~/schemas/user.schema'
 
 export interface CommonQueryParams {
-  page?: number
-  limit?: number
+  page?: number | string
+  limit?: number | string
 }
 
 export interface AuthQueryParams {
@@ -18,4 +18,13 @@ export interface OAuthQueryParams {
   refresh_token?: string
   new_user?: number
   verify?: UserType['verify']
+}
+
+export interface BoardInvitationQueryParams {
+  token?: string
+  board_id?: string
+}
+
+export interface BoardQueryParams extends CommonQueryParams {
+  keyword?: string
 }

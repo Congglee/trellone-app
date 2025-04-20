@@ -1,3 +1,11 @@
+export const TokenType = {
+  AccessToken: 0,
+  RefreshToken: 1,
+  ForgotPasswordToken: 2,
+  EmailVerifyToken: 3,
+  InviteToken: 4
+} as const
+
 export const BoardType = {
   Public: 'public',
   Private: 'private'
@@ -22,4 +30,35 @@ export const UserVerifyStatusValues = [
   UserVerifyStatus.Unverified,
   UserVerifyStatus.Verified,
   UserVerifyStatus.Banned
+] as const
+
+export const MediaType = {
+  Image: 0
+} as const
+
+export const MediaTypeValues = [MediaType.Image, 1] as const
+
+export const CardMemberAction = {
+  Add: 'ADD',
+  Remove: 'REMOVE'
+} as const
+
+export const CardMemberActionValues = [CardMemberAction.Add, CardMemberAction.Remove] as const
+
+export const InvitationType = {
+  BoardInvitation: 'BOARD_INVITATION'
+}
+
+export const InvitationTypeValues = [InvitationType.BoardInvitation] as const
+
+export const BoardInvitationStatus = {
+  Pending: 'PENDING',
+  Accepted: 'ACCEPTED',
+  Rejected: 'REJECTED'
+}
+
+export const BoardInvitationStatusValues = [
+  BoardInvitationStatus.Pending,
+  BoardInvitationStatus.Accepted,
+  BoardInvitationStatus.Rejected
 ] as const

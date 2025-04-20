@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { CardMemberAction } from '~/constants/type'
 
 const CommentSchema = z.object({
   user_id: z.string(),
@@ -8,6 +9,15 @@ const CommentSchema = z.object({
   content: z.string(),
   commented_at: z.date()
 })
+
+export type CommentType = z.TypeOf<typeof CommentSchema>
+
+const CardMemberPayloadSchema = z.object({
+  action: z.enum([CardMemberAction.Add, CardMemberAction.Remove]),
+  user_id: z.string()
+})
+
+export type CardMemberPayloadType = z.TypeOf<typeof CardMemberPayloadSchema>
 
 export const CardSchema = z.object({
   _id: z.string(),
@@ -49,3 +59,18 @@ export const CreateCardBody = z.object({
 })
 
 export type CreateCardBodyType = z.TypeOf<typeof CreateCardBody>
+
+export const UpdateCardBody = z.object({
+  title: z
+    .string()
+    .min(3, { message: 'Title must be at least 3 characters long' })
+    .max(50, { message: 'Title must be at most 50 characters long' })
+    .optional(),
+  description: z.string().optional(),
+  cover_photo: z.string().url().optional(),
+  _destroy: z.boolean().optional(),
+  comment: CommentSchema.optional(),
+  member: CardMemberPayloadSchema.optional()
+})
+
+export type UpdateCardBodyType = z.TypeOf<typeof UpdateCardBody>

@@ -3,7 +3,6 @@ import { experimental_extendTheme as extendTheme } from '@mui/material/styles'
 
 declare module '@mui/material/styles' {
   interface Theme {
-    // Add your custom properties here
     trellone: {
       navBarHeight: string
       workspaceDrawerWidth: string
@@ -15,9 +14,7 @@ declare module '@mui/material/styles' {
       columnFooterHeight: string
     }
   }
-  // allow configuration using `createTheme`
   interface ThemeOptions {
-    // Add your custom properties here
     trellone: {
       navBarHeight: string
       workspaceDrawerWidth: string
@@ -42,7 +39,6 @@ const BOARD_CONTENT_HEIGHT = `calc(100vh - ${NAV_BAR_HEIGHT} - ${BOARD_BAR_HEIGH
 const COLUMN_HEADER_HEIGHT = '50px'
 const COLUMN_FOOTER_HEIGHT = '56px'
 
-// A custom theme for this app
 const theme = extendTheme({
   trellone: {
     navBarHeight: NAV_BAR_HEIGHT,

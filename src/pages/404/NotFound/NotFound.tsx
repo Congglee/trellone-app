@@ -6,17 +6,11 @@ import HomeIcon from '@mui/icons-material/Home'
 import PlanetSvg from '~/assets/404/planet.svg?react'
 import AstronautSvg from '~/assets/404/astronaut.svg?react'
 import { Link } from 'react-router-dom'
+import path from '~/constants/path'
 
 export default function NotFound() {
   return (
-    <Box
-      sx={{
-        width: '100vw',
-        height: '100vh',
-        bgcolor: '#25344C',
-        color: 'white'
-      }}
-    >
+    <Box sx={{ minHeight: '100vh', bgcolor: '#25344C', color: 'white', py: 6 }}>
       <Box
         sx={{
           '@keyframes stars': {
@@ -30,7 +24,6 @@ export default function NotFound() {
           backgroundSize: 'contain',
           backgroundRepeat: 'repeat',
           backgroundPosition: 'center',
-          // boxShadow: 'inset 0 0 0 2000px rgba(0, 0, 0, 0.2)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -73,7 +66,13 @@ export default function NotFound() {
           ?<br />
           Hmm, looks like that page doesn&apos;t exist.
         </Typography>
-        <Box sx={{ width: '390px', height: '390px', position: 'relative' }}>
+        <Box
+          sx={{
+            width: { xs: '100%', md: '390px' },
+            height: '100%',
+            position: 'relative'
+          }}
+        >
           <SvgIcon
             component={AstronautSvg}
             inheritViewBox
@@ -92,7 +91,7 @@ export default function NotFound() {
           />
           <PlanetSvg />
         </Box>
-        <Link to='/' style={{ textDecoration: 'none' }}>
+        <Link to={path.home} style={{ textDecoration: 'none' }}>
           <Button
             variant='outlined'
             startIcon={<HomeIcon />}

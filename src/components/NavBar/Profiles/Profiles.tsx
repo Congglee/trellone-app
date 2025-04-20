@@ -13,10 +13,14 @@ import PersonAdd from '@mui/icons-material/PersonAdd'
 import Settings from '@mui/icons-material/Settings'
 import { useLogoutMutation } from '~/queries/auth'
 import { useConfirm } from 'material-ui-confirm'
+import { useAppSelector } from '~/lib/redux/hooks'
+import path from '~/constants/path'
 
 export default function Profiles() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
+
+  const { profile } = useAppSelector((state) => state.auth)
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setAnchorEl(event.currentTarget)
@@ -59,7 +63,7 @@ export default function Profiles() {
           aria-haspopup='true'
           aria-expanded={open ? 'true' : undefined}
         >
-          <Avatar sx={{ width: 36, height: 36 }} alt='Conggglee' />
+          <Avatar sx={{ width: 36, height: 36 }} alt={profile?.display_name} src={profile?.avatar} />
         </IconButton>
       </Tooltip>
       <Menu
@@ -68,14 +72,12 @@ export default function Profiles() {
         open={open}
         onClose={handleClose}
         onClick={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button-profiles'
-        }}
+        MenuListProps={{ 'aria-labelledby': 'basic-button-profiles' }}
       >
-        <Link to='/settings/account' style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Link to={path.accountSettings} style={{ textDecoration: 'none', color: 'inherit' }}>
           <MenuItem sx={{ '&:hover': { color: 'success.light' } }}>
-            <Avatar sx={{ width: 28, height: 28, mr: 2 }} />
-            <span>Profile</span>
+            <Avatar sx={{ width: 28, height: 28, mr: 2 }} alt={profile?.display_name} src={profile?.avatar} />
+            <span>{profile?.display_name}</span>
           </MenuItem>
         </Link>
         <Divider />

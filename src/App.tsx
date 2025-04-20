@@ -11,6 +11,11 @@ import OAuth from '~/pages/Auth/OAuth'
 import Register from '~/pages/Auth/Register'
 import ResetPassword from '~/pages/Auth/ResetPassword'
 import BoardDetails from '~/pages/Boards/BoardDetails'
+import BoardInvitationVerification from '~/pages/Boards/BoardInvitationVerification'
+import Settings from '~/pages/Settings'
+import BoardsList from '~/pages/Workspaces/BoardsList'
+import Home from '~/pages/Workspaces/Home'
+import HomeLayout from '~/pages/Workspaces/layouts/HomeLayout'
 import { UserType } from '~/schemas/user.schema'
 
 const ProtectedRoute = ({ profile, isAuthenticated }: { profile: UserType | null; isAuthenticated: boolean }) => {
@@ -19,14 +24,17 @@ const ProtectedRoute = ({ profile, isAuthenticated }: { profile: UserType | null
 
 const RejectedRoute = ({ profile, isAuthenticated }: { profile: UserType | null; isAuthenticated: boolean }) => {
   const location = useLocation()
+
   const isVerificationPath =
-    location.pathname === path.accountVerification || location.pathname === path.forgotPasswordVerification
+    location.pathname === path.accountVerification ||
+    location.pathname === path.forgotPasswordVerification ||
+    location.pathname === path.boardInvitationVerification
 
   if (isVerificationPath) {
     return <Outlet />
   }
 
-  return !isAuthenticated && !profile ? <Outlet /> : <Navigate to='/' />
+  return !isAuthenticated && !profile ? <Outlet /> : <Navigate to={path.home} />
 }
 
 function App() {
@@ -35,12 +43,22 @@ function App() {
   return (
     <Routes>
       {/* Redirect Route */}
-      <Route path='/' element={<Navigate to='/boards/67e4444eb85fdbf3be814557' replace={true} />} />
+      <Route path={path.home} element={<Navigate to='/boards/67e4444eb85fdbf3be814557' replace={true} />} />
 
       {/* Protected Routes */}
       <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} profile={profile} />}>
+        {/* Workspaces */}
+        <Route path={path.home} element={<HomeLayout />}>
+          <Route index element={<Home />} />
+          <Route path={path.boardsList} element={<BoardsList />} />
+        </Route>
+
         {/* Board Details */}
         <Route path={path.boardDetails} element={<BoardDetails />} />
+
+        {/* User Settings */}
+        <Route path={path.accountSettings} element={<Settings />} />
+        <Route path={path.securitySettings} element={<Settings />} />
       </Route>
 
       {/* Authentication */}
@@ -53,6 +71,7 @@ function App() {
         </Route>
         <Route path={path.accountVerification} element={<AccountVerification />} />
         <Route path={path.forgotPasswordVerification} element={<ForgotPasswordVerification />} />
+        <Route path={path.boardInvitationVerification} element={<BoardInvitationVerification />} />
       </Route>
 
       {/* OAuth */}

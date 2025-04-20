@@ -16,6 +16,8 @@ import DashboardIcon from '@mui/icons-material/Dashboard'
 import GroupsIcon from '@mui/icons-material/Groups'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import DeleteIcon from '@mui/icons-material/Delete'
+import { useState } from 'react'
+import ChangeBackgroundDrawer from '~/pages/Boards/BoardDetails/components/ChangeBackgroundDrawer'
 
 interface BoardDrawerProps {
   open: boolean
@@ -25,68 +27,78 @@ interface BoardDrawerProps {
 export default function BoardDrawer({ open, onOpen }: BoardDrawerProps) {
   const theme = useTheme()
 
+  const [changeBackgroundDrawer, setChangeBackgroundDrawer] = useState(false)
+
+  const onOpenChangeBackgroundDrawer = (open: boolean) => {
+    setChangeBackgroundDrawer(open)
+  }
+
   return (
-    <Drawer
-      sx={{
-        width: theme.trellone.boardDrawerWidth,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
+    <>
+      <Drawer
+        sx={{
           width: theme.trellone.boardDrawerWidth,
-          boxSizing: 'border-box',
-          top: 'auto',
-          height: `calc(100vh - ${theme.trellone.navBarHeight})`
-        }
-      }}
-      variant='persistent'
-      anchor='right'
-      open={open}
-    >
-      <DrawerHeader sx={{ justifyContent: 'space-between', minHeight: `${theme.trellone.navBarHeight}px!important` }}>
-        <IconButton color='inherit' onClick={() => onOpen(false)}>
-          {theme.direction === 'rtl' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-        </IconButton>
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: theme.trellone.boardDrawerWidth,
+            boxSizing: 'border-box',
+            top: 'auto',
+            height: `calc(100vh - ${theme.trellone.navBarHeight})`
+          }
+        }}
+        variant='persistent'
+        anchor='right'
+        open={open}
+      >
+        <DrawerHeader sx={{ justifyContent: 'space-between', minHeight: `${theme.trellone.navBarHeight}px!important` }}>
+          <IconButton color='inherit' onClick={() => onOpen(false)}>
+            {theme.direction === 'rtl' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          </IconButton>
 
-        <Typography variant='subtitle1'>Menu</Typography>
-        <Box sx={{ width: 40, height: 40 }} />
-      </DrawerHeader>
-      <Divider />
-      <List>
-        <ListItem disablePadding>
-          <ListItemButton>
-            <ListItemIcon>
-              <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText secondary='About this board' />
-          </ListItemButton>
-        </ListItem>
+          <Typography variant='subtitle1'>Menu</Typography>
+          <Box sx={{ width: 40, height: 40 }} />
+        </DrawerHeader>
+        <Divider />
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton>
+              <ListItemIcon>
+                <DashboardIcon />
+              </ListItemIcon>
+              <ListItemText secondary='About this board' />
+            </ListItemButton>
+          </ListItem>
 
-        <ListItem disablePadding>
-          <ListItemButton>
-            <ListItemIcon>
-              <FavoriteBorderIcon />
-            </ListItemIcon>
-            <ListItemText secondary='Change background' />
-          </ListItemButton>
-        </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => onOpenChangeBackgroundDrawer(true)}>
+              <ListItemIcon>
+                <FavoriteBorderIcon />
+              </ListItemIcon>
+              <ListItemText secondary='Change background' />
+            </ListItemButton>
+          </ListItem>
 
-        <ListItem disablePadding>
-          <ListItemButton>
-            <ListItemIcon>
-              <GroupsIcon />
-            </ListItemIcon>
-            <ListItemText secondary='Members (8)' />
-          </ListItemButton>
-        </ListItem>
+          <ChangeBackgroundDrawer open={changeBackgroundDrawer} onOpen={onOpenChangeBackgroundDrawer} />
 
-        <ListItem disablePadding>
-          <ListItemButton>
-            <ListItemIcon>
-              <DeleteIcon />
-            </ListItemIcon>
-            <ListItemText secondary='Delete this board' />
-          </ListItemButton>
-        </ListItem>
-      </List>
-    </Drawer>
+          <ListItem disablePadding>
+            <ListItemButton>
+              <ListItemIcon>
+                <GroupsIcon />
+              </ListItemIcon>
+              <ListItemText secondary='Members (8)' />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton>
+              <ListItemIcon>
+                <DeleteIcon />
+              </ListItemIcon>
+              <ListItemText secondary='Delete this board' />
+            </ListItemButton>
+          </ListItem>
+        </List>
+      </Drawer>
+    </>
   )
 }

@@ -19,7 +19,7 @@ import { isUnprocessableEntityError } from '~/utils/error-handlers'
 import { Link as MuiLink } from '@mui/material'
 import Divider from '@mui/material/Divider'
 import GoogleIcon from '@mui/icons-material/Google'
-import useQueryConfig from '~/hooks/use-query-config'
+import { useQueryConfig } from '~/hooks/use-query-config'
 import { AuthQueryParams } from '~/types/query-params.type'
 import Alert from '@mui/material/Alert'
 import RefreshIcon from '@mui/icons-material/Refresh'
@@ -50,7 +50,7 @@ export default function Login() {
   const onSubmit = handleSubmit((values) => {
     loginMutation(values).then((res) => {
       if (!res.error) {
-        navigate('/')
+        navigate(path.home)
       }
     })
   })
@@ -200,7 +200,7 @@ export default function Login() {
               Login
             </Button>
           </CardActions>
-          <Divider>or</Divider>
+          <Divider>Or continue with</Divider>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '1em' }}>
             <Button fullWidth variant='outlined' startIcon={<GoogleIcon />} href={googleOAuthUrl}>
               Sign in with Google

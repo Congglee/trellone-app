@@ -1,5 +1,20 @@
 import { BoardResType } from '~/schemas/board.schema'
 
+export const mockWorkspacesList = [
+  {
+    _id: 'workspace-id-01',
+    title: 'Project Management',
+    description: 'This is a workspace description',
+    type: 'public',
+    logo: 'https://images6.alphacoders.com/138/thumbbig-1386838.webp',
+    owners: [],
+    members: [],
+    _destroy: false,
+    created_at: new Date('2023-10-01T00:00:00.000Z'),
+    updated_at: new Date('2023-10-01T00:00:00.000Z')
+  }
+]
+
 export const mockBoardsList: BoardResType['result'][] = [
   {
     _id: 'board-id-01',

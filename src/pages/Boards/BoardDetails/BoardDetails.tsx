@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom'
 import DrawerHeader from '~/components/DrawerHeader'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import Main from '~/components/Main'
+import ActiveCard from '~/components/Modal/ActiveCard'
 import NavBar from '~/components/NavBar'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import BoardBar from '~/pages/Boards/BoardDetails/components/BoardBar'
@@ -18,7 +19,7 @@ import { useMoveCardToDifferentColumnMutation, useUpdateBoardMutation } from '~/
 import { useUpdateColumnMutation } from '~/queries/columns'
 import { CardType } from '~/schemas/card.schema'
 import { ColumnType } from '~/schemas/column.schema'
-import { getBoardDetails, updateActiveBoard } from '~/store/slices/board.slice'
+import { clearActiveBoard, getBoardDetails, updateActiveBoard } from '~/store/slices/board.slice'
 
 export default function BoardDetails() {
   const theme = useTheme()
@@ -31,14 +32,20 @@ export default function BoardDetails() {
   const { boardId } = useParams()
 
   const dispatch = useAppDispatch()
-  const { activeBoard, loading } = useAppSelector((state) => state.board)
+  const { activeBoard, loading, error } = useAppSelector((state) => state.board)
 
   const [updateBoardMutation] = useUpdateBoardMutation()
   const [updateColumnMutation] = useUpdateColumnMutation()
   const [moveCardToDifferentColumnMutation] = useMoveCardToDifferentColumnMutation()
 
   useEffect(() => {
-    dispatch(getBoardDetails(boardId!))
+    if (boardId) {
+      dispatch(getBoardDetails(boardId))
+    }
+
+    return () => {
+      dispatch(clearActiveBoard())
+    }
   }, [dispatch, boardId])
 
   const onMoveColumns = (dndOrderedColumns: ColumnType[]) => {
@@ -107,19 +114,21 @@ export default function BoardDetails() {
     return <PageLoadingSpinner caption='Loading board...' />
   }
 
-  if (!activeBoard) {
+  if (error || !activeBoard) {
     return <BoardNotFound />
   }
 
   return (
     <Container disableGutters maxWidth={false} sx={{ height: '100vh' }}>
       <NavBar />
+      <ActiveCard />
       <Box
         sx={{
           position: 'relative',
-          backgroundImage: 'url(https://images6.alphacoders.com/138/thumbbig-1386838.webp)',
+          backgroundImage: activeBoard.cover_photo ? `url(${activeBoard.cover_photo})` : 'none',
           backgroundSize: 'cover',
-          backgroundPosition: 'center'
+          backgroundPosition: 'center',
+          bgcolor: isDarkMode ? 'grey.900' : 'primary.main'
         }}
       >
         {isDarkMode && (
@@ -136,7 +145,7 @@ export default function BoardDetails() {
           />
         )}
         <Box sx={{ display: 'flex' }}>
-          <WorkspaceDrawer open={workspaceDrawerOpen} onOpen={setWorkspaceDrawerOpen} />
+          <WorkspaceDrawer open={workspaceDrawerOpen} onOpen={setWorkspaceDrawerOpen} boardId={boardId} />
           <BoardBar
             workspaceDrawerOpen={workspaceDrawerOpen}
             onWorkspaceDrawerOpen={setWorkspaceDrawerOpen}

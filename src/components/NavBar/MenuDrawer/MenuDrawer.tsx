@@ -24,40 +24,43 @@ import ListSubheader from '@mui/material/ListSubheader'
 import SvgIcon from '@mui/material/SvgIcon'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
-import ModeSelect from '~/components/ModeSelect'
-import SearchBar from '~/components/NavBar/SearchBar'
+import AutoCompleteSearchBoard from '~/components/NavBar/AutoCompleteSearchBoard'
+import ModeSelect from '~/components/NavBar/ModeSelect'
+import path from '~/constants/path'
+import AppsIcon from '@mui/icons-material/Apps'
 
 interface MenuDrawerProps {
   onToggleDrawer: (open: boolean) => void
 }
 
 export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
-  // Separate state for each section
   const [workspacesOpen, setWorkspacesOpen] = useState(false)
   const [recentOpen, setRecentOpen] = useState(false)
   const [starredOpen, setStarredOpen] = useState(false)
   const [templatesOpen, setTemplatesOpen] = useState(false)
 
-  // Handle click for each section
-  const handleWorkspacesClick = (e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent drawer from closing
+  const navigate = useNavigate()
+
+  const handleWorkspacesClick = (event: React.MouseEvent) => {
+    // Prevent drawer from closing
+    event.stopPropagation()
     setWorkspacesOpen(!workspacesOpen)
   }
 
-  const handleRecentClick = (e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent drawer from closing
+  const handleRecentClick = (event: React.MouseEvent) => {
+    event.stopPropagation()
     setRecentOpen(!recentOpen)
   }
 
-  const handleStarredClick = (e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent drawer from closing
+  const handleStarredClick = (event: React.MouseEvent) => {
+    event.stopPropagation()
     setStarredOpen(!starredOpen)
   }
 
-  const handleTemplatesClick = (e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent drawer from closing
+  const handleTemplatesClick = (event: React.MouseEvent) => {
+    event.stopPropagation()
     setTemplatesOpen(!templatesOpen)
   }
 
@@ -69,10 +72,6 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
         display: 'grid'
       }}
       role='presentation'
-      // onClick={(e) => {
-      //   e.stopPropagation()
-      //   onToggleDrawer(false)
-      // }}
     >
       <List
         sx={{ width: '100%', height: '100%', bgcolor: 'background.paper' }}
@@ -80,7 +79,7 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
         aria-labelledby='nested-list-subheader'
         subheader={
           <ListSubheader component='div' id='nested-list-subheader' sx={{ py: 1.5 }}>
-            <Link to='/' onClick={(e) => e.stopPropagation()}>
+            <Link to={path.home} onClick={(e) => e.stopPropagation()}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <SvgIcon
                   component={TrelloneIcon}
@@ -96,7 +95,6 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
                 </Typography>
               </Box>
             </Link>
-
             <IconButton
               size='small'
               sx={{
@@ -113,7 +111,12 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
         }
       >
         <Divider sx={{ my: 0.25 }} />
-
+        <ListItemButton onClick={() => navigate(path.boardsList)}>
+          <ListItemIcon>
+            <AppsIcon />
+          </ListItemIcon>
+          <ListItemText primary='All Boards' />
+        </ListItemButton>
         <ListItemButton onClick={handleWorkspacesClick}>
           <ListItemIcon>
             <WorkspacesIcon />
@@ -150,7 +153,6 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
             </ListItemButton>
           </List>
         </Collapse>
-
         <ListItemButton onClick={handleRecentClick}>
           <ListItemIcon>
             <HistoryIcon />
@@ -181,7 +183,6 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
             </ListItemButton>
           </List>
         </Collapse>
-
         <ListItemButton onClick={handleStarredClick}>
           <ListItemIcon>
             <StarBorder />
@@ -206,7 +207,6 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
             </ListItemButton>
           </List>
         </Collapse>
-
         <ListItemButton onClick={handleTemplatesClick}>
           <ListItemIcon>
             <ContentCopy />
@@ -237,19 +237,16 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
             </ListItemButton>
           </List>
         </Collapse>
-
         <ListItem sx={{ mt: 1 }}>
           <Button variant='contained' fullWidth startIcon={<LibraryAddIcon />}>
             Create
           </Button>
         </ListItem>
-
         <ListItem>
           <ModeSelect styles={{ minWidth: '100%' }} />
         </ListItem>
-
         <ListItem>
-          <SearchBar styles={{ minWidth: '100%' }} />
+          <AutoCompleteSearchBoard />
         </ListItem>
       </List>
     </Box>

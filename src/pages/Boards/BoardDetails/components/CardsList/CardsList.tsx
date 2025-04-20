@@ -8,8 +8,10 @@ interface CardsListProps {
 }
 
 export default function CardsList({ cards }: CardsListProps) {
+  const activeCards = cards.filter((card) => !card._destroy)
+
   return (
-    <SortableContext items={cards.map((card) => card._id)} strategy={verticalListSortingStrategy}>
+    <SortableContext items={activeCards.map((card) => card._id)} strategy={verticalListSortingStrategy}>
       <Box
         sx={{
           p: '0 5px 5px 5px',
@@ -32,7 +34,7 @@ export default function CardsList({ cards }: CardsListProps) {
           '&::-webkit-scrollbar-thumb:hover': { backgroundColor: '#bfc2cf' }
         }}
       >
-        {cards.map((card) => (
+        {activeCards.map((card) => (
           <Card key={card._id} card={card} />
         ))}
       </Box>

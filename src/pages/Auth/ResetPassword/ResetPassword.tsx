@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Navigate, useNavigate } from 'react-router-dom'
-import useQueryConfig from '~/hooks/use-query-config'
+import { useQueryConfig } from '~/hooks/use-query-config'
 import { useResetPasswordMutation, useVerifyForgotPasswordMutation } from '~/queries/auth'
 import { ResetPasswordBody, ResetPasswordBodyType } from '~/schemas/auth.schema'
 import { AuthQueryParams } from '~/types/query-params.type'
@@ -137,7 +137,7 @@ export default function ResetPassword() {
               Reset password
             </Button>
           </CardActions>
-          <Divider>or</Divider>
+          <Divider>Or continue with</Divider>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '1em' }}>
             <Typography sx={{ textAlign: 'center' }}>
               Go back to{' '}

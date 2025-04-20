@@ -1,6 +1,9 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
+import { AppDispatch } from '~/lib/redux/store'
+import { boardApi } from '~/queries/boards'
+import { invitationApi } from '~/queries/invitations'
 import { userApi } from '~/queries/users'
 import {
   AuthResType,
@@ -22,6 +25,14 @@ export const AUTH_API_URL = '/auth' as const
 const reducerPath = 'auth/api' as const
 const tagTypes = ['Auth'] as const
 
+export const apiSlicesToReset = [boardApi, userApi, invitationApi]
+
+export const resetApiState = (dispatch: AppDispatch) => {
+  apiSlicesToReset.forEach((api) => {
+    dispatch(api.util.resetApiState())
+  })
+}
+
 export const authApi = createApi({
   reducerPath,
   tagTypes,
@@ -33,6 +44,8 @@ export const authApi = createApi({
         try {
           await queryFulfilled
 
+          // Option 1: Force a fresh API call by using `forceRefetch: true`
+          // `dispatch(userApi.endpoints.getMe.initiate(undefined, { forceRefetch: true }))
           dispatch(userApi.endpoints.getMe.initiate(undefined)).then((res) => {
             if (!res.error) {
               const profile = res.data?.result
@@ -61,6 +74,18 @@ export const authApi = createApi({
 
     verifyEmail: build.mutation<VerifyEmailResType, { email_verify_token: string }>({
       query: (body) => ({ url: `${AUTH_API_URL}/verify-email`, method: 'POST', data: body }),
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled
+          toast.success(data.message)
+        } catch (error: any) {
+          console.error(error)
+        }
+      }
+    }),
+
+    resendVerifyEmail: build.mutation<VerifyEmailResType, void>({
+      query: () => ({ url: `${AUTH_API_URL}/resend-verify-email`, method: 'POST' }),
       async onQueryStarted(_args, { queryFulfilled }) {
         try {
           const { data } = await queryFulfilled
@@ -107,6 +132,10 @@ export const authApi = createApi({
 
           dispatch(setAuthenticated(false))
           dispatch(setProfile(null))
+
+          // Option 2: Reset API state on logout to clear any cached data
+          dispatch(authApi.util.resetApiState())
+          resetApiState(dispatch)
         } catch (error: any) {
           console.error(error)
         }
@@ -122,7 +151,8 @@ export const {
   useVerifyEmailMutation,
   useForgotPasswordMutation,
   useVerifyForgotPasswordMutation,
-  useResetPasswordMutation
+  useResetPasswordMutation,
+  useResendVerifyEmailMutation
 } = authApi
 
 const authApiReducer = authApi.reducer

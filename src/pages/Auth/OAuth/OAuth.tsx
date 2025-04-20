@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
-import useQueryConfig from '~/hooks/use-query-config'
+import { useQueryConfig } from '~/hooks/use-query-config'
 import { useAppDispatch } from '~/lib/redux/hooks'
 import { userApi } from '~/queries/users'
 import { setAuthenticated, setProfile } from '~/store/slices/auth.slice'

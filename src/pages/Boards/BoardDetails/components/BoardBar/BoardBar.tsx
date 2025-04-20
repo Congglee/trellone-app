@@ -3,19 +3,24 @@ import BoltIcon from '@mui/icons-material/Bolt'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import MenuIcon from '@mui/icons-material/Menu'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard'
 import VpnLockIcon from '@mui/icons-material/VpnLock'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
 import Tooltip from '@mui/material/Tooltip'
+import { useState } from 'react'
 import AppBar from '~/components/AppBar'
 import BoardUserGroup from '~/pages/Boards/BoardDetails/components/BoardUserGroup'
+import InviteBoardUser from '~/pages/Boards/BoardDetails/components/InviteBoardUser'
 import { BoardResType } from '~/schemas/board.schema'
 import { capitalizeFirstLetter } from '~/utils/formatters'
+import TextField from '@mui/material/TextField'
+import { useClickAway } from '@uidotdev/usehooks'
+import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
+import { updateActiveBoard } from '~/store/slices/board.slice'
+import { useUpdateBoardMutation } from '~/queries/boards'
 
 interface BoardBarProps {
   workspaceDrawerOpen: boolean
@@ -47,6 +52,47 @@ export default function BoardBar({
   onBoardDrawerOpen,
   board
 }: BoardBarProps) {
+  const [editBoardTitleFormOpen, setEditBoardTitleFormOpen] = useState(false)
+  const [boardTitle, setBoardTitle] = useState(board.title)
+
+  const editBoardTitleClickAwayRef = useClickAway(() => {
+    handleUpdateBoardTitle()
+  })
+
+  const dispatch = useAppDispatch()
+  const { activeBoard } = useAppSelector((state) => state.board)
+
+  const [updateBoardMutation] = useUpdateBoardMutation()
+
+  const toggleEditBoardTitleForm = () => {
+    setEditBoardTitleFormOpen(!editBoardTitleFormOpen)
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter') {
+      handleUpdateBoardTitle()
+    }
+  }
+
+  const handleUpdateBoardTitle = () => {
+    setEditBoardTitleFormOpen(false)
+
+    if (!boardTitle || boardTitle.trim() === '') {
+      setBoardTitle(board.title)
+      return
+    }
+
+    const newActiveBoard = { ...activeBoard! }
+    newActiveBoard.title = boardTitle
+
+    dispatch(updateActiveBoard(newActiveBoard))
+
+    updateBoardMutation({
+      id: newActiveBoard._id,
+      body: { title: newActiveBoard.title }
+    })
+  }
+
   return (
     <AppBar
       sx={{
@@ -82,7 +128,30 @@ export default function BoardBar({
             <MenuIcon />
           </IconButton>
           <Tooltip title={board.description}>
-            <Chip sx={MENU_STYLES} icon={<SpaceDashboardIcon />} label={board.title} clickable />
+            {editBoardTitleFormOpen ? (
+              <Box ref={editBoardTitleClickAwayRef}>
+                <TextField
+                  sx={{
+                    bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#22272b' : '#feff0026')
+                  }}
+                  variant='outlined'
+                  size='small'
+                  autoFocus
+                  focused
+                  inputProps={{ style: { fontWeight: 500, fontSize: '1rem' } }}
+                  value={boardTitle}
+                  onChange={(e) => setBoardTitle(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                />
+              </Box>
+            ) : (
+              <Chip
+                sx={MENU_STYLES}
+                icon={<SpaceDashboardIcon />}
+                label={board.title}
+                onClick={toggleEditBoardTitleForm}
+              />
+            )}
           </Tooltip>
           <Tooltip title={capitalizeFirstLetter('public')}>
             <IconButton color='inherit'>
@@ -104,16 +173,8 @@ export default function BoardBar({
           </Tooltip>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, ml: 'auto' }}>
-          <Button
-            size='small'
-            color='secondary'
-            variant='contained'
-            startIcon={<PersonAddAltIcon />}
-            onClick={() => {}}
-          >
-            Invite
-          </Button>
-          <BoardUserGroup />
+          <InviteBoardUser boardId={board._id} />
+          <BoardUserGroup boardUsers={board?.FE_AllUsers} />
           <IconButton
             color='inherit'
             aria-label='open board drawer'

@@ -162,7 +162,7 @@ export default function Register() {
               Register
             </Button>
           </CardActions>
-          <Divider>or</Divider>
+          <Divider>Or continue with</Divider>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '1em' }}>
             <Button fullWidth variant='outlined' href={googleOAuthUrl} startIcon={<GoogleIcon />}>
               Sign in with Google

@@ -1,11 +1,7 @@
 import AppsIcon from '@mui/icons-material/Apps'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
-import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
 import { useMediaQuery } from '@mui/material'
-import Badge from '@mui/material/Badge'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
@@ -14,16 +10,19 @@ import SvgIcon from '@mui/material/SvgIcon'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
-import ModeSelect from '~/components/ModeSelect'
+import AutoCompleteSearchBoard from '~/components/NavBar/AutoCompleteSearchBoard'
+import Create from '~/components/NavBar/Create'
 import MenuDrawer from '~/components/NavBar/MenuDrawer'
+import ModeSelect from '~/components/NavBar/ModeSelect'
+import Notifications from '~/components/NavBar/Notifications'
 import Profiles from '~/components/NavBar/Profiles'
 import Recent from '~/components/NavBar/Recent'
-import SearchBar from '~/components/NavBar/SearchBar'
 import Starred from '~/components/NavBar/Starred'
 import Templates from '~/components/NavBar/Templates'
 import Workspaces from '~/components/NavBar/Workspaces'
+import path from '~/constants/path'
 
 export default function NavBar() {
   const [open, setOpen] = useState(false)
@@ -31,9 +30,13 @@ export default function NavBar() {
   const theme = useTheme()
   const isScreenBelowMedium = useMediaQuery(theme.breakpoints.down('md'))
 
+  const navigate = useNavigate()
+
   const toggleDrawer = (newOpen: boolean) => {
     if (isScreenBelowMedium) {
       setOpen(newOpen)
+    } else {
+      navigate(path.boardsList)
     }
   }
 
@@ -55,7 +58,7 @@ export default function NavBar() {
           <IconButton size='small' sx={{ padding: 0 }} onClick={() => toggleDrawer(true)}>
             <AppsIcon />
           </IconButton>
-          <Link to='/'>
+          <Link to={path.home}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <SvgIcon
                 component={TrelloneIcon}
@@ -76,23 +79,17 @@ export default function NavBar() {
             <Recent />
             <Starred />
             <Templates />
-            <Button variant='contained' fullWidth startIcon={<LibraryAddIcon />}>
-              Create
-            </Button>
+            <Create />
           </Box>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           {!isScreenBelowMedium && (
             <>
-              <SearchBar />
+              <AutoCompleteSearchBoard />
               <ModeSelect />
             </>
           )}
-          <Tooltip title='Notifications'>
-            <Badge color='error' variant='dot' sx={{ cursor: 'pointer' }}>
-              <NotificationsNoneIcon />
-            </Badge>
-          </Tooltip>
+          <Notifications />
           <Tooltip title='Help'>
             <HelpOutlineIcon sx={{ cursor: 'pointer' }} />
           </Tooltip>
