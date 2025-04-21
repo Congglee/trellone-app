@@ -37,10 +37,12 @@ export const boardSlice = createSlice({
       const board = action.payload
       state.activeBoard = board
     },
+
     clearActiveBoard: (state) => {
       state.activeBoard = null
       state.error = null
     },
+
     updateCardInBoard: (state, action: PayloadAction<CardType>) => {
       const incomingCard = action.payload
 

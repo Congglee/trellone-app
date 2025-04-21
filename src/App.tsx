@@ -42,12 +42,9 @@ function App() {
 
   return (
     <Routes>
-      {/* Redirect Route */}
-      <Route path={path.home} element={<Navigate to='/boards/67e4444eb85fdbf3be814557' replace={true} />} />
-
       {/* Protected Routes */}
       <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} profile={profile} />}>
-        {/* Workspaces */}
+        {/* Home */}
         <Route path={path.home} element={<HomeLayout />}>
           <Route index element={<Home />} />
           <Route path={path.boardsList} element={<BoardsList />} />
@@ -61,14 +58,16 @@ function App() {
         <Route path={path.securitySettings} element={<Settings />} />
       </Route>
 
-      {/* Authentication */}
+      {/* Rejected Routes */}
       <Route element={<RejectedRoute isAuthenticated={isAuthenticated} profile={profile} />}>
+        {/* Authentication */}
         <Route element={<AuthLayout />}>
           <Route path={path.login} element={<Login />} />
           <Route path={path.register} element={<Register />} />
           <Route path={path.forgotPassword} element={<ForgotPassword />} />
           <Route path={path.resetPassword} element={<ResetPassword />} />
         </Route>
+
         <Route path={path.accountVerification} element={<AccountVerification />} />
         <Route path={path.forgotPasswordVerification} element={<ForgotPasswordVerification />} />
         <Route path={path.boardInvitationVerification} element={<BoardInvitationVerification />} />

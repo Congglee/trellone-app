@@ -14,16 +14,16 @@ import notificationReducer from '~/store/slices/notification.slice'
 
 const rootReducer = combineReducers({
   app: appReducer,
-  board: boardReducer,
   auth: authReducer,
+  board: boardReducer,
   card: cardReducer,
   notification: notificationReducer,
 
+  [authApi.reducerPath]: authApiReducer,
+  [userApi.reducerPath]: userApiReducer,
   [boardApi.reducerPath]: boardApiReducer,
   [columnApi.reducerPath]: columnApiReducer,
   [cardApi.reducerPath]: cardApiReducer,
-  [authApi.reducerPath]: authApiReducer,
-  [userApi.reducerPath]: userApiReducer,
   [mediaApi.reducerPath]: mediaApiReducer,
   [invitationApi.reducerPath]: invitationApiReducer
 })

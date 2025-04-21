@@ -18,6 +18,7 @@ export const authSlice = createSlice({
     setAuthenticated: (state, action) => {
       state.isAuthenticated = action.payload
     },
+
     setProfile: (state, action) => {
       state.profile = action.payload
     }
