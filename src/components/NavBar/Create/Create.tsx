@@ -8,6 +8,7 @@ import WorkspacesIcon from '@mui/icons-material/Workspaces'
 import Typography from '@mui/material/Typography'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import NewBoardDialog from '~/components/Dialog/NewBoardDialog'
+import { SxProps } from '@mui/material'
 
 const menuItemStyles = {
   display: 'flex',
@@ -17,7 +18,11 @@ const menuItemStyles = {
   whiteSpace: 'pre-line'
 }
 
-export default function Create() {
+interface CreateProps {
+  styles?: SxProps
+}
+
+export default function Create({ styles }: CreateProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [newBoardOpen, setNewBoardOpen] = useState(false)
 
@@ -41,7 +46,7 @@ export default function Create() {
   }
 
   return (
-    <Box>
+    <Box sx={styles}>
       <Button
         fullWidth
         variant='contained'

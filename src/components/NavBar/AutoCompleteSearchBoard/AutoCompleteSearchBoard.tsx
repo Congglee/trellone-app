@@ -1,5 +1,5 @@
 import SearchIcon from '@mui/icons-material/Search'
-import { alpha } from '@mui/material'
+import { alpha, SxProps } from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -11,7 +11,11 @@ import { useDebounce } from '~/hooks/use-debounce'
 import { useGetBoardsQuery } from '~/queries/boards'
 import { BoardResType } from '~/schemas/board.schema'
 
-export default function AutoCompleteSearchBoard() {
+interface AutoCompleteSearchBoardProps {
+  styles?: SxProps
+}
+
+export default function AutoCompleteSearchBoard({ styles }: AutoCompleteSearchBoardProps) {
   const [open, setOpen] = useState(false)
   const [keyword, setKeyword] = useState('')
 
@@ -45,7 +49,7 @@ export default function AutoCompleteSearchBoard() {
 
   return (
     <Autocomplete
-      sx={{ width: 220 }}
+      sx={{ width: 220, ...styles }}
       id='asynchronous-search-board'
       noOptionsText={!boards ? 'Type to search board...' : 'No board found!'}
       open={open}

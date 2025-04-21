@@ -4,6 +4,7 @@ import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
@@ -92,6 +93,10 @@ export default function NewBoardDialog({ open, onNewBoardClose }: NewBoardDialog
 
       <form onSubmit={onSubmit}>
         <DialogContent sx={{ width: { xs: '100%', sm: 400 } }}>
+          <DialogContentText sx={{ opacity: 0, visibility: 'hidden', height: 0 }}>
+            To create a board, please fill in the required fields below.
+          </DialogContentText>
+
           <Box sx={{ marginTop: '1em' }}>
             <TextFieldInput name='title' register={register} label='Board Title' error={!!errors['title']} />
             <FieldErrorAlert errorMessage={errors.title?.message} />

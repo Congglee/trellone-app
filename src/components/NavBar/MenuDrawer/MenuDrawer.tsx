@@ -1,3 +1,4 @@
+import AppsIcon from '@mui/icons-material/Apps'
 import Check from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 import Cloud from '@mui/icons-material/Cloud'
@@ -7,12 +8,10 @@ import ContentPaste from '@mui/icons-material/ContentPaste'
 import ExpandLess from '@mui/icons-material/ExpandLess'
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import HistoryIcon from '@mui/icons-material/History'
-import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
 import StarBorder from '@mui/icons-material/StarBorder'
 import WorkspacesIcon from '@mui/icons-material/Workspaces'
 import { IconButton } from '@mui/material'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Collapse from '@mui/material/Collapse'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
@@ -27,9 +26,9 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
 import AutoCompleteSearchBoard from '~/components/NavBar/AutoCompleteSearchBoard'
+import Create from '~/components/NavBar/Create'
 import ModeSelect from '~/components/NavBar/ModeSelect'
 import path from '~/constants/path'
-import AppsIcon from '@mui/icons-material/Apps'
 
 interface MenuDrawerProps {
   onToggleDrawer: (open: boolean) => void
@@ -238,15 +237,13 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
           </List>
         </Collapse>
         <ListItem sx={{ mt: 1 }}>
-          <Button variant='contained' fullWidth startIcon={<LibraryAddIcon />}>
-            Create
-          </Button>
+          <Create styles={{ minWidth: '100%' }} />
         </ListItem>
         <ListItem>
           <ModeSelect styles={{ minWidth: '100%' }} />
         </ListItem>
         <ListItem>
-          <AutoCompleteSearchBoard />
+          <AutoCompleteSearchBoard styles={{ minWidth: '100%' }} />
         </ListItem>
       </List>
     </Box>

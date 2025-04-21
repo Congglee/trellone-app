@@ -42,7 +42,7 @@ export default function BoardDrawer({ open, onOpen }: BoardDrawerProps) {
           '& .MuiDrawer-paper': {
             width: theme.trellone.boardDrawerWidth,
             boxSizing: 'border-box',
-            top: `${theme.trellone.navBarHeight}`,
+            top: 'auto',
             height: `calc(100vh - ${theme.trellone.navBarHeight})`
           }
         }}

@@ -1,7 +1,7 @@
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness'
-import { useColorScheme } from '@mui/material'
+import { SxProps, useColorScheme } from '@mui/material'
 import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
@@ -10,7 +10,7 @@ import Select, { type SelectChangeEvent } from '@mui/material/Select'
 import { Mode } from '~/types/utils.type'
 
 interface ModeSelectProps {
-  styles?: React.CSSProperties
+  styles?: SxProps
 }
 
 export default function ModeSelect({ styles }: ModeSelectProps) {
