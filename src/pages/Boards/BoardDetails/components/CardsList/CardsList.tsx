@@ -1,5 +1,6 @@
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
+import { useMemo } from 'react'
 import Card from '~/pages/Boards/BoardDetails/components/Card/Card'
 import { CardType } from '~/schemas/card.schema'
 
@@ -8,7 +9,7 @@ interface CardsListProps {
 }
 
 export default function CardsList({ cards }: CardsListProps) {
-  const activeCards = cards.filter((card) => !card._destroy)
+  const activeCards = useMemo(() => cards.filter((card) => !card._destroy), [cards])
 
   return (
     <SortableContext items={activeCards.map((card) => card._id)} strategy={verticalListSortingStrategy}>
@@ -26,9 +27,6 @@ export default function CardsList({ cards }: CardsListProps) {
             xs: `calc(${theme.trellone.boardContentHeight} - ${theme.trellone.boardBarHeight} - ${theme.spacing(5)} - ${theme.trellone.columnHeaderHeight} - ${theme.trellone.columnFooterHeight})`,
             md: `calc(${theme.trellone.boardContentHeight} - ${theme.spacing(5)} - ${theme.trellone.columnHeaderHeight} - ${theme.trellone.columnFooterHeight})`
           }),
-
-          // maxHeight: (theme) =>
-          //   `calc(${theme.trellone.boardContentHeight} - ${theme.spacing(5)} - ${theme.trellone.columnHeaderHeight} - ${theme.trellone.columnFooterHeight})`,
 
           '&::-webkit-scrollbar-thumb': { backgroundColor: '#ced0da' },
           '&::-webkit-scrollbar-thumb:hover': { backgroundColor: '#bfc2cf' }

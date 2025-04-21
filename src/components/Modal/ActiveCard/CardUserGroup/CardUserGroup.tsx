@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { CardMemberAction } from '~/constants/type'
 import { useAppSelector } from '~/lib/redux/hooks'
 import { CardMemberPayloadType } from '~/schemas/card.schema'
@@ -32,7 +32,10 @@ export default function CardUserGroup({ cardMembers, onUpdateCardMembers }: Card
 
   const { activeBoard } = useAppSelector((state) => state.board)
 
-  const FE_CardMembers = cardMembers.map((id) => activeBoard?.FE_AllUsers?.find((user) => user._id === id))
+  const FE_CardMembers = useMemo(
+    () => cardMembers.map((id) => activeBoard?.FE_AllUsers?.find((user) => user._id === id)),
+    [cardMembers, activeBoard?.FE_AllUsers]
+  )
 
   const updateCardMembers = (user: UserType) => {
     const payload = {

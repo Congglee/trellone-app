@@ -35,7 +35,7 @@ export default function AutoCompleteSearchBoard() {
   const debounceSearchBoard = useDebounce(handleInputSearchChange, 2000)
 
   const handleSelectBoard = (
-    event: React.SyntheticEvent<Element, Event>,
+    _event: React.SyntheticEvent<Element, Event>,
     selectedBoard: BoardResType['result'] | null
   ) => {
     if (selectedBoard) {
@@ -51,7 +51,7 @@ export default function AutoCompleteSearchBoard() {
       open={open}
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}
-      getOptionLabel={(board: BoardResType['result']) => board.title}
+      getOptionLabel={(board) => board.title}
       options={boards}
       isOptionEqualToValue={(option, value) => option._id === value._id}
       loading={isLoading}

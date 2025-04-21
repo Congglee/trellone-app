@@ -10,6 +10,7 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { PersistGate } from 'redux-persist/integration/react'
 import App from '~/App'
+import ErrorBoundary from '~/components/ErrorBoundary'
 import '~/index.css'
 import { injectStore } from '~/lib/http'
 import { persistor, store } from '~/lib/redux/store'
@@ -34,8 +35,10 @@ createRoot(document.getElementById('root')!).render(
             >
               <GlobalStyles styles={{ a: { textDecoration: 'none' } }} />
               <CssBaseline />
-              <App />
-              <ToastContainer position='bottom-left' theme='colored' />
+              <ErrorBoundary>
+                <App />
+                <ToastContainer position='bottom-left' theme='colored' />
+              </ErrorBoundary>
             </ConfirmProvider>
           </CssVarsProvider>
         </BrowserRouter>

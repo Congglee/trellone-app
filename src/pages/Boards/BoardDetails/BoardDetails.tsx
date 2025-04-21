@@ -1,7 +1,7 @@
 import { useMediaQuery, useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import { cloneDeep } from 'lodash'
+import cloneDeep from 'lodash/cloneDeep'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import DrawerHeader from '~/components/DrawerHeader'

@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import z from 'zod'
 import { CardSchema } from '~/schemas/card.schema'
 
 export const ColumnSchema = z.object({

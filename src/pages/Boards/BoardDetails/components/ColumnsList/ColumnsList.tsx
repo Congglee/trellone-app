@@ -3,7 +3,7 @@ import Column from '~/pages/Boards/BoardDetails/components/Column/Column'
 import Button from '@mui/material/Button'
 import NoteAddIcon from '@mui/icons-material/NoteAdd'
 import { horizontalListSortingStrategy, SortableContext } from '@dnd-kit/sortable'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import { useClickAway } from '@uidotdev/usehooks'
@@ -11,7 +11,7 @@ import { ColumnType } from '~/schemas/column.schema'
 import { useAddColumnMutation } from '~/queries/columns'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { generatePlaceholderCard } from '~/utils/utils'
-import { cloneDeep } from 'lodash'
+import cloneDeep from 'lodash/cloneDeep'
 import { updateActiveBoard } from '~/store/slices/board.slice'
 
 interface ColumnsListProps {
@@ -22,7 +22,7 @@ export default function ColumnsList({ columns }: ColumnsListProps) {
   const [newColumnFormOpen, setNewColumnFormOpen] = useState(false)
   const [newColumnTitle, setNewColumnTitle] = useState('')
 
-  const activeColumns = columns.filter((column) => !column._destroy)
+  const activeColumns = useMemo(() => columns.filter((column) => !column._destroy), [columns])
 
   const { activeBoard } = useAppSelector((state) => state.board)
   const dispatch = useAppDispatch()

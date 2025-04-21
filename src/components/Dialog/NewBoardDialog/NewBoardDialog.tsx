@@ -122,7 +122,7 @@ export default function NewBoardDialog({ open, onNewBoardClose }: NewBoardDialog
                     {...field}
                     row
                     aria-labelledby='board-type-radio-buttons-group'
-                    onChange={(event, value) => field.onChange(value)}
+                    onChange={(_, value) => field.onChange(value)}
                     value={field.value}
                   >
                     <FormControlLabel

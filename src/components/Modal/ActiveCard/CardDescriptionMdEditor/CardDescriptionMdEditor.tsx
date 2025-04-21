@@ -41,7 +41,7 @@ export default function CardDescriptionMdEditor({
               previewOptions={{ rehypePlugins: [[rehypeSanitize]] }} // Sanitize the markdown content
               height={400}
               preview='edit'
-              // hideToolbar={true}
+              // hideToolbar={true} // Uncomment this line to hide the toolbar
             />
           </Box>
           <Box sx={{ display: 'flex', gap: 1 }}>
