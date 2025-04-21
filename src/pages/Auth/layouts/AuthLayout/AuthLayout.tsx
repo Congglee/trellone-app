@@ -1,7 +1,8 @@
-import { Outlet } from 'react-router-dom'
-import Box from '@mui/material/Box'
 import { useMediaQuery } from '@mui/material'
+import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
+import { Outlet } from 'react-router-dom'
+import LoginRegisterBg from '~/assets/auth/login-register-bg.jpg'
 
 export default function AuthLayout() {
   const theme = useTheme()
@@ -15,7 +16,7 @@ export default function AuthLayout() {
         minHeight: '100vh',
         alignItems: 'center',
         justifyContent: 'flex-start',
-        background: 'url("src/assets/auth/login-register-bg.jpg")',
+        background: `url(${LoginRegisterBg})`,
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
         backgroundPosition: 'center',

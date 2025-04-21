@@ -1,11 +1,12 @@
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import SvgIcon from '@mui/material/SvgIcon'
-import Button from '@mui/material/Button'
 import HomeIcon from '@mui/icons-material/Home'
-import PlanetSvg from '~/assets/404/planet.svg?react'
-import AstronautSvg from '~/assets/404/astronaut.svg?react'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import SvgIcon from '@mui/material/SvgIcon'
+import Typography from '@mui/material/Typography'
 import { Link } from 'react-router-dom'
+import AstronautSvg from '~/assets/404/astronaut.svg?react'
+import Particles from '~/assets/404/particles.png'
+import PlanetSvg from '~/assets/404/planet.svg?react'
 import path from '~/constants/path'
 
 export default function NotFound() {
@@ -20,7 +21,7 @@ export default function NotFound() {
           animation: 'stars 12s linear infinite alternate',
           width: '100%',
           height: '100%',
-          backgroundImage: 'url("src/assets/404/particles.png")',
+          backgroundImage: `url(${Particles})`,
           backgroundSize: 'contain',
           backgroundRepeat: 'repeat',
           backgroundPosition: 'center',

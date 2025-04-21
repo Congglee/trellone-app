@@ -1,4 +1,5 @@
-import { isUndefined, omitBy } from 'lodash'
+import isUndefined from 'lodash/isUndefined'
+import omitBy from 'lodash/omitBy'
 import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '~/constants/pagination'
 import { useQueryParams } from '~/hooks/use-query-params'
 import { CommonQueryParams } from '~/types/query-params.type'

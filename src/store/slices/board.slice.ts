@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { isEmpty } from 'lodash'
+import isEmpty from 'lodash/isEmpty'
 import { envConfig } from '~/constants/config'
 import http from '~/lib/http'
 import { BoardResType } from '~/schemas/board.schema'

@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import z from 'zod'
 import { MediaType } from '~/constants/type'
 
 export const UploadImageRes = z.object({

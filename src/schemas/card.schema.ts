@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import z from 'zod'
 import { CardMemberAction } from '~/constants/type'
 
 const CommentSchema = z.object({

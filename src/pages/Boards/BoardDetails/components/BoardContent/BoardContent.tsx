@@ -17,7 +17,8 @@ import {
 } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
-import { cloneDeep, isEmpty } from 'lodash'
+import cloneDeep from 'lodash/cloneDeep'
+import isEmpty from 'lodash/isEmpty'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { MouseSensor, TouchSensor } from '~/lib/sensors'
 import Card from '~/pages/Boards/BoardDetails/components/Card'
@@ -51,6 +52,8 @@ export default function BoardContent({
   onMoveCardInTheSameColumn,
   onMoveCardToDifferentColumn
 }: BoardContentProps) {
+  console.log('BoardContent render')
+
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: { distance: 10 }
   })

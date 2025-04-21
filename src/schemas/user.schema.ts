@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import z from 'zod'
 import { Role, UserVerifyStatus } from '~/constants/type'
 
 export const UserSchema = z.object({

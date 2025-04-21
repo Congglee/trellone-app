@@ -11,7 +11,7 @@ import { ColumnType } from '~/schemas/column.schema'
 import { useAddColumnMutation } from '~/queries/columns'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { generatePlaceholderCard } from '~/utils/utils'
-import { cloneDeep } from 'lodash'
+import cloneDeep from 'lodash/cloneDeep'
 import { updateActiveBoard } from '~/store/slices/board.slice'
 
 interface ColumnsListProps {

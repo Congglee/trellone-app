@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { debounce } from 'lodash'
+import debounce from 'lodash/debounce'
 
 export const useDebounce = (fnToDebounce: any, delay = 500) => {
   if (isNaN(delay)) {

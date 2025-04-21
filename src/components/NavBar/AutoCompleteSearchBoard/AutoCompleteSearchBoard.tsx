@@ -35,7 +35,7 @@ export default function AutoCompleteSearchBoard() {
   const debounceSearchBoard = useDebounce(handleInputSearchChange, 2000)
 
   const handleSelectBoard = (
-    event: React.SyntheticEvent<Element, Event>,
+    _event: React.SyntheticEvent<Element, Event>,
     selectedBoard: BoardResType['result'] | null
   ) => {
     if (selectedBoard) {

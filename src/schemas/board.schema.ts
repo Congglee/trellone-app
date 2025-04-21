@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import z from 'zod'
 import { BoardType, BoardTypeValues } from '~/constants/type'
 import { ColumnSchema } from '~/schemas/column.schema'
 import { UserSchema } from '~/schemas/user.schema'
