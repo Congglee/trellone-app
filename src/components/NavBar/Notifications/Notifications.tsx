@@ -21,7 +21,7 @@ import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import socket from '~/lib/socket'
 import { useGetInvitationsQuery, useUpdateBoardInvitationMutation } from '~/queries/invitations'
 import { BoardInvitationType, InvitationType } from '~/schemas/invitation.schema'
-import { addNotification, setNotifications } from '~/store/slices/notification.slice'
+import { addNotification, appendNotifications, setNotifications } from '~/store/slices/notification.slice'
 
 export default function Notifications() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -78,8 +78,22 @@ export default function Notifications() {
       if (page === NOTIFICATION_PAGE) {
         dispatch(setNotifications(invitations))
       } else {
-        dispatch(setNotifications([...notifications, ...invitations]))
+        dispatch(appendNotifications(invitations))
       }
+    }
+  }, [invitationsData, dispatch])
+
+  useEffect(() => {
+    const onConnect = () => {
+      console.log('Connected to socket server')
+    }
+
+    const onDisconnect = () => {
+      console.log('Disconnected from socket server')
+    }
+
+    if (socket.connected) {
+      onConnect()
     }
 
     const onReceiveNewInvitation = (invitation: InvitationType) => {
@@ -90,15 +104,15 @@ export default function Notifications() {
     }
 
     socket.on('SERVER_USER_INVITED_TO_BOARD', onReceiveNewInvitation)
-
-    socket.on('disconnect', (reason) => {
-      console.log(reason)
-    })
+    socket.on('connect', onConnect)
+    socket.on('disconnect', onDisconnect)
 
     return () => {
       socket.off('SERVER_USER_INVITED_TO_BOARD', onReceiveNewInvitation)
+      socket.off('connect', onConnect)
+      socket.off('disconnect', onDisconnect)
     }
-  }, [invitationsData, dispatch, profile])
+  }, [dispatch, profile])
 
   const getMoreNotifications = () => {
     if (pagination.page < pagination.total_page) {

@@ -29,6 +29,7 @@ import cloneDeep from 'lodash/cloneDeep'
 import { updateActiveBoard } from '~/store/slices/board.slice'
 import { useConfirm } from 'material-ui-confirm'
 import { useDeleteColumnMutation } from '~/queries/columns'
+import socket from '~/lib/socket'
 
 interface ColumnProps {
   column: ColumnType
@@ -113,6 +114,9 @@ export default function Column({ column }: ColumnProps) {
     dispatch(updateActiveBoard(newActiveBoard))
 
     reset()
+
+    // Emit socket event to notify other users about the new card creation
+    socket.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
   }
 
   const confirmDeleteColumn = useConfirm()
@@ -138,6 +142,9 @@ export default function Column({ column }: ColumnProps) {
         dispatch(updateActiveBoard(newActiveBoard))
 
         await deleteColumnMutation(column._id)
+
+        // Emit socket event to notify other users about the column deletion
+        socket.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
       }
     } catch (error: any) {
       // User canceled the operation or there was an error

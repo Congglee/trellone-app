@@ -10,7 +10,7 @@ import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
 import Tooltip from '@mui/material/Tooltip'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import AppBar from '~/components/AppBar'
 import BoardUserGroup from '~/pages/Boards/BoardDetails/components/BoardUserGroup'
 import InviteBoardUser from '~/pages/Boards/BoardDetails/components/InviteBoardUser'
@@ -21,6 +21,7 @@ import { useClickAway } from '@uidotdev/usehooks'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { updateActiveBoard } from '~/store/slices/board.slice'
 import { useUpdateBoardMutation } from '~/queries/boards'
+import socket from '~/lib/socket'
 
 interface BoardBarProps {
   workspaceDrawerOpen: boolean
@@ -53,7 +54,7 @@ export default function BoardBar({
   board
 }: BoardBarProps) {
   const [editBoardTitleFormOpen, setEditBoardTitleFormOpen] = useState(false)
-  const [boardTitle, setBoardTitle] = useState(board.title)
+  const [boardTitle, setBoardTitle] = useState('')
 
   const editBoardTitleClickAwayRef = useClickAway(() => {
     handleUpdateBoardTitle()
@@ -62,9 +63,23 @@ export default function BoardBar({
   const dispatch = useAppDispatch()
   const { activeBoard } = useAppSelector((state) => state.board)
 
+  // Update local boardTitle state whenever the board title changes
+  // This ensures that when another user updates the title via socket, the local state is also updated
+  useEffect(() => {
+    if (board?.title) {
+      setBoardTitle(board.title)
+    }
+  }, [board?.title])
+
   const [updateBoardMutation] = useUpdateBoardMutation()
 
   const toggleEditBoardTitleForm = () => {
+    // Always set the current board title when opening the edit form
+    // This ensures we're always starting with the latest title
+    if (!editBoardTitleFormOpen) {
+      setBoardTitle(board.title)
+    }
+
     setEditBoardTitleFormOpen(!editBoardTitleFormOpen)
   }
 
@@ -91,6 +106,9 @@ export default function BoardBar({
       id: newActiveBoard._id,
       body: { title: newActiveBoard.title }
     })
+
+    // Emit socket event to notify other users about the board title update
+    socket.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
   }
 
   return (
