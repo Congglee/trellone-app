@@ -52,8 +52,6 @@ export default function BoardContent({
   onMoveCardInTheSameColumn,
   onMoveCardToDifferentColumn
 }: BoardContentProps) {
-  console.log('BoardContent render')
-
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: { distance: 10 }
   })
