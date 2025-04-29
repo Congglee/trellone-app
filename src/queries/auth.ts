@@ -18,7 +18,8 @@ import {
   VerifyEmailResType,
   VerifyForgotPasswordResType
 } from '~/schemas/auth.schema'
-import { setAuthenticated, setProfile } from '~/store/slices/auth.slice'
+import { disconnectSocket } from '~/store/slices/app.slice'
+import { reset, setAuthenticated, setProfile } from '~/store/slices/auth.slice'
 
 export const AUTH_API_URL = '/auth' as const
 
@@ -130,8 +131,8 @@ export const authApi = createApi({
         try {
           await queryFulfilled
 
-          dispatch(setAuthenticated(false))
-          dispatch(setProfile(null))
+          dispatch(reset())
+          dispatch(disconnectSocket())
 
           // Option 2: Reset API state on logout to clear any cached data
           dispatch(authApi.util.resetApiState())

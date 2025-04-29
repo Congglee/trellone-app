@@ -13,7 +13,6 @@ import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { generatePlaceholderCard } from '~/utils/utils'
 import cloneDeep from 'lodash/cloneDeep'
 import { updateActiveBoard } from '~/store/slices/board.slice'
-import socket from '~/lib/socket'
 
 interface ColumnsListProps {
   columns: ColumnType[]
@@ -26,6 +25,7 @@ export default function ColumnsList({ columns }: ColumnsListProps) {
   const activeColumns = useMemo(() => columns.filter((column) => !column._destroy), [columns])
 
   const { activeBoard } = useAppSelector((state) => state.board)
+  const { socket } = useAppSelector((state) => state.app)
   const dispatch = useAppDispatch()
 
   const newColumnClickAwayRef = useClickAway(() => {
@@ -70,7 +70,7 @@ export default function ColumnsList({ columns }: ColumnsListProps) {
     reset()
 
     // Emit socket event to notify other users about the new column creation
-    socket.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
   }
 
   return (

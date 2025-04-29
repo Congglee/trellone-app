@@ -21,7 +21,6 @@ import { useClickAway } from '@uidotdev/usehooks'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { updateActiveBoard } from '~/store/slices/board.slice'
 import { useUpdateBoardMutation } from '~/queries/boards'
-import socket from '~/lib/socket'
 
 interface BoardBarProps {
   workspaceDrawerOpen: boolean
@@ -62,6 +61,7 @@ export default function BoardBar({
 
   const dispatch = useAppDispatch()
   const { activeBoard } = useAppSelector((state) => state.board)
+  const { socket } = useAppSelector((state) => state.app)
 
   // Update local boardTitle state whenever the board title changes
   // This ensures that when another user updates the title via socket, the local state is also updated
@@ -108,7 +108,7 @@ export default function BoardBar({
     })
 
     // Emit socket event to notify other users about the board title update
-    socket.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
   }
 
   return (

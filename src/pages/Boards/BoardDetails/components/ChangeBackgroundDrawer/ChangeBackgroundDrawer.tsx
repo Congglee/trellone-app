@@ -29,7 +29,6 @@ import { useGetUnsplashSearchPhotosQuery, useUploadImageMutation } from '~/queri
 import { updateActiveBoard } from '~/store/slices/board.slice'
 import { useDebounce } from '~/hooks/use-debounce'
 import { singleFileValidator } from '~/utils/validators'
-import socket from '~/lib/socket'
 
 // @ts-expect-error - Missing type definitions for mui-color-input package
 import { MuiColorInput, MuiColorInputValue } from 'mui-color-input'
@@ -64,6 +63,7 @@ export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroun
 
   const dispatch = useAppDispatch()
   const { activeBoard } = useAppSelector((state) => state.board)
+  const { socket } = useAppSelector((state) => state.app)
 
   const { data: searchPhotosData, isLoading } = useGetUnsplashSearchPhotosQuery(query)
   const searchPhotos = searchPhotosData?.result || []
@@ -83,7 +83,7 @@ export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroun
     })
 
     // Emit socket event to notify other users about the board background update
-    socket.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
   }
 
   const handleUploadBoardCoverPhoto = async (event: React.ChangeEvent<HTMLInputElement>) => {

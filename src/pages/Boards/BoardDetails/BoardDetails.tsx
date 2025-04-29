@@ -10,7 +10,6 @@ import Main from '~/components/Main'
 import ActiveCard from '~/components/Modal/ActiveCard'
 import NavBar from '~/components/NavBar'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
-import socket from '~/lib/socket'
 import BoardBar from '~/pages/Boards/BoardDetails/components/BoardBar'
 import BoardContent from '~/pages/Boards/BoardDetails/components/BoardContent'
 import BoardDrawer from '~/pages/Boards/BoardDetails/components/BoardDrawer'
@@ -35,6 +34,7 @@ export default function BoardDetails() {
 
   const dispatch = useAppDispatch()
   const { activeBoard, loading, error } = useAppSelector((state) => state.board)
+  const { socket } = useAppSelector((state) => state.app)
 
   const [updateBoardMutation] = useUpdateBoardMutation()
   const [updateColumnMutation] = useUpdateColumnMutation()
@@ -45,7 +45,7 @@ export default function BoardDetails() {
       dispatch(getBoardDetails(boardId))
 
       // Join the board room to receive updates
-      socket.emit('CLIENT_JOIN_BOARD', boardId)
+      socket?.emit('CLIENT_JOIN_BOARD', boardId)
     }
 
     return () => {
@@ -53,10 +53,10 @@ export default function BoardDetails() {
 
       // Leave the board room when component unmounts
       if (boardId) {
-        socket.emit('CLIENT_LEAVE_BOARD', boardId)
+        socket?.emit('CLIENT_LEAVE_BOARD', boardId)
       }
     }
-  }, [dispatch, boardId])
+  }, [dispatch, boardId, socket])
 
   // Listen for board updates from other users
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function BoardDetails() {
       console.log('Disconnected from socket server')
     }
 
-    if (socket.connected) {
+    if (socket?.connected) {
       onConnect()
     }
 
@@ -76,16 +76,16 @@ export default function BoardDetails() {
       dispatch(updateActiveBoard(board))
     }
 
-    socket.on('SERVER_BOARD_UPDATED', onUpdateBoard)
-    socket.on('connect', onConnect)
-    socket.on('disconnect', onDisconnect)
+    socket?.on('SERVER_BOARD_UPDATED', onUpdateBoard)
+    socket?.on('connect', onConnect)
+    socket?.on('disconnect', onDisconnect)
 
     return () => {
-      socket.off('SERVER_BOARD_UPDATED', onUpdateBoard)
-      socket.off('connect', onConnect)
-      socket.off('disconnect', onDisconnect)
+      socket?.off('SERVER_BOARD_UPDATED', onUpdateBoard)
+      socket?.off('connect', onConnect)
+      socket?.off('disconnect', onDisconnect)
     }
-  }, [dispatch])
+  }, [dispatch, boardId, socket])
 
   const onMoveColumns = (dndOrderedColumns: ColumnType[]) => {
     const dndOrderedCardsIds = dndOrderedColumns.map((column) => column._id)
@@ -102,7 +102,7 @@ export default function BoardDetails() {
     })
 
     // Emit socket event to notify other users about the column order update
-    socket.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
   }
 
   const onMoveCardInTheSameColumn = (dndOrderedCards: CardType[], dndOrderedCardsIds: string[], columnId: string) => {
@@ -122,7 +122,7 @@ export default function BoardDetails() {
     })
 
     // Emit socket event to notify other users about the card order update
-    socket.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
   }
 
   const onMoveCardToDifferentColumn = (
@@ -155,7 +155,7 @@ export default function BoardDetails() {
     })
 
     // Emit socket event to notify other users about the card move to different column
-    socket.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
   }
 
   if (loading === 'pending') {
