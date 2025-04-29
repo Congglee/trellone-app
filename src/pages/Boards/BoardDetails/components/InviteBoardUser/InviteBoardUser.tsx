@@ -12,7 +12,7 @@ import TextFieldInput from '~/components/Form/TextFieldInput'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import { useAddNewBoardInvitationMutation } from '~/queries/invitations'
 import { isUnprocessableEntityError } from '~/utils/error-handlers'
-import socket from '~/lib/socket'
+import { useAppSelector } from '~/lib/redux/hooks'
 
 interface InviteBoardUserProps {
   boardId: string
@@ -49,6 +49,8 @@ export default function InviteBoardUser({ boardId }: InviteBoardUserProps) {
     }
   }, [isOpenPopover, reset])
 
+  const { socket } = useAppSelector((state) => state.app)
+
   const [addNewBoardInvitationMutation, { isError, error }] = useAddNewBoardInvitationMutation()
 
   const onSubmit = handleSubmit(async (values) => {
@@ -59,7 +61,7 @@ export default function InviteBoardUser({ boardId }: InviteBoardUserProps) {
 
         const invitation = res.data?.result
 
-        socket.emit('CLIENT_USER_INVITED_TO_BOARD', invitation)
+        socket?.emit('CLIENT_USER_INVITED_TO_BOARD', invitation)
       }
     })
   })
