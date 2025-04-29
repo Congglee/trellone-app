@@ -1,8 +1,9 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import path from '~/constants/path'
-import { useAppSelector } from '~/lib/redux/hooks'
+import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
+import { generateSocketInstace } from '~/lib/socket'
 import AccountVerification from '~/pages/Auth/AccountVerification'
 import ForgotPasswordVerification from '~/pages/Auth/ForgotPasswordVerification'
 import AuthLayout from '~/pages/Auth/layouts/AuthLayout'
@@ -10,6 +11,9 @@ import OAuth from '~/pages/Auth/OAuth'
 import BoardInvitationVerification from '~/pages/Boards/BoardInvitationVerification'
 import HomeLayout from '~/pages/Workspaces/layouts/HomeLayout'
 import { UserType } from '~/schemas/user.schema'
+import { disconnectSocket, setSocket } from '~/store/slices/app.slice'
+import { reset } from '~/store/slices/auth.slice'
+import { getAccessTokenFromLS, LocalStorageEventTarget } from '~/utils/storage'
 
 const Login = lazy(() => import('~/pages/Auth/Login'))
 const Register = lazy(() => import('~/pages/Auth/Register'))
@@ -42,6 +46,28 @@ const RejectedRoute = ({ profile, isAuthenticated }: { profile: UserType | null;
 
 function App() {
   const { isAuthenticated, profile } = useAppSelector((state) => state.auth)
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    const accessToken = getAccessTokenFromLS()
+
+    if (isAuthenticated && profile) {
+      dispatch(setSocket(generateSocketInstace(accessToken)))
+    }
+  }, [isAuthenticated, profile, dispatch])
+
+  useEffect(() => {
+    const onReset = () => {
+      dispatch(reset())
+      dispatch(disconnectSocket())
+    }
+
+    LocalStorageEventTarget.addEventListener('clearLS', onReset)
+
+    return () => {
+      LocalStorageEventTarget.removeEventListener('clearLS', onReset)
+    }
+  }, [dispatch])
 
   return (
     <Routes>

@@ -21,11 +21,16 @@ export const authSlice = createSlice({
 
     setProfile: (state, action) => {
       state.profile = action.payload
+    },
+
+    reset: (state) => {
+      state.isAuthenticated = false
+      state.profile = null
     }
   }
 })
 
-export const { setAuthenticated, setProfile } = authSlice.actions
+export const { setAuthenticated, setProfile, reset } = authSlice.actions
 
 const authReducer = authSlice.reducer
 

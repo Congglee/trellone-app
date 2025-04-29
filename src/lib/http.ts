@@ -6,6 +6,13 @@ import { AppStore } from '~/lib/redux/store'
 import { AUTH_API_URL, authApi } from '~/queries/auth'
 import { AuthResType } from '~/schemas/auth.schema'
 import { isAxiosExpiredTokenError, isAxiosUnauthorizedError } from '~/utils/error-handlers'
+import {
+  clearLS,
+  getAccessTokenFromLS,
+  getRefreshTokenFromLS,
+  setAccessTokenToLS,
+  setRefreshTokenToLS
+} from '~/utils/storage'
 import { interceptorLoadingElements } from '~/utils/utils'
 
 let axiosReduxStore: AppStore
@@ -16,20 +23,32 @@ export const injectStore = (mainStore: AppStore) => {
 
 export class Http {
   instance: AxiosInstance
+  private accessToken: string
+  private refreshToken: string
   private refreshTokenRequest: Promise<string> | null
 
   constructor() {
+    this.accessToken = getAccessTokenFromLS()
+    this.refreshToken = getRefreshTokenFromLS()
+    this.refreshTokenRequest = null
     this.instance = axios.create({
       baseURL: envConfig.baseUrl,
       timeout: 1000 * 60 * 10, // 10 minutes
       headers: { 'Content-Type': 'application/json' },
       withCredentials: true
     })
-    this.refreshTokenRequest = null
 
     this.instance.interceptors.request.use(
       (config) => {
         interceptorLoadingElements(true)
+
+        const accessToken = this.accessToken || getAccessTokenFromLS()
+
+        if (accessToken && config.headers) {
+          config.headers.authorization = accessToken
+          return config
+        }
+
         return config
       },
       (error) => {
@@ -40,6 +59,24 @@ export class Http {
     this.instance.interceptors.response.use(
       (response) => {
         interceptorLoadingElements(false)
+
+        const { url } = response.config
+
+        if (url === `${AUTH_API_URL}/login`) {
+          const result = response.data as AuthResType
+
+          this.accessToken = result.result.access_token
+          this.refreshToken = result.result.refresh_token
+
+          setAccessTokenToLS(this.accessToken)
+          setRefreshTokenToLS(this.refreshToken)
+        } else if (url === `${AUTH_API_URL}/logout`) {
+          this.accessToken = ''
+          this.refreshToken = ''
+
+          clearLS()
+        }
+
         return response
       },
       (error: AxiosError) => {
@@ -55,7 +92,7 @@ export class Http {
         }
 
         if (isAxiosUnauthorizedError(error)) {
-          const config = error.response?.config as InternalAxiosRequestConfig
+          const config = error.response?.config || ({ headers: {} } as InternalAxiosRequestConfig)
           const { url } = config
 
           if (isAxiosExpiredTokenError(error) && url !== `${AUTH_API_URL}/refresh-token`) {
@@ -67,11 +104,17 @@ export class Http {
                   }, 10000)
                 })
 
-            return this.refreshTokenRequest.then(() => {
-              return this.instance(config)
+            return this.refreshTokenRequest.then((access_token) => {
+              return this.instance({
+                ...config,
+                headers: { ...config.headers, authorization: access_token }
+              })
             })
           }
 
+          clearLS()
+          this.accessToken = ''
+          this.refreshToken = ''
           axiosReduxStore.dispatch(authApi.endpoints.logout.initiate(undefined))
         }
 
@@ -82,12 +125,19 @@ export class Http {
 
   private handleRefreshToken() {
     return this.instance
-      .post<AuthResType>(`${AUTH_API_URL}/refresh-token`)
+      .post<AuthResType>(`${AUTH_API_URL}/refresh-token`, {
+        refresh_token: this.refreshToken
+      })
       .then((res) => {
         const access_token = res.data.result.access_token
+        setAccessTokenToLS(access_token)
+        this.accessToken = access_token
         return access_token
       })
       .catch((error) => {
+        clearLS()
+        this.accessToken = ''
+        this.refreshToken = ''
         axiosReduxStore.dispatch(authApi.endpoints.logout.initiate(undefined))
         throw error
       })

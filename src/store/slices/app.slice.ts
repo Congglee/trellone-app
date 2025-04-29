@@ -1,16 +1,32 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { Socket } from 'socket.io-client'
 
-interface AppSliceState {}
+interface AppSliceState {
+  socket: Socket | null
+}
 
-const initialState: AppSliceState = {}
+const initialState: AppSliceState = {
+  socket: null
+}
 
 export const appSlice = createSlice({
   name: 'app',
   initialState,
-  reducers: {}
+  reducers: {
+    setSocket: (state, action) => {
+      state.socket = action.payload
+    },
+
+    disconnectSocket: (state) => {
+      if (state.socket) {
+        state.socket.disconnect()
+        state.socket = null
+      }
+    }
+  }
 })
 
-// export const {} = appSlice.actions
+export const { setSocket, disconnectSocket } = appSlice.actions
 
 const appReducer = appSlice.reducer
 

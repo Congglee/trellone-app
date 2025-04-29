@@ -18,7 +18,6 @@ import { useNavigate } from 'react-router-dom'
 import { NOTIFICATION_LIMIT, NOTIFICATION_PAGE } from '~/constants/pagination'
 import { BoardInvitationStatus } from '~/constants/type'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
-import socket from '~/lib/socket'
 import { useGetInvitationsQuery, useUpdateBoardInvitationMutation } from '~/queries/invitations'
 import { BoardInvitationType, InvitationType } from '~/schemas/invitation.schema'
 import { addNotification, appendNotifications, setNotifications } from '~/store/slices/notification.slice'
@@ -44,6 +43,7 @@ export default function Notifications() {
 
   const { profile } = useAppSelector((state) => state.auth)
   const { notifications } = useAppSelector((state) => state.notification)
+  const { socket } = useAppSelector((state) => state.app)
 
   const [pagination, setPagination] = useState({
     page: NOTIFICATION_PAGE,
@@ -92,7 +92,7 @@ export default function Notifications() {
       console.log('Disconnected from socket server')
     }
 
-    if (socket.connected) {
+    if (socket?.connected) {
       onConnect()
     }
 
@@ -103,16 +103,16 @@ export default function Notifications() {
       }
     }
 
-    socket.on('SERVER_USER_INVITED_TO_BOARD', onReceiveNewInvitation)
-    socket.on('connect', onConnect)
-    socket.on('disconnect', onDisconnect)
+    socket?.on('SERVER_USER_INVITED_TO_BOARD', onReceiveNewInvitation)
+    socket?.on('connect', onConnect)
+    socket?.on('disconnect', onDisconnect)
 
     return () => {
-      socket.off('SERVER_USER_INVITED_TO_BOARD', onReceiveNewInvitation)
-      socket.off('connect', onConnect)
-      socket.off('disconnect', onDisconnect)
+      socket?.off('SERVER_USER_INVITED_TO_BOARD', onReceiveNewInvitation)
+      socket?.off('connect', onConnect)
+      socket?.off('disconnect', onDisconnect)
     }
-  }, [dispatch, profile])
+  }, [dispatch, profile, socket])
 
   const getMoreNotifications = () => {
     if (pagination.page < pagination.total_page) {

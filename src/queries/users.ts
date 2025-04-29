@@ -5,7 +5,7 @@ import { authApi } from '~/queries/auth'
 import { ChangePasswordBodyType, ChangePasswordResType, UpdateMeBodyType, UserResType } from '~/schemas/user.schema'
 import { setProfile } from '~/store/slices/auth.slice'
 
-const USERS_API_URL = '/users' as const
+export const USERS_API_URL = '/users' as const
 
 const reducerPath = 'user/api' as const
 const tagTypes = ['User'] as const
