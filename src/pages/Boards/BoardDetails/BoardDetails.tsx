@@ -20,7 +20,8 @@ import { useUpdateColumnMutation } from '~/queries/columns'
 import { BoardResType } from '~/schemas/board.schema'
 import { CardType } from '~/schemas/card.schema'
 import { ColumnType } from '~/schemas/column.schema'
-import { clearActiveBoard, getBoardDetails, updateActiveBoard } from '~/store/slices/board.slice'
+import { clearActiveBoard, getBoardDetails, updateActiveBoard, updateCardInBoard } from '~/store/slices/board.slice'
+import { updateActiveCard } from '~/store/slices/card.slice'
 
 export default function BoardDetails() {
   const theme = useTheme()
@@ -58,7 +59,7 @@ export default function BoardDetails() {
     }
   }, [dispatch, boardId, socket])
 
-  // Listen for board updates from other users
+  // Listen for board and card updates from other users
   useEffect(() => {
     const onConnect = () => {
       console.log('Connected to socket server')
@@ -76,16 +77,23 @@ export default function BoardDetails() {
       dispatch(updateActiveBoard(board))
     }
 
+    const onUpdateCard = (card: CardType) => {
+      dispatch(updateActiveCard(card))
+      dispatch(updateCardInBoard(card))
+    }
+
     socket?.on('SERVER_BOARD_UPDATED', onUpdateBoard)
+    socket?.on('SERVER_CARD_UPDATED', onUpdateCard)
     socket?.on('connect', onConnect)
     socket?.on('disconnect', onDisconnect)
 
     return () => {
       socket?.off('SERVER_BOARD_UPDATED', onUpdateBoard)
+      socket?.off('SERVER_CARD_UPDATED', onUpdateCard)
       socket?.off('connect', onConnect)
       socket?.off('disconnect', onDisconnect)
     }
-  }, [dispatch, boardId, socket])
+  }, [dispatch, socket])
 
   const onMoveColumns = (dndOrderedColumns: ColumnType[]) => {
     const dndOrderedCardsIds = dndOrderedColumns.map((column) => column._id)
