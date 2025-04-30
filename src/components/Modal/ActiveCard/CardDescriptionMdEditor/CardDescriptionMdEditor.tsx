@@ -1,5 +1,5 @@
 import { useColorScheme } from '@mui/material'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import MDEditor from '@uiw/react-md-editor'
 import rehypeSanitize from 'rehype-sanitize'
@@ -19,6 +19,13 @@ export default function CardDescriptionMdEditor({
 
   const [markdownEditMode, setMarkdownEditMode] = useState(false)
   const [cardDescription, setCardDescription] = useState<string>(description)
+
+  // Update local state when the description prop changes (e.g., from realtime updates)
+  useEffect(() => {
+    if (description !== undefined && description !== cardDescription) {
+      setCardDescription(description)
+    }
+  }, [description])
 
   const updateCardDescription = () => {
     setMarkdownEditMode(false)
