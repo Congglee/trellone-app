@@ -67,6 +67,7 @@ export default function ActiveCard() {
   const dispatch = useAppDispatch()
   const { isShowActiveCardModal, activeCard } = useAppSelector((state) => state.card)
   const { profile } = useAppSelector((state) => state.auth)
+  const { socket } = useAppSelector((state) => state.app)
 
   const [updateCardMutation] = useUpdateCardMutation()
   const [uploadImageMutation] = useUploadImageMutation()
@@ -83,6 +84,9 @@ export default function ActiveCard() {
     dispatch(updateActiveCard(updatedCard))
 
     dispatch(updateCardInBoard(updatedCard))
+
+    // Emit socket event to broadcast the card update to other users
+    socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
 
     return updatedCard
   }
