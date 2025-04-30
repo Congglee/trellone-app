@@ -1,5 +1,5 @@
 import { StandardTextFieldProps } from '@mui/material'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import TextField from '@mui/material/TextField'
 
 interface ToggleFocusInputProps extends StandardTextFieldProps {
@@ -15,6 +15,13 @@ export default function ToggleFocusInput({
   ...rest
 }: ToggleFocusInputProps) {
   const [localValue, setLocalValue] = useState<string>(value as string)
+
+  // Update local state when the value prop changes (e.g., from realtime updates)
+  useEffect(() => {
+    if (value !== undefined && value !== localValue) {
+      setLocalValue(value)
+    }
+  }, [value])
 
   const triggerBlur = () => {
     setLocalValue(localValue.trim())
