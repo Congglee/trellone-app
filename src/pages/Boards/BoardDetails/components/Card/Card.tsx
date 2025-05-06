@@ -3,6 +3,7 @@ import { CSS } from '@dnd-kit/utilities'
 import AttachmentIcon from '@mui/icons-material/Attachment'
 import CommentIcon from '@mui/icons-material/Comment'
 import GroupIcon from '@mui/icons-material/Group'
+import AccessTimeIcon from '@mui/icons-material/AccessTime'
 import { Card as MuiCard } from '@mui/material'
 import Button from '@mui/material/Button'
 import CardActions from '@mui/material/CardActions'
@@ -13,6 +14,9 @@ import { CSSProperties } from 'react'
 import { useAppDispatch } from '~/lib/redux/hooks'
 import { CardType } from '~/schemas/card.schema'
 import { showActiveCardModal, updateActiveCard } from '~/store/slices/card.slice'
+import Box from '@mui/material/Box'
+import Chip from '@mui/material/Chip'
+import { format } from 'date-fns'
 
 interface CardProps {
   card: CardType
@@ -41,6 +45,26 @@ export default function Card({ card }: CardProps) {
 
   const shouldShowCardActions = !!card.members?.length || !!card.comments?.length || !!card.attachments?.length
 
+  const now = new Date()
+  const isOverdue = card.due_date ? new Date(card.due_date) < now : false
+
+  const formatDueDate = (date: Date) => {
+    const currentYear = now.getFullYear()
+    const dateYear = new Date(date).getFullYear()
+
+    if (currentYear === dateYear) {
+      return format(new Date(date), 'd MMM')
+    }
+
+    return format(new Date(date), 'd MMM, y')
+  }
+
+  const getDueDateColor = () => {
+    if (card.is_completed) return 'success'
+    if (card.due_date && new Date(card.due_date) < new Date()) return 'error'
+    return 'default'
+  }
+
   return (
     <MuiCard
       onClick={handleSetActiveCard}
@@ -62,6 +86,24 @@ export default function Card({ card }: CardProps) {
       {card.cover_photo && <CardMedia sx={{ height: 140 }} image={card.cover_photo} title='green iguana' />}
       <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
         <Typography>{card.title}</Typography>
+        {card.due_date && (
+          <Box sx={{ mt: 1 }}>
+            <Chip
+              icon={<AccessTimeIcon fontSize='small' />}
+              label={formatDueDate(card.due_date)}
+              size='small'
+              color={getDueDateColor()}
+              sx={{
+                height: '24px',
+                backgroundColor: (theme) =>
+                  card.is_completed ? theme.palette.success.main : isOverdue ? theme.palette.error.main : '#1F2A40',
+                color: '#fff',
+                '& .MuiChip-icon': { color: '#fff' },
+                fontSize: '0.75rem'
+              }}
+            />
+          </Box>
+        )}
       </CardContent>
       {shouldShowCardActions && (
         <CardActions sx={{ p: '0 4px 8px 4px' }}>

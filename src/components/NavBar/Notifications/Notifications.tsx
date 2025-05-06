@@ -217,7 +217,7 @@ export default function Notifications() {
 
                 <Box sx={{ textAlign: 'right' }}>
                   <Typography component='span' sx={{ fontSize: '13px' }}>
-                    {format(notification.created_at, 'dd/MM/yyyy HH:mm:ss')}
+                    {format(new Date(notification.created_at), 'dd/MM/yyyy HH:mm:ss')}
                   </Typography>
                 </Box>
               </Box>

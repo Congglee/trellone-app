@@ -130,15 +130,24 @@ export class Http {
       })
       .then((res) => {
         const access_token = res.data.result.access_token
+        const refresh_token = res.data.result.refresh_token
+
         setAccessTokenToLS(access_token)
+        setRefreshTokenToLS(refresh_token)
+
         this.accessToken = access_token
+        this.refreshToken = refresh_token
+
         return access_token
       })
       .catch((error) => {
         clearLS()
+
         this.accessToken = ''
         this.refreshToken = ''
+
         axiosReduxStore.dispatch(authApi.endpoints.logout.initiate(undefined))
+
         throw error
       })
   }

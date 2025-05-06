@@ -25,6 +25,8 @@ export const CardSchema = z.object({
   column_id: z.string(),
 
   title: z.string(),
+  due_date: z.date().nullable().optional(),
+  is_completed: z.boolean().nullable().optional(),
   description: z.string().optional(),
   cover_photo: z.string().optional(),
 
@@ -66,6 +68,8 @@ export const UpdateCardBody = z.object({
     .min(3, { message: 'Title must be at least 3 characters long' })
     .max(50, { message: 'Title must be at most 50 characters long' })
     .optional(),
+  due_date: z.date().nullable().optional(),
+  is_completed: z.boolean().nullable().optional(),
   description: z.string().optional(),
   cover_photo: z.string().url().optional(),
   _destroy: z.boolean().optional(),

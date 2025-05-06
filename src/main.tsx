@@ -1,6 +1,9 @@
 import CssBaseline from '@mui/material/CssBaseline'
 import GlobalStyles from '@mui/material/GlobalStyles'
 import { Experimental_CssVarsProvider as CssVarsProvider } from '@mui/material/styles'
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { enGB } from 'date-fns/locale'
 import { ConfirmProvider } from 'material-ui-confirm'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -36,7 +39,9 @@ createRoot(document.getElementById('root')!).render(
               <GlobalStyles styles={{ a: { textDecoration: 'none' } }} />
               <CssBaseline />
               <ErrorBoundary>
-                <App />
+                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enGB}>
+                  <App />
+                </LocalizationProvider>
                 <ToastContainer position='bottom-left' theme='colored' />
               </ErrorBoundary>
             </ConfirmProvider>

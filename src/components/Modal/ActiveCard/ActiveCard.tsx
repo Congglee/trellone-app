@@ -20,7 +20,6 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import SubjectRoundedIcon from '@mui/icons-material/SubjectRounded'
 import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined'
-import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Modal from '@mui/material/Modal'
@@ -33,7 +32,9 @@ import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
 import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
 import CardActivitySection from '~/components/Modal/ActiveCard/CardActivitySection'
 import CardDescriptionMdEditor from '~/components/Modal/ActiveCard/CardDescriptionMdEditor'
+import CardDueDate from '~/components/Modal/ActiveCard/CardDueDate'
 import CardUserGroup from '~/components/Modal/ActiveCard/CardUserGroup'
+import DatesMenu from '~/components/Modal/ActiveCard/DatesMenu'
 import { CardMemberAction } from '~/constants/type'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { useUpdateCardMutation } from '~/queries/cards'
@@ -134,6 +135,10 @@ export default function ActiveCard() {
     handleUpdateActiveCard({ member })
   }
 
+  const onUpdateCardDueDateAndStatus = async (due_date: Date | null, is_completed: boolean | null) => {
+    handleUpdateActiveCard({ due_date, is_completed })
+  }
+
   const onUpdateCardArchiveStatus = async (_destroy: boolean) => {
     handleUpdateActiveCard({ _destroy })
   }
@@ -189,6 +194,14 @@ export default function ActiveCard() {
 
               <CardUserGroup cardMembers={activeCard?.members || []} onUpdateCardMembers={onUpdateCardMembers} />
             </Box>
+
+            {activeCard?.due_date && (
+              <CardDueDate
+                dueDate={activeCard.due_date}
+                isCompleted={activeCard.is_completed}
+                onUpdateCardDueDateAndStatus={onUpdateCardDueDateAndStatus}
+              />
+            )}
 
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -282,9 +295,12 @@ export default function ActiveCard() {
                 <TaskAltOutlinedIcon fontSize='small' />
                 Checklist
               </SidebarItem>
-              <SidebarItem>
-                <WatchLaterOutlinedIcon fontSize='small' />
-                Dates
+              <SidebarItem className='active' sx={{ p: 0 }}>
+                <DatesMenu
+                  dueDate={activeCard?.due_date}
+                  isCompleted={activeCard?.is_completed}
+                  onUpdateCardDueDate={onUpdateCardDueDateAndStatus}
+                />
               </SidebarItem>
               <SidebarItem>
                 <AutoFixHighOutlinedIcon fontSize='small' />
@@ -326,11 +342,7 @@ export default function ActiveCard() {
                 <AutoAwesomeOutlinedIcon fontSize='small' />
                 Make Template
               </SidebarItem>
-              <SidebarItem
-                className='active'
-                component='label'
-                onClick={() => onUpdateCardArchiveStatus(!activeCard?._destroy)}
-              >
+              <SidebarItem className='active' onClick={() => onUpdateCardArchiveStatus(!activeCard?._destroy)}>
                 {activeCard?._destroy ? (
                   <>
                     <RestartAltIcon fontSize='small' />

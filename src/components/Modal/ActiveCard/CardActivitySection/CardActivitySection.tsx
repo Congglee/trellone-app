@@ -71,7 +71,7 @@ export default function CardActivitySection({ cardComments, onAddCardComment }: 
               {comment.user_display_name}
             </Typography>
             <Typography component='span' sx={{ fontSize: '12px' }}>
-              {format(comment.commented_at, 'dd/MM/yyyy HH:mm')}
+              {format(new Date(comment.commented_at), 'dd/MM/yyyy HH:mm')}
             </Typography>
             <Box
               sx={{
