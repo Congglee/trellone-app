@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import axiosBaseQuery from '~/lib/redux/helpers'
-import { UnsplashSearchPhotosType, UploadImageResType } from '~/schemas/media.schema'
+import { UnsplashSearchPhotosType, UploadDocumentResType, UploadImageResType } from '~/schemas/media.schema'
 
 const MEDIAS_API_URL = '/medias' as const
 
@@ -21,6 +21,15 @@ export const mediaApi = createApi({
       })
     }),
 
+    uploadDocument: build.mutation<UploadDocumentResType, FormData>({
+      query: (body) => ({
+        url: `${MEDIAS_API_URL}/upload-document`,
+        method: 'POST',
+        data: body,
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+    }),
+
     getUnsplashSearchPhotos: build.query<UnsplashSearchPhotosType, string>({
       query: (params) => ({
         url: `${MEDIAS_API_URL}/unsplash/search/get-photos`,
@@ -31,7 +40,7 @@ export const mediaApi = createApi({
   })
 })
 
-export const { useUploadImageMutation, useGetUnsplashSearchPhotosQuery } = mediaApi
+export const { useUploadImageMutation, useUploadDocumentMutation, useGetUnsplashSearchPhotosQuery } = mediaApi
 
 const mediaApiReducer = mediaApi.reducer
 

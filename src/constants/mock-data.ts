@@ -83,7 +83,7 @@ export const mockBoardDetails: BoardResType['result'] = {
               commented_at: new Date('2023-10-01T00:00:00.000Z')
             }
           ],
-          attachments: ['test attachment 01', 'test attachment 02'],
+          attachments: [],
           _destroy: false,
           created_at: new Date('2023-10-01T00:00:00.000Z'),
           updated_at: new Date('2023-10-01T00:00:00.000Z')

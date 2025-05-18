@@ -1,0 +1,3 @@
+import EditCardFileAttachmentForm from '~/components/Modal/ActiveCard/EditCardFileAttachmentForm/EditCardFileAttachmentForm'
+
+export default EditCardFileAttachmentForm

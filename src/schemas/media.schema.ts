@@ -11,6 +11,22 @@ export const UploadImageRes = z.object({
   message: z.string()
 })
 
+export type UploadImageResType = z.TypeOf<typeof UploadImageRes>
+
+export const UploadDocumentRes = z.object({
+  result: z.array(
+    z.object({
+      url: z.string(),
+      type: z.nativeEnum(MediaType),
+      mime_type: z.string(),
+      size: z.number(),
+      original_name: z.string()
+    })
+  )
+})
+
+export type UploadDocumentResType = z.TypeOf<typeof UploadDocumentRes>
+
 export const UnsplashImageUrlSchema = z.object({
   url: z.string(),
   full: z.string(),
@@ -21,8 +37,6 @@ export const UnsplashImageUrlSchema = z.object({
 })
 
 export type UnsplashImageUrlType = z.TypeOf<typeof UnsplashImageUrlSchema>
-
-export type UploadImageResType = z.TypeOf<typeof UploadImageRes>
 
 export const UnsplashSearchPhotos = z.object({
   result: z.array(
