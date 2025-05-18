@@ -3,7 +3,7 @@ import AddToDriveOutlinedIcon from '@mui/icons-material/AddToDriveOutlined'
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined'
 import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined'
 import AspectRatioOutlinedIcon from '@mui/icons-material/AspectRatioOutlined'
-import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined'
+import AttachmentIcon from '@mui/icons-material/Attachment'
 import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined'
 import AutoFixHighOutlinedIcon from '@mui/icons-material/AutoFixHighOutlined'
 import CancelIcon from '@mui/icons-material/Cancel'
@@ -27,10 +27,13 @@ import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
+import { useRef } from 'react'
 import { toast } from 'react-toastify'
 import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
 import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
+import AttachmentPopover from '~/components/Modal/ActiveCard/AttachmentPopover'
 import CardActivitySection from '~/components/Modal/ActiveCard/CardActivitySection'
+import CardAttachments from '~/components/Modal/ActiveCard/CardAttachments'
 import CardDescriptionMdEditor from '~/components/Modal/ActiveCard/CardDescriptionMdEditor'
 import CardDueDate from '~/components/Modal/ActiveCard/CardDueDate'
 import CardUserGroup from '~/components/Modal/ActiveCard/CardUserGroup'
@@ -39,7 +42,12 @@ import { CardMemberAction } from '~/constants/type'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { useUpdateCardMutation } from '~/queries/cards'
 import { useUploadImageMutation } from '~/queries/medias'
-import { CardMemberPayloadType, CommentType, UpdateCardBodyType } from '~/schemas/card.schema'
+import {
+  CardAttachmentPayloadType,
+  CardMemberPayloadType,
+  CommentType,
+  UpdateCardBodyType
+} from '~/schemas/card.schema'
 import { updateCardInBoard } from '~/store/slices/board.slice'
 import { clearAndHideActiveCardModal, updateActiveCard } from '~/store/slices/card.slice'
 import { singleFileValidator } from '~/utils/validators'
@@ -76,6 +84,8 @@ export default function ActiveCard() {
   const handleCloseModal = () => {
     dispatch(clearAndHideActiveCardModal())
   }
+
+  const attachmentButtonRef = useRef<HTMLButtonElement | null>(null)
 
   const handleUpdateActiveCard = async (body: UpdateCardBodyType) => {
     const updateCardRes = await updateCardMutation({ id: activeCard?._id as string, body }).unwrap()
@@ -141,6 +151,10 @@ export default function ActiveCard() {
 
   const onUpdateCardArchiveStatus = async (_destroy: boolean) => {
     handleUpdateActiveCard({ _destroy })
+  }
+
+  const onUpdateCardAttachment = async (attachment: CardAttachmentPayloadType) => {
+    handleUpdateActiveCard({ attachment })
   }
 
   return (
@@ -217,6 +231,23 @@ export default function ActiveCard() {
               />
             </Box>
 
+            {activeCard?.attachments && !!activeCard.attachments.length && (
+              <Box sx={{ mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <AttachmentIcon />
+                  <Typography component='span' sx={{ fontWeight: '600', fontSize: '20px' }}>
+                    Attachments
+                  </Typography>
+                </Box>
+
+                <CardAttachments
+                  cardAttachments={activeCard?.attachments || []}
+                  onUpdateCardAttachment={onUpdateCardAttachment}
+                  attachmentPopoverButtonRef={attachmentButtonRef}
+                />
+              </Box>
+            )}
+
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                 <DvrOutlinedIcon />
@@ -283,9 +314,8 @@ export default function ActiveCard() {
                 <VisuallyHiddenInput type='file' accept='image/*' onChange={onUploadCardCoverPhoto} />
               </SidebarItem>
 
-              <SidebarItem>
-                <AttachFileOutlinedIcon fontSize='small' />
-                Attachment
+              <SidebarItem className='active' sx={{ p: 0 }}>
+                <AttachmentPopover ref={attachmentButtonRef} onUpdateCardAttachment={onUpdateCardAttachment} />
               </SidebarItem>
               <SidebarItem>
                 <LocalOfferOutlinedIcon fontSize='small' />

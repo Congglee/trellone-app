@@ -118,7 +118,7 @@ export default function BoardBar({
         top: 'auto',
         zIndex: 999
       }}
-      position='fixed'
+      position='absolute'
       workspaceDrawerOpen={workspaceDrawerOpen}
       boardDrawerOpen={boardDrawerOpen}
     >

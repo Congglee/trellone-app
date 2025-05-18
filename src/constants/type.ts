@@ -33,10 +33,11 @@ export const UserVerifyStatusValues = [
 ] as const
 
 export const MediaType = {
-  Image: 0
+  Image: 0,
+  Document: 1
 } as const
 
-export const MediaTypeValues = [MediaType.Image, 1] as const
+export const MediaTypeValues = [MediaType.Image, MediaType.Document] as const
 
 export const CardMemberAction = {
   Add: 'ADD',
@@ -61,4 +62,23 @@ export const BoardInvitationStatusValues = [
   BoardInvitationStatus.Pending,
   BoardInvitationStatus.Accepted,
   BoardInvitationStatus.Rejected
+] as const
+
+export const AttachmentType = {
+  File: 'FILE',
+  Link: 'LINK'
+} as const
+
+export const AttachmentTypeValues = [AttachmentType.Link, AttachmentType.File] as const
+
+export const CardAttachmentAction = {
+  Add: 'ADD',
+  Edit: 'EDIT',
+  Remove: 'REMOVE'
+} as const
+
+export const CardAttachmentActionValues = [
+  CardAttachmentAction.Add,
+  CardAttachmentAction.Edit,
+  CardAttachmentAction.Remove
 ] as const
