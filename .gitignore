@@ -31,3 +31,7 @@ dist-ssr
 
 # Visualize
 stats.html
+
+# GitHub Copilot instructions
+/.github/copilot-instructions.md
+/.github/prompts/*

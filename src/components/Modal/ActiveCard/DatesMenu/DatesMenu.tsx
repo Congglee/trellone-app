@@ -1,4 +1,4 @@
-import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined'
+import DateRangeIcon from '@mui/icons-material/DateRange'
 import { useMediaQuery } from '@mui/material'
 import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
@@ -61,9 +61,10 @@ export default function DatesMenu({ dueDate, onUpdateCardDueDate, isCompleted }:
           justifyContent: 'flex-start'
         }}
       >
-        <PersonOutlineOutlinedIcon fontSize='small' />
+        <DateRangeIcon fontSize='small' />
         <span>Dates</span>
       </Button>
+
       <Menu
         id='basic-menu-dates'
         anchorEl={anchorEl}
