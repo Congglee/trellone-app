@@ -39,6 +39,7 @@ const AttachmentPopover = forwardRef<HTMLButtonElement, AttachmentPopoverProps>(
       setAnchorPopoverElement(event.currentTarget)
     } else {
       setAnchorPopoverElement(null)
+      onReset()
     }
   }
 
