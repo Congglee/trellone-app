@@ -6,6 +6,8 @@ import Avatar from '@mui/material/Avatar'
 import TextField from '@mui/material/TextField'
 import Tooltip from '@mui/material/Tooltip'
 import { format } from 'date-fns'
+import IconButton from '@mui/material/IconButton'
+import AddReactionIcon from '@mui/icons-material/AddReaction'
 
 interface CardActivitySectionProps {
   cardComments: CommentType[]
@@ -61,35 +63,94 @@ export default function CardActivitySection({ cardComments, onAddCardComment }: 
           No activity found!
         </Typography>
       )}
-      {cardComments.map((comment, index) => (
-        <Box sx={{ display: 'flex', gap: 1, width: '100%', mb: 1.5 }} key={index}>
-          <Tooltip title='trungquandev'>
-            <Avatar sx={{ width: 36, height: 36, cursor: 'pointer' }} alt='trungquandev' src={comment.user_avatar} />
-          </Tooltip>
-          <Box sx={{ width: 'inherit' }}>
-            <Typography component='span' sx={{ fontWeight: 'bold', mr: 1 }}>
-              {comment.user_display_name}
-            </Typography>
-            <Typography component='span' sx={{ fontSize: '12px' }}>
-              {format(new Date(comment.commented_at), 'dd/MM/yyyy HH:mm')}
-            </Typography>
-            <Box
-              sx={{
-                display: 'block',
-                bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#33485D' : 'white'),
-                p: '8px 12px',
-                mt: '4px',
-                border: '0.5px solid rgba(0, 0, 0, 0.2)',
-                borderRadius: '4px',
-                wordBreak: 'break-word',
-                boxShadow: '0 0 1px rgba(0, 0, 0, 0.2)'
-              }}
-            >
-              {comment.content}
+      {cardComments.map((comment, index) => {
+        const isCommentOwner = comment.user_email === profile?.email
+
+        return (
+          <Box sx={{ display: 'flex', gap: 1, width: '100%', mb: 1.5 }} key={index}>
+            <Tooltip title='trungquandev'>
+              <Avatar sx={{ width: 36, height: 36, cursor: 'pointer' }} alt='trungquandev' src={comment.user_avatar} />
+            </Tooltip>
+            <Box sx={{ width: 'inherit' }}>
+              <Typography component='span' sx={{ fontWeight: 'bold', mr: 1 }}>
+                {comment.user_display_name}
+              </Typography>
+              <Typography component='span' sx={{ fontSize: '12px' }}>
+                {format(new Date(comment.commented_at), 'dd/MM/yyyy HH:mm')}
+              </Typography>
+              <Box
+                sx={{
+                  display: 'block',
+                  bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#33485D' : 'white'),
+                  p: '8px 12px',
+                  mt: '4px',
+                  border: '0.5px solid rgba(0, 0, 0, 0.2)',
+                  borderRadius: '4px',
+                  wordBreak: 'break-word',
+                  boxShadow: '0 0 1px rgba(0, 0, 0, 0.2)'
+                }}
+              >
+                {comment.content}
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
+                <IconButton size='small'>
+                  <AddReactionIcon fontSize='small' />
+                </IconButton>
+                <Typography component='span' sx={{ fontSize: '12px', color: 'text.secondary' }}>
+                  •
+                </Typography>
+                {isCommentOwner ? (
+                  <>
+                    <Typography
+                      component='span'
+                      sx={{
+                        fontSize: '12px',
+                        color: 'text.secondary',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          textDecoration: 'underline'
+                        }
+                      }}
+                    >
+                      Edit
+                    </Typography>
+                    <Typography component='span' sx={{ fontSize: '12px', color: 'text.secondary' }}>
+                      •
+                    </Typography>
+                    <Typography
+                      component='span'
+                      sx={{
+                        fontSize: '12px',
+                        color: 'text.secondary',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          textDecoration: 'underline'
+                        }
+                      }}
+                    >
+                      Delete
+                    </Typography>
+                  </>
+                ) : (
+                  <Typography
+                    component='span'
+                    sx={{
+                      fontSize: '12px',
+                      color: 'text.secondary',
+                      cursor: 'pointer',
+                      '&:hover': {
+                        textDecoration: 'underline'
+                      }
+                    }}
+                  >
+                    Reply
+                  </Typography>
+                )}
+              </Box>
             </Box>
           </Box>
-        </Box>
-      ))}
+        )
+      })}
     </Box>
   )
 }
