@@ -19,6 +19,7 @@ import Popover from '@mui/material/Popover'
 import Typography from '@mui/material/Typography'
 import { formatDistanceToNow } from 'date-fns'
 import { Fragment, RefObject, useMemo, useState } from 'react'
+import { toast } from 'react-toastify'
 import EditCardFileAttachmentForm from '~/components/Modal/ActiveCard/EditCardFileAttachmentForm'
 import EditCardLinkAttachmentForm from '~/components/Modal/ActiveCard/EditCardLinkAttachmentForm'
 import RemoveCardAttachmentConfirm from '~/components/Modal/ActiveCard/RemoveCardAttachmentConfirm/RemoveCardAttachmentConfirm'
@@ -71,6 +72,38 @@ export default function CardAttachments({
   const handleAddAttachmentClick = () => {
     if (attachmentPopoverButtonRef?.current) {
       attachmentPopoverButtonRef.current.click()
+    }
+  }
+
+  const handleDownloadFileAttachment = async (attachment: CardAttachmentType) => {
+    try {
+      const response = await fetch(attachment.file.url)
+
+      if (!response.ok) {
+        throw new Error('Failed to download file')
+      }
+
+      // Get the file blob
+      const blob = await response.blob()
+
+      // Create a temporary URL for the blob
+      const downloadUrl = window.URL.createObjectURL(blob)
+
+      // Create a temporary anchor element to trigger download
+      const link = document.createElement('a')
+      link.href = downloadUrl
+      link.download = attachment.file.display_name || attachment.file.original_name
+
+      // Append to body, click, and remove
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      // Clean up the object URL
+      window.URL.revokeObjectURL(downloadUrl)
+    } catch (error) {
+      toast.error('Failed to download file')
+      console.error('Error downloading file:', error)
     }
   }
 
@@ -336,16 +369,21 @@ export default function CardAttachments({
                 />
               </ListItemButton>
             </ListItem>
-            <ListItem disablePadding>
-              <ListItemButton sx={{ py: 0.5 }}>
-                <ListItemText
-                  primary='Download'
-                  sx={{
-                    '& .MuiTypography-body1': { fontSize: '1em' }
-                  }}
-                />
-              </ListItemButton>
-            </ListItem>
+            {activeAttachment?.type === AttachmentType.File && (
+              <ListItem disablePadding>
+                <ListItemButton
+                  sx={{ py: 0.5 }}
+                  onClick={() => handleDownloadFileAttachment(activeAttachment as CardAttachmentType)}
+                >
+                  <ListItemText
+                    primary='Download'
+                    sx={{
+                      '& .MuiTypography-body1': { fontSize: '1em' }
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            )}
             <ListItem disablePadding>
               <ListItemButton
                 onClick={() => {
