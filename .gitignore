@@ -35,3 +35,10 @@ stats.html
 # GitHub Copilot instructions
 /.github/copilot-instructions.md
 /.github/prompts/*
+/.github/instructions/*
+
+# Cursor
+/.cursor
+.cursorrules
+.cursorignore
+/memory-bank

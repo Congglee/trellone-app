@@ -1,0 +1,3 @@
+import RemoveCardAttachmentConfirm from '~/components/Modal/ActiveCard/RemoveCardAttachmentConfirm/RemoveCardAttachmentConfirm'
+
+export default RemoveCardAttachmentConfirm

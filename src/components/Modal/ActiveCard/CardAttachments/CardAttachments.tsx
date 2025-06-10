@@ -19,9 +19,11 @@ import Popover from '@mui/material/Popover'
 import Typography from '@mui/material/Typography'
 import { formatDistanceToNow } from 'date-fns'
 import { Fragment, RefObject, useMemo, useState } from 'react'
+import { toast } from 'react-toastify'
+import AttachmentPreviewModal from '~/components/Modal/ActiveCard/AttachmentPreviewModal'
 import EditCardFileAttachmentForm from '~/components/Modal/ActiveCard/EditCardFileAttachmentForm'
 import EditCardLinkAttachmentForm from '~/components/Modal/ActiveCard/EditCardLinkAttachmentForm'
-import RemoveCardAttachmentConfirm from '~/components/Modal/ActiveCard/RemoveCardAttachmentConfirm/RemoveCardAttachmentConfirm'
+import RemoveCardAttachmentConfirm from '~/components/Modal/ActiveCard/RemoveCardAttachmentConfirm'
 import { AttachmentType, CardAttachmentAction } from '~/constants/type'
 import { CardAttachmentPayloadType, CardAttachmentType } from '~/schemas/card.schema'
 
@@ -40,6 +42,8 @@ export default function CardAttachments({
   const [showMenuActions, setShowMenuActions] = useState(false)
   const [showRemoveCardAttachmentConfirm, setShowRemoveCardAttachmentConfirm] = useState(false)
   const [showEditCardAttachmentForm, setShowEditCardAttachmentForm] = useState(false)
+  const [showPreviewModal, setShowPreviewModal] = useState(false)
+  const [previewAttachment, setPreviewAttachment] = useState<CardAttachmentType | null>(null)
 
   const isOpenPopover = Boolean(anchorPopoverElement)
 
@@ -68,9 +72,51 @@ export default function CardAttachments({
     setActiveAttachment(null)
   }
 
+  const handlePreviewAttachment = (attachment: CardAttachmentType) => {
+    setPreviewAttachment(attachment)
+    setShowPreviewModal(true)
+  }
+
+  const handleClosePreviewModal = () => {
+    setShowPreviewModal(false)
+    setPreviewAttachment(null)
+  }
+
   const handleAddAttachmentClick = () => {
     if (attachmentPopoverButtonRef?.current) {
       attachmentPopoverButtonRef.current.click()
+    }
+  }
+
+  const handleDownloadFileAttachment = async (attachment: CardAttachmentType) => {
+    try {
+      const response = await fetch(attachment.file.url)
+
+      if (!response.ok) {
+        throw new Error('Failed to download file')
+      }
+
+      // Get the file blob
+      const blob = await response.blob()
+
+      // Create a temporary URL for the blob
+      const downloadUrl = window.URL.createObjectURL(blob)
+
+      // Create a temporary anchor element to trigger download
+      const link = document.createElement('a')
+      link.href = downloadUrl
+      link.download = attachment.file.display_name || attachment.file.original_name
+
+      // Append to body, click, and remove
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      // Clean up the object URL
+      window.URL.revokeObjectURL(downloadUrl)
+    } catch (error) {
+      toast.error('Failed to download file')
+      console.error('Error downloading file:', error)
     }
   }
 
@@ -206,12 +252,18 @@ export default function CardAttachments({
                 <ListItem
                   key={index}
                   disableGutters
+                  component='div'
                   sx={{
                     borderRadius: 1,
                     flexDirection: { xs: 'column', sm: 'row' },
                     alignItems: { xs: 'flex-start', sm: 'center' },
-                    gap: 1
+                    gap: 1,
+                    cursor: 'pointer',
+                    '&:hover': {
+                      backgroundColor: 'action.hover'
+                    }
                   }}
+                  onClick={() => handlePreviewAttachment(attachment)}
                   secondaryAction={
                     <Box
                       sx={{
@@ -222,7 +274,13 @@ export default function CardAttachments({
                       <IconButton size='small' sx={{ mr: 0.5 }}>
                         <OpenInNewIcon fontSize='small' />
                       </IconButton>
-                      <IconButton size='small' onClick={(event) => togglePopover(event, attachment)}>
+                      <IconButton
+                        size='small'
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          togglePopover(event, attachment)
+                        }}
+                      >
                         <MoreHorizIcon />
                       </IconButton>
                     </Box>
@@ -336,16 +394,21 @@ export default function CardAttachments({
                 />
               </ListItemButton>
             </ListItem>
-            <ListItem disablePadding>
-              <ListItemButton sx={{ py: 0.5 }}>
-                <ListItemText
-                  primary='Download'
-                  sx={{
-                    '& .MuiTypography-body1': { fontSize: '1em' }
-                  }}
-                />
-              </ListItemButton>
-            </ListItem>
+            {activeAttachment?.type === AttachmentType.File && (
+              <ListItem disablePadding>
+                <ListItemButton
+                  sx={{ py: 0.5 }}
+                  onClick={() => handleDownloadFileAttachment(activeAttachment as CardAttachmentType)}
+                >
+                  <ListItemText
+                    primary='Download'
+                    sx={{
+                      '& .MuiTypography-body1': { fontSize: '1em' }
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            )}
             <ListItem disablePadding>
               <ListItemButton
                 onClick={() => {
@@ -390,6 +453,12 @@ export default function CardAttachments({
             />
           ))}
       </Popover>
+
+      <AttachmentPreviewModal
+        open={showPreviewModal}
+        onClose={handleClosePreviewModal}
+        attachment={previewAttachment}
+      />
     </Box>
   )
 }
