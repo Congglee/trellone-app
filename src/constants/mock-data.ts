@@ -72,7 +72,8 @@ export const mockBoardDetails: BoardResType['result'] = {
               user_avatar: '',
               user_display_name: 'Test User 01',
               content: 'This is a comment',
-              commented_at: new Date('2023-10-01T00:00:00.000Z')
+              commented_at: new Date('2023-10-01T00:00:00.000Z'),
+              comment_id: 'comment-id-01'
             },
             {
               user_id: 'user-id-01',
@@ -80,7 +81,8 @@ export const mockBoardDetails: BoardResType['result'] = {
               user_avatar: '',
               user_display_name: 'Test User 01',
               content: 'This is another comment',
-              commented_at: new Date('2023-10-01T00:00:00.000Z')
+              commented_at: new Date('2023-10-01T00:00:00.000Z'),
+              comment_id: 'comment-id-02'
             }
           ],
           attachments: [],

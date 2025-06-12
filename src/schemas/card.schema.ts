@@ -1,7 +1,8 @@
 import z from 'zod'
-import { AttachmentType, CardAttachmentActionValues, CardMemberAction } from '~/constants/type'
+import { AttachmentType, CardAttachmentActionValues, CardMemberAction, CommentActionValues } from '~/constants/type'
 
 const CommentSchema = z.object({
+  comment_id: z.string(),
   user_id: z.string(),
   user_email: z.string(),
   user_avatar: z.string(),
@@ -11,6 +12,16 @@ const CommentSchema = z.object({
 })
 
 export type CommentType = z.TypeOf<typeof CommentSchema>
+
+const CommentPayloadSchema = z.object({
+  action: z.enum(CommentActionValues),
+  user_email: z.string(),
+  user_avatar: z.string().optional(),
+  user_display_name: z.string(),
+  content: z.string()
+})
+
+export type CommentPayloadType = z.TypeOf<typeof CommentPayloadSchema>
 
 const CardMemberPayloadSchema = z.object({
   action: z.enum([CardMemberAction.Add, CardMemberAction.Remove]),
@@ -117,7 +128,7 @@ export const UpdateCardBody = z.object({
   description: z.string().optional(),
   cover_photo: z.string().url().optional(),
   _destroy: z.boolean().optional(),
-  comment: CommentSchema.optional(),
+  comment: CommentPayloadSchema.optional(),
   member: CardMemberPayloadSchema.optional(),
   attachment: CardAttachmentPayloadSchema.optional()
 })

@@ -45,7 +45,7 @@ import { useUploadImageMutation } from '~/queries/medias'
 import {
   CardAttachmentPayloadType,
   CardMemberPayloadType,
-  CommentType,
+  CommentPayloadType,
   UpdateCardBodyType
 } from '~/schemas/card.schema'
 import { updateCardInBoard } from '~/store/slices/board.slice'
@@ -137,7 +137,7 @@ export default function ActiveCard() {
     })
   }
 
-  const onAddCardComment = async (comment: CommentType) => {
+  const onUpdateCardComment = async (comment: CommentPayloadType) => {
     handleUpdateActiveCard({ comment })
   }
 
@@ -256,7 +256,10 @@ export default function ActiveCard() {
                 </Typography>
               </Box>
 
-              <CardActivitySection cardComments={activeCard?.comments || []} onAddCardComment={onAddCardComment} />
+              <CardActivitySection
+                cardComments={activeCard?.comments || []}
+                onUpdateCardComment={onUpdateCardComment}
+              />
             </Box>
           </Grid>
 
