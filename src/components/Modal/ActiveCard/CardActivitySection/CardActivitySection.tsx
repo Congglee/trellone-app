@@ -26,13 +26,13 @@ export default function CardActivitySection({ cardComments, onUpdateCardComment 
   const [editingCommentIndex, setEditingCommentIndex] = useState<number | null>(null)
   const [editingCommentContent, setEditingCommentContent] = useState<string>('')
 
-  const [anchorPopoverElement, setAnchorPopoverElement] = useState<HTMLElement | null>(null)
+  const [anchorRemoveCommentPopoverElement, setAnchorRemoveCommentPopoverElement] = useState<HTMLElement | null>(null)
 
-  const isOpenPopover = Boolean(anchorPopoverElement)
+  const isRemoveCommentPopoverOpen = Boolean(anchorRemoveCommentPopoverElement)
 
-  const popoverId = isOpenPopover ? 'card-activity-section-popover' : undefined
+  const popoverId = isRemoveCommentPopoverOpen ? 'remove-comment-popover' : undefined
 
-  const handleCloseEditingCardComment = () => {
+  const handleEditingCommentClose = () => {
     setEditingCommentIndex(null)
     setEditingCommentContent('')
     setActiveComment(null)
@@ -45,17 +45,17 @@ export default function CardActivitySection({ cardComments, onUpdateCardComment 
   }
 
   const toggleRemoveCommentPopover = (event: React.MouseEvent<HTMLSpanElement, MouseEvent>, comment: CommentType) => {
-    if (!anchorPopoverElement) {
-      setAnchorPopoverElement(event.currentTarget)
+    if (!anchorRemoveCommentPopoverElement) {
+      setAnchorRemoveCommentPopoverElement(event.currentTarget)
       setActiveComment(comment)
     } else {
-      setAnchorPopoverElement(null)
+      setAnchorRemoveCommentPopoverElement(null)
       setActiveComment(null)
     }
   }
 
-  const handleClosePopover = () => {
-    setAnchorPopoverElement(null)
+  const handleRemoveCommentPopoverClose = () => {
+    setAnchorRemoveCommentPopoverElement(null)
     setActiveComment(null)
   }
 
@@ -83,12 +83,12 @@ export default function CardActivitySection({ cardComments, onUpdateCardComment 
 
   const updateCardComment = () => {
     if (!activeComment || !editingCommentContent.trim()) {
-      handleCloseEditingCardComment()
+      handleEditingCommentClose()
       return
     }
 
     if (editingCommentContent.trim() === activeComment.content.trim()) {
-      handleCloseEditingCardComment()
+      handleEditingCommentClose()
       return
     }
 
@@ -102,7 +102,7 @@ export default function CardActivitySection({ cardComments, onUpdateCardComment 
     }
 
     onUpdateCardComment(payload).finally(() => {
-      handleCloseEditingCardComment()
+      handleEditingCommentClose()
     })
   }
 
@@ -118,7 +118,7 @@ export default function CardActivitySection({ cardComments, onUpdateCardComment 
       }
 
       onUpdateCardComment(payload).finally(() => {
-        handleClosePopover()
+        handleRemoveCommentPopoverClose()
       })
     }
   }
@@ -136,6 +136,7 @@ export default function CardActivitySection({ cardComments, onUpdateCardComment 
           onKeyDown={addCardComment}
         />
       </Box>
+
       {cardComments.length === 0 && (
         <Typography
           sx={{
@@ -148,6 +149,7 @@ export default function CardActivitySection({ cardComments, onUpdateCardComment 
           No activity found!
         </Typography>
       )}
+
       {cardComments.map((comment, index) => {
         const isCommentOwner = comment.user_email === profile?.email
         const isEditingThisComment = editingCommentIndex === index
@@ -161,6 +163,7 @@ export default function CardActivitySection({ cardComments, onUpdateCardComment 
                 src={comment.user_avatar}
               />
             </Tooltip>
+
             <Box sx={{ width: 'inherit' }}>
               <Typography component='span' sx={{ fontWeight: 'bold', mr: 1 }}>
                 {comment.user_display_name}
@@ -184,7 +187,7 @@ export default function CardActivitySection({ cardComments, onUpdateCardComment 
                     <Button type='submit' variant='contained' color='info' onClick={updateCardComment}>
                       Save
                     </Button>
-                    <Button type='button' sx={{ color: 'text.primary' }} onClick={handleCloseEditingCardComment}>
+                    <Button type='button' sx={{ color: 'text.primary' }} onClick={handleEditingCommentClose}>
                       Cancel
                     </Button>
                   </Box>
@@ -205,6 +208,7 @@ export default function CardActivitySection({ cardComments, onUpdateCardComment 
                   {comment.content}
                 </Box>
               )}
+
               {!isEditingThisComment && (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
                   <IconButton size='small'>
@@ -268,11 +272,12 @@ export default function CardActivitySection({ cardComments, onUpdateCardComment 
           </Box>
         )
       })}
+
       <Popover
         id={popoverId}
-        open={isOpenPopover}
-        anchorEl={anchorPopoverElement}
-        onClose={handleClosePopover}
+        open={isRemoveCommentPopoverOpen}
+        anchorEl={anchorRemoveCommentPopoverElement}
+        onClose={handleRemoveCommentPopoverClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         slotProps={{
           paper: { sx: { borderRadius: 2 } }
@@ -283,7 +288,7 @@ export default function CardActivitySection({ cardComments, onUpdateCardComment 
             <Typography variant='subtitle1' sx={{ fontWeight: 'medium' }}>
               Delete comment?
             </Typography>
-            <IconButton size='small' onClick={handleClosePopover} sx={{ position: 'absolute', right: 0 }}>
+            <IconButton size='small' onClick={handleRemoveCommentPopoverClose} sx={{ position: 'absolute', right: 0 }}>
               <CloseIcon fontSize='small' />
             </IconButton>
           </Box>

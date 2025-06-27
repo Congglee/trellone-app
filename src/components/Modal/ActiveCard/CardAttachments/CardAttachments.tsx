@@ -38,34 +38,34 @@ export default function CardAttachments({
   attachmentPopoverButtonRef,
   onUpdateCardAttachment
 }: CardAttachmentsProps) {
-  const [anchorPopoverElement, setAnchorPopoverElement] = useState<HTMLElement | null>(null)
+  const [anchorMenuActionsPopoverElement, setAnchorMenuActionsPopoverElement] = useState<HTMLElement | null>(null)
   const [showMenuActions, setShowMenuActions] = useState(false)
   const [showRemoveCardAttachmentConfirm, setShowRemoveCardAttachmentConfirm] = useState(false)
   const [showEditCardAttachmentForm, setShowEditCardAttachmentForm] = useState(false)
   const [showPreviewModal, setShowPreviewModal] = useState(false)
   const [previewAttachment, setPreviewAttachment] = useState<CardAttachmentType | null>(null)
 
-  const isOpenPopover = Boolean(anchorPopoverElement)
+  const isMenuActionsPopoverOpen = Boolean(anchorMenuActionsPopoverElement)
 
-  const popoverId = isOpenPopover ? 'card-attachments-popover' : undefined
+  const popoverId = isMenuActionsPopoverOpen ? 'menu-actions-popover' : undefined
 
-  const togglePopover = (
+  const toggleMenuActionsPopover = (
     event: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>,
     attachment: CardAttachmentType
   ) => {
-    if (!anchorPopoverElement) {
-      setAnchorPopoverElement(event.currentTarget)
+    if (!anchorMenuActionsPopoverElement) {
+      setAnchorMenuActionsPopoverElement(event.currentTarget)
       setShowMenuActions(true)
       setActiveAttachment(attachment)
     } else {
-      setAnchorPopoverElement(null)
+      setAnchorMenuActionsPopoverElement(null)
       setShowMenuActions(false)
       setActiveAttachment(null)
     }
   }
 
-  const handleClose = () => {
-    setAnchorPopoverElement(null)
+  const handleMenuActionsPopoverClose = () => {
+    setAnchorMenuActionsPopoverElement(null)
     setShowMenuActions(false)
     setShowRemoveCardAttachmentConfirm(false)
     setShowEditCardAttachmentForm(false)
@@ -77,7 +77,7 @@ export default function CardAttachments({
     setShowPreviewModal(true)
   }
 
-  const handleClosePreviewModal = () => {
+  const handlePreviewModalClose = () => {
     setShowPreviewModal(false)
     setPreviewAttachment(null)
   }
@@ -151,7 +151,7 @@ export default function CardAttachments({
       }
 
       onUpdateCardAttachment(payload).finally(() => {
-        handleClose()
+        handleMenuActionsPopoverClose()
       })
     }
   }
@@ -231,7 +231,7 @@ export default function CardAttachments({
                         sx={{ m: 0 }}
                       />
                     </MuiLink>
-                    <IconButton size='small' onClick={(event) => togglePopover(event, attachment)}>
+                    <IconButton size='small' onClick={(event) => toggleMenuActionsPopover(event, attachment)}>
                       <MoreHorizIcon fontSize='small' />
                     </IconButton>
                   </ListItem>
@@ -278,7 +278,7 @@ export default function CardAttachments({
                         size='small'
                         onClick={(event) => {
                           event.stopPropagation()
-                          togglePopover(event, attachment)
+                          toggleMenuActionsPopover(event, attachment)
                         }}
                       >
                         <MoreHorizIcon />
@@ -352,16 +352,16 @@ export default function CardAttachments({
 
       <Popover
         id={popoverId}
-        open={isOpenPopover}
-        anchorEl={anchorPopoverElement}
-        onClose={handleClose}
+        open={isMenuActionsPopoverOpen}
+        anchorEl={anchorMenuActionsPopoverElement}
+        onClose={handleMenuActionsPopoverClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         slotProps={{
           paper: {
             sx: {
               borderRadius: 2,
-              display: !isOpenPopover ? 'none' : 'block'
+              display: !isMenuActionsPopoverOpen ? 'none' : 'block'
             }
           }
         }}
@@ -432,7 +432,7 @@ export default function CardAttachments({
           <RemoveCardAttachmentConfirm
             onBackToMenuActions={onBackToMenuActionsFromRemove}
             onRemoveCardAttachment={onRemoveCardAttachment}
-            onClose={handleClose}
+            onClose={handleMenuActionsPopoverClose}
           />
         )}
 
@@ -442,21 +442,21 @@ export default function CardAttachments({
               attachment={activeAttachment!}
               onUpdateCardAttachment={onUpdateCardAttachment}
               onBackToMenuActions={onBackToMenuActionsFromEdit}
-              onClose={handleClose}
+              onClose={handleMenuActionsPopoverClose}
             />
           ) : (
             <EditCardLinkAttachmentForm
               attachment={activeAttachment!}
               onUpdateCardAttachment={onUpdateCardAttachment}
               onBackToMenuActions={onBackToMenuActionsFromEdit}
-              onClose={handleClose}
+              onClose={handleMenuActionsPopoverClose}
             />
           ))}
       </Popover>
 
       <AttachmentPreviewModal
         open={showPreviewModal}
-        onClose={handleClosePreviewModal}
+        onClose={handlePreviewModalClose}
         attachment={previewAttachment}
       />
     </Box>

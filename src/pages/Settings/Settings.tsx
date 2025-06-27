@@ -1,19 +1,19 @@
+import PersonIcon from '@mui/icons-material/Person'
+import SecurityIcon from '@mui/icons-material/Security'
+import TabContext from '@mui/lab/TabContext'
+import TabList from '@mui/lab/TabList'
+import TabPanel from '@mui/lab/TabPanel'
+import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
+import Tab from '@mui/material/Tab'
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import NavBar from '~/components/NavBar'
-import TabContext from '@mui/lab/TabContext'
-import Box from '@mui/material/Box'
-import TabList from '@mui/lab/TabList'
-import Tab from '@mui/material/Tab'
-import PersonIcon from '@mui/icons-material/Person'
-import SecurityIcon from '@mui/icons-material/Security'
 import path from '~/constants/path'
-import TabPanel from '@mui/lab/TabPanel'
 import AccountTab from '~/pages/Settings/components/AccountTab'
 import SecurityTab from '~/pages/Settings/components/SecurityTab'
 
-const TABS = {
+const SETTINGS_TABS = {
   ACCOUNT: 'account',
   SECURITY: 'security'
 }
@@ -21,23 +21,26 @@ const TABS = {
 export default function Settings() {
   const location = useLocation()
 
-  const defaultTab = location.pathname.includes(TABS.SECURITY) ? TABS.SECURITY : TABS.ACCOUNT
+  const defaultSettingsTab = location.pathname.includes(SETTINGS_TABS.SECURITY)
+    ? SETTINGS_TABS.SECURITY
+    : SETTINGS_TABS.ACCOUNT
 
-  const [activeTab, setActiveTab] = useState(defaultTab)
+  const [activeSettingsTab, setActiveSettingsTab] = useState(defaultSettingsTab)
 
-  const handleChangeTab = (_event: React.SyntheticEvent, selectedTab: string) => {
-    setActiveTab(selectedTab)
+  const handleSettingsTabChange = (_event: React.SyntheticEvent, selectedSettingsTab: string) => {
+    setActiveSettingsTab(selectedSettingsTab)
   }
 
   return (
     <Container disableGutters maxWidth={false}>
       <NavBar />
-      <TabContext value={activeTab}>
+
+      <TabContext value={activeSettingsTab}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <TabList onChange={handleChangeTab}>
+          <TabList onChange={handleSettingsTabChange}>
             <Tab
               label='Account'
-              value={TABS.ACCOUNT}
+              value={SETTINGS_TABS.ACCOUNT}
               icon={<PersonIcon />}
               iconPosition='start'
               component={Link}
@@ -45,7 +48,7 @@ export default function Settings() {
             />
             <Tab
               label='Security'
-              value={TABS.SECURITY}
+              value={SETTINGS_TABS.SECURITY}
               icon={<SecurityIcon />}
               iconPosition='start'
               component={Link}
@@ -53,10 +56,12 @@ export default function Settings() {
             />
           </TabList>
         </Box>
-        <TabPanel value={TABS.ACCOUNT}>
+
+        <TabPanel value={SETTINGS_TABS.ACCOUNT}>
           <AccountTab />
         </TabPanel>
-        <TabPanel value={TABS.SECURITY}>
+
+        <TabPanel value={SETTINGS_TABS.SECURITY}>
           <SecurityTab />
         </TabPanel>
       </TabContext>

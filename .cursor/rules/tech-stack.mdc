@@ -1,0 +1,238 @@
+---
+description: Tech stack and dependencies guide
+globs:
+alwaysApply: true
+---
+# Tech Stack & Dependencies Guide
+
+This rule outlines the complete technology stack used in Trellone, including versions and best practices.
+
+## Core Framework & Runtime
+
+### React 18.3.1
+- **Latest Features**: React 18 includes concurrent features, automatic batching, and Suspense improvements
+- **Best Practices**:
+  - Use `useId()` for unique IDs instead of manual generation
+  - Leverage `useDeferredValue()` for performance optimization
+  - Use `useTransition()` for non-urgent state updates
+  - Prefer function components with hooks over class components
+
+### TypeScript 5.7.2
+- **Latest Features**: Enhanced type inference, decorators support, and better performance
+- **Best Practices**:
+  - Use strict mode in tsconfig.json
+  - Leverage utility types (Pick, Omit, Partial, etc.)
+  - Define interfaces for props and state
+  - Use generic types for reusable components
+
+### Vite 6.1.0
+- **Modern Build Tool**: Lightning-fast HMR and optimized builds
+- **Best Practices**:
+  - Use dynamic imports for code splitting
+  - Leverage Vite's built-in optimizations
+  - Configure proper environment variables
+
+## UI Framework & Styling
+
+### Material-UI (MUI) 5.16.14
+- **Component Library**: Comprehensive React components following Material Design
+- **Dependencies**:
+  - `@mui/material`: Core components
+  - `@mui/icons-material`: Material Design icons
+  - `@mui/lab`: Experimental components
+  - `@mui/x-date-pickers`: Date/time picker components
+- **Best Practices**:
+  - Use theme customization for consistent styling
+  - Leverage sx prop for component-specific styles
+  - Use MUI's responsive breakpoints
+  - Implement proper TypeScript typing with MUI themes
+
+```typescript
+// Good: Using MUI with proper typing
+import { Box, Typography, useTheme } from '@mui/material';
+
+const MyComponent = () => {
+  const theme = useTheme();
+  return (
+    <Box sx={{ p: 2, bgcolor: 'background.paper' }}>
+      <Typography variant="h6">Content</Typography>
+    </Box>
+  );
+};
+```
+
+### Emotion 11.14.0
+- **CSS-in-JS**: Used by MUI for styling
+- **Best Practices**:
+  - Prefer MUI's sx prop over direct Emotion usage
+  - Use theme tokens for consistency
+
+## State Management
+
+### Redux Toolkit 2.6.0 + React Redux 9.2.0
+- **Modern Redux**: Simplified Redux with best practices built-in
+- **Best Practices**:
+  - Use `createSlice()` for reducers
+  - Implement proper TypeScript typing with RTK
+  - Use `createAsyncThunk()` for async actions
+  - Leverage Redux DevTools
+
+```typescript
+// Good: RTK slice structure
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+interface AppState {
+  loading: boolean;
+  error: string | null;
+}
+
+const appSlice = createSlice({
+  name: 'app',
+  initialState: { loading: false, error: null } as AppState,
+  reducers: {
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload;
+    }
+  }
+});
+```
+
+### Redux Persist 6.0.0
+- **State Persistence**: Maintains state across browser sessions
+- **Best Practices**:
+  - Configure whitelist/blacklist for selective persistence
+  - Handle migration for schema changes
+
+## Form Management
+
+### React Hook Form 7.54.2 + Hookform Resolvers 3.10.0
+- **Performance**: Minimizes re-renders with uncontrolled components
+- **Best Practices**:
+  - Use `useForm()` hook for form state
+  - Implement proper validation with resolvers
+  - Leverage `Controller` for MUI components
+
+```typescript
+// Good: RHF with MUI integration
+import { useForm, Controller } from 'react-hook-form';
+import { TextField } from '@mui/material';
+
+const MyForm = () => {
+  const { control, handleSubmit } = useForm();
+  
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Controller
+        name="email"
+        control={control}
+        render={({ field }) => (
+          <TextField {...field} label="Email" />
+        )}
+      />
+    </form>
+  );
+};
+```
+
+## Validation & Schema
+
+### Zod 3.24.2
+- **TypeScript-first Schema**: Runtime validation with static type inference
+- **Best Practices**:
+  - Define schemas for API responses and form data
+  - Use with React Hook Form resolvers
+  - Leverage type inference for TypeScript integration
+
+```typescript
+// Good: Zod schema definition
+import { z } from 'zod';
+
+const userSchema = z.object({
+  id: z.string(),
+  email: z.string().email(),
+  name: z.string().min(1)
+});
+
+type User = z.infer<typeof userSchema>;
+```
+
+## Drag & Drop
+
+### DND Kit 6.3.1
+- **Modern DnD**: Accessibility-focused drag and drop
+- **Components**:
+  - `@dnd-kit/core`: Core functionality
+  - `@dnd-kit/sortable`: Sortable lists
+  - `@dnd-kit/utilities`: Utility functions
+- **Best Practices**:
+  - Use sensors for different input methods
+  - Implement proper accessibility features
+  - Handle collision detection appropriately
+
+## HTTP Client & Real-time
+
+### Axios 1.8.3
+- **HTTP Client**: Promise-based HTTP client
+- **Best Practices**:
+  - Create axios instances with base configuration
+  - Implement request/response interceptors
+  - Handle errors consistently
+
+### Socket.io Client 4.8.1
+- **Real-time Communication**: WebSocket with fallbacks
+- **Best Practices**:
+  - Manage connection lifecycle properly
+  - Handle reconnection scenarios
+  - Implement proper error handling
+
+## Routing
+
+### React Router DOM 6.29.0
+- **Modern Routing**: Data-driven routing with loaders and actions
+- **Best Practices**:
+  - Use data router approach
+  - Implement proper error boundaries
+  - Leverage route loaders for data fetching
+
+## Development Tools
+
+### ESLint 9.19.0 + Prettier 3.5.2
+- **Code Quality**: Linting and formatting
+- **Configuration**:
+  - TypeScript ESLint integration
+  - Prettier for consistent formatting
+  - React-specific rules
+
+### Development Dependencies
+- **Rollup Plugin Visualizer**: Bundle analysis
+- **Vite Plugin SVGR**: SVG to React components
+- **Various Type Definitions**: Comprehensive TypeScript support
+
+## Version Compatibility Notes
+
+1. **React 18 + MUI 5**: Fully compatible, leverage concurrent features
+2. **Redux Toolkit 2.x**: Uses Immer 10.x internally, excellent TypeScript support
+3. **React Hook Form 7.x**: Stable API, excellent performance
+4. **Zod 3.x**: Mature schema validation, excellent TypeScript integration
+5. **DND Kit 6.x**: Modern replacement for react-beautiful-dnd
+
+## Performance Considerations
+
+1. **Bundle Splitting**: Use dynamic imports for route-based code splitting
+2. **Tree Shaking**: Vite handles this automatically
+3. **Lazy Loading**: Implement React.lazy for component-level splitting
+4. **Memoization**: Use React.memo, useMemo, useCallback appropriately
+
+## Security Best Practices
+
+1. **JWT Handling**: Use jwt-decode for token parsing, store securely
+2. **Validation**: Always validate on both client and server
+3. **Sanitization**: Use rehype-sanitize for markdown content
+4. **HTTPS**: Ensure all production traffic uses HTTPS
+
+## Migration Path for Future Updates
+
+1. **React 19**: Monitor for release and compatibility
+2. **MUI 6**: Watch for breaking changes
+3. **Redux Toolkit**: Keep updated for performance improvements
+4. **TypeScript**: Regular updates for language features

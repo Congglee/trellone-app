@@ -1,12 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-import { Navigate, useNavigate } from 'react-router-dom'
-import { useQueryConfig } from '~/hooks/use-query-config'
-import { useResetPasswordMutation, useVerifyForgotPasswordMutation } from '~/queries/auth'
-import { ResetPasswordBody, ResetPasswordBodyType } from '~/schemas/auth.schema'
-import { AuthQueryParams } from '~/types/query-params.type'
-import { isUnprocessableEntityError } from '~/utils/error-handlers'
 import LockIcon from '@mui/icons-material/Lock'
 import { Card as MuiCard } from '@mui/material'
 import Avatar from '@mui/material/Avatar'
@@ -16,11 +8,18 @@ import CardActions from '@mui/material/CardActions'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import Zoom from '@mui/material/Zoom'
-import { Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
 import path from '~/constants/path'
+import { useQueryConfig } from '~/hooks/use-query-config'
+import { useResetPasswordMutation, useVerifyForgotPasswordMutation } from '~/queries/auth'
+import { ResetPasswordBody, ResetPasswordBodyType } from '~/schemas/auth.schema'
+import { AuthQueryParams } from '~/types/query-params.type'
+import { isUnprocessableEntityError } from '~/utils/error-handlers'
 
 export default function ResetPassword() {
   const { forgot_password_token } = useQueryConfig<AuthQueryParams>()
@@ -39,7 +38,7 @@ export default function ResetPassword() {
   const [verifyForgotPasswordMutation] = useVerifyForgotPasswordMutation()
   const [resetPasswordMutation, { isError, error }] = useResetPasswordMutation()
 
-  // Prevent users from accessing this page by entering the URL directly
+  // Prevent users from accessing this page by entering the URL directly (404)
   useEffect(() => {
     if (forgot_password_token) {
       verifyForgotPasswordMutation({ forgot_password_token }).then((res) => {
@@ -76,6 +75,7 @@ export default function ResetPassword() {
     }
   }, [isError, error, setError])
 
+  // If there is no token on the URL, redirect to 404
   if (!forgot_password_token) {
     return <Navigate to='/404' />
   }
@@ -92,9 +92,11 @@ export default function ResetPassword() {
               <TrelloneIcon />
             </Avatar>
           </Box>
+
           <Typography sx={{ textAlign: 'center', fontSize: '1.5rem', fontWeight: 'medium' }} variant='h1'>
             Reset your password
           </Typography>
+
           <Box sx={{ padding: '1em' }}>
             <Box sx={{ marginTop: '1em' }}>
               <TextFieldInput
@@ -106,6 +108,7 @@ export default function ResetPassword() {
               />
               <FieldErrorAlert errorMessage={errors.password?.message} />
             </Box>
+
             <Box sx={{ marginTop: '1em' }}>
               <TextFieldInput
                 name='confirm_password'
@@ -117,6 +120,7 @@ export default function ResetPassword() {
               <FieldErrorAlert errorMessage={errors.confirm_password?.message} />
             </Box>
           </Box>
+
           <CardActions
             sx={{
               padding: '0 1em 1em 1em',
@@ -137,7 +141,9 @@ export default function ResetPassword() {
               Reset password
             </Button>
           </CardActions>
+
           <Divider>Or continue with</Divider>
+
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '1em' }}>
             <Typography sx={{ textAlign: 'center' }}>
               Go back to{' '}

@@ -38,7 +38,7 @@ export default function AutoCompleteSearchBoard({ styles }: AutoCompleteSearchBo
 
   const debounceSearchBoard = useDebounce(handleInputSearchChange, 2000)
 
-  const handleSelectBoard = (
+  const handleBoardSelection = (
     _event: React.SyntheticEvent<Element, Event>,
     selectedBoard: BoardResType['result'] | null
   ) => {
@@ -60,7 +60,7 @@ export default function AutoCompleteSearchBoard({ styles }: AutoCompleteSearchBo
       isOptionEqualToValue={(option, value) => option._id === value._id}
       loading={isLoading}
       onInputChange={debounceSearchBoard}
-      onChange={handleSelectBoard}
+      onChange={handleBoardSelection}
       renderInput={(params) => (
         <TextField
           {...params}

@@ -77,6 +77,7 @@ export default function EditCardLinkAttachmentForm({
           <CloseIcon fontSize='small' />
         </IconButton>
       </Box>
+
       <form onSubmit={onSubmit}>
         <Stack direction='column' spacing={1}>
           <Box>

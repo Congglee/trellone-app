@@ -23,18 +23,18 @@ import { BoardInvitationType, InvitationType } from '~/schemas/invitation.schema
 import { addNotification, appendNotifications, setNotifications } from '~/store/slices/notification.slice'
 
 export default function Notifications() {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [anchorNotificationsMenuElement, setAnchorNotificationsMenuElement] = useState<null | HTMLElement>(null)
   const [hasNewNotification, setHasNewNotification] = useState(false)
 
-  const open = Boolean(anchorEl)
+  const isNotificationsMenuOpen = Boolean(anchorNotificationsMenuElement)
 
-  const handleClickNotificationIcon = (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-    setAnchorEl(event.currentTarget)
+  const handleNotificationsMenuClick = (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+    setAnchorNotificationsMenuElement(event.currentTarget)
     setHasNewNotification(false)
   }
 
-  const handleClose = () => {
-    setAnchorEl(null)
+  const handleNotificationsMenuClose = () => {
+    setAnchorNotificationsMenuElement(null)
   }
 
   const navigate = useNavigate()
@@ -130,10 +130,10 @@ export default function Notifications() {
           variant={hasNewNotification ? 'dot' : 'standard'}
           sx={{ cursor: 'pointer' }}
           id='basic-button-open-notification'
-          aria-controls={open ? 'basic-notification-drop-down' : undefined}
+          aria-controls={isNotificationsMenuOpen ? 'basic-notification-drop-down' : undefined}
           aria-haspopup='true'
-          aria-expanded={open ? 'true' : undefined}
-          onClick={handleClickNotificationIcon}
+          aria-expanded={isNotificationsMenuOpen ? 'true' : undefined}
+          onClick={handleNotificationsMenuClick}
         >
           <NotificationsNoneIcon sx={{ color: hasNewNotification ? 'yellow' : 'inherit' }} />
         </Badge>
@@ -141,9 +141,9 @@ export default function Notifications() {
 
       <Menu
         id='basic-notification-drop-down'
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
+        anchorEl={anchorNotificationsMenuElement}
+        open={isNotificationsMenuOpen}
+        onClose={handleNotificationsMenuClose}
         MenuListProps={{ 'aria-labelledby': 'basic-button-open-notification' }}
         sx={{ mt: 2 }}
       >
@@ -222,6 +222,7 @@ export default function Notifications() {
                 </Box>
               </Box>
             </MenuItem>
+
             {index !== notifications?.length - 1 && <Divider />}
           </Box>
         ))}

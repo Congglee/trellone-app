@@ -29,16 +29,16 @@ interface AttachmentPopoverProps {
 }
 
 const AttachmentPopover = forwardRef<HTMLButtonElement, AttachmentPopoverProps>(({ onUpdateCardAttachment }, ref) => {
-  const [anchorPopoverElement, setAnchorPopoverElement] = useState<HTMLElement | null>(null)
-  const isOpenPopover = Boolean(anchorPopoverElement)
+  const [anchorAttachmentPopoverElement, setAnchorAttachmentPopoverElement] = useState<HTMLElement | null>(null)
+  const isAttachmentPopoverOpen = Boolean(anchorAttachmentPopoverElement)
 
-  const popoverId = isOpenPopover ? 'attachment-popover' : undefined
+  const popoverId = isAttachmentPopoverOpen ? 'attachment-popover' : undefined
 
-  const togglePopover = (event: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>) => {
-    if (!anchorPopoverElement) {
-      setAnchorPopoverElement(event.currentTarget)
+  const toggleAttachmentPopover = (event: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>) => {
+    if (!anchorAttachmentPopoverElement) {
+      setAnchorAttachmentPopoverElement(event.currentTarget)
     } else {
-      setAnchorPopoverElement(null)
+      setAnchorAttachmentPopoverElement(null)
       onReset()
     }
   }
@@ -72,7 +72,7 @@ const AttachmentPopover = forwardRef<HTMLButtonElement, AttachmentPopoverProps>(
 
     onUpdateCardAttachment(payload).finally(() => {
       onReset()
-      setAnchorPopoverElement(null)
+      setAnchorAttachmentPopoverElement(null)
     })
   })
 
@@ -118,7 +118,7 @@ const AttachmentPopover = forwardRef<HTMLButtonElement, AttachmentPopoverProps>(
       })
     ).finally(() => {
       onReset()
-      setAnchorPopoverElement(null)
+      setAnchorAttachmentPopoverElement(null)
     })
   }
 
@@ -128,7 +128,7 @@ const AttachmentPopover = forwardRef<HTMLButtonElement, AttachmentPopoverProps>(
         ref={ref}
         color='inherit'
         fullWidth
-        onClick={togglePopover}
+        onClick={toggleAttachmentPopover}
         sx={{
           p: '10px',
           lineHeight: 'inherit',
@@ -142,9 +142,9 @@ const AttachmentPopover = forwardRef<HTMLButtonElement, AttachmentPopoverProps>(
 
       <Popover
         id={popoverId}
-        open={isOpenPopover}
-        anchorEl={anchorPopoverElement}
-        onClose={togglePopover}
+        open={isAttachmentPopoverOpen}
+        anchorEl={anchorAttachmentPopoverElement}
+        onClose={toggleAttachmentPopover}
         anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
         transformOrigin={{ vertical: 'center', horizontal: 'center' }}
         slotProps={{
@@ -179,7 +179,7 @@ const AttachmentPopover = forwardRef<HTMLButtonElement, AttachmentPopoverProps>(
           >
             Attach
           </Typography>
-          <IconButton onClick={togglePopover} size='small'>
+          <IconButton onClick={toggleAttachmentPopover} size='small'>
             <CloseIcon />
           </IconButton>
         </Box>

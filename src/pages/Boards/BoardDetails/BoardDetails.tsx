@@ -177,7 +177,9 @@ export default function BoardDetails() {
   return (
     <Container disableGutters maxWidth={false} sx={{ height: '100vh' }}>
       <NavBar />
+
       <ActiveCard />
+
       <Box
         sx={{
           position: 'relative',
@@ -200,8 +202,10 @@ export default function BoardDetails() {
             }}
           />
         )}
+
         <Box sx={{ display: 'flex' }}>
           <WorkspaceDrawer open={workspaceDrawerOpen} onOpen={setWorkspaceDrawerOpen} boardId={boardId} />
+
           <BoardBar
             workspaceDrawerOpen={workspaceDrawerOpen}
             onWorkspaceDrawerOpen={setWorkspaceDrawerOpen}
@@ -209,6 +213,7 @@ export default function BoardDetails() {
             onBoardDrawerOpen={setBoardDrawerOpen}
             board={activeBoard}
           />
+
           <Main
             workspaceDrawerOpen={workspaceDrawerOpen}
             boardDrawerOpen={boardDrawerOpen}
@@ -220,7 +225,9 @@ export default function BoardDetails() {
             }}
           >
             <DrawerHeader />
+
             {isScreenBelowMedium && <DrawerHeader />}
+
             <BoardContent
               board={activeBoard}
               onMoveColumns={onMoveColumns}
@@ -228,6 +235,7 @@ export default function BoardDetails() {
               onMoveCardToDifferentColumn={onMoveCardToDifferentColumn}
             />
           </Main>
+
           <BoardDrawer open={boardDrawerOpen} onOpen={setBoardDrawerOpen} />
         </Box>
       </Box>

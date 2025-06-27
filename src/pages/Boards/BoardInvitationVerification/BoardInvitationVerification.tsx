@@ -33,12 +33,14 @@ export default function BoardInvitationVerification() {
 
   const isLoading = isVerifyBoardInvitationLoading || isUpdateBoardInvitationLoading
 
+  // Once there is a verification token on the URL, verify the invitation
   useEffect(() => {
     if (token) {
       verifyBoardInvitationMutation({ invite_token: token })
     }
   }, [token])
 
+  // If the invitation is verified successfully, update the invitation status to accepted
   useEffect(() => {
     if (isVerifyBoardInvitationSuccess && token) {
       const invitationId = decodeToken<InviteTokenPayload>(token as string).invitation_id
@@ -50,18 +52,21 @@ export default function BoardInvitationVerification() {
     }
   }, [isVerifyBoardInvitationSuccess, token])
 
+  // If the invitation is updated successfully, navigate to the board details page
   useEffect(() => {
     if (isUpdateBoardInvitationSuccess) {
       navigate(`/boards/${board_id}`)
     }
   }, [isUpdateBoardInvitationSuccess, navigate, board_id])
 
+  // If there is an error, navigate to the login page
   useEffect(() => {
     if (isVerifyBoardInvitationError || isUpdateBoardInvitationError) {
       navigate(path.login)
     }
   }, [isVerifyBoardInvitationError, isUpdateBoardInvitationError, navigate, board_id])
 
+  // If there is no token or board_id on the URL, navigate to the 404 page (this prevent the user from accessing the page directly)
   if (!token || !board_id) {
     return <Navigate to='/404' />
   }

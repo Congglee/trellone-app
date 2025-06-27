@@ -16,7 +16,7 @@ interface ModeSelectProps {
 export default function ModeSelect({ styles }: ModeSelectProps) {
   const { mode, setMode } = useColorScheme()
 
-  const handleChange = (event: SelectChangeEvent<Mode>) => {
+  const handleModeChange = (event: SelectChangeEvent<Mode>) => {
     const activeMode = event.target.value as Mode
     setMode(activeMode)
   }
@@ -29,7 +29,7 @@ export default function ModeSelect({ styles }: ModeSelectProps) {
         id='select-dark-light-mode'
         value={mode}
         label='Mode'
-        onChange={handleChange}
+        onChange={handleModeChange}
       >
         <MenuItem value='light'>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

@@ -1,0 +1,361 @@
+---
+description: Constants management guide
+globs:
+alwaysApply: true
+---
+# Constants Management Guide
+
+This rule defines the comprehensive conventions for managing constants in the Trellone project, based on the established patterns in [src/constants](mdc:src/constants).
+
+## Directory Structure
+
+All constants are organized in [src/constants/](mdc:src/constants) with specific files for different types of constants:
+
+- [config.ts](mdc:src/constants/config.ts) - Environment and application configuration
+- [type.ts](mdc:src/constants/type.ts) - Type definitions, enums, and value arrays
+- [path.ts](mdc:src/constants/path.ts) - Route path definitions
+- [pagination.ts](mdc:src/constants/pagination.ts) - Pagination-related constants
+- [http-status-code.ts](mdc:src/constants/http-status-code.ts) - HTTP status code enum
+- [mock-data.ts](mdc:src/constants/mock-data.ts) - Mock data for development/testing
+
+## Configuration Constants ([config.ts](mdc:src/constants/config.ts))
+
+### Environment Configuration Pattern
+
+```typescript
+// ✅ Good - Environment-based configuration
+const environment = import.meta.env.MODE || 'development'
+
+export const envConfig = {
+  baseUrl: environment === 'development' 
+    ? import.meta.env.VITE_APP_DEV_API_URL 
+    : import.meta.env.VITE_APP_PROD_API_URL,
+  googleClientId: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+  googleRedirectUri: import.meta.env.VITE_GOOGLE_REDIRECT_URI
+}
+```
+
+### Application Configuration Pattern
+
+```typescript
+// ✅ Good - Structured application config with proper units
+export const config = {
+  maxSizeUploadAvatar: 3 * 1024 * 1024, // 3MB
+  maxSizeUploadDocument: 10 * 1024 * 1024, // 10MB
+  maxFileUploadDocument: 4, // 4 files
+  maxSizeUploadDocumentTotal: 10 * 4 * 1024 * 1024, // 40MB
+  allowedDocumentTypes: [
+    'application/pdf', // .pdf
+    'application/msword', // .doc
+    // ... more types with comments
+  ],
+  allowedImageMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']
+}
+```
+
+**Configuration Conventions:**
+- Use camelCase for config object keys
+- Include unit comments for size values (e.g., `// 3MB`)
+- Group related configuration items together
+- Use descriptive names that indicate purpose
+- Include file extension comments for MIME types
+
+## Type Constants ([type.ts](mdc:src/constants/type.ts))
+
+### Const Assertion Pattern
+
+All type objects MUST use `as const` assertion for proper TypeScript inference:
+
+```typescript
+// ✅ Good - Const assertion for immutable objects
+export const TokenType = {
+  AccessToken: 0,
+  RefreshToken: 1,
+  ForgotPasswordToken: 2,
+  EmailVerifyToken: 3,
+  InviteToken: 4
+} as const
+
+export const BoardType = {
+  Public: 'public',
+  Private: 'private'
+} as const
+```
+
+### Values Array Pattern
+
+For each type object, create a corresponding values array for validation:
+
+```typescript
+// ✅ Good - Values array for validation
+export const BoardTypeValues = [BoardType.Public, BoardType.Private] as const
+
+export const RoleValues = [Role.Client, Role.Admin] as const
+
+export const UserVerifyStatusValues = [
+  UserVerifyStatus.Unverified,
+  UserVerifyStatus.Verified,
+  UserVerifyStatus.Banned
+] as const
+```
+
+### Naming Conventions for Types
+
+- **Type Objects**: Use PascalCase (e.g., `TokenType`, `BoardType`)
+- **Values Arrays**: Use PascalCase + "Values" suffix (e.g., `BoardTypeValues`)
+- **Enum Values**: Use PascalCase for object-style enums, UPPER_CASE for string enums
+
+### Type Value Patterns
+
+```typescript
+// ✅ Good - Numeric enums for internal use
+export const TokenType = {
+  AccessToken: 0,
+  RefreshToken: 1
+} as const
+
+// ✅ Good - String enums for API communication
+export const BoardType = {
+  Public: 'public',
+  Private: 'private'
+} as const
+
+// ✅ Good - String enums for actions
+export const CardMemberAction = {
+  Add: 'ADD',
+  Remove: 'REMOVE'
+} as const
+```
+
+## Path Constants ([path.ts](mdc:src/constants/path.ts))
+
+### Path Object Pattern
+
+```typescript
+// ✅ Good - Single path object with const assertion
+const path = {
+  home: '/',
+  boardsList: '/boards',
+  boardDetails: '/boards/:boardId',
+  login: '/login',
+  oauth: '/login/oauth',
+  register: '/register',
+  accountVerification: '/account/verification',
+  
+  // Group related paths together
+  accountSettings: '/settings/account',
+  securitySettings: '/settings/security',
+  
+  boardInvitationVerification: '/board-invitation/verification'
+} as const
+
+export default path
+```
+
+**Path Conventions:**
+- Use camelCase for path keys
+- Group related paths together (e.g., auth paths, settings paths)
+- Use descriptive names that match component/page names
+- Include URL parameters with colon syntax (`:boardId`)
+- Export as default export, not named export
+
+## Pagination Constants ([pagination.ts](mdc:src/constants/pagination.ts))
+
+### Simple Constants Pattern
+
+```typescript
+// ✅ Good - Simple named exports for single-value constants
+export const DEFAULT_PAGINATION_LIMIT = 10
+export const DEFAULT_PAGINATION_PAGE = 1
+
+export const NOTIFICATION_LIMIT = 4
+export const NOTIFICATION_PAGE = 1
+```
+
+**Pagination Conventions:**
+- Use UPPER_SNAKE_CASE for constant names
+- Include descriptive prefixes (DEFAULT_, NOTIFICATION_, etc.)
+- Use named exports for individual constants
+- Group related constants together
+
+## HTTP Status Codes ([http-status-code.ts](mdc:src/constants/http-status-code.ts))
+
+### Enum Pattern for Status Codes
+
+```typescript
+// ✅ Good - Standard TypeScript enum for HTTP status codes
+enum HttpStatusCode {
+  Continue = 100,
+  SwitchingProtocols = 101,
+  Processing = 102,
+  // ... continue with all status codes
+  Ok = 200,
+  Created = 201,
+  // ... error codes
+  BadRequest = 400,
+  Unauthorized = 401,
+  // ... server errors
+  InternalServerError = 500,
+  NotImplemented = 501
+}
+
+export default HttpStatusCode
+```
+
+**HTTP Status Code Conventions:**
+- Use standard TypeScript `enum` (not const assertion object)
+- Use PascalCase for enum member names
+- Export as default export
+- Include comprehensive status codes for all categories (1xx, 2xx, 3xx, 4xx, 5xx)
+
+## Mock Data ([mock-data.ts](mdc:src/constants/mock-data.ts))
+
+### Mock Data Structure Pattern
+
+```typescript
+// ✅ Good - Type-safe mock data with proper imports
+import { BoardResType } from '~/schemas/board.schema'
+
+export const mockWorkspacesList = [
+  {
+    _id: 'workspace-id-01',
+    title: 'Project Management',
+    description: 'This is a workspace description',
+    // ... complete object structure
+  }
+]
+
+export const mockBoardsList: BoardResType['result'][] = [
+  {
+    _id: 'board-id-01',
+    title: 'Conggglee Trellone Board',
+    // ... type-safe structure
+  }
+]
+```
+
+**Mock Data Conventions:**
+- Import proper types from schema files
+- Use descriptive array names with plural form
+- Include realistic data that matches production structure
+- Use consistent ID patterns (e.g., `'entity-id-01'`)
+- Export as named exports with `mock` prefix
+
+## File Organization Best Practices
+
+### When to Create New Constant Files
+
+1. **Size threshold**: If a constants file exceeds 100-150 lines, consider splitting
+2. **Domain separation**: Create separate files for distinct feature domains
+3. **Usage patterns**: Group constants that are used together
+
+### Import/Export Patterns
+
+```typescript
+// ✅ Good - Named exports for multiple related constants
+export const config = { ... }
+export const envConfig = { ... }
+
+// ✅ Good - Default export for single primary constant
+const path = { ... }
+export default path
+
+// ✅ Good - Enum default export
+enum HttpStatusCode { ... }
+export default HttpStatusCode
+```
+
+## Usage in Components
+
+### Importing Constants
+
+```typescript
+// ✅ Good - Import patterns
+import { config, envConfig } from '~/constants/config'
+import { BoardType, BoardTypeValues } from '~/constants/type'
+import path from '~/constants/path'
+import HttpStatusCode from '~/constants/http-status-code'
+import { DEFAULT_PAGINATION_LIMIT } from '~/constants/pagination'
+```
+
+### Type-Safe Usage
+
+```typescript
+// ✅ Good - Type-safe constant usage
+const boardType: typeof BoardType.Public = BoardType.Public
+
+// ✅ Good - Validation with values arrays
+const isValidBoardType = (type: string): type is keyof typeof BoardType => {
+  return BoardTypeValues.includes(type as any)
+}
+
+// ✅ Good - HTTP status code usage
+if (response.status === HttpStatusCode.Unauthorized) {
+  // handle unauthorized
+}
+```
+
+## Common Anti-Patterns to Avoid
+
+### Hard-coded Values
+```typescript
+// ❌ Bad - Hard-coded values in components
+const maxFileSize = 3 * 1024 * 1024 // Should be in config
+
+// ✅ Good - Use constants
+import { config } from '~/constants/config'
+const maxFileSize = config.maxSizeUploadAvatar
+```
+
+### Missing Const Assertions
+```typescript
+// ❌ Bad - Missing const assertion
+export const BoardType = {
+  Public: 'public',
+  Private: 'private'
+} // TypeScript can't infer literal types
+
+// ✅ Good - With const assertion
+export const BoardType = {
+  Public: 'public',
+  Private: 'private'
+} as const
+```
+
+### Inconsistent Naming
+```typescript
+// ❌ Bad - Inconsistent naming
+export const board_type = { ... }  // snake_case
+export const BoardTypeEnum = { ... }  // Unnecessary 'Enum' suffix
+
+// ✅ Good - Consistent naming
+export const BoardType = { ... }
+export const BoardTypeValues = [ ... ]
+```
+
+### Missing Values Arrays
+```typescript
+// ❌ Bad - No validation array
+export const Status = {
+  Active: 'active',
+  Inactive: 'inactive'
+} as const
+
+// ✅ Good - Include values array for validation
+export const Status = {
+  Active: 'active',
+  Inactive: 'inactive'
+} as const
+
+export const StatusValues = [Status.Active, Status.Inactive] as const
+```
+
+## Maintenance Guidelines
+
+1. **Regular Review**: Periodically review constants for unused or duplicate values
+2. **Documentation**: Add comments for complex calculations or business rules
+3. **Validation**: Always provide values arrays for enum-like constants
+4. **Type Safety**: Use proper TypeScript types and const assertions
+5. **Consistency**: Follow established naming and export patterns across all constant files
+
+This structure ensures type safety, maintainability, and consistent usage patterns across the entire Trellone application.

@@ -55,10 +55,7 @@ export default function EditCardFileAttachmentForm({
     const payload = {
       action: CardAttachmentAction.Edit,
       type: attachment.type,
-      file: {
-        ...attachment.file,
-        display_name: values.display_name
-      },
+      file: { ...attachment.file, display_name: values.display_name },
       attachment_id: attachment.attachment_id
     }
 
@@ -80,6 +77,7 @@ export default function EditCardFileAttachmentForm({
           <CloseIcon fontSize='small' />
         </IconButton>
       </Box>
+
       <form onSubmit={onSubmit}>
         <Box>
           <Typography variant='subtitle2' gutterBottom sx={{ color: 'text.secondary' }}>
@@ -94,6 +92,7 @@ export default function EditCardFileAttachmentForm({
           />
           <FieldErrorAlert errorMessage={errors.display_name?.message} />
         </Box>
+
         <Button type='submit' variant='contained' color='info' fullWidth sx={{ mt: 2 }}>
           Save
         </Button>

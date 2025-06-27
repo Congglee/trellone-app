@@ -34,6 +34,7 @@ export default function NotFound() {
         <Typography variant='h1' sx={{ fontSize: '100px', fontWeight: 800 }}>
           404
         </Typography>
+
         <Typography
           sx={{
             fontSize: '18px !important',
@@ -67,6 +68,7 @@ export default function NotFound() {
           ?<br />
           Hmm, looks like that page doesn&apos;t exist.
         </Typography>
+
         <Box
           sx={{
             width: { xs: '100%', md: '390px' },
@@ -92,6 +94,7 @@ export default function NotFound() {
           />
           <PlanetSvg />
         </Box>
+
         <Link to={path.home} style={{ textDecoration: 'none' }}>
           <Button
             variant='outlined'

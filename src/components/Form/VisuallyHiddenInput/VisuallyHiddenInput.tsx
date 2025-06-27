@@ -2,7 +2,6 @@ import { styled } from '@mui/material/styles'
 
 const HiddenInputStyles = styled('input')({
   display: 'none'
-
   /*
     clip: 'rect(0 0 0 0)',
     clipPath: 'inset(50%)',

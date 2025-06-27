@@ -23,11 +23,11 @@ import { useState } from 'react'
 import { toast } from 'react-toastify'
 import DrawerHeader from '~/components/DrawerHeader'
 import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
+import { useDebounce } from '~/hooks/use-debounce'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { useUpdateBoardMutation } from '~/queries/boards'
 import { useGetUnsplashSearchPhotosQuery, useUploadImageMutation } from '~/queries/medias'
 import { updateActiveBoard } from '~/store/slices/board.slice'
-import { useDebounce } from '~/hooks/use-debounce'
 import { singleFileValidator } from '~/utils/validators'
 
 // @ts-expect-error - Missing type definitions for mui-color-input package
@@ -41,11 +41,11 @@ interface ChangeBackgroundDrawerProps {
 export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroundDrawerProps) {
   const theme = useTheme()
 
-  const [value, setValue] = useState<MuiColorInputValue>('')
+  const [color, setColor] = useState<MuiColorInputValue>('')
   const [query, setQuery] = useState('Wallpapers')
 
   const handleColorInputChange = (newValue: string) => {
-    setValue(newValue)
+    setColor(newValue)
   }
 
   const handleInputSearchPhotosChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -150,7 +150,7 @@ export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroun
             <Typography variant='caption' fontWeight={500}>
               Colors
             </Typography>
-            <MuiColorInput size='small' fullWidth value={value} onChange={handleColorInputChange} format='hex8' />{' '}
+            <MuiColorInput size='small' fullWidth value={color} onChange={handleColorInputChange} format='hex8' />{' '}
           </Box>
 
           <Box>

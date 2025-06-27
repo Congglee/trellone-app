@@ -55,7 +55,7 @@ export default function BoardBar({
   const [editBoardTitleFormOpen, setEditBoardTitleFormOpen] = useState(false)
   const [boardTitle, setBoardTitle] = useState('')
 
-  const editBoardTitleClickAwayRef = useClickAway(() => {
+  const editBoardTitleClickAwayRef = useClickAway<HTMLInputElement>(() => {
     handleUpdateBoardTitle()
   })
 
@@ -83,7 +83,7 @@ export default function BoardBar({
     setEditBoardTitleFormOpen(!editBoardTitleFormOpen)
   }
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       handleUpdateBoardTitle()
     }
@@ -145,6 +145,7 @@ export default function BoardBar({
           >
             <MenuIcon />
           </IconButton>
+
           <Tooltip title={board.description}>
             {editBoardTitleFormOpen ? (
               <Box ref={editBoardTitleClickAwayRef}>
@@ -171,28 +172,35 @@ export default function BoardBar({
               />
             )}
           </Tooltip>
+
           <Tooltip title={capitalizeFirstLetter('public')}>
             <IconButton color='inherit'>
               <VpnLockIcon />
             </IconButton>
           </Tooltip>
+
           <Tooltip title='Add to Drive'>
             <IconButton color='inherit'>
               <AddToDriveIcon />
             </IconButton>
           </Tooltip>
+
           <Tooltip title='Automation'>
             <IconButton color='inherit'>
               <BoltIcon />
             </IconButton>
           </Tooltip>
+
           <Tooltip title='Filters'>
             <Chip sx={MENU_STYLES} icon={<FilterListIcon />} label='Filters' clickable />
           </Tooltip>
         </Box>
+
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, ml: 'auto' }}>
           <InviteBoardUser boardId={board._id} />
+
           <BoardUserGroup boardUsers={board?.FE_AllUsers} />
+
           <IconButton
             color='inherit'
             aria-label='open board drawer'

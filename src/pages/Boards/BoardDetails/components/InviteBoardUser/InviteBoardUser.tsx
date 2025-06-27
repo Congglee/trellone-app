@@ -2,33 +2,33 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Popover from '@mui/material/Popover'
 import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { CreateNewBoardInvitationBody, CreateNewBoardInvitationBodyType } from '~/schemas/invitation.schema'
-import Popover from '@mui/material/Popover'
-import Typography from '@mui/material/Typography'
-import TextFieldInput from '~/components/Form/TextFieldInput'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
-import { useAddNewBoardInvitationMutation } from '~/queries/invitations'
-import { isUnprocessableEntityError } from '~/utils/error-handlers'
+import TextFieldInput from '~/components/Form/TextFieldInput'
 import { useAppSelector } from '~/lib/redux/hooks'
+import { useAddNewBoardInvitationMutation } from '~/queries/invitations'
+import { CreateNewBoardInvitationBody, CreateNewBoardInvitationBodyType } from '~/schemas/invitation.schema'
+import { isUnprocessableEntityError } from '~/utils/error-handlers'
 
 interface InviteBoardUserProps {
   boardId: string
 }
 
 export default function InviteBoardUser({ boardId }: InviteBoardUserProps) {
-  const [anchorPopoverElement, setAnchorPopoverElement] = useState<HTMLElement | null>(null)
-  const isOpenPopover = Boolean(anchorPopoverElement)
+  const [anchorInviteUserPopoverElement, setAnchorInviteUserPopoverElement] = useState<HTMLElement | null>(null)
+  const isInviteUserPopoverOpen = Boolean(anchorInviteUserPopoverElement)
 
-  const popoverId = isOpenPopover ? 'invite-board-user-popover' : undefined
+  const inviteUserPopoverId = isInviteUserPopoverOpen ? 'invite-board-user-popover' : undefined
 
-  const togglePopover = (event: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>) => {
-    if (!anchorPopoverElement) {
-      setAnchorPopoverElement(event.currentTarget)
+  const toggleInviteUserPopover = (event: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>) => {
+    if (!anchorInviteUserPopoverElement) {
+      setAnchorInviteUserPopoverElement(event.currentTarget)
     } else {
-      setAnchorPopoverElement(null)
+      setAnchorInviteUserPopoverElement(null)
     }
   }
 
@@ -44,10 +44,10 @@ export default function InviteBoardUser({ boardId }: InviteBoardUserProps) {
   })
 
   useEffect(() => {
-    if (isOpenPopover) {
+    if (isInviteUserPopoverOpen) {
       reset()
     }
-  }, [isOpenPopover, reset])
+  }, [isInviteUserPopoverOpen, reset])
 
   const { socket } = useAppSelector((state) => state.app)
 
@@ -57,7 +57,7 @@ export default function InviteBoardUser({ boardId }: InviteBoardUserProps) {
     addNewBoardInvitationMutation({ ...values, board_id: boardId }).then((res) => {
       if (!res.error) {
         reset()
-        setAnchorPopoverElement(null)
+        setAnchorInviteUserPopoverElement(null)
 
         const invitation = res.data?.result
 
@@ -89,16 +89,16 @@ export default function InviteBoardUser({ boardId }: InviteBoardUserProps) {
           color='secondary'
           variant='contained'
           startIcon={<PersonAddAltIcon />}
-          onClick={togglePopover}
+          onClick={toggleInviteUserPopover}
         >
           Invite
         </Button>
       </Tooltip>
       <Popover
-        id={popoverId}
-        open={isOpenPopover}
-        anchorEl={anchorPopoverElement}
-        onClose={togglePopover}
+        id={inviteUserPopoverId}
+        open={isInviteUserPopoverOpen}
+        anchorEl={anchorInviteUserPopoverElement}
+        onClose={toggleInviteUserPopover}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >

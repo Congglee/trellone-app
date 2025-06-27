@@ -10,6 +10,7 @@ export default function BoardsList() {
       <Typography variant='h6' sx={{ pl: 1 }}>
         Your Workspaces
       </Typography>
+
       {mockWorkspacesList?.map((workspace) => (
         <Stack key={workspace._id} spacing={1}>
           <Stack alignItems='center' direction='row' spacing={1} sx={{ pl: 1 }}>

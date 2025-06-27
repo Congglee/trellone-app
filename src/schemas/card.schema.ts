@@ -78,22 +78,17 @@ export const CardSchema = z.object({
   _id: z.string(),
   board_id: z.string(),
   column_id: z.string(),
-
   title: z.string(),
   due_date: z.date().nullable().optional(),
   is_completed: z.boolean().nullable().optional(),
   description: z.string().optional(),
   cover_photo: z.string().optional(),
-
   members: z.array(z.string()).optional(),
   comments: z.array(CommentSchema).optional(),
   attachments: z.array(CardAttachmentSchema).optional(),
-
   _destroy: z.boolean(),
-
   created_at: z.date(),
   updated_at: z.date(),
-
   FE_PlaceholderCard: z.boolean().optional()
 })
 

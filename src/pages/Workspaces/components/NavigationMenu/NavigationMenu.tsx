@@ -1,17 +1,17 @@
 import AddSharpIcon from '@mui/icons-material/AddSharp'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import HomeIcon from '@mui/icons-material/Home'
-import { useTheme } from '@mui/material/styles'
+import { useMediaQuery } from '@mui/material'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
+import { useTheme } from '@mui/material/styles'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import path from '~/constants/path'
 import CollapseList from '~/pages/Workspaces/components/NavigationMenu/CollapseList'
-import { useMediaQuery } from '@mui/material'
 
 const getActiveMenuFromPath = (pathname: string) => {
   switch (true) {

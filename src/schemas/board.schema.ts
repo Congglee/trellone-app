@@ -9,20 +9,14 @@ export const BoardSchema = z.object({
   description: z.string().optional(),
   type: z.enum(BoardTypeValues),
   cover_photo: z.string().optional(),
-
   workspace_id: z.string(),
   column_order_ids: z.array(z.string()),
-
   owners: z.array(UserSchema),
   members: z.array(UserSchema),
-
   columns: z.array(ColumnSchema).optional(),
-
   _destroy: z.boolean(),
-
   created_at: z.date(),
   updated_at: z.date(),
-
   FE_AllUsers: z.array(UserSchema).optional()
 })
 

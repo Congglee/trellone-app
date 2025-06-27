@@ -11,16 +11,16 @@ interface BoardUserGroupProps {
 }
 
 export default function BoardUserGroup({ boardUsers = [], limit = 4 }: BoardUserGroupProps) {
-  const [anchorPopoverElement, setAnchorPopoverElement] = useState<HTMLElement | null>(null)
-  const isOpenPopover = Boolean(anchorPopoverElement)
+  const [anchorBoardUserGroupPopoverElement, setAnchorBoardUserGroupPopoverElement] = useState<HTMLElement | null>(null)
+  const isBoardUserGroupPopoverOpen = Boolean(anchorBoardUserGroupPopoverElement)
 
-  const popoverId = isOpenPopover ? 'board-all-users-popover' : undefined
+  const popoverId = isBoardUserGroupPopoverOpen ? 'board-all-users-popover' : undefined
 
-  const togglePopover = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (!anchorPopoverElement) {
-      setAnchorPopoverElement(event.currentTarget)
+  const toggleBoardUserGroupPopover = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (!anchorBoardUserGroupPopoverElement) {
+      setAnchorBoardUserGroupPopoverElement(event.currentTarget)
     } else {
-      setAnchorPopoverElement(null)
+      setAnchorBoardUserGroupPopoverElement(null)
     }
   }
 
@@ -40,7 +40,7 @@ export default function BoardUserGroup({ boardUsers = [], limit = 4 }: BoardUser
         <Tooltip title='Show more'>
           <Box
             aria-describedby={popoverId}
-            onClick={togglePopover}
+            onClick={toggleBoardUserGroupPopover}
             sx={{
               width: 36,
               height: 36,
@@ -62,9 +62,9 @@ export default function BoardUserGroup({ boardUsers = [], limit = 4 }: BoardUser
 
       <Popover
         id={popoverId}
-        open={isOpenPopover}
-        anchorEl={anchorPopoverElement}
-        onClose={togglePopover}
+        open={isBoardUserGroupPopoverOpen}
+        anchorEl={anchorBoardUserGroupPopoverElement}
+        onClose={toggleBoardUserGroupPopover}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <Box

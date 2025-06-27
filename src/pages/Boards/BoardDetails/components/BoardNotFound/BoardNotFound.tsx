@@ -1,10 +1,10 @@
-import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
-import Paper from '@mui/material/Paper'
 import { useTheme } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
+import Paper from '@mui/material/Paper'
+import Typography from '@mui/material/Typography'
+import { useNavigate } from 'react-router-dom'
 
 export default function BoardNotFound() {
   const theme = useTheme()
@@ -38,6 +38,7 @@ export default function BoardNotFound() {
             }}
           />
         )}
+
         <Paper
           elevation={6}
           sx={{
@@ -53,9 +54,11 @@ export default function BoardNotFound() {
           <Typography variant='h4' component='h1' gutterBottom fontWeight='bold' color='primary'>
             Board Not Found
           </Typography>
+
           <Typography variant='body1' paragraph sx={{ mb: 3 }}>
             The board you're looking for doesn't exist or you don't have permission to view it.
           </Typography>
+
           <Button
             variant='contained'
             size='large'

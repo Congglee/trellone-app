@@ -81,7 +81,7 @@ export default function ActiveCard() {
   const [updateCardMutation] = useUpdateCardMutation()
   const [uploadImageMutation] = useUploadImageMutation()
 
-  const handleCloseModal = () => {
+  const handleActiveCardModalClose = () => {
     dispatch(clearAndHideActiveCardModal())
   }
 
@@ -132,7 +132,6 @@ export default function ActiveCard() {
     const imageUrl = uploadImageRes.result[0].url
 
     handleUpdateActiveCard({ cover_photo: imageUrl }).finally(() => {
-      // Clear the input value after upload
       event.target.value = ''
     })
   }
@@ -158,7 +157,12 @@ export default function ActiveCard() {
   }
 
   return (
-    <Modal disableScrollLock open={isShowActiveCardModal} onClose={handleCloseModal} sx={{ overflowY: 'auto' }}>
+    <Modal
+      disableScrollLock
+      open={isShowActiveCardModal}
+      onClose={handleActiveCardModalClose}
+      sx={{ overflowY: 'auto' }}
+    >
       <Box
         sx={{
           position: 'relative',
@@ -175,7 +179,7 @@ export default function ActiveCard() {
         }}
       >
         <Box sx={{ position: 'absolute', top: '12px', right: '10px', cursor: 'pointer' }}>
-          <CancelIcon color='error' sx={{ '&:hover': { color: 'error.light' } }} onClick={handleCloseModal} />
+          <CancelIcon color='error' sx={{ '&:hover': { color: 'error.light' } }} onClick={handleActiveCardModalClose} />
         </Box>
 
         {activeCard?.cover_photo && (

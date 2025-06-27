@@ -15,9 +15,9 @@ export default function AccountVerification() {
   const [verifyEmailMutation, { isLoading, isSuccess }] = useVerifyEmailMutation()
   const [logoutMutation] = useLogoutMutation()
 
+  // If the user is already authenticated, then logout to get a new access token
   useEffect(() => {
     if (isAuthenticated && profile) {
-      // If the user is authenticated and has a profile, we log them out to get a new access token
       logoutMutation().then((res) => {
         if (!res.error) {
           toast.info('Please login again to enjoy our services')
@@ -26,13 +26,14 @@ export default function AccountVerification() {
     }
   }, [isAuthenticated, profile])
 
+  // Once there is a token and email on the URL, verify the email
   useEffect(() => {
     if (token && email) {
       verifyEmailMutation({ email_verify_token: token })
     }
   }, [token, email])
 
-  // Prevent users from accessing this page by entering the URL directly
+  // Prevent users from accessing this page by entering the URL directly (404)
   if (!token || !email) {
     return <Navigate to='/404' />
   }
