@@ -12,28 +12,48 @@ Frontend (React/TypeScript) ←→ Backend API ←→ Database
    Real-time UI Updates ←→ Real-time Broadcasts
 ```
 
-### Component Hierarchy
+### Application Routing Structure
 
 ```
-App
-├── Authentication Routes (Auth Layout)
-│   ├── Login/Register/OAuth
-│   ├── Password Reset Flow
-│   └── Account Verification
-├── Protected Routes (Home Layout)
-│   ├── Workspace Home
-│   ├── Boards List
-│   └── User Settings
-└── Board Details (Standalone)
-    ├── Board Bar (Top Navigation)
-    ├── Workspace Drawer (Left Sidebar)
-    ├── Board Content (Main Area)
-    │   ├── Columns List
-    │   │   ├── Column Components
-    │   │   └── Cards List
-    │   │       └── Card Components
-    │   └── Drag & Drop Context
-    └── Board Drawer (Right Sidebar)
+App (Route Guards & Socket Management)
+├── ProtectedRoute (Authenticated Users)
+│   ├── HomeLayout (/home)
+│   │   ├── Home (Dashboard)
+│   │   └── BoardsList (/boards)
+│   ├── BoardDetails (/boards/:boardId) - Standalone
+│   └── Settings (/settings/account, /settings/security)
+├── RejectedRoute (Unauthenticated Users)
+│   ├── AuthLayout
+│   │   ├── Login (/login)
+│   │   ├── Register (/register)
+│   │   ├── ForgotPassword (/forgot-password)
+│   │   └── ResetPassword (/reset-password)
+│   ├── AccountVerification (/account/verification)
+│   ├── ForgotPasswordVerification (/forgot-password/verification)
+│   └── BoardInvitationVerification (/board-invitation/verification)
+├── OAuth (/login/oauth) - Special handling
+└── NotFound (404) - Catch all
+```
+
+### Component Hierarchy (Board Details)
+
+```
+BoardDetails (Main Board View)
+├── BoardBar (Top Navigation & Controls)
+├── WorkspaceDrawer (Left Sidebar - Board List)
+├── BoardContent (Main Kanban Area)
+│   ├── ColumnsList (Drag & Drop Context)
+│   │   ├── Column Components
+│   │   └── CardsList (Sortable Cards)
+│   │       └── Card Components
+│   └── DnD Overlay (Visual Feedback)
+├── BoardDrawer (Right Sidebar - Settings)
+└── ActiveCard Modal (Card Details)
+    ├── Card Attachments
+    ├── Card Description (Markdown Editor)
+    ├── Card Members
+    ├── Card Due Dates
+    └── Card Activity Feed
 ```
 
 ## State Management Architecture

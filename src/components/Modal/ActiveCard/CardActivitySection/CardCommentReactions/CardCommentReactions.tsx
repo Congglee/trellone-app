@@ -26,7 +26,7 @@ export default function CardCommentReactions({ activeCard, comment, onUpdateActi
     const payload = {
       emoji,
       action: hasCurrentUserReacted ? CardCommentReactionAction.Remove : CardCommentReactionAction.Add,
-      reaction_id: currentUserReaction?.reaction_id
+      ...(hasCurrentUserReacted && { reaction_id: currentUserReaction?.reaction_id })
     }
 
     const updatedCardRes = await reactToCardCommentMutation({
@@ -105,7 +105,11 @@ export default function CardCommentReactions({ activeCard, comment, onUpdateActi
         // After grouping, transform each group into a clickable UI element
         .map((reactionGroup, reactionIndex) => {
           const users = reactionGroup.users.map((user) => user.user_display_name)
-          const userDisplayNames = users.join(', ')
+          const displayUsers = users.slice(0, 3)
+          const remainingCount = users.length - 3
+
+          const userDisplayNames =
+            remainingCount > 0 ? `${displayUsers.join(', ')}, +${remainingCount}` : displayUsers.join(', ')
 
           const title = `${userDisplayNames} reacted with ${reactionGroup.emoji}`
 

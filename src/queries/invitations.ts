@@ -6,6 +6,7 @@ import {
   InvitationListResType,
   InvitationResType,
   UpdateBoardInvitationBodyType,
+  UpdateBoardInvitationResType,
   VerifyBoardInvitationResType
 } from '~/schemas/invitation.schema'
 import { CommonQueryParams } from '~/types/query-params.type'
@@ -36,7 +37,10 @@ export const invitationApi = createApi({
       query: (body) => ({ url: `${INVITATION_API_URL}/verify-board-invitation`, method: 'POST', data: body })
     }),
 
-    updateBoardInvitation: build.mutation<InvitationResType, { id: string; body: UpdateBoardInvitationBodyType }>({
+    updateBoardInvitation: build.mutation<
+      UpdateBoardInvitationResType,
+      { id: string; body: UpdateBoardInvitationBodyType }
+    >({
       query: ({ id, body }) => ({ url: `${INVITATION_API_URL}/board/${id}`, method: 'PUT', data: body }),
       invalidatesTags: (_result, _error, { id }) => [
         { type: 'Invitation', id },

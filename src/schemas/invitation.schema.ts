@@ -51,6 +51,16 @@ export const UpdateBoardInvitationBody = z.object({
 
 export type UpdateBoardInvitationBodyType = z.TypeOf<typeof UpdateBoardInvitationBody>
 
+export const UpdateBoardInvitationRes = z.object({
+  message: z.string(),
+  result: z.object({
+    invitation: InvitationSchema,
+    invitee: UserSchema
+  })
+})
+
+export type UpdateBoardInvitationResType = z.TypeOf<typeof UpdateBoardInvitationRes>
+
 export const InvitationListRes = z.object({
   result: z.object({
     invitations: z.array(InvitationSchema),

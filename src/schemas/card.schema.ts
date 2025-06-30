@@ -31,10 +31,8 @@ export type CommentType = z.TypeOf<typeof CommentSchema>
 
 const CommentPayloadSchema = z.object({
   action: z.enum(CommentActionValues),
-  user_email: z.string(),
-  user_avatar: z.string().optional(),
-  user_display_name: z.string(),
-  content: z.string()
+  content: z.string(),
+  comment_id: z.string().optional()
 })
 
 export type CommentPayloadType = z.TypeOf<typeof CommentPayloadSchema>

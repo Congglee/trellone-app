@@ -62,9 +62,6 @@ export default function CardActivitySection({
 
     const payload = {
       action: CommentAction.Add,
-      user_email: profile?.email as string,
-      user_display_name: profile?.display_name as string,
-      user_avatar: profile?.avatar as string,
       content: newCommentContent.trim()
     }
 
@@ -87,11 +84,8 @@ export default function CardActivitySection({
 
     const payload = {
       action: CommentAction.Edit,
-      comment_id: activeComment.comment_id,
-      user_email: profile?.email as string,
-      user_display_name: profile?.display_name as string,
-      user_avatar: profile?.avatar as string,
-      content: editingCommentContent.trim()
+      content: editingCommentContent.trim(),
+      comment_id: activeComment.comment_id
     }
 
     onUpdateCardComment(payload).finally(() => {

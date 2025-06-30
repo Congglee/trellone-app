@@ -60,7 +60,7 @@ export default function Notifications() {
   const updateBoardInvitation = (status: BoardInvitationType['status'], invitationId: string) => {
     updateBoardInvitationMutation({ id: invitationId, body: { status } }).then((res) => {
       if (res.data) {
-        const boardInvitation = res.data.result.board_invitation
+        const boardInvitation = res.data.result.invitation.board_invitation
 
         if (boardInvitation?.status === BoardInvitationStatus.Accepted) {
           navigate(`/boards/${boardInvitation.board_id}`)
