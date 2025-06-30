@@ -73,7 +73,17 @@ export const mockBoardDetails: BoardResType['result'] = {
               user_display_name: 'Test User 01',
               content: 'This is a comment',
               commented_at: new Date('2023-10-01T00:00:00.000Z'),
-              comment_id: 'comment-id-01'
+              comment_id: 'comment-id-01',
+              reactions: [
+                {
+                  user_id: 'user-id-01',
+                  user_email: 'testuser01@gmail.com',
+                  user_display_name: 'Test User 01',
+                  reaction_id: 'reaction-id-01',
+                  emoji: '👍',
+                  reacted_at: new Date('2023-10-01T00:00:00.000Z')
+                }
+              ]
             },
             {
               user_id: 'user-id-01',
@@ -82,7 +92,17 @@ export const mockBoardDetails: BoardResType['result'] = {
               user_display_name: 'Test User 01',
               content: 'This is another comment',
               commented_at: new Date('2023-10-01T00:00:00.000Z'),
-              comment_id: 'comment-id-02'
+              comment_id: 'comment-id-02',
+              reactions: [
+                {
+                  user_id: 'user-id-01',
+                  user_email: 'testuser01@gmail.com',
+                  user_display_name: 'Test User 01',
+                  reaction_id: 'reaction-id-01',
+                  emoji: '👍',
+                  reacted_at: new Date('2023-10-01T00:00:00.000Z')
+                }
+              ]
             }
           ],
           attachments: [],
