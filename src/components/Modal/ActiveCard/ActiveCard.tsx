@@ -263,6 +263,7 @@ export default function ActiveCard() {
               <CardActivitySection
                 cardComments={activeCard?.comments || []}
                 onUpdateCardComment={onUpdateCardComment}
+                onUpdateActiveCard={handleUpdateActiveCard}
               />
             </Box>
           </Grid>

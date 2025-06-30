@@ -90,3 +90,13 @@ export const CommentAction = {
 } as const
 
 export const CommentActionValues = [CommentAction.Add, CommentAction.Edit, CommentAction.Remove] as const
+
+export const CardCommentReactionAction = {
+  Add: 'ADD',
+  Remove: 'REMOVE'
+} as const
+
+export const CardCommentReactionActionValues = [
+  CardCommentReactionAction.Add,
+  CardCommentReactionAction.Remove
+] as const

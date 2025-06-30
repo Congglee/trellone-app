@@ -1,7 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
-import { CardResType, CreateCardBodyType, UpdateCardBodyType } from '~/schemas/card.schema'
+import { CardResType, CreateCardBodyType, ReactToCardCommentBodyType, UpdateCardBodyType } from '~/schemas/card.schema'
 
 const CARD_API_URL = '/cards' as const
 
@@ -36,11 +36,30 @@ export const cardApi = createApi({
           console.error(error)
         }
       }
+    }),
+
+    reactToCardComment: build.mutation<
+      CardResType,
+      { card_id: string; comment_id: string; body: ReactToCardCommentBodyType }
+    >({
+      query: ({ card_id, comment_id, body }) => ({
+        url: `${CARD_API_URL}/${card_id}/comment/${comment_id}/reaction`,
+        method: 'PUT',
+        data: body
+      }),
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          await queryFulfilled
+        } catch (error) {
+          toast.error('There was an error reacting to the comment')
+          console.error(error)
+        }
+      }
     })
   })
 })
 
-export const { useAddCardMutation, useUpdateCardMutation } = cardApi
+export const { useAddCardMutation, useUpdateCardMutation, useReactToCardCommentMutation } = cardApi
 
 export const cardApiReducer = cardApi.reducer
 

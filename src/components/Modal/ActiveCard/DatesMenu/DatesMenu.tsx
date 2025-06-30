@@ -56,9 +56,11 @@ export default function DatesMenu({ dueDate, onUpdateCardDueDate, isCompleted }:
         onClick={handleDatesMenuClick}
         sx={{
           p: '10px',
+          fontWeight: '600',
           lineHeight: 'inherit',
           gap: '6px',
-          justifyContent: 'flex-start'
+          justifyContent: 'flex-start',
+          transition: 'none'
         }}
       >
         <DateRangeIcon fontSize='small' />

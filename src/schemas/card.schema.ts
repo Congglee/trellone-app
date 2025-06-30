@@ -1,5 +1,20 @@
 import z from 'zod'
-import { AttachmentType, CardAttachmentActionValues, CardMemberAction, CommentActionValues } from '~/constants/type'
+import {
+  AttachmentType,
+  CardAttachmentActionValues,
+  CardCommentReactionActionValues,
+  CardMemberAction,
+  CommentActionValues
+} from '~/constants/type'
+
+const CommentReactionSchema = z.object({
+  reaction_id: z.string(),
+  emoji: z.string(),
+  user_id: z.string(),
+  user_email: z.string(),
+  user_display_name: z.string(),
+  reacted_at: z.date()
+})
 
 const CommentSchema = z.object({
   comment_id: z.string(),
@@ -8,7 +23,8 @@ const CommentSchema = z.object({
   user_avatar: z.string(),
   user_display_name: z.string(),
   content: z.string(),
-  commented_at: z.date()
+  commented_at: z.date(),
+  reactions: z.array(CommentReactionSchema)
 })
 
 export type CommentType = z.TypeOf<typeof CommentSchema>
@@ -146,3 +162,11 @@ export const UpdateCardFileAttachmentBody = z.object({
 })
 
 export type UpdateCardFileAttachmentBodyType = z.TypeOf<typeof UpdateCardFileAttachmentBody>
+
+export const ReactToCardCommentBody = z.object({
+  emoji: z.string().min(1, { message: 'Emoji is required' }).max(2, { message: 'Emoji must be 2 characters long' }),
+  action: z.enum(CardCommentReactionActionValues),
+  reaction_id: z.string().optional()
+})
+
+export type ReactToCardCommentBodyType = z.TypeOf<typeof ReactToCardCommentBody>
