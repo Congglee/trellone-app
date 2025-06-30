@@ -1,3 +1,4 @@
+import Check from '@mui/icons-material/Check'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -7,18 +8,17 @@ import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { useState } from 'react'
-import Check from '@mui/icons-material/Check'
 
 export default function Recent() {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
+  const [anchorRecentMenuElement, setAnchorRecentMenuElement] = useState<null | HTMLElement>(null)
+  const isRecentMenuOpen = Boolean(anchorRecentMenuElement)
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    setAnchorEl(event.currentTarget)
+  const handleRecentMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    setAnchorRecentMenuElement(event.currentTarget)
   }
 
-  const handleClose = () => {
-    setAnchorEl(null)
+  const handleRecentMenuClose = () => {
+    setAnchorRecentMenuElement(null)
   }
 
   return (
@@ -26,19 +26,20 @@ export default function Recent() {
       <Button
         color='inherit'
         id='basic-button-recent'
-        aria-controls={open ? 'basic-menu-recent' : undefined}
+        aria-controls={isRecentMenuOpen ? 'basic-menu-recent' : undefined}
         aria-haspopup='true'
-        aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
+        aria-expanded={isRecentMenuOpen ? 'true' : undefined}
+        onClick={handleRecentMenuClick}
         endIcon={<ExpandMoreIcon />}
       >
         Recent
       </Button>
+
       <Menu
         id='basic-menu-recent'
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
+        anchorEl={anchorRecentMenuElement}
+        open={isRecentMenuOpen}
+        onClose={handleRecentMenuClose}
         MenuListProps={{
           'aria-labelledby': 'basic-button-recent'
         }}

@@ -16,9 +16,9 @@ export default function DatesMenu({ dueDate, onUpdateCardDueDate, isCompleted }:
   const theme = useTheme()
   const isScreenMdAndAbove = useMediaQuery(theme.breakpoints.only('xs'))
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [anchorDatesMenuElement, setAnchorDatesMenuElement] = useState<null | HTMLElement>(null)
 
-  const open = Boolean(anchorEl)
+  const isDatesMenuOpen = Boolean(anchorDatesMenuElement)
 
   const [dateValue, setDateValue] = useState<Date | null>(null)
 
@@ -31,17 +31,17 @@ export default function DatesMenu({ dueDate, onUpdateCardDueDate, isCompleted }:
     }
   }, [dueDate])
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    setAnchorEl(event.currentTarget)
+  const handleDatesMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    setAnchorDatesMenuElement(event.currentTarget)
   }
 
-  const handleClose = () => {
-    setAnchorEl(null)
+  const handleDatesMenuClose = () => {
+    setAnchorDatesMenuElement(null)
   }
 
   const updateCardDueDate = () => {
     onUpdateCardDueDate(dateValue, isCompleted as boolean)
-    handleClose()
+    handleDatesMenuClose()
   }
 
   return (
@@ -50,15 +50,17 @@ export default function DatesMenu({ dueDate, onUpdateCardDueDate, isCompleted }:
         color='inherit'
         fullWidth
         id='basic-button-dates'
-        aria-controls={open ? 'basic-menu-dates' : undefined}
+        aria-controls={isDatesMenuOpen ? 'basic-menu-dates' : undefined}
         aria-haspopup='true'
-        aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
+        aria-expanded={isDatesMenuOpen ? 'true' : undefined}
+        onClick={handleDatesMenuClick}
         sx={{
           p: '10px',
+          fontWeight: '600',
           lineHeight: 'inherit',
           gap: '6px',
-          justifyContent: 'flex-start'
+          justifyContent: 'flex-start',
+          transition: 'none'
         }}
       >
         <DateRangeIcon fontSize='small' />
@@ -67,9 +69,9 @@ export default function DatesMenu({ dueDate, onUpdateCardDueDate, isCompleted }:
 
       <Menu
         id='basic-menu-dates'
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
+        anchorEl={anchorDatesMenuElement}
+        open={isDatesMenuOpen}
+        onClose={handleDatesMenuClose}
         MenuListProps={{
           'aria-labelledby': 'basic-button-dates',
           disablePadding: true
@@ -87,7 +89,7 @@ export default function DatesMenu({ dueDate, onUpdateCardDueDate, isCompleted }:
               actions: ['today', 'cancel', 'accept'],
               // @ts-expect-error - MUI types don't properly expose the onAccept and onCancel props
               onAccept: updateCardDueDate,
-              onCancel: handleClose,
+              onCancel: handleDatesMenuClose,
               sx: { justifyContent: isScreenMdAndAbove ? 'flex-start' : 'flex-end' }
             }
           }}

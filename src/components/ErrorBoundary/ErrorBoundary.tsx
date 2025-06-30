@@ -58,7 +58,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             sx={{
               position: 'absolute',
               transform: 'rotate(12deg)',
-              bgcolor: '#f97316', // Orange color
+              bgcolor: '#f97316',
               px: 1,
               py: 0.5,
               borderRadius: 1,

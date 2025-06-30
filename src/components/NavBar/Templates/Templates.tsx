@@ -1,3 +1,4 @@
+import Check from '@mui/icons-material/Check'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -7,18 +8,17 @@ import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { useState } from 'react'
-import Check from '@mui/icons-material/Check'
 
 export default function Templates() {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
+  const [anchorTemplatesMenuElement, setAnchorTemplatesMenuElement] = useState<null | HTMLElement>(null)
+  const isTemplatesMenuOpen = Boolean(anchorTemplatesMenuElement)
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    setAnchorEl(event.currentTarget)
+  const handleTemplatesMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    setAnchorTemplatesMenuElement(event.currentTarget)
   }
 
-  const handleClose = () => {
-    setAnchorEl(null)
+  const handleTemplatesMenuClose = () => {
+    setAnchorTemplatesMenuElement(null)
   }
 
   return (
@@ -26,19 +26,20 @@ export default function Templates() {
       <Button
         color='inherit'
         id='basic-button-templates'
-        aria-controls={open ? 'basic-menu-templates' : undefined}
+        aria-controls={isTemplatesMenuOpen ? 'basic-menu-templates' : undefined}
         aria-haspopup='true'
-        aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
+        aria-expanded={isTemplatesMenuOpen ? 'true' : undefined}
+        onClick={handleTemplatesMenuClick}
         endIcon={<ExpandMoreIcon />}
       >
         Templates
       </Button>
+
       <Menu
         id='basic-menu-templates'
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
+        anchorEl={anchorTemplatesMenuElement}
+        open={isTemplatesMenuOpen}
+        onClose={handleTemplatesMenuClose}
         MenuListProps={{
           'aria-labelledby': 'basic-button-templates'
         }}

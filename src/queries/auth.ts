@@ -134,7 +134,7 @@ export const authApi = createApi({
           dispatch(reset())
           dispatch(disconnectSocket())
 
-          // Option 2: Reset API state on logout to clear any cached data
+          // Option 2 (recommended): Reset API state on logout to clear any cached data
           dispatch(authApi.util.resetApiState())
           resetApiState(dispatch)
         } catch (error: any) {

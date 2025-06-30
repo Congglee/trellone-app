@@ -13,13 +13,13 @@ export const config = {
   maxFileUploadDocument: 4, // 4 files
   maxSizeUploadDocumentTotal: 10 * 4 * 1024 * 1024, // 40MB
   allowedDocumentTypes: [
-    'application/pdf',
-    'application/msword',
+    'application/pdf', // .pdf
+    'application/msword', // .doc
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
-    'text/plain',
-    'application/vnd.ms-excel',
+    'text/plain', // .txt
+    'application/vnd.ms-excel', // .xls
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
-    'application/vnd.ms-powerpoint',
+    'application/vnd.ms-powerpoint', // .ppt
     'application/vnd.openxmlformats-officedocument.presentationml.presentation' // .pptx
   ],
   allowedImageMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']

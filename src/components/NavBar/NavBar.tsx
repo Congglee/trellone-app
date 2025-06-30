@@ -32,7 +32,7 @@ export default function NavBar() {
 
   const navigate = useNavigate()
 
-  const toggleDrawer = (newOpen: boolean) => {
+  const toggleMenuDrawer = (newOpen: boolean) => {
     if (isScreenBelowMedium) {
       setOpen(newOpen)
     } else {
@@ -55,9 +55,10 @@ export default function NavBar() {
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <IconButton size='small' sx={{ padding: 0 }} onClick={() => toggleDrawer(true)}>
+          <IconButton size='small' sx={{ padding: 0 }} onClick={() => toggleMenuDrawer(true)}>
             <AppsIcon />
           </IconButton>
+
           <Link to={path.home}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <SvgIcon
@@ -74,6 +75,7 @@ export default function NavBar() {
               </Typography>
             </Box>
           </Link>
+
           <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
             <Workspaces />
             <Recent />
@@ -82,6 +84,7 @@ export default function NavBar() {
             <Create />
           </Box>
         </Box>
+
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           {!isScreenBelowMedium && (
             <>
@@ -96,9 +99,11 @@ export default function NavBar() {
           <Profiles />
         </Box>
       </Box>
+
       <Divider />
-      <Drawer open={open} onClose={() => toggleDrawer(false)}>
-        <MenuDrawer onToggleDrawer={toggleDrawer} />
+
+      <Drawer open={open} onClose={() => toggleMenuDrawer(false)}>
+        <MenuDrawer onToggleDrawer={toggleMenuDrawer} />
       </Drawer>
     </>
   )

@@ -1,22 +1,22 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import AccessTimeIcon from '@mui/icons-material/AccessTime'
 import AttachmentIcon from '@mui/icons-material/Attachment'
 import CommentIcon from '@mui/icons-material/Comment'
 import GroupIcon from '@mui/icons-material/Group'
-import AccessTimeIcon from '@mui/icons-material/AccessTime'
 import { Card as MuiCard } from '@mui/material'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
+import Chip from '@mui/material/Chip'
 import Typography from '@mui/material/Typography'
+import { format } from 'date-fns'
 import { CSSProperties } from 'react'
 import { useAppDispatch } from '~/lib/redux/hooks'
 import { CardType } from '~/schemas/card.schema'
 import { showActiveCardModal, updateActiveCard } from '~/store/slices/card.slice'
-import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
-import { format } from 'date-fns'
 
 interface CardProps {
   card: CardType
@@ -84,8 +84,10 @@ export default function Card({ card }: CardProps) {
       }}
     >
       {card.cover_photo && <CardMedia sx={{ height: 140 }} image={card.cover_photo} title='green iguana' />}
+
       <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
         <Typography>{card.title}</Typography>
+
         {card.due_date && (
           <Box sx={{ mt: 1 }}>
             <Chip
@@ -105,6 +107,7 @@ export default function Card({ card }: CardProps) {
           </Box>
         )}
       </CardContent>
+
       {shouldShowCardActions && (
         <CardActions sx={{ p: '0 4px 8px 4px' }}>
           {!!card.members?.length && (
@@ -112,11 +115,13 @@ export default function Card({ card }: CardProps) {
               {card?.members.length}
             </Button>
           )}
+
           {!!card.comments?.length && (
             <Button size='small' startIcon={<CommentIcon />}>
               {card?.comments.length}
             </Button>
           )}
+
           {!!card.attachments?.length && (
             <Button size='small' startIcon={<AttachmentIcon />}>
               {card?.attachments.length}

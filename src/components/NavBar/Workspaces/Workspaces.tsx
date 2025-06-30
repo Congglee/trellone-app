@@ -1,28 +1,28 @@
-import { useState } from 'react'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
 import Cloud from '@mui/icons-material/Cloud'
 import ContentCopy from '@mui/icons-material/ContentCopy'
 import ContentCut from '@mui/icons-material/ContentCut'
 import ContentPaste from '@mui/icons-material/ContentPaste'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
 import Typography from '@mui/material/Typography'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { useState } from 'react'
 
 export default function Workspaces() {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
+  const [anchorWorkspacesMenuElement, setAnchorWorkspacesMenuElement] = useState<null | HTMLElement>(null)
+  const isWorkspacesMenuOpen = Boolean(anchorWorkspacesMenuElement)
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    setAnchorEl(event.currentTarget)
+  const handleWorkspacesMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    setAnchorWorkspacesMenuElement(event.currentTarget)
   }
 
-  const handleClose = () => {
-    setAnchorEl(null)
+  const handleWorkspacesMenuClose = () => {
+    setAnchorWorkspacesMenuElement(null)
   }
 
   return (
@@ -30,19 +30,20 @@ export default function Workspaces() {
       <Button
         color='inherit'
         id='basic-button-workspaces'
-        aria-controls={open ? 'basic-menu-workspaces' : undefined}
+        aria-controls={isWorkspacesMenuOpen ? 'basic-menu-workspaces' : undefined}
         aria-haspopup='true'
-        aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
+        aria-expanded={isWorkspacesMenuOpen ? 'true' : undefined}
+        onClick={handleWorkspacesMenuClick}
         endIcon={<ExpandMoreIcon />}
       >
         Workspaces
       </Button>
+
       <Menu
         id='basic-menu-workspaces'
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
+        anchorEl={anchorWorkspacesMenuElement}
+        open={isWorkspacesMenuOpen}
+        onClose={handleWorkspacesMenuClose}
         MenuListProps={{
           'aria-labelledby': 'basic-button-workspaces'
         }}

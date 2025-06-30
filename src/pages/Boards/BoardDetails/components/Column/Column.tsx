@@ -1,49 +1,51 @@
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import Box from '@mui/material/Box'
-import Tooltip from '@mui/material/Tooltip'
-import Typography from '@mui/material/Typography'
-import { CSSProperties, useState } from 'react'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
-import AddCardIcon from '@mui/icons-material/AddCard'
-import ContentCut from '@mui/icons-material/ContentCut'
-import ContentCopy from '@mui/icons-material/ContentCopy'
-import ContentPaste from '@mui/icons-material/ContentPaste'
-import Divider from '@mui/material/Divider'
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
-import Cloud from '@mui/icons-material/Cloud'
-import CardsList from '~/pages/Boards/BoardDetails/components/CardsList'
-import Button from '@mui/material/Button'
-import DragHandleIcon from '@mui/icons-material/DragHandle'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import TextField from '@mui/material/TextField'
+import AddCardIcon from '@mui/icons-material/AddCard'
 import CloseIcon from '@mui/icons-material/Close'
+import Cloud from '@mui/icons-material/Cloud'
+import ContentCopy from '@mui/icons-material/ContentCopy'
+import ContentCut from '@mui/icons-material/ContentCut'
+import ContentPaste from '@mui/icons-material/ContentPaste'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
+import DragHandleIcon from '@mui/icons-material/DragHandle'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Divider from '@mui/material/Divider'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import TextField from '@mui/material/TextField'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
 import { useClickAway } from '@uidotdev/usehooks'
-import { ColumnType } from '~/schemas/column.schema'
-import { useAddCardMutation } from '~/queries/cards'
-import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import cloneDeep from 'lodash/cloneDeep'
-import { updateActiveBoard } from '~/store/slices/board.slice'
 import { useConfirm } from 'material-ui-confirm'
+import { CSSProperties, useState } from 'react'
+import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
+import CardsList from '~/pages/Boards/BoardDetails/components/CardsList'
+import { useAddCardMutation } from '~/queries/cards'
 import { useDeleteColumnMutation } from '~/queries/columns'
+import { ColumnType } from '~/schemas/column.schema'
+import { updateActiveBoard } from '~/store/slices/board.slice'
 
 interface ColumnProps {
   column: ColumnType
 }
 
 export default function Column({ column }: ColumnProps) {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | SVGSVGElement | null>(null)
-  const open = Boolean(anchorEl)
+  const [anchorColumnDropdownMenuElement, setAnchorColumnDropdownMenuElement] = useState<
+    HTMLElement | SVGSVGElement | null
+  >(null)
+  const isColumnDropdownMenuOpen = Boolean(anchorColumnDropdownMenuElement)
 
-  const handleClick = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
-    setAnchorEl(event.currentTarget)
+  const handleColumnDropdownMenuClick = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+    setAnchorColumnDropdownMenuElement(event.currentTarget)
   }
 
-  const handleClose = () => {
-    setAnchorEl(null)
+  const handleColumnDropdownMenuClose = () => {
+    setAnchorColumnDropdownMenuElement(null)
   }
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -124,7 +126,7 @@ export default function Column({ column }: ColumnProps) {
   const deleteColumn = async () => {
     try {
       // Close the menu to prevent aria-hidden conflicts
-      handleClose()
+      handleColumnDropdownMenuClose()
 
       const { confirmed } = await confirmDeleteColumn({
         title: 'Delete Column?',
@@ -178,23 +180,25 @@ export default function Column({ column }: ColumnProps) {
           <Typography variant='h6' sx={{ fontSize: '1rem', fontWeight: '600', cursor: 'pointer' }}>
             {column.title}
           </Typography>
+
           <Box>
             <Tooltip title='More options'>
               <ExpandMoreIcon
                 sx={{ color: 'text.primary', cursor: 'pointer', verticalAlign: 'middle' }}
                 id='basic-column-dropdown'
-                aria-controls={open ? 'basic-menu-column-dropdown' : undefined}
+                aria-controls={isColumnDropdownMenuOpen ? 'basic-menu-column-dropdown' : undefined}
                 aria-haspopup='true'
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
+                aria-expanded={isColumnDropdownMenuOpen ? 'true' : undefined}
+                onClick={handleColumnDropdownMenuClick}
               />
             </Tooltip>
+
             <Menu
               id='basic-menu-column-dropdown'
-              anchorEl={anchorEl}
-              open={open}
-              onClick={handleClose}
-              onClose={handleClose}
+              anchorEl={anchorColumnDropdownMenuElement}
+              open={isColumnDropdownMenuOpen}
+              onClick={handleColumnDropdownMenuClose}
+              onClose={handleColumnDropdownMenuClose}
               MenuListProps={{
                 'aria-labelledby': 'basic-column-dropdown'
               }}
@@ -205,31 +209,37 @@ export default function Column({ column }: ColumnProps) {
                 </ListItemIcon>
                 <ListItemText>Add new card</ListItemText>
               </MenuItem>
+
               <MenuItem>
                 <ListItemIcon>
                   <ContentCut fontSize='small' />
                 </ListItemIcon>
                 <ListItemText>Cut</ListItemText>
               </MenuItem>
+
               <MenuItem>
                 <ListItemIcon>
                   <ContentCopy fontSize='small' />
                 </ListItemIcon>
                 <ListItemText>Copy</ListItemText>
               </MenuItem>
+
               <MenuItem>
                 <ListItemIcon>
                   <ContentPaste fontSize='small' />
                 </ListItemIcon>
                 <ListItemText>Paste</ListItemText>
               </MenuItem>
+
               <Divider />
+
               <MenuItem onClick={deleteColumn}>
                 <ListItemIcon>
                   <DeleteForeverIcon fontSize='small' />
                 </ListItemIcon>
                 <ListItemText>Remove this column</ListItemText>
               </MenuItem>
+
               <MenuItem>
                 <ListItemIcon>
                   <Cloud fontSize='small' />
@@ -308,6 +318,7 @@ export default function Column({ column }: ColumnProps) {
                   style: { fontWeight: '400', fontSize: '0.875rem', lineHeight: '1.43', letterSpacing: '0.01071em' }
                 }}
               />
+
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Button
                   onClick={addNewCard}

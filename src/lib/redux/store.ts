@@ -1,20 +1,15 @@
-// Configure Redux Store
 import { configureStore } from '@reduxjs/toolkit'
+import { persistReducer, persistStore } from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
+import { authApi } from '~/queries/auth'
+import { boardApi } from '~/queries/boards'
+import { cardApi } from '~/queries/cards'
+import { columnApi } from '~/queries/columns'
+import { invitationApi } from '~/queries/invitations'
+import { mediaApi } from '~/queries/medias'
+import { userApi } from '~/queries/users'
 import rootReducer from '~/store/root.reducer'
 
-// Configure Redux-Persist
-import storage from 'redux-persist/lib/storage'
-import { persistReducer, persistStore } from 'redux-persist'
-
-import { boardApi } from '~/queries/boards'
-import { columnApi } from '~/queries/columns'
-import { cardApi } from '~/queries/cards'
-import { authApi } from '~/queries/auth'
-import { userApi } from '~/queries/users'
-import { mediaApi } from '~/queries/medias'
-import { invitationApi } from '~/queries/invitations'
-
-// Persist configuration
 const rootPersistConfig = {
   key: 'root',
   storage,
@@ -42,9 +37,7 @@ export const store = configureStore({
 
 export const persistor = persistStore(store)
 
-// Infer the type of the store
 export type AppStore = typeof store
 
-// Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<AppStore['getState']>
 export type AppDispatch = AppStore['dispatch']

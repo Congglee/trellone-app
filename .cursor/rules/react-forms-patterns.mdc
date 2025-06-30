@@ -1,0 +1,529 @@
+---
+description: React Hook Form + Zod best practices
+globs:
+alwaysApply: true
+---
+# React Hook Form + Zod Best Practices
+
+This rule defines the comprehensive patterns for form handling in React using React Hook Form and Zod validation library, based on the established patterns in the Trellone project.
+
+## Form Component Structure
+
+### Standard Form Setup Pattern
+
+```typescript
+// ✅ Good - Complete form setup with Zod validation
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { LoginBody, LoginBodyType } from '~/schemas/auth.schema'
+
+export default function LoginForm() {
+  const {
+    register,
+    setError,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    watch,
+    control  // For Controller components
+  } = useForm<LoginBodyType>({
+    resolver: zodResolver(LoginBody),
+    defaultValues: { email: '', password: '' }
+  })
+
+  const [loginMutation, { isError, error }] = useLoginMutation()
+
+  const onSubmit = handleSubmit((values) => {
+    loginMutation(values).then((res) => {
+      if (!res.error) {
+        navigate(path.home)
+      }
+    })
+  })
+
+  // Error handling effect
+  useEffect(() => {
+    if (isError && isUnprocessableEntityError<LoginBodyType>(error)) {
+      const formError = error.data.errors
+      if (formError) {
+        for (const [key, value] of Object.entries(formError)) {
+          setError(key as keyof LoginBodyType, {
+            type: value.type,
+            message: value.msg
+          })
+        }
+      }
+    }
+  }, [isError, error, setError])
+
+  return (
+    <form onSubmit={onSubmit}>
+      {/* Form content */}
+    </form>
+  )
+}
+```
+
+**Form Setup Conventions:**
+- Always use `zodResolver` for validation
+- Define proper TypeScript types from Zod schemas
+- Include comprehensive `useForm` destructuring
+- Set appropriate `defaultValues`
+- Use RTK Query mutations for API calls
+- Implement server error handling with `useEffect`
+
+## Zod Schema Patterns
+
+### Basic Validation Schemas
+
+```typescript
+// ✅ Good - Comprehensive field validation
+export const LoginBody = z
+  .object({
+    email: z.string().min(1, { message: 'Email is required' }).email({
+      message: 'Invalid email'
+    }),
+    password: z
+      .string()
+      .min(6, 'Password must be at least 6 characters')
+      .max(50, 'Password must be at most 50 characters')
+      .regex(/[a-z]/, { message: 'Password must contain at least 1 lowercase letter' })
+      .regex(/[A-Z]/, { message: 'Password must contain at least 1 uppercase letter' })
+      .regex(/[0-9]/, { message: 'Password must contain at least 1 number' })
+      .regex(/[^a-zA-Z0-9]/, { message: 'Password must contain at least 1 symbol' })
+  })
+  .strict()
+
+export type LoginBodyType = z.TypeOf<typeof LoginBody>
+```
+
+### Advanced Schema Patterns
+
+```typescript
+// ✅ Good - Schema with custom validation and transformations
+export const CreateBoardBody = z.object({
+  title: z
+    .string()
+    .min(3, { message: 'Title must be at least 3 characters long' })
+    .max(50, { message: 'Title must be at most 50 characters long' }),
+  description: z
+    .string()
+    .transform((val) => (val === '' ? undefined : val))
+    .optional()
+    .refine((val) => val === undefined || val.length >= 3, {
+      message: 'Description must be at least 3 characters long'
+    })
+    .refine((val) => val === undefined || val.length <= 256, {
+      message: 'Description must be at most 256 characters long'
+    }),
+  type: z.enum(BoardTypeValues, { message: 'Type must be either public or private' }).default(BoardType.Public)
+})
+```
+
+### Cross-Field Validation with superRefine
+
+```typescript
+// ✅ Good - Password confirmation validation
+export const RegisterBody = z
+  .object({
+    email: z.string().min(1, { message: 'Email is required' }).email({
+      message: 'Invalid email'
+    }),
+    password: z.string().min(6, 'Password must be at least 6 characters'),
+    confirm_password: z.string().min(6, 'Confirm password must be at least 6 characters')
+  })
+  .strict()
+  .superRefine(({ confirm_password, password }, ctx) => {
+    if (confirm_password !== password) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Passwords do not match',
+        path: ['confirm_password']
+      })
+    }
+  })
+```
+
+**Zod Schema Conventions:**
+- Use `.strict()` to prevent unknown fields
+- Provide descriptive error messages
+- Use `.transform()` for data transformation (empty string to undefined)
+- Use `.refine()` for custom validation logic
+- Use `.superRefine()` for cross-field validation
+- Export both schema and TypeScript type
+- Use enum validation with predefined values
+- Set appropriate `.default()` values when needed
+
+## Form Input Components
+
+### Reusable Input Component Pattern
+
+```typescript
+// ✅ Good - Generic TextFieldInput component
+import { FieldPath, FieldValues, RegisterOptions, UseFormRegister } from 'react-hook-form'
+import TextField, { TextFieldProps } from '@mui/material/TextField'
+
+interface TextFieldInputProps<TFieldValues extends FieldValues> extends Omit<TextFieldProps, 'name'> {
+  register?: UseFormRegister<TFieldValues>
+  rules?: RegisterOptions<TFieldValues, FieldPath<TFieldValues>>
+  name?: FieldPath<TFieldValues>
+}
+
+export default function TextFieldInput<TFieldValues extends FieldValues = FieldValues>({
+  register,
+  rules,
+  name,
+  ...rest
+}: TextFieldInputProps<TFieldValues>) {
+  const registerResult = register && name ? register(name, rules) : null
+
+  return <TextField autoFocus fullWidth variant='outlined' {...registerResult} {...rest} />
+}
+```
+
+### Input Usage Pattern
+
+```typescript
+// ✅ Good - Input component usage with error handling
+<Box sx={{ marginTop: '1em' }}>
+  <TextFieldInput
+    name='email'
+    register={register}
+    type='email'
+    label='Enter Email...'
+    error={!!errors['email']}
+  />
+  <FieldErrorAlert errorMessage={errors.email?.message} />
+</Box>
+
+<Box sx={{ marginTop: '1em' }}>
+  <TextFieldInput
+    name='password'
+    register={register}
+    type='password'
+    label='Enter Password...'
+    error={!!errors['password']}
+  />
+  <FieldErrorAlert errorMessage={errors.password?.message} />
+</Box>
+```
+
+**Input Component Conventions:**
+- Create generic, reusable input components
+- Use proper TypeScript generics for type safety
+- Spread register result into input props
+- Always pair inputs with error display components
+- Use consistent naming for form field names
+- Include proper labels and accessibility attributes
+
+## Error Handling Patterns
+
+### Error Display Component
+
+```typescript
+// ✅ Good - Reusable error alert component
+interface FieldErrorAlertProps {
+  errorMessage?: string
+}
+
+export default function FieldErrorAlert({ errorMessage }: FieldErrorAlertProps) {
+  if (!errorMessage) return null
+
+  return (
+    <Alert severity='error' sx={{ mt: '0.7em', '.MuiAlert-message': { overflow: 'hidden' } }}>
+      {errorMessage}
+    </Alert>
+  )
+}
+```
+
+### Server Error Integration
+
+```typescript
+// ✅ Good - Server error handling pattern
+useEffect(() => {
+  if (isError && isUnprocessableEntityError<FormBodyType>(error)) {
+    const formError = error.data.errors
+
+    if (formError) {
+      for (const [key, value] of Object.entries(formError)) {
+        setError(key as keyof FormBodyType, {
+          type: value.type,
+          message: value.msg
+        })
+      }
+    }
+  }
+}, [isError, error, setError])
+```
+
+**Error Handling Conventions:**
+- Create conditional error display components
+- Return `null` when no error exists
+- Use consistent styling for error messages
+- Map server validation errors to form fields
+- Use proper TypeScript typing for error objects
+- Handle both client-side and server-side validation errors
+
+## Advanced Form Patterns
+
+### Controller for Custom Components
+
+```typescript
+// ✅ Good - Using Controller for non-standard inputs
+import { Controller } from 'react-hook-form'
+
+<Controller
+  name='type'
+  control={control}
+  render={({ field }) => (
+    <RadioGroup
+      {...field}
+      row
+      aria-labelledby='board-type-radio-buttons-group'
+      onChange={(_, value) => field.onChange(value)}
+      value={field.value}
+    >
+      <FormControlLabel
+        value={BoardType.Public}
+        control={<Radio size='small' />}
+        label='Public'
+        labelPlacement='start'
+      />
+      <FormControlLabel
+        value={BoardType.Private}
+        control={<Radio size='small' />}
+        label='Private'
+        labelPlacement='start'
+      />
+    </RadioGroup>
+  )}
+/>
+```
+
+### File Upload Handling
+
+```typescript
+// ✅ Good - File upload with validation
+const handleChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const file = event.target.files?.[0]
+
+  if (file && (file.size >= config.maxSizeUploadAvatar || !file.type.includes('image'))) {
+    toast.error('Maximum file size is 3MB and file type must be an image.', { position: 'top-center' })
+  } else {
+    setFile(file || null)
+  }
+}
+
+// File upload component
+<Button component='label' variant='contained' size='small' startIcon={<CloudUploadIcon />}>
+  Upload
+  <VisuallyHiddenInput type='file' accept='image/*' onChange={handleChangeFile} />
+</Button>
+```
+
+### Form Reset and Default Values
+
+```typescript
+// ✅ Good - Form reset and initialization
+const onReset = () => {
+  reset({ title: '', description: '', type: BoardType.Public })
+}
+
+// Initialize form with existing data
+useEffect(() => {
+  if (profile) {
+    const { display_name, avatar } = profile
+    reset({
+      display_name,
+      avatar: Boolean(avatar) ? avatar : undefined
+    })
+  }
+}, [profile, reset])
+```
+
+**Advanced Pattern Conventions:**
+- Use `Controller` for complex form inputs (radio groups, selects, custom components)
+- Handle file uploads with proper validation and preview
+- Implement form reset functionality
+- Initialize forms with existing data using `useEffect`
+- Use `watch` for dependent field logic
+- Handle form submission with proper loading states
+
+## Form Submission Patterns
+
+### Standard Submission Handler
+
+```typescript
+// ✅ Good - Form submission with navigation
+const onSubmit = handleSubmit((values) => {
+  addBoardMutation(values).then((res) => {
+    if (!res.error) {
+      const board = res.data?.result
+      navigate(`/boards/${board?._id}`)
+    }
+  })
+})
+```
+
+### Complex Submission with File Upload
+
+```typescript
+// ✅ Good - Form submission with file processing
+const onSubmit = handleSubmit(async (values) => {
+  let body = values
+
+  if (file) {
+    const formData = new FormData()
+    formData.append('image', file)
+
+    const uploadImageRes = await uploadImageMutation(formData).unwrap()
+    const imageUrl = uploadImageRes.result[0].url
+
+    body = { ...values, avatar: imageUrl }
+  }
+
+  await updateMeMutation(body)
+})
+```
+
+**Submission Conventions:**
+- Use `handleSubmit` to wrap submission logic
+- Handle both success and error cases
+- Process file uploads before form submission
+- Navigate to appropriate pages after successful submission
+- Use async/await for complex submission flows
+- Show loading states during submission
+
+## Form Layout and Styling
+
+### Consistent Form Structure
+
+```typescript
+// ✅ Good - Form layout with proper spacing
+<form onSubmit={onSubmit}>
+  <DialogContent sx={{ width: { xs: '100%', sm: 400 } }}>
+    <Box sx={{ marginTop: '1em' }}>
+      <TextFieldInput name='title' register={register} label='Board Title' error={!!errors['title']} />
+      <FieldErrorAlert errorMessage={errors.title?.message} />
+    </Box>
+
+    <Box sx={{ marginTop: '1em' }}>
+      <TextFieldInput
+        name='description'
+        register={register}
+        label='Board Description'
+        multiline
+        rows={4}
+        error={!!errors['description']}
+      />
+      <FieldErrorAlert errorMessage={errors.description?.message} />
+    </Box>
+  </DialogContent>
+
+  <DialogActions>
+    <Button type='button' onClick={onReset}>Cancel</Button>
+    <Button type='submit' variant='contained' className='interceptor-loading'>
+      Create
+    </Button>
+  </DialogActions>
+</form>
+```
+
+**Layout Conventions:**
+- Wrap each field group in a Box with consistent margin
+- Place error alerts immediately after their corresponding inputs
+- Use responsive design patterns for form width
+- Include proper form actions (submit, cancel, reset)
+- Add loading classes for submission feedback
+
+## File Organization
+
+### Schema File Structure
+
+```typescript
+// ✅ Good - Schema file organization
+// schemas/auth.schema.ts
+export const LoginBody = z.object({ ... }).strict()
+export type LoginBodyType = z.TypeOf<typeof LoginBody>
+
+export const RegisterBody = z.object({ ... }).strict()
+export type RegisterBodyType = z.TypeOf<typeof RegisterBody>
+
+// Response schemas
+export const AuthRes = z.object({ ... })
+export type AuthResType = z.TypeOf<typeof AuthRes>
+```
+
+### Form Component Structure
+
+```typescript
+// ✅ Good - Component file organization
+// components/Form/
+├── TextFieldInput/
+│   ├── TextFieldInput.tsx
+│   └── index.ts
+├── FieldErrorAlert/
+│   ├── FieldErrorAlert.tsx
+│   └── index.ts
+└── VisuallyHiddenInput/
+    ├── VisuallyHiddenInput.tsx
+    └── index.ts
+```
+
+**Organization Conventions:**
+- Group related schemas in domain-specific files
+- Export both schema and type from same file
+- Create reusable form components in `/components/Form/`
+- Use barrel exports (index.ts) for clean imports
+- Keep form logic separate from UI components
+
+## Common Anti-Patterns to Avoid
+
+### Poor Error Handling
+```typescript
+// ❌ Bad - No error display
+<TextFieldInput name='email' register={register} />
+
+// ✅ Good - Proper error handling
+<TextFieldInput name='email' register={register} error={!!errors.email} />
+<FieldErrorAlert errorMessage={errors.email?.message} />
+```
+
+### Missing Validation
+```typescript
+// ❌ Bad - No schema validation
+const { register, handleSubmit } = useForm()
+
+// ✅ Good - Zod schema validation
+const { register, handleSubmit } = useForm<LoginBodyType>({
+  resolver: zodResolver(LoginBody)
+})
+```
+
+### Inconsistent Type Safety
+```typescript
+// ❌ Bad - No TypeScript types
+const onSubmit = handleSubmit((values: any) => {
+  // Implementation
+})
+
+// ✅ Good - Proper typing
+const onSubmit = handleSubmit((values: LoginBodyType) => {
+  // Implementation
+})
+```
+
+### Missing Default Values
+```typescript
+// ❌ Bad - No default values
+const { register } = useForm()
+
+// ✅ Good - Proper defaults
+const { register } = useForm<LoginBodyType>({
+  resolver: zodResolver(LoginBody),
+  defaultValues: { email: '', password: '' }
+})
+```
+
+This comprehensive approach ensures type-safe, validated, and maintainable forms throughout the React application using React Hook Form and Zod.

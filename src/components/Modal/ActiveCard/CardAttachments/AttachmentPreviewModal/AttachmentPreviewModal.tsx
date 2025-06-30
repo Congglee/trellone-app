@@ -34,16 +34,25 @@ export default function AttachmentPreviewModal({ open, onClose, attachment }: At
         throw new Error('Failed to download file')
       }
 
+      // Get the file blob
       const blob = await response.blob()
+
+      // Create a temporary URL for the blob
       const downloadUrl = window.URL.createObjectURL(blob)
+
+      // Create a temporary anchor element to trigger download
       const link = document.createElement('a')
+
+      // Set the href and download attributes
       link.href = downloadUrl
       link.download = attachment.file.display_name || attachment.file.original_name
 
+      // Append to body, click, and remove
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
 
+      // Clean up the object URL
       window.URL.revokeObjectURL(downloadUrl)
     } catch (error) {
       toast.error('Failed to download file')
@@ -89,6 +98,7 @@ export default function AttachmentPreviewModal({ open, onClose, attachment }: At
             {Math.round(attachment.file.size / 1024)} KB
           </Typography>
         </Box>
+
         <Box sx={{ display: 'flex', gap: 1 }}>
           <IconButton
             size='small'

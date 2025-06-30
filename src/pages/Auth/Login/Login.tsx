@@ -1,10 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import GoogleIcon from '@mui/icons-material/Google'
 import LockIcon from '@mui/icons-material/Lock'
-import { Card as MuiCard } from '@mui/material'
+import RefreshIcon from '@mui/icons-material/Refresh'
+import { Card as MuiCard, Link as MuiLink } from '@mui/material'
+import Alert from '@mui/material/Alert'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CardActions from '@mui/material/CardActions'
+import Checkbox from '@mui/material/Checkbox'
+import Divider from '@mui/material/Divider'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import Zoom from '@mui/material/Zoom'
 import { useEffect } from 'react'
@@ -13,20 +20,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
+import path from '~/constants/path'
+import { useQueryConfig } from '~/hooks/use-query-config'
 import { useLoginMutation } from '~/queries/auth'
 import { LoginBody, LoginBodyType } from '~/schemas/auth.schema'
-import { isUnprocessableEntityError } from '~/utils/error-handlers'
-import { Link as MuiLink } from '@mui/material'
-import Divider from '@mui/material/Divider'
-import GoogleIcon from '@mui/icons-material/Google'
-import { useQueryConfig } from '~/hooks/use-query-config'
 import { AuthQueryParams } from '~/types/query-params.type'
-import Alert from '@mui/material/Alert'
-import RefreshIcon from '@mui/icons-material/Refresh'
-import IconButton from '@mui/material/IconButton'
-import Checkbox from '@mui/material/Checkbox'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import path from '~/constants/path'
+import { isUnprocessableEntityError } from '~/utils/error-handlers'
 import { getGoogleAuthUrl } from '~/utils/oauth'
 
 export default function Login() {
@@ -82,9 +81,11 @@ export default function Login() {
               <TrelloneIcon />
             </Avatar>
           </Box>
+
           <Typography sx={{ textAlign: 'center', fontSize: '1.5rem', fontWeight: 'medium' }} variant='h1'>
             Sign in to your account
           </Typography>
+
           <Box
             sx={{
               marginTop: '1em',
@@ -105,6 +106,7 @@ export default function Login() {
                 Now you can login to enjoy our services! Have a good day! 😊
               </Alert>
             )}
+
             {registered_email && (
               <Alert
                 severity='info'
@@ -130,6 +132,7 @@ export default function Login() {
               </Alert>
             )}
           </Box>
+
           <Box sx={{ padding: '0 1em 1em 1em' }}>
             <Box sx={{ marginTop: '1em' }}>
               <TextFieldInput
@@ -141,6 +144,7 @@ export default function Login() {
               />
               <FieldErrorAlert errorMessage={errors.email?.message} />
             </Box>
+
             <Box sx={{ marginTop: '1em' }}>
               <TextFieldInput
                 name='password'
@@ -152,6 +156,7 @@ export default function Login() {
               <FieldErrorAlert errorMessage={errors.password?.message} />
             </Box>
           </Box>
+
           <CardActions
             sx={{
               padding: '0 1em 1em 1em',
@@ -189,6 +194,7 @@ export default function Login() {
                 Forgot your password?
               </MuiLink>
             </Box>
+
             <Button
               className='interceptor-loading'
               type='submit'
@@ -200,11 +206,14 @@ export default function Login() {
               Login
             </Button>
           </CardActions>
+
           <Divider>Or continue with</Divider>
+
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '1em' }}>
             <Button fullWidth variant='outlined' startIcon={<GoogleIcon />} href={googleOAuthUrl}>
               Sign in with Google
             </Button>
+
             <Typography sx={{ textAlign: 'center' }}>
               Don&apos;t have an account?{' '}
               <Link to='/register' style={{ textDecoration: 'none' }}>

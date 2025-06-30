@@ -14,16 +14,12 @@ export const InvitationSchema = z.object({
   _id: z.string(),
   inviter_id: z.string(),
   invitee_id: z.string(),
-
   type: z.enum(InvitationTypeValues),
   board_invitation: BoardInvitationSchema.optional(),
-
   inviter: UserSchema,
   invitee: UserSchema,
   board: BoardSchema,
-
   _destroy: z.boolean(),
-
   created_at: z.date(),
   updated_at: z.date()
 })

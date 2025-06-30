@@ -10,12 +10,14 @@ export default function ForgotPasswordVerification() {
 
   const [verifyForgotPasswordMutation, { isLoading }] = useVerifyForgotPasswordMutation()
 
+  // Once there is a token on the URL, verify the forgot password request
   useEffect(() => {
     if (token) {
       verifyForgotPasswordMutation({ forgot_password_token: token })
     }
   }, [token])
 
+  // Prevent users from accessing this page by entering the URL directly (404)
   if (!token) {
     return <Navigate to='/404' />
   }

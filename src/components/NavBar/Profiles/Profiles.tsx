@@ -1,33 +1,33 @@
-import { useState } from 'react'
-import Box from '@mui/material/Box'
-import Tooltip from '@mui/material/Tooltip'
-import IconButton from '@mui/material/IconButton'
-import Avatar from '@mui/material/Avatar'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import { Link } from 'react-router-dom'
-import Divider from '@mui/material/Divider'
 import Logout from '@mui/icons-material/Logout'
 import PersonAdd from '@mui/icons-material/PersonAdd'
 import Settings from '@mui/icons-material/Settings'
-import { useLogoutMutation } from '~/queries/auth'
+import Avatar from '@mui/material/Avatar'
+import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import Tooltip from '@mui/material/Tooltip'
 import { useConfirm } from 'material-ui-confirm'
-import { useAppSelector } from '~/lib/redux/hooks'
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import path from '~/constants/path'
+import { useAppSelector } from '~/lib/redux/hooks'
+import { useLogoutMutation } from '~/queries/auth'
 
 export default function Profiles() {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
+  const [anchorProfilesMenuElement, setAnchorProfilesMenuElement] = useState<null | HTMLElement>(null)
+  const isProfilesMenuOpen = Boolean(anchorProfilesMenuElement)
 
   const { profile } = useAppSelector((state) => state.auth)
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    setAnchorEl(event.currentTarget)
+  const handleProfilesMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    setAnchorProfilesMenuElement(event.currentTarget)
   }
 
-  const handleClose = () => {
-    setAnchorEl(null)
+  const handleProfilesMenuClose = () => {
+    setAnchorProfilesMenuElement(null)
   }
 
   const [logoutMutation] = useLogoutMutation()
@@ -36,7 +36,7 @@ export default function Profiles() {
 
   const logout = async () => {
     try {
-      handleClose()
+      handleProfilesMenuClose()
 
       const { confirmed } = await confirmLogout({
         title: 'Are you sure you want to logout?',
@@ -56,22 +56,23 @@ export default function Profiles() {
     <Box>
       <Tooltip title='Account settings' placement='bottom-start'>
         <IconButton
-          onClick={handleClick}
+          onClick={handleProfilesMenuClick}
           size='small'
           sx={{ padding: 0 }}
-          aria-controls={open ? 'basic-menu-profiles' : undefined}
+          aria-controls={isProfilesMenuOpen ? 'basic-menu-profiles' : undefined}
           aria-haspopup='true'
-          aria-expanded={open ? 'true' : undefined}
+          aria-expanded={isProfilesMenuOpen ? 'true' : undefined}
         >
           <Avatar sx={{ width: 36, height: 36 }} alt={profile?.display_name} src={profile?.avatar} />
         </IconButton>
       </Tooltip>
+
       <Menu
         id='basic-menu-profiles'
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        onClick={handleClose}
+        anchorEl={anchorProfilesMenuElement}
+        open={isProfilesMenuOpen}
+        onClose={handleProfilesMenuClose}
+        onClick={handleProfilesMenuClose}
         MenuListProps={{ 'aria-labelledby': 'basic-button-profiles' }}
       >
         <Link to={path.accountSettings} style={{ textDecoration: 'none', color: 'inherit' }}>

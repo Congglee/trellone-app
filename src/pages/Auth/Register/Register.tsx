@@ -1,27 +1,26 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import GoogleIcon from '@mui/icons-material/Google'
 import LockIcon from '@mui/icons-material/Lock'
-import { Card as MuiCard } from '@mui/material'
+import { Card as MuiCard, Link as MuiLink } from '@mui/material'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CardActions from '@mui/material/CardActions'
+import Checkbox from '@mui/material/Checkbox'
+import Divider from '@mui/material/Divider'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import Typography from '@mui/material/Typography'
 import Zoom from '@mui/material/Zoom'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
-import { RegisterBody, RegisterBodyType } from '~/schemas/auth.schema'
-import { Link as MuiLink } from '@mui/material'
-import Divider from '@mui/material/Divider'
-import GoogleIcon from '@mui/icons-material/Google'
-import { useRegisterMutation } from '~/queries/auth'
-import { isUnprocessableEntityError } from '~/utils/error-handlers'
-import { useEffect } from 'react'
 import path from '~/constants/path'
-import Checkbox from '@mui/material/Checkbox'
-import FormControlLabel from '@mui/material/FormControlLabel'
+import { useRegisterMutation } from '~/queries/auth'
+import { RegisterBody, RegisterBodyType } from '~/schemas/auth.schema'
+import { isUnprocessableEntityError } from '~/utils/error-handlers'
 import { getGoogleAuthUrl } from '~/utils/oauth'
 
 export default function Register() {
@@ -79,9 +78,11 @@ export default function Register() {
               <TrelloneIcon />
             </Avatar>
           </Box>
+
           <Typography sx={{ textAlign: 'center', fontSize: '1.5rem', fontWeight: 'medium' }} variant='h1'>
             Sign up for your account
           </Typography>
+
           <Box sx={{ padding: '1em' }}>
             <Box sx={{ marginTop: '1em' }}>
               <TextFieldInput
@@ -93,6 +94,7 @@ export default function Register() {
               />
               <FieldErrorAlert errorMessage={errors.email?.message} />
             </Box>
+
             <Box sx={{ marginTop: '1em' }}>
               <TextFieldInput
                 name='password'
@@ -103,6 +105,7 @@ export default function Register() {
               />
               <FieldErrorAlert errorMessage={errors.password?.message} />
             </Box>
+
             <Box sx={{ marginTop: '1em' }}>
               <TextFieldInput
                 name='confirm_password'
@@ -114,6 +117,7 @@ export default function Register() {
               <FieldErrorAlert errorMessage={errors.confirm_password?.message} />
             </Box>
           </Box>
+
           <CardActions
             sx={{
               padding: '0 1em 1em 1em',
@@ -151,6 +155,7 @@ export default function Register() {
                 Forgot your password?
               </MuiLink>
             </Box>
+
             <Button
               className='interceptor-loading'
               type='submit'
@@ -162,11 +167,14 @@ export default function Register() {
               Register
             </Button>
           </CardActions>
+
           <Divider>Or continue with</Divider>
+
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '1em' }}>
             <Button fullWidth variant='outlined' href={googleOAuthUrl} startIcon={<GoogleIcon />}>
               Sign in with Google
             </Button>
+
             <Typography sx={{ textAlign: 'center' }}>
               Already have an account?{' '}
               <Link to={path.login} style={{ textDecoration: 'none' }}>

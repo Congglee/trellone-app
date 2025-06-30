@@ -1,16 +1,43 @@
 import z from 'zod'
-import { AttachmentType, CardAttachmentActionValues, CardMemberAction } from '~/constants/type'
+import {
+  AttachmentType,
+  CardAttachmentActionValues,
+  CardCommentReactionActionValues,
+  CardMemberAction,
+  CommentActionValues
+} from '~/constants/type'
+
+const CommentReactionSchema = z.object({
+  reaction_id: z.string(),
+  emoji: z.string(),
+  user_id: z.string(),
+  user_email: z.string(),
+  user_display_name: z.string(),
+  reacted_at: z.date()
+})
 
 const CommentSchema = z.object({
+  comment_id: z.string(),
   user_id: z.string(),
   user_email: z.string(),
   user_avatar: z.string(),
   user_display_name: z.string(),
   content: z.string(),
-  commented_at: z.date()
+  commented_at: z.date(),
+  reactions: z.array(CommentReactionSchema)
 })
 
 export type CommentType = z.TypeOf<typeof CommentSchema>
+
+const CommentPayloadSchema = z.object({
+  action: z.enum(CommentActionValues),
+  user_email: z.string(),
+  user_avatar: z.string().optional(),
+  user_display_name: z.string(),
+  content: z.string()
+})
+
+export type CommentPayloadType = z.TypeOf<typeof CommentPayloadSchema>
 
 const CardMemberPayloadSchema = z.object({
   action: z.enum([CardMemberAction.Add, CardMemberAction.Remove]),
@@ -67,22 +94,17 @@ export const CardSchema = z.object({
   _id: z.string(),
   board_id: z.string(),
   column_id: z.string(),
-
   title: z.string(),
   due_date: z.date().nullable().optional(),
   is_completed: z.boolean().nullable().optional(),
   description: z.string().optional(),
   cover_photo: z.string().optional(),
-
   members: z.array(z.string()).optional(),
   comments: z.array(CommentSchema).optional(),
   attachments: z.array(CardAttachmentSchema).optional(),
-
   _destroy: z.boolean(),
-
   created_at: z.date(),
   updated_at: z.date(),
-
   FE_PlaceholderCard: z.boolean().optional()
 })
 
@@ -117,7 +139,7 @@ export const UpdateCardBody = z.object({
   description: z.string().optional(),
   cover_photo: z.string().url().optional(),
   _destroy: z.boolean().optional(),
-  comment: CommentSchema.optional(),
+  comment: CommentPayloadSchema.optional(),
   member: CardMemberPayloadSchema.optional(),
   attachment: CardAttachmentPayloadSchema.optional()
 })
@@ -140,3 +162,11 @@ export const UpdateCardFileAttachmentBody = z.object({
 })
 
 export type UpdateCardFileAttachmentBodyType = z.TypeOf<typeof UpdateCardFileAttachmentBody>
+
+export const ReactToCardCommentBody = z.object({
+  emoji: z.string().min(1, { message: 'Emoji is required' }).max(2, { message: 'Emoji must be 2 characters long' }),
+  action: z.enum(CardCommentReactionActionValues),
+  reaction_id: z.string().optional()
+})
+
+export type ReactToCardCommentBodyType = z.TypeOf<typeof ReactToCardCommentBody>

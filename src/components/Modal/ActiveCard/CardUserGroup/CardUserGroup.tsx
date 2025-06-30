@@ -1,15 +1,15 @@
+import AddIcon from '@mui/icons-material/Add'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import Avatar from '@mui/material/Avatar'
+import Badge from '@mui/material/Badge'
+import Box from '@mui/material/Box'
+import Popover from '@mui/material/Popover'
+import Tooltip from '@mui/material/Tooltip'
 import { useMemo, useState } from 'react'
 import { CardMemberAction } from '~/constants/type'
 import { useAppSelector } from '~/lib/redux/hooks'
 import { CardMemberPayloadType } from '~/schemas/card.schema'
 import { UserType } from '~/schemas/user.schema'
-import Box from '@mui/material/Box'
-import Avatar from '@mui/material/Avatar'
-import Tooltip from '@mui/material/Tooltip'
-import AddIcon from '@mui/icons-material/Add'
-import Popover from '@mui/material/Popover'
-import Badge from '@mui/material/Badge'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 
 interface CardUserGroupProps {
   cardMembers: string[]
@@ -17,16 +17,16 @@ interface CardUserGroupProps {
 }
 
 export default function CardUserGroup({ cardMembers, onUpdateCardMembers }: CardUserGroupProps) {
-  const [anchorPopoverElement, setAnchorPopoverElement] = useState<HTMLElement | null>(null)
-  const isOpenPopover = Boolean(anchorPopoverElement)
+  const [anchorGroupActionsPopoverElement, setAnchorGroupActionsPopoverElement] = useState<HTMLElement | null>(null)
+  const isGroupActionsPopoverOpen = Boolean(anchorGroupActionsPopoverElement)
 
-  const popoverId = isOpenPopover ? 'card-all-users-popover' : undefined
+  const popoverId = isGroupActionsPopoverOpen ? 'group-actions-popover' : undefined
 
-  const togglePopover = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (!anchorPopoverElement) {
-      setAnchorPopoverElement(event.currentTarget)
+  const toggleGroupActionsPopover = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (!anchorGroupActionsPopoverElement) {
+      setAnchorGroupActionsPopoverElement(event.currentTarget)
     } else {
-      setAnchorPopoverElement(null)
+      setAnchorGroupActionsPopoverElement(null)
     }
   }
 
@@ -53,10 +53,11 @@ export default function CardUserGroup({ cardMembers, onUpdateCardMembers }: Card
           <Avatar sx={{ width: 34, height: 34, cursor: 'pointer' }} alt={user?.display_name} src={user?.avatar} />
         </Tooltip>
       ))}
+
       <Tooltip title='Add new member'>
         <Box
           aria-describedby={popoverId}
-          onClick={togglePopover}
+          onClick={toggleGroupActionsPopover}
           sx={{
             width: 36,
             height: 36,
@@ -78,11 +79,12 @@ export default function CardUserGroup({ cardMembers, onUpdateCardMembers }: Card
           <AddIcon fontSize='small' />
         </Box>
       </Tooltip>
+
       <Popover
         id={popoverId}
-        open={isOpenPopover}
-        anchorEl={anchorPopoverElement}
-        onClose={togglePopover}
+        open={isGroupActionsPopoverOpen}
+        anchorEl={anchorGroupActionsPopoverElement}
+        onClose={toggleGroupActionsPopover}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <Box

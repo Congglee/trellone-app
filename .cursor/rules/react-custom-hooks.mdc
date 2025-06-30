@@ -1,0 +1,528 @@
+---
+description: React custom hooks best practices
+globs:
+alwaysApply: true
+---
+# React Custom Hooks Best Practices
+
+This rule defines the comprehensive patterns and conventions for writing custom React hooks in the Trellone project, based on the established patterns in [src/hooks](mdc:src/hooks).
+
+## Hook Naming Conventions
+
+### Standard Hook Naming Pattern
+All custom hooks MUST follow the `use` prefix convention with descriptive camelCase names:
+
+```typescript
+// ✅ Good - Clear, descriptive hook names
+export const useQueryConfig = <T = CommonQueryParams>() => { ... }
+export const useDebounce = (fnToDebounce: any, delay = 500) => { ... }
+export const useQueryParams = () => { ... }
+
+// ❌ Bad - Missing 'use' prefix or unclear names
+export const queryConfig = () => { ... }
+export const debounce = () => { ... }
+export const getParams = () => { ... }
+```
+
+**Naming Conventions:**
+- Always start with `use` prefix
+- Use camelCase for the rest of the name
+- Be descriptive about the hook's purpose
+- Avoid abbreviations unless they're widely understood
+
+## File Organization and Structure
+
+### File Naming Pattern
+Hook files should follow kebab-case naming with descriptive names:
+
+```
+src/hooks/
+├── use-query-config.ts     # Query configuration management
+├── use-debounce.ts         # Debouncing functionality  
+├── use-query-params.ts     # URL search params handling
+└── index.ts               # Barrel export file (if needed)
+```
+
+### Import Organization
+Follow the established import order pattern:
+
+```typescript
+// ✅ Good - Proper import organization
+import { useCallback } from 'react'                    // React hooks first
+import { useSearchParams } from 'react-router-dom'     // External library hooks
+import debounce from 'lodash/debounce'                 // External utilities
+import isUndefined from 'lodash/isUndefined'
+import omitBy from 'lodash/omitBy'
+import { DEFAULT_PAGINATION_LIMIT } from '~/constants/pagination'  // Internal constants
+import { useQueryParams } from '~/hooks/use-query-params'          // Internal hooks
+import { CommonQueryParams } from '~/types/query-params.type'      // Internal types
+```
+
+## TypeScript Integration Patterns
+
+### Generic Hook Design
+Use TypeScript generics for flexible, reusable hooks:
+
+```typescript
+// ✅ Good - Generic hook with proper constraints
+export type QueryConfig<T = CommonQueryParams> = {
+  [key in keyof T]: string
+}
+
+export const useQueryConfig = <T = CommonQueryParams>() => {
+  const queryParams = useQueryParams()
+  
+  const queryConfig: QueryConfig<T> = omitBy(
+    {
+      ...queryParams,
+      page: queryParams.page || DEFAULT_PAGINATION_PAGE,
+      limit: queryParams.limit || DEFAULT_PAGINATION_LIMIT
+    },
+    isUndefined
+  ) as QueryConfig<T>
+
+  return queryConfig
+}
+
+// Usage with specific type
+const config = useQueryConfig<BoardQueryParams>()
+```
+
+### Type Safety Patterns
+Always provide proper TypeScript types for parameters and return values:
+
+```typescript
+// ✅ Good - Explicit parameter and return types
+export const useDebounce = (fnToDebounce: any, delay = 500) => {
+  // Type validation logic
+  return useCallback(debounce(fnToDebounce, delay), [fnToDebounce, delay])
+}
+
+// ✅ Good - Simple hook with clear return type
+export const useQueryParams = (): Record<string, string> => {
+  const [searchParams] = useSearchParams()
+  return Object.fromEntries([...searchParams])
+}
+```
+
+## Input Validation Patterns
+
+### Parameter Validation
+Always validate hook parameters with descriptive error messages:
+
+```typescript
+// ✅ Good - Comprehensive parameter validation
+export const useDebounce = (fnToDebounce: any, delay = 500) => {
+  if (isNaN(delay)) {
+    throw new Error('Delay value should be a number.')
+  }
+
+  if (!fnToDebounce || typeof fnToDebounce !== 'function') {
+    throw new Error('Debounce must have a function')
+  }
+
+  return useCallback(debounce(fnToDebounce, delay), [fnToDebounce, delay])
+}
+```
+
+**Validation Conventions:**
+- Check for invalid parameter types
+- Provide clear, descriptive error messages
+- Validate early in the hook function
+- Use appropriate error types (Error, TypeError, etc.)
+- Include parameter name in error messages
+
+## Default Values and Fallbacks
+
+### Consistent Default Handling
+Use constants for default values and provide sensible fallbacks:
+
+```typescript
+// ✅ Good - Using constants for defaults
+import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '~/constants/pagination'
+
+export const useQueryConfig = <T = CommonQueryParams>() => {
+  const queryParams = useQueryParams()
+
+  const queryConfig: QueryConfig<T> = omitBy(
+    {
+      ...queryParams,
+      page: queryParams.page || DEFAULT_PAGINATION_PAGE,    // Use constant defaults
+      limit: queryParams.limit || DEFAULT_PAGINATION_LIMIT  // Use constant defaults
+    },
+    isUndefined
+  ) as QueryConfig<T>
+
+  return queryConfig
+}
+
+// ✅ Good - Default parameter values
+export const useDebounce = (fnToDebounce: any, delay = 500) => {
+  // Implementation
+}
+```
+
+**Default Value Conventions:**
+- Import defaults from [constants](mdc:src/constants) when available
+- Use meaningful default values (not just 0 or empty string)
+- Document default behavior in JSDoc comments
+- Make defaults configurable when appropriate
+
+## Hook Composition Patterns
+
+### Building Hooks from Other Hooks
+Compose complex hooks from simpler ones:
+
+```typescript
+// ✅ Good - Hook composition pattern
+export const useQueryConfig = <T = CommonQueryParams>() => {
+  const queryParams = useQueryParams()  // Using another custom hook
+  
+  // Process and return enhanced data
+  const queryConfig: QueryConfig<T> = omitBy(
+    {
+      ...queryParams,
+      page: queryParams.page || DEFAULT_PAGINATION_PAGE,
+      limit: queryParams.limit || DEFAULT_PAGINATION_LIMIT
+    },
+    isUndefined
+  ) as QueryConfig<T>
+
+  return queryConfig
+}
+```
+
+### React Hook Integration
+Properly integrate with built-in React hooks:
+
+```typescript
+// ✅ Good - Proper React hook integration
+export const useDebounce = (fnToDebounce: any, delay = 500) => {
+  // Validation first
+  if (isNaN(delay)) {
+    throw new Error('Delay value should be a number.')
+  }
+
+  if (!fnToDebounce || typeof fnToDebounce !== 'function') {
+    throw new Error('Debounce must have a function')
+  }
+
+  // Use React hooks with proper dependencies
+  return useCallback(debounce(fnToDebounce, delay), [fnToDebounce, delay])
+}
+```
+
+## Performance Optimization
+
+### Memoization Patterns
+Use `useCallback` and `useMemo` appropriately for performance:
+
+```typescript
+// ✅ Good - Proper memoization with dependencies
+export const useDebounce = (fnToDebounce: any, delay = 500) => {
+  // ... validation logic
+  
+  return useCallback(
+    debounce(fnToDebounce, delay), 
+    [fnToDebounce, delay]  // Proper dependency array
+  )
+}
+```
+
+### Lodash Integration
+Leverage lodash utilities for common operations:
+
+```typescript
+// ✅ Good - Lodash utility usage
+import isUndefined from 'lodash/isUndefined'
+import omitBy from 'lodash/omitBy'
+import debounce from 'lodash/debounce'
+
+// Use in hook implementation
+const queryConfig: QueryConfig<T> = omitBy(
+  {
+    ...queryParams,
+    page: queryParams.page || DEFAULT_PAGINATION_PAGE,
+    limit: queryParams.limit || DEFAULT_PAGINATION_LIMIT
+  },
+  isUndefined  // Remove undefined values
+) as QueryConfig<T>
+```
+
+## URL and Query Parameter Handling
+
+### Search Params Processing
+Create utility hooks for common URL parameter operations:
+
+```typescript
+// ✅ Good - Simple, focused hook for search params
+export const useQueryParams = () => {
+  const [searchParams] = useSearchParams()
+  return Object.fromEntries([...searchParams])
+}
+
+// ✅ Good - Enhanced hook building on the simple one
+export const useQueryConfig = <T = CommonQueryParams>() => {
+  const queryParams = useQueryParams()
+  
+  // Process and enhance the raw params
+  const queryConfig: QueryConfig<T> = omitBy(
+    {
+      ...queryParams,
+      page: queryParams.page || DEFAULT_PAGINATION_PAGE,
+      limit: queryParams.limit || DEFAULT_PAGINATION_LIMIT
+    },
+    isUndefined
+  ) as QueryConfig<T>
+
+  return queryConfig
+}
+```
+
+**Query Parameter Conventions:**
+- Create simple hooks for basic operations
+- Build enhanced hooks that add business logic
+- Use type definitions from [types/query-params.type.ts](mdc:src/types/query-params.type.ts)
+- Handle pagination parameters consistently
+- Remove undefined values from query objects
+
+## Type Definitions and Interfaces
+
+### Hook-Specific Types
+Define clear types for hook parameters and return values:
+
+```typescript
+// ✅ Good - Clear type definitions
+export type QueryConfig<T = CommonQueryParams> = {
+  [key in keyof T]: string
+}
+
+// Usage with specific interfaces
+interface BoardQueryParams extends CommonQueryParams {
+  keyword?: string
+}
+
+const boardConfig = useQueryConfig<BoardQueryParams>()
+```
+
+### Interface Integration
+Use established type interfaces from the project:
+
+```typescript
+// ✅ Good - Using project type definitions
+import { CommonQueryParams } from '~/types/query-params.type'
+
+// Hook that works with established types
+export const useQueryConfig = <T = CommonQueryParams>() => {
+  // Implementation using the established interface
+}
+```
+
+## Error Handling in Hooks
+
+### Validation Error Patterns
+Throw descriptive errors for invalid inputs:
+
+```typescript
+// ✅ Good - Descriptive error handling
+export const useDebounce = (fnToDebounce: any, delay = 500) => {
+  if (isNaN(delay)) {
+    throw new Error('Delay value should be a number.')
+  }
+
+  if (!fnToDebounce || typeof fnToDebounce !== 'function') {
+    throw new Error('Debounce must have a function')
+  }
+
+  // Continue with implementation
+}
+```
+
+**Error Handling Conventions:**
+- Validate inputs early in the hook
+- Throw errors with clear, actionable messages
+- Use appropriate error types
+- Don't catch errors unless you can meaningfully handle them
+- Document error conditions in JSDoc comments
+
+## Hook Export Patterns
+
+### Named Exports
+Always use named exports for hooks:
+
+```typescript
+// ✅ Good - Named exports
+export const useQueryConfig = <T = CommonQueryParams>() => { ... }
+export const useDebounce = (fnToDebounce: any, delay = 500) => { ... }
+export const useQueryParams = () => { ... }
+
+// ❌ Bad - Default exports for hooks
+export default function useQueryConfig() { ... }
+```
+
+### Type Exports
+Export related types alongside hooks:
+
+```typescript
+// ✅ Good - Export types with hooks
+export type QueryConfig<T = CommonQueryParams> = {
+  [key in keyof T]: string
+}
+
+export const useQueryConfig = <T = CommonQueryParams>() => {
+  // Implementation
+}
+```
+
+## Documentation and Comments
+
+### JSDoc Documentation
+Provide comprehensive JSDoc comments for complex hooks:
+
+```typescript
+/**
+ * Custom hook for managing query configuration with pagination defaults
+ * @template T - Type extending CommonQueryParams for type safety
+ * @returns {QueryConfig<T>} Processed query configuration object with defaults applied
+ * 
+ * @example
+ * ```typescript
+ * // Basic usage
+ * const config = useQueryConfig()
+ * 
+ * // With specific type
+ * const boardConfig = useQueryConfig<BoardQueryParams>()
+ * ```
+ */
+export const useQueryConfig = <T = CommonQueryParams>() => {
+  // Implementation
+}
+```
+
+## Testing Considerations
+
+### Hook Testability
+Design hooks to be easily testable:
+
+```typescript
+// ✅ Good - Testable hook design
+export const useDebounce = (fnToDebounce: any, delay = 500) => {
+  // Clear input validation
+  if (isNaN(delay)) {
+    throw new Error('Delay value should be a number.')
+  }
+
+  if (!fnToDebounce || typeof fnToDebounce !== 'function') {
+    throw new Error('Debounce must have a function')
+  }
+
+  // Predictable return value
+  return useCallback(debounce(fnToDebounce, delay), [fnToDebounce, delay])
+}
+```
+
+**Testing Conventions:**
+- Keep hooks pure when possible
+- Validate inputs clearly
+- Use predictable return values
+- Avoid side effects in hook logic
+- Make dependencies explicit
+
+## Common Anti-Patterns to Avoid
+
+### Missing Validation
+```typescript
+// ❌ Bad - No input validation
+export const useDebounce = (fnToDebounce: any, delay = 500) => {
+  return useCallback(debounce(fnToDebounce, delay), [fnToDebounce, delay])
+}
+
+// ✅ Good - Proper validation
+export const useDebounce = (fnToDebounce: any, delay = 500) => {
+  if (isNaN(delay)) {
+    throw new Error('Delay value should be a number.')
+  }
+  // ... rest of validation and implementation
+}
+```
+
+### Poor TypeScript Usage
+```typescript
+// ❌ Bad - Using 'any' without constraints
+export const useQueryConfig = () => {
+  const queryParams: any = useQueryParams()
+  return queryParams
+}
+
+// ✅ Good - Proper generic typing
+export const useQueryConfig = <T = CommonQueryParams>() => {
+  const queryParams = useQueryParams()
+  const queryConfig: QueryConfig<T> = omitBy(/* ... */) as QueryConfig<T>
+  return queryConfig
+}
+```
+
+### Missing Dependencies
+```typescript
+// ❌ Bad - Missing dependencies in useCallback
+export const useDebounce = (fnToDebounce: any, delay = 500) => {
+  return useCallback(debounce(fnToDebounce, delay), [])  // Missing deps
+}
+
+// ✅ Good - Proper dependencies
+export const useDebounce = (fnToDebounce: any, delay = 500) => {
+  return useCallback(debounce(fnToDebounce, delay), [fnToDebounce, delay])
+}
+```
+
+### Inconsistent Naming
+```typescript
+// ❌ Bad - Inconsistent naming patterns
+export const getQueryParams = () => { ... }
+export const queryConfigHook = () => { ... }
+export const debounceFunction = () => { ... }
+
+// ✅ Good - Consistent 'use' prefix
+export const useQueryParams = () => { ... }
+export const useQueryConfig = () => { ... }
+export const useDebounce = () => { ... }
+```
+
+## Integration with Project Architecture
+
+### Constants Integration
+Use project constants for default values:
+
+```typescript
+// ✅ Good - Using project constants
+import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '~/constants/pagination'
+
+export const useQueryConfig = <T = CommonQueryParams>() => {
+  // Use constants for defaults
+  const queryConfig: QueryConfig<T> = omitBy(
+    {
+      ...queryParams,
+      page: queryParams.page || DEFAULT_PAGINATION_PAGE,
+      limit: queryParams.limit || DEFAULT_PAGINATION_LIMIT
+    },
+    isUndefined
+  ) as QueryConfig<T>
+
+  return queryConfig
+}
+```
+
+### Type System Integration
+Leverage the project's type system:
+
+```typescript
+// ✅ Good - Using established type patterns
+import { CommonQueryParams } from '~/types/query-params.type'
+
+// Hook that integrates with project types
+export const useQueryConfig = <T = CommonQueryParams>() => {
+  // Implementation that works with project type system
+}
+```
+
+This structure ensures consistent, type-safe, and maintainable custom hooks across the entire React application, following the established patterns in the Trellone project.

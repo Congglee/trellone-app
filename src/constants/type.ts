@@ -82,3 +82,21 @@ export const CardAttachmentActionValues = [
   CardAttachmentAction.Edit,
   CardAttachmentAction.Remove
 ] as const
+
+export const CommentAction = {
+  Add: 'ADD',
+  Edit: 'EDIT',
+  Remove: 'REMOVE'
+} as const
+
+export const CommentActionValues = [CommentAction.Add, CommentAction.Edit, CommentAction.Remove] as const
+
+export const CardCommentReactionAction = {
+  Add: 'ADD',
+  Remove: 'REMOVE'
+} as const
+
+export const CardCommentReactionActionValues = [
+  CardCommentReactionAction.Add,
+  CardCommentReactionAction.Remove
+] as const

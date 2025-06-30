@@ -135,7 +135,9 @@ export default function WorkspaceDrawer({ open, onOpen, boardId }: WorkspaceDraw
             {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
         </DrawerHeader>
+
         <Divider />
+
         <List>
           <ListItem disablePadding>
             <ListItemButton onClick={() => {}}>
@@ -145,6 +147,7 @@ export default function WorkspaceDrawer({ open, onOpen, boardId }: WorkspaceDraw
               <ListItemText secondary='Boards' />
             </ListItemButton>
           </ListItem>
+
           <ListItem disablePadding>
             <ListItemButton onClick={() => {}}>
               <ListItemIcon>
@@ -153,6 +156,7 @@ export default function WorkspaceDrawer({ open, onOpen, boardId }: WorkspaceDraw
               <ListItemText secondary='Members' />
             </ListItemButton>
           </ListItem>
+
           <ListItem disablePadding>
             <ListItemButton onClick={() => {}}>
               <ListItemIcon>
@@ -162,10 +166,13 @@ export default function WorkspaceDrawer({ open, onOpen, boardId }: WorkspaceDraw
             </ListItemButton>
           </ListItem>
         </List>
+
         <Divider />
+
         <Typography variant='subtitle1' p={2} pb={1}>
           Your Boards
         </Typography>
+
         <InfiniteScroll
           dataLength={boards.length}
           next={getMoreBoards}

@@ -1,0 +1,474 @@
+---
+description: Material-UI styling best practices
+globs:
+alwaysApply: true
+---
+# Material-UI Styling Best Practices
+
+This rule defines the comprehensive styling patterns used throughout the React + TypeScript application with Material-UI (MUI).
+
+## Component-Level Styling Patterns
+
+### 1. Styled Components with Theme Support
+
+Always create styled components that support both light and dark themes:
+
+```typescript
+// ✅ Good - Comprehensive theme support
+const SidebarItem = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '6px',
+  cursor: 'pointer',
+  fontSize: '14px',
+  fontWeight: '600',
+  color: theme.palette.mode === 'dark' ? '#90caf9' : '#172b4d',
+  backgroundColor: theme.palette.mode === 'dark' ? '#2f3542' : '#091e420f',
+  padding: '10px',
+  borderRadius: '4px',
+  '&:hover': {
+    backgroundColor: theme.palette.mode === 'dark' ? '#33485D' : theme.palette.grey[300],
+    '&.active': {
+      color: theme.palette.mode === 'dark' ? '#000000de' : '#0c66e4',
+      backgroundColor: theme.palette.mode === 'dark' ? '#90caf9' : '#e9f2ff'
+    }
+  }
+}))
+
+// ❌ Bad - No theme support
+const BadSidebarItem = styled(Box)({
+  backgroundColor: '#f5f5f5', // Hard-coded color
+  color: '#000' // No dark mode consideration
+})
+```
+
+### 2. Consistent Style Object Patterns
+
+Define reusable style objects as constants using UPPER_SNAKE_CASE:
+
+```typescript
+// ✅ Good - Reusable style constants
+const MENU_STYLES = {
+  bgcolor: 'transparent',
+  border: 'none',
+  paddingX: '5px',
+  borderRadius: '4px',
+  '.MuiSvgIcon-root': {
+    color: 'text.primary'
+  },
+  '&:hover': {
+    bgcolor: 'primary.50'
+  },
+  fontSize: '0.875rem',
+  fontWeight: 500
+}
+
+const MENU_ITEM_STYLES = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  width: '350px',
+  whiteSpace: 'pre-line'
+}
+
+// ❌ Bad - Inline styles without reusability
+<Box sx={{ display: 'flex', fontSize: '0.875rem', fontWeight: 500 }} />
+```
+
+### 3. Responsive Design with Breakpoints
+
+Use MUI's responsive breakpoint system consistently:
+
+```typescript
+// ✅ Good - Responsive design patterns
+<Toolbar
+  sx={{
+    flexDirection: { xs: 'column', md: 'row' },
+    alignItems: { xs: 'flex-start', md: 'center' },
+    gap: 2
+  }}
+>
+
+// ✅ Good - Conditional responsive display
+sx={{ ...(workspaceDrawerOpen && { display: 'none' }) }}
+
+// ❌ Bad - Hard-coded sizes
+<Box sx={{ width: '300px' }} /> // Not responsive
+```
+
+## Theme Integration Patterns
+
+### 1. Dynamic Theme-Based Styling
+
+Always use theme functions for dynamic styling:
+
+```typescript
+// ✅ Good - Theme-based dynamic styling
+sx={{
+  backgroundColor: (theme) => (theme.palette.mode === 'dark' ? '#1A2027' : '#fff'),
+  bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgb(0 0 0 / 40%)' : 'rgb(255 255 255 / 40%)'),
+  backdropFilter: 'blur(4px)'
+}}
+
+// ✅ Good - Using theme palette tokens
+sx={{
+  bgcolor: 'background.paper',
+  color: 'text.primary'
+}}
+
+// ❌ Bad - Hard-coded colors
+sx={{ backgroundColor: '#ffffff', color: '#000000' }}
+```
+
+### 2. Custom Theme Properties
+
+Leverage custom theme properties defined in the theme configuration:
+
+```typescript
+// ✅ Good - Using custom theme properties
+sx={{
+  minHeight: (theme) => theme.trellone.boardBarHeight
+}}
+```
+
+## Layout and Positioning Patterns
+
+### 1. Grid System Usage
+
+Use MUI's Grid2 system for responsive layouts:
+
+```typescript
+// ✅ Good - Grid layout with responsive breakpoints
+<Grid container spacing={2}>
+  <Grid xs={12} sm={9}>
+    {/* Main content */}
+  </Grid>
+  <Grid xs={12} sm={3}>
+    {/* Sidebar */}
+  </Grid>
+</Grid>
+```
+
+### 2. Stack Component for Simple Layouts
+
+Use Stack for straightforward vertical/horizontal layouts:
+
+```typescript
+// ✅ Good - Stack for simple layouts
+<Stack direction='column' spacing={1}>
+  <SidebarItem>Item 1</SidebarItem>
+  <SidebarItem>Item 2</SidebarItem>
+</Stack>
+```
+
+### 3. Box for Custom Container Styling
+
+Use Box as the primary container with custom styling:
+
+```typescript
+// ✅ Good - Box with comprehensive styling
+<Box
+  sx={{
+    position: 'relative',
+    width: '100%',
+    maxWidth: 900,
+    bgcolor: 'white',
+    boxShadow: 24,
+    borderRadius: '8px',
+    border: 'none',
+    outline: 0,
+    padding: '40px 20px 20px',
+    margin: '50px auto',
+    backgroundColor: (theme) => (theme.palette.mode === 'dark' ? '#1A2027' : '#fff')
+  }}
+>
+```
+
+## Component-Specific Styling
+
+### 1. AppBar and Toolbar Styling
+
+```typescript
+// ✅ Good - AppBar with backdrop and positioning
+<AppBar
+  sx={{
+    backgroundColor: (theme) => (theme.palette.mode === 'dark' ? 'rgb(0 0 0 / 40%)' : 'rgb(255 255 255 / 40%)'),
+    top: 'auto',
+    zIndex: 999
+  }}
+  position='absolute'
+>
+  <Toolbar
+    sx={{
+      minHeight: (theme) => theme.trellone.boardBarHeight,
+      backdropFilter: 'blur(4px)',
+      justifyContent: 'space-between',
+      gap: 2,
+      overflowX: 'auto'
+    }}
+    variant='dense'
+  >
+```
+
+### 2. Modal Styling
+
+```typescript
+// ✅ Good - Modal with proper positioning and styling
+<Modal disableScrollLock open={isOpen} onClose={onClose} sx={{ overflowY: 'auto' }}>
+  <Box
+    sx={{
+      position: 'relative',
+      width: '100%',
+      maxWidth: 900,
+      bgcolor: 'white',
+      boxShadow: 24,
+      borderRadius: '8px',
+      border: 'none',
+      outline: 0,
+      margin: '50px auto'
+    }}
+  >
+```
+
+### 3. Form Input Styling
+
+```typescript
+// ✅ Good - TextField with theme-aware styling
+<TextField
+  sx={{
+    bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#22272b' : '#feff0026')
+  }}
+  variant='outlined'
+  size='small'
+  autoFocus
+  focused
+  inputProps={{ style: { fontWeight: 500, fontSize: '1rem' } }}
+/>
+```
+
+## Interactive Element Patterns
+
+### 1. Hover States and Transitions
+
+Always implement smooth hover transitions:
+
+```typescript
+// ✅ Good - Comprehensive hover states
+'&:hover': {
+  backgroundColor: theme.palette.mode === 'dark' ? '#33485D' : theme.palette.grey[300],
+  '&.active': {
+    color: theme.palette.mode === 'dark' ? '#000000de' : '#0c66e4',
+    backgroundColor: theme.palette.mode === 'dark' ? '#90caf9' : '#e9f2ff'
+  }
+}
+```
+
+### 2. Icon Button Styling
+
+```typescript
+// ✅ Good - Icon button with proper positioning
+<IconButton
+  color='inherit'
+  aria-label='descriptive label'
+  onClick={handleClick}
+  edge='start'
+  sx={{ ...(condition && { display: 'none' }) }}
+>
+  <MenuIcon />
+</IconButton>
+```
+
+### 3. Chip Component Styling
+
+```typescript
+// ✅ Good - Chip with custom styling
+<Chip
+  sx={MENU_STYLES}
+  icon={<SpaceDashboardIcon />}
+  label={board.title}
+  onClick={toggleEditBoardTitleForm}
+/>
+```
+
+## Advanced Styling Patterns
+
+### 1. Background Images and Effects
+
+```typescript
+// ✅ Good - Background image with proper fallbacks
+<Box
+  sx={{
+    backgroundImage: `url(${imageUrl})`,
+    backgroundSize: 'contain',
+    minHeight: '116px',
+    maxHeight: '160px',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    borderTopLeftRadius: '12px',
+    borderTopRightRadius: '12px',
+    backgroundColor: (theme) => (theme.palette.mode === 'dark' ? '#1d1f19' : '#f5f5f5')
+  }}
+/>
+```
+
+### 2. Complex Conditional Styling
+
+```typescript
+// ✅ Good - Complex conditional styling with theme awareness
+<SidebarItem
+  sx={{
+    backgroundColor: (theme) => theme.palette.error.main,
+    color: (theme) => theme.palette.error.contrastText,
+    '&:hover': {
+      backgroundColor: (theme) =>
+        theme.palette.mode === 'dark' ? theme.palette.error.dark : theme.palette.error.light,
+      '&.active': {
+        backgroundColor: (theme) =>
+          theme.palette.mode === 'dark' ? theme.palette.error.dark : theme.palette.error.light,
+        color: (theme) => theme.palette.error.contrastText
+      }
+    }
+  }}
+>
+```
+
+## Performance and Optimization
+
+### 1. Style Object Extraction
+
+Extract frequently used styles to constants to avoid recreation:
+
+```typescript
+// ✅ Good - Extracted style constants
+const SIDEBAR_ITEM_STYLES = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '6px',
+  cursor: 'pointer'
+} as const
+
+// Use in component
+<Box sx={SIDEBAR_ITEM_STYLES}>
+```
+
+### 2. Conditional Style Application
+
+Use spread operator for conditional styles:
+
+```typescript
+// ✅ Good - Conditional style spreading
+<IconButton
+  sx={{
+    ...baseStyles,
+    ...(isActive && activeStyles),
+    ...(workspaceDrawerOpen && { display: 'none' })
+  }}
+>
+```
+
+## Component Composition Patterns
+
+### 1. Wrapper Component Styling
+
+```typescript
+// ✅ Good - Wrapper components with flexible styling
+interface ComponentProps {
+  styles?: SxProps
+  children: React.ReactNode
+}
+
+export default function Component({ styles, children }: ComponentProps) {
+  return (
+    <Box sx={styles}>
+      {children}
+    </Box>
+  )
+}
+```
+
+### 2. Icon Integration
+
+```typescript
+// ✅ Good - Icon integration with consistent spacing
+<Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+  <SubjectRoundedIcon />
+  <Typography component='span' sx={{ fontWeight: '600', fontSize: '20px' }}>
+    Description
+  </Typography>
+</Box>
+```
+
+## Accessibility and UX Styling
+
+### 1. Focus States
+
+```typescript
+// ✅ Good - Proper focus styling
+<TextField
+  autoFocus
+  focused
+  sx={{
+    '&:focus-within': {
+      outline: '2px solid',
+      outlineColor: 'primary.main'
+    }
+  }}
+/>
+```
+
+### 2. Loading and Disabled States
+
+```typescript
+// ✅ Good - Visual feedback for states
+sx={{
+  opacity: loading ? 0.6 : 1,
+  pointerEvents: loading ? 'none' : 'auto',
+  transition: 'opacity 0.2s ease'
+}}
+```
+
+## Common Anti-Patterns to Avoid
+
+### 1. Hard-coded Values
+```typescript
+// ❌ Bad - Hard-coded colors and sizes
+sx={{ color: '#1976d2', padding: '8px' }}
+
+// ✅ Good - Theme-based values
+sx={{ color: 'primary.main', p: 1 }}
+```
+
+### 2. Inline Styles for Complex Components
+```typescript
+// ❌ Bad - Complex inline styles
+<Box style={{
+  display: 'flex',
+  alignItems: 'center',
+  backgroundColor: '#f5f5f5',
+  padding: '10px',
+  borderRadius: '4px'
+}} />
+
+// ✅ Good - Styled component or sx prop
+const StyledBox = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  backgroundColor: theme.palette.background.paper,
+  padding: theme.spacing(1.25),
+  borderRadius: theme.shape.borderRadius
+}))
+```
+
+### 3. Missing Responsive Design
+```typescript
+// ❌ Bad - No responsive considerations
+<Box sx={{ width: 300, height: 200 }} />
+
+// ✅ Good - Responsive design
+<Box sx={{ 
+  width: { xs: '100%', sm: 300 },
+  height: { xs: 150, sm: 200 }
+}} />
+```
+
+These patterns ensure consistent, maintainable, and accessible styling across the entire Material-UI React application while supporting both light and dark themes seamlessly.

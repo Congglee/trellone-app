@@ -63,9 +63,11 @@ export default function ForgotPassword() {
               <TrelloneIcon />
             </Avatar>
           </Box>
+
           <Typography sx={{ textAlign: 'center', fontSize: '1.5rem', fontWeight: 'medium' }} variant='h1'>
             Forgot your password?
           </Typography>
+
           <Box sx={{ padding: '1em' }}>
             <Box sx={{ marginTop: '1em' }}>
               <TextFieldInput
@@ -78,6 +80,7 @@ export default function ForgotPassword() {
               <FieldErrorAlert errorMessage={errors.email?.message} />
             </Box>
           </Box>
+
           <CardActions
             sx={{
               padding: '0 1em 1em 1em',
@@ -98,7 +101,9 @@ export default function ForgotPassword() {
               Send reset instructions
             </Button>
           </CardActions>
+
           <Divider>Or continue with</Divider>
+
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '1em' }}>
             <Typography sx={{ textAlign: 'center' }}>
               Already have an account?{' '}

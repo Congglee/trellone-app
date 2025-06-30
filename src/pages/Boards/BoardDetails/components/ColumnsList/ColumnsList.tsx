@@ -1,18 +1,18 @@
-import Box from '@mui/material/Box'
-import Column from '~/pages/Boards/BoardDetails/components/Column/Column'
-import Button from '@mui/material/Button'
-import NoteAddIcon from '@mui/icons-material/NoteAdd'
 import { horizontalListSortingStrategy, SortableContext } from '@dnd-kit/sortable'
-import { useMemo, useState } from 'react'
-import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
+import NoteAddIcon from '@mui/icons-material/NoteAdd'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
 import { useClickAway } from '@uidotdev/usehooks'
-import { ColumnType } from '~/schemas/column.schema'
-import { useAddColumnMutation } from '~/queries/columns'
-import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
-import { generatePlaceholderCard } from '~/utils/utils'
 import cloneDeep from 'lodash/cloneDeep'
+import { useMemo, useState } from 'react'
+import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
+import Column from '~/pages/Boards/BoardDetails/components/Column/Column'
+import { useAddColumnMutation } from '~/queries/columns'
+import { ColumnType } from '~/schemas/column.schema'
 import { updateActiveBoard } from '~/store/slices/board.slice'
+import { generatePlaceholderCard } from '~/utils/utils'
 
 interface ColumnsListProps {
   columns: ColumnType[]
@@ -138,6 +138,7 @@ export default function ColumnsList({ columns }: ColumnsListProps) {
                 style: { letterSpacing: '0.00714em', lineHeight: 1.5, fontWeight: 500, fontSize: '0.875rem' }
               }}
             />
+
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Button
                 onClick={addNewColumn}
