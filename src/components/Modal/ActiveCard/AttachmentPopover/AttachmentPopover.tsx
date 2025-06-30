@@ -131,9 +131,11 @@ const AttachmentPopover = forwardRef<HTMLButtonElement, AttachmentPopoverProps>(
         onClick={toggleAttachmentPopover}
         sx={{
           p: '10px',
+          fontWeight: '600',
           lineHeight: 'inherit',
           gap: '6px',
-          justifyContent: 'flex-start'
+          justifyContent: 'flex-start',
+          transition: 'none'
         }}
       >
         <AttachFileOutlinedIcon fontSize='small' />
