@@ -63,6 +63,11 @@ export default function Notifications() {
         const boardInvitation = res.data.result.invitation.board_invitation
 
         if (boardInvitation?.status === BoardInvitationStatus.Accepted) {
+          const invitee = res.data.result.invitee
+          const boardId = boardInvitation.board_id
+
+          socket?.emit('CLIENT_USER_ACCEPTED_BOARD_INVITATION', { boardId, invitee })
+
           navigate(`/boards/${boardInvitation.board_id}`)
         }
       }

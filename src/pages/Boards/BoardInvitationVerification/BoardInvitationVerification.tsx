@@ -1,17 +1,23 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import path from '~/constants/path'
 import { BoardInvitationStatus } from '~/constants/type'
 import { useQueryConfig } from '~/hooks/use-query-config'
 import { decodeToken } from '~/lib/jwt-decode'
+import { useAppSelector } from '~/lib/redux/hooks'
 import { useUpdateBoardInvitationMutation, useVerifyBoardInvitationMutation } from '~/queries/invitations'
+import { UserType } from '~/schemas/user.schema'
 import { InviteTokenPayload } from '~/types/jwt.type'
 import { BoardInvitationQueryParams } from '~/types/query-params.type'
 
 export default function BoardInvitationVerification() {
   const { token, board_id } = useQueryConfig<BoardInvitationQueryParams>()
   const navigate = useNavigate()
+
+  const [invitee, setInvitee] = useState<UserType | null>(null)
+
+  const { socket } = useAppSelector((state) => state.app)
 
   const [
     verifyBoardInvitationMutation,
@@ -40,24 +46,36 @@ export default function BoardInvitationVerification() {
     }
   }, [token])
 
-  // If the invitation is verified successfully, update the invitation status to accepted
+  // If the invitation is verified successfully, update the invitation status to accepted and set the invitee
   useEffect(() => {
-    if (isVerifyBoardInvitationSuccess && token) {
-      const invitationId = decodeToken<InviteTokenPayload>(token as string).invitation_id
+    const updateBoardInvitation = async () => {
+      if (isVerifyBoardInvitationSuccess && token) {
+        const invitationId = decodeToken<InviteTokenPayload>(token as string).invitation_id
 
-      updateBoardInvitationMutation({
-        id: invitationId,
-        body: { status: BoardInvitationStatus.Accepted }
-      })
+        const updateBoardInvitationRes = await updateBoardInvitationMutation({
+          id: invitationId,
+          body: { status: BoardInvitationStatus.Accepted }
+        }).unwrap()
+
+        const invitee = updateBoardInvitationRes.result.invitee
+
+        setInvitee(invitee)
+      }
     }
+
+    updateBoardInvitation()
   }, [isVerifyBoardInvitationSuccess, token])
 
-  // If the invitation is updated successfully, navigate to the board details page
+  // If the invitation is updated successfully, emit socket event to notify other users about the new member addition and navigate to the board details page
   useEffect(() => {
     if (isUpdateBoardInvitationSuccess) {
+      if (invitee) {
+        socket?.emit('CLIENT_USER_ACCEPTED_BOARD_INVITATION', { boardId: board_id, invitee })
+      }
+
       navigate(`/boards/${board_id}`)
     }
-  }, [isUpdateBoardInvitationSuccess, navigate, board_id])
+  }, [isUpdateBoardInvitationSuccess, navigate, board_id, invitee, socket])
 
   // If there is an error, navigate to the login page
   useEffect(() => {
