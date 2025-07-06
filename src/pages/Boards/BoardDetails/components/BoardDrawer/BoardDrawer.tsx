@@ -42,7 +42,7 @@ export default function BoardDrawer({ open, onOpen }: BoardDrawerProps) {
           width: theme.trellone.boardDrawerWidth,
           boxSizing: 'border-box',
           top: 'auto',
-          height: `calc(100vh - ${theme.trellone.navBarHeight})`
+          height: `calc(100% - ${theme.trellone.navBarHeight})`
         }
       }}
       variant='persistent'

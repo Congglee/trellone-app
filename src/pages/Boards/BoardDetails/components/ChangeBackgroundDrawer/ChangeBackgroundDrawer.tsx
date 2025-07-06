@@ -116,7 +116,9 @@ export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroun
       sx={{
         width: theme.trellone.boardDrawerWidth,
         flexShrink: 0,
-        '& .MuiDrawer-paper': { top: `${theme.trellone.navBarHeight}` }
+        '& .MuiDrawer-paper': {
+          top: `calc(${theme.trellone.navBarHeight} + 1px)`
+        }
       }}
       variant='persistent'
       anchor='right'
