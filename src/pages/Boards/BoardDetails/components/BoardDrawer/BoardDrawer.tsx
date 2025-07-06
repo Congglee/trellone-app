@@ -40,8 +40,7 @@ export default function BoardDrawer({ open, onOpen }: BoardDrawerProps) {
         flexShrink: 0,
         '& .MuiDrawer-paper': {
           width: theme.trellone.boardDrawerWidth,
-          boxSizing: 'border-box',
-          top: 'auto',
+          top: `calc(${theme.trellone.navBarHeight} + 1px)`,
           height: `calc(100% - ${theme.trellone.navBarHeight})`
         }
       }}

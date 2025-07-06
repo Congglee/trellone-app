@@ -105,8 +105,7 @@ export default function WorkspaceDrawer({ open, onOpen, boardId }: WorkspaceDraw
         '& .MuiDrawer-paper': {
           backdropFilter: 'blur(16px)',
           width: theme.trellone.workspaceDrawerWidth,
-          boxSizing: 'border-box',
-          top: 'auto',
+          top: `calc(${theme.trellone.navBarHeight} + 1px)`,
           height: `calc(100% - ${theme.trellone.navBarHeight})`
         }
       }}
