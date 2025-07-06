@@ -118,7 +118,7 @@ export default function BoardBar({
         top: (theme) => `calc(${theme.trellone.navBarHeight} + 1px)`,
         zIndex: 999
       }}
-      position='absolute'
+      position='fixed'
       workspaceDrawerOpen={workspaceDrawerOpen}
       boardDrawerOpen={boardDrawerOpen}
     >
