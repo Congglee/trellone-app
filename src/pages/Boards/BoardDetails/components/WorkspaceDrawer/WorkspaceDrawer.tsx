@@ -107,7 +107,7 @@ export default function WorkspaceDrawer({ open, onOpen, boardId }: WorkspaceDraw
           width: theme.trellone.workspaceDrawerWidth,
           boxSizing: 'border-box',
           top: 'auto',
-          height: `calc(100vh - ${theme.trellone.navBarHeight})`
+          height: `calc(100% - ${theme.trellone.navBarHeight})`
         }
       }}
       variant='persistent'
