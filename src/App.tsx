@@ -25,9 +25,9 @@ const BoardDetails = lazy(() => import('~/pages/Boards/BoardDetails'))
 const Settings = lazy(() => import('~/pages/Settings'))
 const NotFound = lazy(() => import('~/pages/404/NotFound'))
 
-const ProtectedRoute = ({ profile, isAuthenticated }: { profile: UserType | null; isAuthenticated: boolean }) => {
-  return profile && isAuthenticated ? <Outlet /> : <Navigate to={path.login} replace={true} />
-}
+// const ProtectedRoute = ({ profile, isAuthenticated }: { profile: UserType | null; isAuthenticated: boolean }) => {
+//   return profile && isAuthenticated ? <Outlet /> : <Navigate to={path.login} replace={true} />
+// }
 
 const RejectedRoute = ({ profile, isAuthenticated }: { profile: UserType | null; isAuthenticated: boolean }) => {
   const location = useLocation()
@@ -72,48 +72,48 @@ function App() {
   return (
     <Routes>
       {/* Protected Routes */}
-      <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} profile={profile} />}>
-        {/* Home */}
-        <Route
-          path={path.home}
-          element={
-            <Suspense fallback={<PageLoadingSpinner />}>
-              <HomeLayout />
-            </Suspense>
-          }
-        >
-          <Route index element={<Home />} />
-          <Route path={path.boardsList} element={<BoardsList />} />
-        </Route>
-
-        {/* Board Details */}
-        <Route
-          path={path.boardDetails}
-          element={
-            <Suspense fallback={<PageLoadingSpinner />}>
-              <BoardDetails />
-            </Suspense>
-          }
-        />
-
-        {/* User Settings */}
-        <Route
-          path={path.accountSettings}
-          element={
-            <Suspense fallback={<PageLoadingSpinner />}>
-              <Settings />
-            </Suspense>
-          }
-        />
-        <Route
-          path={path.securitySettings}
-          element={
-            <Suspense fallback={<PageLoadingSpinner />}>
-              <Settings />
-            </Suspense>
-          }
-        />
+      {/* <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} profile={profile} />}> */}
+      {/* Home */}
+      <Route
+        path={path.home}
+        element={
+          <Suspense fallback={<PageLoadingSpinner />}>
+            <HomeLayout />
+          </Suspense>
+        }
+      >
+        <Route index element={<Home />} />
+        <Route path={path.boardsList} element={<BoardsList />} />
       </Route>
+
+      {/* Board Details */}
+      <Route
+        path={path.boardDetails}
+        element={
+          <Suspense fallback={<PageLoadingSpinner />}>
+            <BoardDetails />
+          </Suspense>
+        }
+      />
+
+      {/* User Settings */}
+      <Route
+        path={path.accountSettings}
+        element={
+          <Suspense fallback={<PageLoadingSpinner />}>
+            <Settings />
+          </Suspense>
+        }
+      />
+      <Route
+        path={path.securitySettings}
+        element={
+          <Suspense fallback={<PageLoadingSpinner />}>
+            <Settings />
+          </Suspense>
+        }
+      />
+      {/* </Route> */}
 
       {/* Rejected Routes */}
       <Route element={<RejectedRoute isAuthenticated={isAuthenticated} profile={profile} />}>
