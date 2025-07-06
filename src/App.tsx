@@ -73,7 +73,6 @@ function App() {
     <Routes>
       {/* Protected Routes */}
       <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} profile={profile} />}>
-        {/* Home */}
         <Route
           path={path.home}
           element={
