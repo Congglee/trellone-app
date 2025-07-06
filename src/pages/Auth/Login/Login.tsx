@@ -16,7 +16,7 @@ import Typography from '@mui/material/Typography'
 import Zoom from '@mui/material/Zoom'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
@@ -39,19 +39,14 @@ export default function Login() {
     defaultValues: { email: '', password: '' }
   })
 
-  const navigate = useNavigate()
   const { registered_email, verified_email } = useQueryConfig<AuthQueryParams>()
 
   const [loginMutation, { isError, error }] = useLoginMutation()
 
   const googleOAuthUrl = getGoogleAuthUrl()
 
-  const onSubmit = handleSubmit((values) => {
-    loginMutation(values).then((res) => {
-      if (!res.error) {
-        navigate(path.home)
-      }
-    })
+  const onSubmit = handleSubmit(async (values) => {
+    await loginMutation(values)
   })
 
   useEffect(() => {
