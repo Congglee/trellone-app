@@ -116,7 +116,7 @@ VITE_GOOGLE_REDIRECT_URI="http://localhost:8000/auth/oauth/google"
 $ npm run dev
 ```
 
-The application will be available at `http://localhost:5173`
+The application will be available at `http://localhost:3000`
 
 **Production Build**:
 
@@ -159,7 +159,8 @@ $ npm run preview
 
 - `npm run lint` - Run ESLint to check for code issues
 - `npm run lint:fix` - Fix automatically fixable ESLint issues
-- `npm run type-check` - Run TypeScript type checking
+- `npm run prettier` - Run Prettier to check for code issues
+- `npm run prettier:fix` - Fix automatically fixable Prettier issues
 
 ## :file_folder: Project Structure
 
@@ -170,13 +171,6 @@ $ npm run preview
  ┃ ┗ 📜vite.svg                      # Vite logo
  ┣ 📂src                             # Source code
  ┃ ┣ 📂components                    # Reusable UI components
- ┃ ┃ ┣ 📂AppBar                      # Application header bar
- ┃ ┃ ┣ 📂Dialog                      # Modal dialogs
- ┃ ┃ ┣ 📂Form                        # Form components and inputs
- ┃ ┃ ┣ 📂Loading                     # Loading indicators
- ┃ ┃ ┣ 📂Modal                       # Complex modals (ActiveCard)
- ┃ ┃ ┣ 📂NavBar                      # Navigation bar with search
- ┃ ┃ ┗ 📂Workspace                   # Workspace-related components
  ┃ ┣ 📂pages                         # Route-specific page components
  ┃ ┃ ┣ 📂Auth                        # Authentication pages
  ┃ ┃ ┣ 📂Boards                      # Board management pages
@@ -375,13 +369,13 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 
 ## :scroll: License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is open source feel free to use it as you want.
 
 ## :heart: Acknowledgments
 
 This project was made possible thanks to the following resources and inspirations:
 
-- **[Complete React + TypeScript Course](https://www.youtube.com/playlist?list=PLP6tw4Zpj-RJP2-YrhtkWqObMQ-AA4TDy)** - A comprehensive YouTube playlist/course that provided the foundation and guidance for building this project. This course was instrumental in establishing the core architecture and development patterns.
+- **[Complete React + TypeScript Course](https://www.youtube.com/playlist?list=PLP6tw4Zpj-RJP2-YrhtkWqObMQ-AA4TDy)** - A comprehensive YouTube playlist/course by [TrungQuanDev](https://www.youtube.com/@trungquandev) that provided the foundation and guidance for building this project. This course was instrumental in establishing the core architecture and development patterns.
 
 - **[Task Manager - Trello Clone](https://github.com/aashish47/task-manager)** - An excellent Trello clone project that served as a valuable reference for UI design and user experience patterns. This project provided inspiration for the visual design and interface interactions.
 
