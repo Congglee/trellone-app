@@ -352,7 +352,13 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## :heart: Acknowledgments
 
-...
+This project was made possible thanks to the following resources and inspirations:
+
+- **[Complete React + TypeScript Course](https://www.youtube.com/playlist?list=PLP6tw4Zpj-RJP2-YrhtkWqObMQ-AA4TDy)** - A comprehensive YouTube playlist/course that provided the foundation and guidance for building this project. This course was instrumental in establishing the core architecture and development patterns.
+
+- **[Task Manager - Trello Clone](https://github.com/aashish47/task-manager)** - An excellent Trello clone project that served as a valuable reference for UI design and user experience patterns. This project provided inspiration for the visual design and interface interactions.
+
+Special thanks to all the open-source contributors and maintainers of the technologies used in this project, including React, TypeScript, Material-UI, Redux Toolkit, and many others that make modern web development possible.
 
 ---
 
