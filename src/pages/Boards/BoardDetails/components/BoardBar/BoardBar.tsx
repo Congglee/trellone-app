@@ -115,8 +115,7 @@ export default function BoardBar({
     <AppBar
       sx={{
         backgroundColor: (theme) => (theme.palette.mode === 'dark' ? 'rgb(0 0 0 / 40%)' : 'rgb(255 255 255 / 40%)'),
-        top: (theme) => `calc(${theme.trellone.navBarHeight} + 1px)`,
-        zIndex: 999
+        top: (theme) => `calc(${theme.trellone.navBarHeight} + 1px)`
       }}
       position='fixed'
       workspaceDrawerOpen={workspaceDrawerOpen}
