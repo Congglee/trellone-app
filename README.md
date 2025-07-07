@@ -293,6 +293,33 @@ $ npm run preview
 - **Protected Routes**: Authentication-based access control
 - **Lazy Loading**: Code splitting for optimal performance
 
+## :construction: Development Progress
+
+### 🚧 Currently Working On
+
+The following features are actively being developed and will be available in upcoming releases:
+
+- **SEO Optimization** - Implementing comprehensive SEO features for better search engine visibility
+- **Workspace Management** - Enhanced workspace functionality with advanced organization tools
+- **User Permissions System** - Role-based access control for Boards and Workspaces
+- **Board & Workspace Visibility** - Public/private visibility settings with granular access control
+- **System Optimization** - Performance improvements and code optimization across the application
+- **Docker Support** - Complete containerization of the project for easy deployment and development
+
+### 🔮 Future Roadmap (if possible 🤔)
+
+These features are planned for future development and will significantly enhance the platform's capabilities:
+
+- **Premium Subscription System** - Monthly Stripe-powered subscriptions with advanced features including:
+  - Unlimited board creation
+  - Advanced team management tools
+  - Enhanced storage limits
+  - Priority support
+  - Advanced analytics and reporting
+  - Custom integrations
+
+---
+
 ## :rocket: Deployment
 
 This project is configured for easy deployment on Vercel:
