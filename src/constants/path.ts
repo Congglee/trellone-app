@@ -1,18 +1,28 @@
 const path = {
-  home: '/',
+  // Front Landing Page
+  frontPage: '/',
+
+  // Workspace Pages
+  home: '/home',
   boardsList: '/boards',
+
+  // Board Details Page
   boardDetails: '/boards/:boardId',
+
+  // Auth Pages
   login: '/login',
   oauth: '/login/oauth',
   register: '/register',
-  accountVerification: '/account/verification',
   forgotPassword: '/forgot-password',
-  forgotPasswordVerification: '/forgot-password/verification',
   resetPassword: '/reset-password',
 
+  // Settings Pages
   accountSettings: '/settings/account',
   securitySettings: '/settings/security',
 
+  // Verification Pages
+  accountVerification: '/account/verification',
+  forgotPasswordVerification: '/forgot-password/verification',
   boardInvitationVerification: '/board-invitation/verification'
 } as const
 

@@ -17,6 +17,7 @@ import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
+import SEO from '~/components/SEO'
 import path from '~/constants/path'
 import { useRegisterMutation } from '~/queries/auth'
 import { RegisterBody, RegisterBodyType } from '~/schemas/auth.schema'
@@ -68,6 +69,11 @@ export default function Register() {
 
   return (
     <form onSubmit={onSubmit}>
+      <SEO
+        title='Sign Up'
+        description='Create your free Trellone account to start managing projects, organizing tasks, and collaborating with your team.'
+      />
+
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>
         <MuiCard sx={{ marginTop: '6em' }}>
           <Box sx={{ margin: '1em', display: 'flex', justifyContent: 'center', gap: 1 }}>

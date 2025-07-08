@@ -88,7 +88,7 @@ export default function NewBoardDialog({ open, onNewBoardClose }: NewBoardDialog
       <Divider variant='middle' />
 
       <div style={{ textAlign: 'center', margin: '28px 0px 8px 0px' }}>
-        <img src='/board.svg' alt='' />
+        <img src='/board.svg' alt='Create a new board' />
       </div>
 
       <form onSubmit={onSubmit}>

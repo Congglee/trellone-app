@@ -9,6 +9,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CardActions from '@mui/material/CardActions'
 import RecentlyViewed from '~/pages/Workspaces/Home/components/RecentlyViewed'
+import { Helmet } from 'react-helmet-async'
 
 export default function Home() {
   const bulletPoint = (
@@ -26,6 +27,14 @@ export default function Home() {
 
   return (
     <Stack direction='row' gap={2}>
+      <Helmet>
+        <title>Home | Trellone</title>
+        <meta
+          name='description'
+          content="Organize anything, together. Trellone is a collaboration tool that organizes your projects into boards. In one glance, know what's being worked on, who's working on what, and where something is in a process"
+        />
+      </Helmet>
+
       <List
         sx={{ mx: { xs: 1, md: 0 }, width: '100%', maxWidth: 500 }}
         aria-labelledby='nested-list-subheader'

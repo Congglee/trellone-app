@@ -7,6 +7,7 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Tab from '@mui/material/Tab'
 import { useState } from 'react'
+import { Helmet } from 'react-helmet-async'
 import { Link, useLocation } from 'react-router-dom'
 import NavBar from '~/components/NavBar'
 import path from '~/constants/path'
@@ -33,6 +34,14 @@ export default function Settings() {
 
   return (
     <Container disableGutters maxWidth={false}>
+      <Helmet>
+        <title>Settings | Trellone</title>
+        <meta
+          name='description'
+          content="Organize anything, together. Trellone is a collaboration tool that organizes your projects into boards. In one glance, know what's being worked on, who's working on what, and where something is in a process"
+        />
+      </Helmet>
+
       <NavBar />
 
       <TabContext value={activeSettingsTab}>
