@@ -3,6 +3,7 @@ description: Constants management guide
 globs:
 alwaysApply: true
 ---
+
 # Constants Management Guide
 
 This rule defines the comprehensive conventions for managing constants in the Trellone project, based on the established patterns in [src/constants](mdc:src/constants).
@@ -27,9 +28,7 @@ All constants are organized in [src/constants/](mdc:src/constants) with specific
 const environment = import.meta.env.MODE || 'development'
 
 export const envConfig = {
-  baseUrl: environment === 'development' 
-    ? import.meta.env.VITE_APP_DEV_API_URL 
-    : import.meta.env.VITE_APP_PROD_API_URL,
+  baseUrl: environment === 'development' ? import.meta.env.VITE_APP_DEV_API_URL : import.meta.env.VITE_APP_PROD_API_URL,
   googleClientId: import.meta.env.VITE_GOOGLE_CLIENT_ID,
   googleRedirectUri: import.meta.env.VITE_GOOGLE_REDIRECT_URI
 }
@@ -46,7 +45,7 @@ export const config = {
   maxSizeUploadDocumentTotal: 10 * 4 * 1024 * 1024, // 40MB
   allowedDocumentTypes: [
     'application/pdf', // .pdf
-    'application/msword', // .doc
+    'application/msword' // .doc
     // ... more types with comments
   ],
   allowedImageMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']
@@ -54,6 +53,7 @@ export const config = {
 ```
 
 **Configuration Conventions:**
+
 - Use camelCase for config object keys
 - Include unit comments for size values (e.g., `// 3MB`)
 - Group related configuration items together
@@ -134,18 +134,32 @@ export const CardMemberAction = {
 ```typescript
 // ✅ Good - Single path object with const assertion
 const path = {
-  home: '/',
+  // Front Landing Page
+  frontPage: '/',
+
+  // Group related paths together
+
+  // Workspace Pages
+  home: '/home',
   boardsList: '/boards',
+
+  // Board Details Page
   boardDetails: '/boards/:boardId',
+
+  // Auth Pages
   login: '/login',
   oauth: '/login/oauth',
   register: '/register',
-  accountVerification: '/account/verification',
-  
-  // Group related paths together
+  forgotPassword: '/forgot-password',
+  resetPassword: '/reset-password',
+
+  // Settings Pages
   accountSettings: '/settings/account',
   securitySettings: '/settings/security',
-  
+
+  // Verification Pages
+  accountVerification: '/account/verification',
+  forgotPasswordVerification: '/forgot-password/verification',
   boardInvitationVerification: '/board-invitation/verification'
 } as const
 
@@ -153,6 +167,7 @@ export default path
 ```
 
 **Path Conventions:**
+
 - Use camelCase for path keys
 - Group related paths together (e.g., auth paths, settings paths)
 - Use descriptive names that match component/page names
@@ -173,8 +188,9 @@ export const NOTIFICATION_PAGE = 1
 ```
 
 **Pagination Conventions:**
+
 - Use UPPER_SNAKE_CASE for constant names
-- Include descriptive prefixes (DEFAULT_, NOTIFICATION_, etc.)
+- Include descriptive prefixes (DEFAULT*, NOTIFICATION*, etc.)
 - Use named exports for individual constants
 - Group related constants together
 
@@ -203,6 +219,7 @@ export default HttpStatusCode
 ```
 
 **HTTP Status Code Conventions:**
+
 - Use standard TypeScript `enum` (not const assertion object)
 - Use PascalCase for enum member names
 - Export as default export
@@ -220,7 +237,7 @@ export const mockWorkspacesList = [
   {
     _id: 'workspace-id-01',
     title: 'Project Management',
-    description: 'This is a workspace description',
+    description: 'This is a workspace description'
     // ... complete object structure
   }
 ]
@@ -228,13 +245,14 @@ export const mockWorkspacesList = [
 export const mockBoardsList: BoardResType['result'][] = [
   {
     _id: 'board-id-01',
-    title: 'Conggglee Trellone Board',
+    title: 'Conggglee Trellone Board'
     // ... type-safe structure
   }
 ]
 ```
 
 **Mock Data Conventions:**
+
 - Import proper types from schema files
 - Use descriptive array names with plural form
 - Include realistic data that matches production structure
@@ -298,6 +316,7 @@ if (response.status === HttpStatusCode.Unauthorized) {
 ## Common Anti-Patterns to Avoid
 
 ### Hard-coded Values
+
 ```typescript
 // ❌ Bad - Hard-coded values in components
 const maxFileSize = 3 * 1024 * 1024 // Should be in config
@@ -308,6 +327,7 @@ const maxFileSize = config.maxSizeUploadAvatar
 ```
 
 ### Missing Const Assertions
+
 ```typescript
 // ❌ Bad - Missing const assertion
 export const BoardType = {
@@ -323,6 +343,7 @@ export const BoardType = {
 ```
 
 ### Inconsistent Naming
+
 ```typescript
 // ❌ Bad - Inconsistent naming
 export const board_type = { ... }  // snake_case
@@ -334,6 +355,7 @@ export const BoardTypeValues = [ ... ]
 ```
 
 ### Missing Values Arrays
+
 ```typescript
 // ❌ Bad - No validation array
 export const Status = {

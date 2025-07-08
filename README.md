@@ -375,7 +375,7 @@ This project is open source feel free to use it as you want.
 
 This project was made possible thanks to the following resources and inspirations:
 
-- **[Complete React + TypeScript Course](https://www.youtube.com/playlist?list=PLP6tw4Zpj-RJP2-YrhtkWqObMQ-AA4TDy)** - A comprehensive YouTube playlist/course by [TrungQuanDev](https://www.youtube.com/@trungquandev) that provided the foundation and guidance for building this project. This course was instrumental in establishing the core architecture and development patterns.
+- **[MERN Stack Pro - Learn Programming through a Real-World Advanced Drag-and-Drop Trello Project](https://www.youtube.com/playlist?list=PLP6tw4Zpj-RJP2-YrhtkWqObMQ-AA4TDy)** - A comprehensive YouTube playlist/course by [TrungQuanDev](https://www.youtube.com/@trungquandev) that provided the foundation and guidance for building this project. This course was instrumental in establishing the core architecture and development patterns.
 
 - **[Task Manager - Trello Clone](https://github.com/aashish47/task-manager)** - An excellent Trello clone project that served as a valuable reference for UI design and user experience patterns. This project provided inspiration for the visual design and interface interactions.
 

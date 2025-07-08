@@ -7,6 +7,7 @@ import { enGB } from 'date-fns/locale'
 import { ConfirmProvider } from 'material-ui-confirm'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { HelmetProvider } from 'react-helmet-async'
 import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
@@ -26,26 +27,28 @@ createRoot(document.getElementById('root')!).render(
     <Provider store={store}>
       <PersistGate persistor={persistor}>
         <BrowserRouter>
-          <CssVarsProvider theme={theme}>
-            <ConfirmProvider
-              defaultOptions={{
-                allowClose: false,
-                dialogProps: { maxWidth: 'xs' },
-                buttonOrder: ['confirm', 'cancel'],
-                cancellationButtonProps: { color: 'inherit' },
-                confirmationButtonProps: { color: 'secondary', variant: 'outlined' }
-              }}
-            >
-              <GlobalStyles styles={{ a: { textDecoration: 'none' } }} />
-              <CssBaseline />
-              <ErrorBoundary>
-                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enGB}>
-                  <App />
-                </LocalizationProvider>
-                <ToastContainer position='bottom-left' theme='colored' />
-              </ErrorBoundary>
-            </ConfirmProvider>
-          </CssVarsProvider>
+          <HelmetProvider>
+            <CssVarsProvider theme={theme}>
+              <ConfirmProvider
+                defaultOptions={{
+                  allowClose: false,
+                  dialogProps: { maxWidth: 'xs' },
+                  buttonOrder: ['confirm', 'cancel'],
+                  cancellationButtonProps: { color: 'inherit' },
+                  confirmationButtonProps: { color: 'secondary', variant: 'outlined' }
+                }}
+              >
+                <GlobalStyles styles={{ a: { textDecoration: 'none' } }} />
+                <CssBaseline />
+                <ErrorBoundary>
+                  <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enGB}>
+                    <App />
+                  </LocalizationProvider>
+                  <ToastContainer position='bottom-left' theme='colored' />
+                </ErrorBoundary>
+              </ConfirmProvider>
+            </CssVarsProvider>
+          </HelmetProvider>
         </BrowserRouter>
       </PersistGate>
     </Provider>

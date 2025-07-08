@@ -3,6 +3,7 @@ description: React Hook Form + Zod best practices
 globs:
 alwaysApply: true
 ---
+
 # React Hook Form + Zod Best Practices
 
 This rule defines the comprehensive patterns for form handling in React using React Hook Form and Zod validation library, based on the established patterns in the Trellone project.
@@ -33,12 +34,8 @@ export default function LoginForm() {
 
   const [loginMutation, { isError, error }] = useLoginMutation()
 
-  const onSubmit = handleSubmit((values) => {
-    loginMutation(values).then((res) => {
-      if (!res.error) {
-        navigate(path.home)
-      }
-    })
+  const onSubmit = handleSubmit( async (values) => {
+    await loginMutation(values)
   })
 
   // Error handling effect
@@ -65,6 +62,7 @@ export default function LoginForm() {
 ```
 
 **Form Setup Conventions:**
+
 - Always use `zodResolver` for validation
 - Define proper TypeScript types from Zod schemas
 - Include comprehensive `useForm` destructuring
@@ -145,6 +143,7 @@ export const RegisterBody = z
 ```
 
 **Zod Schema Conventions:**
+
 - Use `.strict()` to prevent unknown fields
 - Provide descriptive error messages
 - Use `.transform()` for data transformation (empty string to undefined)
@@ -209,6 +208,7 @@ export default function TextFieldInput<TFieldValues extends FieldValues = FieldV
 ```
 
 **Input Component Conventions:**
+
 - Create generic, reusable input components
 - Use proper TypeScript generics for type safety
 - Spread register result into input props
@@ -258,6 +258,7 @@ useEffect(() => {
 ```
 
 **Error Handling Conventions:**
+
 - Create conditional error display components
 - Return `null` when no error exists
 - Use consistent styling for error messages
@@ -343,6 +344,7 @@ useEffect(() => {
 ```
 
 **Advanced Pattern Conventions:**
+
 - Use `Controller` for complex form inputs (radio groups, selects, custom components)
 - Handle file uploads with proper validation and preview
 - Implement form reset functionality
@@ -388,6 +390,7 @@ const onSubmit = handleSubmit(async (values) => {
 ```
 
 **Submission Conventions:**
+
 - Use `handleSubmit` to wrap submission logic
 - Handle both success and error cases
 - Process file uploads before form submission
@@ -431,6 +434,7 @@ const onSubmit = handleSubmit(async (values) => {
 ```
 
 **Layout Conventions:**
+
 - Wrap each field group in a Box with consistent margin
 - Place error alerts immediately after their corresponding inputs
 - Use responsive design patterns for form width
@@ -472,6 +476,7 @@ export type AuthResType = z.TypeOf<typeof AuthRes>
 ```
 
 **Organization Conventions:**
+
 - Group related schemas in domain-specific files
 - Export both schema and type from same file
 - Create reusable form components in `/components/Form/`
@@ -481,6 +486,7 @@ export type AuthResType = z.TypeOf<typeof AuthRes>
 ## Common Anti-Patterns to Avoid
 
 ### Poor Error Handling
+
 ```typescript
 // ❌ Bad - No error display
 <TextFieldInput name='email' register={register} />
@@ -491,6 +497,7 @@ export type AuthResType = z.TypeOf<typeof AuthRes>
 ```
 
 ### Missing Validation
+
 ```typescript
 // ❌ Bad - No schema validation
 const { register, handleSubmit } = useForm()
@@ -502,6 +509,7 @@ const { register, handleSubmit } = useForm<LoginBodyType>({
 ```
 
 ### Inconsistent Type Safety
+
 ```typescript
 // ❌ Bad - No TypeScript types
 const onSubmit = handleSubmit((values: any) => {
@@ -515,6 +523,7 @@ const onSubmit = handleSubmit((values: LoginBodyType) => {
 ```
 
 ### Missing Default Values
+
 ```typescript
 // ❌ Bad - No default values
 const { register } = useForm()

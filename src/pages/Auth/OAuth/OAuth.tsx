@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
+import path from '~/constants/path'
 import { useQueryConfig } from '~/hooks/use-query-config'
 import { useAppDispatch } from '~/lib/redux/hooks'
 import { userApi } from '~/queries/users'
@@ -39,7 +40,7 @@ export default function OAuth() {
           dispatch(setAuthenticated(true))
           dispatch(setProfile(profile))
 
-          navigate('/')
+          navigate(path.home)
         }
       })
     }

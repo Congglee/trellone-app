@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import SvgIcon from '@mui/material/SvgIcon'
 import Typography from '@mui/material/Typography'
+import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import AstronautSvg from '~/assets/404/astronaut.svg?react'
 import Particles from '~/assets/404/particles.png'
@@ -12,6 +13,14 @@ import path from '~/constants/path'
 export default function NotFound() {
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: '#25344C', color: 'white', py: 6 }}>
+      <Helmet>
+        <title>Error 404 - Page not found</title>
+        <meta
+          name='description'
+          content='The page you are looking for does not exist. Please check the URL and try again.'
+        />
+      </Helmet>
+
       <Box
         sx={{
           '@keyframes stars': {

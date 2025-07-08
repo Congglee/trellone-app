@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import cloneDeep from 'lodash/cloneDeep'
 import { useEffect, useState } from 'react'
+import { Helmet } from 'react-helmet-async'
 import { useParams } from 'react-router-dom'
 import DrawerHeader from '~/components/DrawerHeader'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
@@ -189,6 +190,14 @@ export default function BoardDetails() {
 
   return (
     <Container disableGutters maxWidth={false} sx={{ height: '100vh' }}>
+      <Helmet>
+        <title>{activeBoard.title} | Trellone</title>
+        <meta
+          name='description'
+          content="Organize anything, together. Trellone is a collaboration tool that organizes your projects into boards. In one glance, know what's being worked on, who's working on what, and where something is in a process"
+        />
+      </Helmet>
+
       <NavBar />
 
       <ActiveCard />
