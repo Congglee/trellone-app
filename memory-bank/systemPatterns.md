@@ -49,12 +49,37 @@ BoardDetails (Main Board View)
 │   └── DnD Overlay (Visual Feedback)
 ├── BoardDrawer (Right Sidebar - Settings)
 └── ActiveCard Modal (Card Details)
-    ├── Card Attachments
+    ├── Card Attachments (with Preview Modal)
     ├── Card Description (Markdown Editor)
     ├── Card Members
-    ├── Card Due Dates
-    └── Card Activity Feed
+    ├── Card Due Dates (with DateTimePicker)
+    ├── Card Activity Feed
+    └── Card Comment Reactions (Emoji Support)
 ```
+
+### Navigation & Menu Patterns
+
+```
+NavBar (Top Navigation)
+├── AutoComplete Search (Board Search)
+├── Create (New Board/Card Creation)
+├── Recent (Recently Viewed Boards)
+├── Starred (Favorited Boards)
+├── Templates (Board Templates)
+├── Workspaces (Workspace Navigation)
+├── Notifications (Real-time Notifications)
+├── Mode Select (Theme Switching)
+└── User Profile (Account & Settings)
+```
+
+**Advanced Features Integrated**:
+
+- Infinite scroll for large board lists
+- Emoji picker for comment reactions
+- File attachment preview modals
+- Advanced date/time pickers
+- Color input for customization
+- Confirmation dialogs for destructive actions
 
 ## State Management Architecture
 

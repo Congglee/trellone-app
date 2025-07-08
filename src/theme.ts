@@ -4,6 +4,7 @@ import { experimental_extendTheme as extendTheme } from '@mui/material/styles'
 declare module '@mui/material/styles' {
   interface Theme {
     trellone: {
+      frontPageNavBarHeight: string
       navBarHeight: string
       workspaceDrawerWidth: string
       boardDrawerWidth: string
@@ -16,6 +17,7 @@ declare module '@mui/material/styles' {
   }
   interface ThemeOptions {
     trellone: {
+      frontPageNavBarHeight: string
       navBarHeight: string
       workspaceDrawerWidth: string
       boardDrawerWidth: string
@@ -27,6 +29,8 @@ declare module '@mui/material/styles' {
     }
   }
 }
+
+const FRONT_PAGE_NAV_BAR_HEIGHT = '68px'
 
 const NAV_BAR_HEIGHT = '58px'
 const WORKSPACE_DRAWER_WIDTH = '300px'
@@ -41,6 +45,7 @@ const COLUMN_FOOTER_HEIGHT = '56px'
 
 const theme = extendTheme({
   trellone: {
+    frontPageNavBarHeight: FRONT_PAGE_NAV_BAR_HEIGHT,
     navBarHeight: NAV_BAR_HEIGHT,
     workspaceDrawerWidth: WORKSPACE_DRAWER_WIDTH,
     boardDrawerWidth: BOARD_DRAWER_WIDTH,

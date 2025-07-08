@@ -14,6 +14,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
+import SEO from '~/components/SEO'
 import path from '~/constants/path'
 import { useQueryConfig } from '~/hooks/use-query-config'
 import { useResetPasswordMutation, useVerifyForgotPasswordMutation } from '~/queries/auth'
@@ -82,6 +83,8 @@ export default function ResetPassword() {
 
   return (
     <form onSubmit={onSubmit}>
+      <SEO title='Reset Your Password' description='Create a new password for your Trellone account.' />
+
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>
         <MuiCard sx={{ marginTop: '6em' }}>
           <Box sx={{ margin: '1em', display: 'flex', justifyContent: 'center', gap: 1 }}>

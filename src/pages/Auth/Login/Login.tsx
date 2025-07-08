@@ -20,6 +20,7 @@ import { Link } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
+import SEO from '~/components/SEO'
 import path from '~/constants/path'
 import { useQueryConfig } from '~/hooks/use-query-config'
 import { useLoginMutation } from '~/queries/auth'
@@ -66,6 +67,11 @@ export default function Login() {
 
   return (
     <form onSubmit={onSubmit}>
+      <SEO
+        title='Login'
+        description='Log in to your Trellone account to continue managing your projects, tasks, and team collaboration.'
+      />
+
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>
         <MuiCard sx={{ marginTop: '6em' }}>
           <Box sx={{ margin: '1em', display: 'flex', justifyContent: 'center', gap: 1 }}>

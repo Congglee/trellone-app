@@ -15,6 +15,7 @@ import { disconnectSocket, setSocket } from '~/store/slices/app.slice'
 import { reset } from '~/store/slices/auth.slice'
 import { getAccessTokenFromLS, LocalStorageEventTarget } from '~/utils/storage'
 
+const FrontPage = lazy(() => import('~/pages/FrontPage'))
 const Login = lazy(() => import('~/pages/Auth/Login'))
 const Register = lazy(() => import('~/pages/Auth/Register'))
 const ForgotPassword = lazy(() => import('~/pages/Auth/ForgotPassword'))
@@ -71,17 +72,27 @@ function App() {
 
   return (
     <Routes>
+      {/* Front Landing Page */}
+      <Route
+        path={path.frontPage}
+        element={
+          <Suspense fallback={<PageLoadingSpinner />}>
+            <FrontPage />
+          </Suspense>
+        }
+      />
+
       {/* Protected Routes */}
       <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} profile={profile} />}>
         <Route
-          path={path.home}
+          path=''
           element={
             <Suspense fallback={<PageLoadingSpinner />}>
               <HomeLayout />
             </Suspense>
           }
         >
-          <Route index element={<Home />} />
+          <Route path={path.home} element={<Home />} />
           <Route path={path.boardsList} element={<BoardsList />} />
         </Route>
 

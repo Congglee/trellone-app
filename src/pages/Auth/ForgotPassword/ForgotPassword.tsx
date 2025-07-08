@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
+import SEO from '~/components/SEO'
 import path from '~/constants/path'
 import { useForgotPasswordMutation } from '~/queries/auth'
 import { ForgotPasswordBody, ForgotPasswordBodyType } from '~/schemas/auth.schema'
@@ -53,6 +54,11 @@ export default function ForgotPassword() {
 
   return (
     <form onSubmit={onSubmit}>
+      <SEO
+        title='Forgot Password'
+        description='Recover your Trellone account password. Enter your email to receive instructions on how to reset your password.'
+      />
+
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>
         <MuiCard sx={{ marginTop: '6em' }}>
           <Box sx={{ margin: '1em', display: 'flex', justifyContent: 'center', gap: 1 }}>

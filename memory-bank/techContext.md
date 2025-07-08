@@ -51,6 +51,17 @@
 - **lodash 4.17.21**: Utility library for data manipulation
 - **react-toastify 11.0.5**: Toast notifications
 - **randomcolor 0.6.2**: Color generation utilities
+- **emoji-picker-react 4.12.3**: Emoji picker for card reactions
+- **mui-color-input 1.1.1**: Color input component for theming
+- **@uidotdev/usehooks 2.4.1**: Additional React hooks library
+
+### Additional Utilities
+
+- **material-ui-confirm 4.0.0**: Confirmation dialogs
+- **react-infinite-scroll-component 6.1.0**: Infinite scrolling functionality
+- **rehype-sanitize 6.0.0**: Markdown content sanitization
+
+**Note**: All dependencies are current as of December 2024 and represent the latest stable versions.
 
 ## Development Environment
 

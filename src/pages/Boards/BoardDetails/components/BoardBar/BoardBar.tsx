@@ -116,7 +116,6 @@ export default function BoardBar({
       sx={{
         backgroundColor: (theme) => (theme.palette.mode === 'dark' ? 'rgb(0 0 0 / 40%)' : 'rgb(255 255 255 / 40%)'),
         top: 'auto'
-        // zIndex: 999
       }}
       position='absolute'
       workspaceDrawerOpen={workspaceDrawerOpen}
