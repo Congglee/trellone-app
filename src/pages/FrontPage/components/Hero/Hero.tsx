@@ -311,8 +311,8 @@ export default function Hero() {
 
               <FloatingIcon
                 sx={{
-                  top: '60%',
-                  right: { xs: '5%', md: '8%' },
+                  top: '40%',
+                  right: { xs: '4%', md: '7%' },
                   width: { xs: 50, md: 58 },
                   height: { xs: 50, md: 58 },
                   display: { xs: 'none', sm: 'flex' }
