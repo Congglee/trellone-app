@@ -173,9 +173,10 @@ $ npm run preview
  ┃ ┣ 📂components                    # Reusable UI components
  ┃ ┣ 📂pages                         # Route-specific page components
  ┃ ┃ ┣ 📂Auth                        # Authentication pages
- ┃ ┃ ┣ 📂Boards                      # Board management pages
+ ┃ ┃ ┣ 📂FrontPage                   # Front page
  ┃ ┃ ┣ 📂Settings                    # User settings pages
- ┃ ┃ ┗ 📂Workspaces                  # Workspace pages
+ ┃ ┃ ┗ 📂Boards                      # Board management pages
+ ┃ ┃ ┗ 📂...                         # Other pages
  ┃ ┣ 📂store                         # Redux store and slices
  ┃ ┃ ┣ 📂slices                      # Redux Toolkit slices
  ┃ ┃ ┗ 📜root.reducer.ts             # Root reducer
@@ -293,12 +294,12 @@ $ npm run preview
 
 The following features are actively being developed and will be available in upcoming releases:
 
-- **SEO Optimization** - Implementing comprehensive SEO features for better search engine visibility
-- **Workspace Management** - Enhanced workspace functionality with advanced organization tools
-- **User Permissions System** - Role-based access control for Boards and Workspaces
-- **Board & Workspace Visibility** - Public/private visibility settings with granular access control
-- **System Optimization** - Performance improvements and code optimization across the application
-- **Docker Support** - Complete containerization of the project for easy deployment and development
+- **SEO Optimization** - Implementing comprehensive SEO features for better search engine visibility ✅
+- **Workspace Management** - Enhanced workspace functionality with advanced organization tools ⏳
+- **User Permissions System** - Role-based access control for Boards and Workspaces ⏳
+- **Board & Workspace Visibility** - Public/private visibility settings with granular access control ⏳
+- **System Optimization** - Performance improvements and code optimization across the application ⏳
+- **Docker Support** - Complete containerization of the project for easy deployment and development ⏳
 
 ### 🔮 Future Roadmap (if possible 🤔)
 
