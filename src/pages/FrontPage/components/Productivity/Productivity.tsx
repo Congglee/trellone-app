@@ -1,11 +1,11 @@
+import { useMediaQuery } from '@mui/material'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
-import { styled } from '@mui/material/styles'
-import { useState, useEffect } from 'react'
-import { fadeInUp, rotateIn, slideInLeft, slideInRight, slideOutLeft, slideOutRight } from '~/constants/animations'
+import { styled, useTheme } from '@mui/material/styles'
+import { useState } from 'react'
 import { productivityTabs } from '~/constants/front-page'
 import { siteConfig } from '~/constants/site'
 
@@ -14,60 +14,36 @@ const ProductivityImage = styled('img')(({ theme }) => ({
   height: 'auto',
   borderRadius: '20px',
   boxShadow: theme.palette.mode === 'dark' ? '0 25px 50px rgba(0, 0, 0, 0.5)' : '0 25px 50px rgba(0, 0, 0, 0.15)',
-  transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+  transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
   transform: 'rotateY(0deg) scale(1)',
   opacity: 1,
-  transformStyle: 'preserve-3d',
   '&.entering': {
-    animation: `${rotateIn} 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards`
+    transform: 'rotateY(-90deg) scale(0.8)',
+    opacity: 0
   },
   '&.exiting': {
     transform: 'rotateY(90deg) scale(0.8)',
     opacity: 0
-  },
-  '&:hover': {
-    transform: 'rotateY(0deg) scale(1.02) translateZ(20px)',
-    boxShadow: theme.palette.mode === 'dark' ? '0 35px 70px rgba(0, 0, 0, 0.6)' : '0 35px 70px rgba(0, 0, 0, 0.2)'
   }
 }))
 
 export default function Productivity() {
+  const theme = useTheme()
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'))
   const [value, setValue] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
-  const [previousValue, setPreviousValue] = useState(0)
-  const [animationKey, setAnimationKey] = useState(0)
 
   const handleTabsChange = (_event: React.SyntheticEvent, newValue: number) => {
-    if (newValue === value || isTransitioning) return
+    if (newValue === value) return
 
     setIsTransitioning(true)
-    setPreviousValue(value)
 
-    // Start exit animation
     setTimeout(() => {
       setValue(newValue)
-      setAnimationKey((prev) => prev + 1)
-
-      // Start enter animation
       setTimeout(() => {
         setIsTransitioning(false)
       }, 100)
     }, 300)
-  }
-
-  // Reset animation classes when component mounts or value changes
-  useEffect(() => {
-    setAnimationKey((prev) => prev + 1)
-  }, [value])
-
-  const getAnimationClass = (index: number) => {
-    if (index === value && !isTransitioning) {
-      return value > previousValue ? 'slide-enter' : 'slide-enter-reverse'
-    }
-    if (index === previousValue && isTransitioning) {
-      return value > previousValue ? 'slide-exit' : 'slide-exit-reverse'
-    }
-    return ''
   }
 
   return (
@@ -144,6 +120,8 @@ export default function Productivity() {
           }}
         >
           <Tabs
+            orientation={isSmallScreen ? 'vertical' : 'horizontal'}
+            variant={isSmallScreen ? 'standard' : 'fullWidth'}
             sx={(theme) => ({
               background: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.8)',
               borderRadius: '12px',
@@ -153,8 +131,14 @@ export default function Productivity() {
               backdropFilter: 'blur(10px)',
               border:
                 theme.palette.mode === 'dark' ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.05)',
+              width: { xs: '100%', sm: 'auto' },
+              maxWidth: { xs: '400px', sm: 'none' },
               '& .MuiTabs-indicator': {
                 display: 'none'
+              },
+              '& .MuiTabs-flexContainer': {
+                flexDirection: { xs: 'column', sm: 'row' },
+                gap: { xs: '8px', sm: '0' }
               }
             })}
             value={value}
@@ -174,8 +158,10 @@ export default function Productivity() {
                   fontWeight: 600,
                   fontSize: '16px',
                   minHeight: '48px',
-                  padding: '12px 32px',
-                  margin: '0 4px',
+                  padding: { xs: '16px 24px', sm: '12px 32px' },
+                  margin: { xs: '0', sm: '0 4px' },
+                  width: { xs: '100%', sm: 'auto' },
+                  maxWidth: { xs: '100%', sm: '360px' },
                   color: (theme) => (theme.palette.mode === 'dark' ? '#a0a9ba' : '#64748b'),
                   transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                   position: 'relative',
@@ -214,32 +200,12 @@ export default function Productivity() {
           </Tabs>
         </Box>
 
-        <Box sx={{ width: '100%', position: 'relative', minHeight: '600px' }}>
+        <Box sx={{ width: '100%' }}>
           {productivityTabs.map((tab, index) => (
-            <Box
-              key={`${tab.label}-${animationKey}`}
+            <div
+              key={tab.label}
               role='tabpanel'
-              className={getAnimationClass(index)}
-              sx={{
-                display: value === index ? 'block' : 'none',
-                position: value === index ? 'relative' : 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                opacity: value === index ? 1 : 0,
-                '&.slide-enter': {
-                  animation: `${slideInRight} 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards`
-                },
-                '&.slide-exit': {
-                  animation: `${slideOutLeft} 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards`
-                },
-                '&.slide-enter-reverse': {
-                  animation: `${slideInLeft} 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards`
-                },
-                '&.slide-exit-reverse': {
-                  animation: `${slideOutRight} 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards`
-                }
-              }}
+              hidden={value !== index}
               id={`productivity-tabpanel-${index}`}
               aria-labelledby={`productivity-tab-${index}`}
             >
@@ -260,7 +226,6 @@ export default function Productivity() {
                 >
                   <Typography
                     variant='h3'
-                    className={value === index ? 'text-enter' : ''}
                     sx={{
                       fontSize: { xs: '1.5rem', sm: '1.75rem' },
                       fontWeight: 600,
@@ -268,18 +233,7 @@ export default function Productivity() {
                       marginBottom: 2,
                       borderLeft: '4px solid',
                       borderColor: 'primary.main',
-                      paddingLeft: 2,
-                      '&.text-enter': {
-                        animation: `${fadeInUp} 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards`
-                      },
-                      '&.text-enter-delay-1': {
-                        animation: `${fadeInUp} 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s forwards`,
-                        opacity: 0
-                      },
-                      '&.text-enter-delay-2': {
-                        animation: `${fadeInUp} 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards`,
-                        opacity: 0
-                      }
+                      paddingLeft: 2
                     }}
                   >
                     {tab.label}
@@ -287,22 +241,10 @@ export default function Productivity() {
 
                   <Typography
                     variant='body1'
-                    className={value === index ? 'text-enter-delay-1' : ''}
                     sx={{
                       fontSize: '16px',
                       lineHeight: 1.6,
-                      color: 'text.secondary',
-                      '&.text-enter': {
-                        animation: `${fadeInUp} 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards`
-                      },
-                      '&.text-enter-delay-1': {
-                        animation: `${fadeInUp} 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s forwards`,
-                        opacity: 0
-                      },
-                      '&.text-enter-delay-2': {
-                        animation: `${fadeInUp} 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards`,
-                        opacity: 0
-                      }
+                      color: 'text.secondary'
                     }}
                   >
                     {tab.description}
@@ -326,10 +268,9 @@ export default function Productivity() {
                     }}
                   >
                     <ProductivityImage
-                      key={`${tab.label}-image-${animationKey}`}
                       src={tab.image}
                       alt={`${tab.label} feature illustration`}
-                      className={value === index && !isTransitioning ? 'entering' : isTransitioning ? 'exiting' : ''}
+                      className={isTransitioning ? 'entering' : ''}
                       sx={{
                         maxHeight: '500px',
                         objectFit: 'contain'
@@ -338,7 +279,7 @@ export default function Productivity() {
                   </Box>
                 </Box>
               </Box>
-            </Box>
+            </div>
           ))}
         </Box>
       </Container>
