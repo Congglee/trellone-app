@@ -17,7 +17,7 @@ export default function RemoveCardAttachmentConfirm({
   onClose
 }: RemoveCardAttachmentConfirmProps) {
   return (
-    <Box sx={{ p: 1.5 }}>
+    <Box sx={{ p: 1.5, maxWidth: '350px', width: '100%' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
         <IconButton size='small' onClick={onBackToMenuActions}>
           <ArrowBackIcon fontSize='small' />

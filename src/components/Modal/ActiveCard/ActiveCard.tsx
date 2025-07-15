@@ -12,7 +12,6 @@ import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined'
 import CreditCardIcon from '@mui/icons-material/CreditCard'
 import DvrOutlinedIcon from '@mui/icons-material/DvrOutlined'
 import ExitToAppIcon from '@mui/icons-material/ExitToApp'
-import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined'
 import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined'
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
@@ -27,21 +26,19 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useRef } from 'react'
-import { toast } from 'react-toastify'
 import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
-import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
 import AttachmentPopover from '~/components/Modal/ActiveCard/AttachmentPopover'
 import CardActivitySection from '~/components/Modal/ActiveCard/CardActivitySection'
 import CardAttachments from '~/components/Modal/ActiveCard/CardAttachments'
 import CardDescriptionMdEditor from '~/components/Modal/ActiveCard/CardDescriptionMdEditor'
 import CardDueDate from '~/components/Modal/ActiveCard/CardDueDate'
 import CardUserGroup from '~/components/Modal/ActiveCard/CardUserGroup'
+import CoverPopover from '~/components/Modal/ActiveCard/CoverPopover'
 import DatesMenu from '~/components/Modal/ActiveCard/DatesMenu'
 import RemoveActiveCardPopover from '~/components/Modal/ActiveCard/RemoveActiveCardPopover'
 import { CardMemberAction } from '~/constants/type'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { useUpdateCardMutation } from '~/queries/cards'
-import { useUploadImageMutation } from '~/queries/medias'
 import {
   CardAttachmentPayloadType,
   CardMemberPayloadType,
@@ -50,7 +47,6 @@ import {
 } from '~/schemas/card.schema'
 import { updateCardInBoard } from '~/store/slices/board.slice'
 import { clearAndHideActiveCardModal, updateActiveCard } from '~/store/slices/card.slice'
-import { singleFileValidator } from '~/utils/validators'
 
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -79,7 +75,6 @@ export default function ActiveCard() {
   const { socket } = useAppSelector((state) => state.app)
 
   const [updateCardMutation] = useUpdateCardMutation()
-  const [uploadImageMutation] = useUploadImageMutation()
 
   const handleActiveCardModalClose = () => {
     dispatch(clearAndHideActiveCardModal())
@@ -110,30 +105,8 @@ export default function ActiveCard() {
     handleUpdateActiveCard({ description })
   }
 
-  const onUploadCardCoverPhoto = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-
-    const errorMessage = singleFileValidator(file as File)
-
-    if (errorMessage) {
-      toast.error(errorMessage, { position: 'top-center' })
-      return
-    }
-
-    const formData = new FormData()
-
-    formData.append('image', file as File)
-
-    const uploadImageRes = await toast.promise(uploadImageMutation(formData).unwrap(), {
-      pending: 'Uploading...',
-      success: 'Upload successfully!',
-      error: 'Upload failed!'
-    })
-    const imageUrl = uploadImageRes.result[0].url
-
-    handleUpdateActiveCard({ cover_photo: imageUrl }).finally(() => {
-      event.target.value = ''
-    })
+  const onUpdateCardCoverPhoto = async (cover_photo: string) => {
+    handleUpdateActiveCard({ cover_photo })
   }
 
   const onUpdateCardComment = async (comment: CommentPayloadType) => {
@@ -316,10 +289,8 @@ export default function ActiveCard() {
                 </SidebarItem>
               )}
 
-              <SidebarItem className='active' component='label'>
-                <ImageOutlinedIcon fontSize='small' />
-                Cover
-                <VisuallyHiddenInput type='file' accept='image/*' onChange={onUploadCardCoverPhoto} />
+              <SidebarItem className='active' sx={{ p: 0 }}>
+                <CoverPopover onUpdateCardCoverPhoto={onUpdateCardCoverPhoto} />
               </SidebarItem>
 
               <SidebarItem className='active' sx={{ p: 0 }}>

@@ -131,7 +131,7 @@ export default function RemoveActiveCardPopover({ cardId, columnId }: RemoveActi
           paper: { sx: { borderRadius: 2 } }
         }}
       >
-        <Box sx={{ p: 1.5, maxWidth: '304px', width: '100%' }}>
+        <Box sx={{ p: 1.5, maxWidth: '350px', width: '100%' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2, position: 'relative' }}>
             <Typography variant='subtitle1' sx={{ fontWeight: 'medium' }}>
               Delete card?
