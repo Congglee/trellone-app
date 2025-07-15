@@ -104,7 +104,7 @@ export default function RemoveCommentPopover({
           </Typography>
 
           <Button variant='contained' color='error' fullWidth onClick={removeCardComment}>
-            Remove
+            Delete comment
           </Button>
         </Box>
       </Popover>
