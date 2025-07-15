@@ -15,7 +15,6 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp'
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined'
 import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined'
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined'
-import RemoveIcon from '@mui/icons-material/Remove'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import SubjectRoundedIcon from '@mui/icons-material/SubjectRounded'
@@ -38,6 +37,7 @@ import CardDescriptionMdEditor from '~/components/Modal/ActiveCard/CardDescripti
 import CardDueDate from '~/components/Modal/ActiveCard/CardDueDate'
 import CardUserGroup from '~/components/Modal/ActiveCard/CardUserGroup'
 import DatesMenu from '~/components/Modal/ActiveCard/DatesMenu'
+import RemoveActiveCardPopover from '~/components/Modal/ActiveCard/RemoveActiveCardPopover'
 import { CardMemberAction } from '~/constants/type'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { useUpdateCardMutation } from '~/queries/cards'
@@ -394,23 +394,8 @@ export default function ActiveCard() {
                 )}
               </SidebarItem>
               {activeCard?._destroy && (
-                <SidebarItem
-                  sx={{
-                    backgroundColor: (theme) => theme.palette.error.main,
-                    color: (theme) => theme.palette.error.contrastText,
-                    '&:hover': {
-                      backgroundColor: (theme) =>
-                        theme.palette.mode === 'dark' ? theme.palette.error.dark : theme.palette.error.light,
-                      '&.active': {
-                        backgroundColor: (theme) =>
-                          theme.palette.mode === 'dark' ? theme.palette.error.dark : theme.palette.error.light,
-                        color: (theme) => theme.palette.error.contrastText
-                      }
-                    }
-                  }}
-                >
-                  <RemoveIcon fontSize='small' />
-                  Delete
+                <SidebarItem className='active' sx={{ p: 0 }}>
+                  <RemoveActiveCardPopover cardId={activeCard?._id} columnId={activeCard?.column_id} />
                 </SidebarItem>
               )}
               <SidebarItem>

@@ -31,3 +31,6 @@ dist-ssr
 
 # Visualize
 stats.html
+
+# AI Coding Assistant
+.augment/

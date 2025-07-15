@@ -168,3 +168,9 @@ export const ReactToCardCommentBody = z.object({
 })
 
 export type ReactToCardCommentBodyType = z.TypeOf<typeof ReactToCardCommentBody>
+
+export const DeleteCardRes = z.object({
+  message: z.string()
+})
+
+export type DeleteCardResType = z.TypeOf<typeof DeleteCardRes>

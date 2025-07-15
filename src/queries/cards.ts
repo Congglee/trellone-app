@@ -1,7 +1,13 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
-import { CardResType, CreateCardBodyType, ReactToCardCommentBodyType, UpdateCardBodyType } from '~/schemas/card.schema'
+import {
+  CardResType,
+  CreateCardBodyType,
+  DeleteCardResType,
+  ReactToCardCommentBodyType,
+  UpdateCardBodyType
+} from '~/schemas/card.schema'
 
 const CARD_API_URL = '/cards' as const
 
@@ -55,11 +61,25 @@ export const cardApi = createApi({
           console.error(error)
         }
       }
+    }),
+
+    deleteCard: build.mutation<DeleteCardResType, string>({
+      query: (id) => ({ url: `${CARD_API_URL}/${id}`, method: 'DELETE' }),
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled
+          toast.success(data.message || 'Card deleted successfully')
+        } catch (error) {
+          toast.error('There was an error deleting the card')
+          console.error(error)
+        }
+      }
     })
   })
 })
 
-export const { useAddCardMutation, useUpdateCardMutation, useReactToCardCommentMutation } = cardApi
+export const { useAddCardMutation, useUpdateCardMutation, useReactToCardCommentMutation, useDeleteCardMutation } =
+  cardApi
 
 export const cardApiReducer = cardApi.reducer
 
