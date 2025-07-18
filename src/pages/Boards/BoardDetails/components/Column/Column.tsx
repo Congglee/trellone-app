@@ -49,14 +49,20 @@ export default function Column({ column }: ColumnProps) {
   }
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: column._id,
-    data: { ...column }
+    id: column._id, // Unique ID to identify the draggable element
+    data: { ...column } // Custom data will be passed into the `handleDragEnd` event
   })
 
   const dndKitColumnsStyles: CSSProperties = {
-    touchAction: 'none',
+    touchAction: 'none', // For the default sensor type `PointerSensor`
+
+    // If using `CSS.Transform` as in the docs, it will cause a stretch error
+    // https://github.com/clauderic/dnd-kit/issues/117
     transform: CSS.Translate.toString(transform),
     transition,
+
+    // The height must always be max 100% because otherwise, when dragging a short column over a long column, you have to drag in the middle area, which is very inconvenient.
+    // Note that at this point, you must combine with {...listeners} on the Box, not on the outermost div, to avoid dragging into the green area.
     height: '100%',
     opacity: isDragging ? 0.5 : undefined
   }
@@ -104,10 +110,12 @@ export default function Column({ column }: ColumnProps) {
     const columnToUpdate = newActiveBoard?.columns?.find((column) => column._id === newCard.column_id)
 
     if (columnToUpdate) {
+      // If the column is empty: it essentially contains a Placeholder card
       if (columnToUpdate.cards?.some((card) => card.FE_PlaceholderCard)) {
         columnToUpdate.cards = [newCard]
         columnToUpdate.card_order_ids = [newCard._id]
       } else {
+        // Otherwise, if the column already has data, push it to the end of the array
         columnToUpdate.cards?.push(newCard)
         columnToUpdate.card_order_ids?.push(newCard._id)
       }
@@ -155,6 +163,7 @@ export default function Column({ column }: ColumnProps) {
   }
 
   return (
+    // Must wrap with a `div` here because the column height issue during drag-and-drop can cause a flickering bug
     <div ref={setNodeRef} style={dndKitColumnsStyles} {...attributes}>
       <Box
         {...listeners}

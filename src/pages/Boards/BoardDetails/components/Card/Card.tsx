@@ -24,14 +24,18 @@ interface CardProps {
 
 export default function Card({ card }: CardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: card._id,
-    data: { ...card }
+    id: card._id, // Unique ID to identify the draggable element
+    data: { ...card } // Custom data will be passed into the `handleDragEnd` event
   })
 
   const dndKitCardStyles: CSSProperties = {
-    touchAction: 'none',
+    touchAction: 'none', // For the default sensor type `PointerSensor`
+
+    // If using `CSS.Transform` as in the docs, it will cause a stretch error
+    // https://github.com/clauderic/dnd-kit/issues/117
     transform: CSS.Translate.toString(transform),
     transition,
+
     opacity: isDragging ? 0.5 : undefined,
     border: isDragging ? '1px solid #2ecc71' : undefined
   }

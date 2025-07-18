@@ -101,17 +101,21 @@ export default function Notifications() {
       onConnect()
     }
 
+    // A function to handle the new invitation received from the socket server
     const onReceiveNewInvitation = (invitation: InvitationType) => {
+      // If the invitation is for the current user, add it to the notifications and set the hasNewNotification state to true
       if (invitation.invitee_id === profile?._id) {
         dispatch(addNotification(invitation))
         setHasNewNotification(true)
       }
     }
 
+    // Listen for a real-time event named `SERVER_USER_INVITED_TO_BOARD` sent from the server
     socket?.on('SERVER_USER_INVITED_TO_BOARD', onReceiveNewInvitation)
     socket?.on('connect', onConnect)
     socket?.on('disconnect', onDisconnect)
 
+    // Clean up the event to prevent duplicate event registrations
     return () => {
       socket?.off('SERVER_USER_INVITED_TO_BOARD', onReceiveNewInvitation)
       socket?.off('connect', onConnect)

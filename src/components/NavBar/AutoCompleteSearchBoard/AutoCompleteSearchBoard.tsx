@@ -36,6 +36,7 @@ export default function AutoCompleteSearchBoard({ styles }: AutoCompleteSearchBo
     setKeyword(value)
   }
 
+  // Wrap the `handleBoardSelection` function above with useDebounceFn and set a delay of about 2 seconds after typing stops before executing the function
   const debounceSearchBoard = useDebounce(handleInputSearchChange, 2000)
 
   const handleBoardSelection = (
@@ -56,7 +57,7 @@ export default function AutoCompleteSearchBoard({ styles }: AutoCompleteSearchBo
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}
       getOptionLabel={(board) => board.title}
-      options={boards}
+      options={boards || []}
       isOptionEqualToValue={(option, value) => option._id === value._id}
       loading={isLoading}
       onInputChange={debounceSearchBoard}

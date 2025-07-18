@@ -110,6 +110,7 @@ export default function BoardDetails() {
   }, [dispatch, socket, activeBoard])
 
   const onMoveColumns = (dndOrderedColumns: ColumnType[]) => {
+    // Get the IDs of the columns in the order they are being moved
     const dndOrderedCardsIds = dndOrderedColumns.map((column) => column._id)
 
     const newActiveBoard = { ...activeBoard! }
@@ -153,6 +154,15 @@ export default function BoardDetails() {
     nextColumnId: string,
     dndOrderedColumns: ColumnType[]
   ) => {
+    /**
+     * When moving a card to another Column:
+     * Step 1: Update the `card_order_ids` array of the original Column containing it (essentially, remove the Card's _id from the array)
+     * Step 2: Update the `card_order_ids` array of the target Column (essentially, add the Card's _id to the array)
+     * Step 3: Update the new columnId field of the dragged Card
+     * => Implement a dedicated support API.
+     */
+
+    // Get the IDs of the columns in the order they are being moved
     const dndOrderedColumnsIds = dndOrderedColumns.map((column) => column._id)
 
     const newActiveBoard = { ...activeBoard! }
@@ -164,6 +174,8 @@ export default function BoardDetails() {
 
     let prevCardOrderIds = dndOrderedColumns.find((column) => column._id === prevColumnId)?.card_order_ids as string[]
 
+    // Handle the issue when dragging the last Card out of a Column;
+    // If the Column is empty, there will be a placeholder card that needs to be removed before sending data to the backend server.
     if (prevCardOrderIds[0]?.includes('placeholder-card')) {
       prevCardOrderIds = []
     }
