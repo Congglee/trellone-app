@@ -18,15 +18,15 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
 import Tooltip from '@mui/material/Tooltip'
-import Typography from '@mui/material/Typography'
 import { useClickAway } from '@uidotdev/usehooks'
 import cloneDeep from 'lodash/cloneDeep'
 import { useConfirm } from 'material-ui-confirm'
 import { CSSProperties, useState } from 'react'
+import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import CardsList from '~/pages/Boards/BoardDetails/components/CardsList'
 import { useAddCardMutation } from '~/queries/cards'
-import { useDeleteColumnMutation } from '~/queries/columns'
+import { useDeleteColumnMutation, useUpdateColumnMutation } from '~/queries/columns'
 import { ColumnType } from '~/schemas/column.schema'
 import { updateActiveBoard } from '~/store/slices/board.slice'
 
@@ -92,6 +92,7 @@ export default function Column({ column }: ColumnProps) {
 
   const [addCardMutation] = useAddCardMutation()
   const [deleteColumnMutation] = useDeleteColumnMutation()
+  const [updateColumnMutation] = useUpdateColumnMutation()
 
   const addNewCard = async () => {
     if (!newCardTitle || newCardTitle.trim() === '') {
@@ -162,6 +163,25 @@ export default function Column({ column }: ColumnProps) {
     }
   }
 
+  const onUpdateColumnTitle = async (newTitle: string) => {
+    const newActiveBoard = cloneDeep(activeBoard)
+    const columnToUpdate = newActiveBoard?.columns?.find((col) => col._id === column._id)
+
+    if (columnToUpdate) {
+      columnToUpdate.title = newTitle.trim()
+    }
+
+    dispatch(updateActiveBoard(newActiveBoard))
+
+    updateColumnMutation({
+      id: column._id,
+      body: { title: newTitle.trim() }
+    })
+
+    // Emit socket event to notify other users about the column title update
+    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+  }
+
   return (
     // Must wrap with a `div` here because the column height issue during drag-and-drop can cause a flickering bug
     <div ref={setNodeRef} style={dndKitColumnsStyles} {...attributes}>
@@ -186,9 +206,7 @@ export default function Column({ column }: ColumnProps) {
             justifyContent: 'space-between'
           }}
         >
-          <Typography variant='h6' sx={{ fontSize: '1rem', fontWeight: '600', cursor: 'pointer' }}>
-            {column.title}
-          </Typography>
+          <ToggleFocusInput value={column?.title} onChangeValue={onUpdateColumnTitle} data-no-dnd='true' />
 
           <Box>
             <Tooltip title='More options'>

@@ -87,7 +87,7 @@ export default function Card({ card }: CardProps) {
         visibility: card.FE_PlaceholderCard ? 'hidden' : 'visible'
       }}
     >
-      {card.cover_photo && <CardMedia sx={{ height: 140 }} image={card.cover_photo} title='green iguana' />}
+      {card.cover_photo && <CardMedia sx={{ height: 140 }} image={card.cover_photo} title={card.title} />}
 
       <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
         <Typography>{card.title}</Typography>
