@@ -22,9 +22,10 @@ import ChangeBackgroundDrawer from '~/pages/Boards/BoardDetails/components/Chang
 interface BoardDrawerProps {
   open: boolean
   onOpen: (open: boolean) => void
+  totalMembers: number
 }
 
-export default function BoardDrawer({ open, onOpen }: BoardDrawerProps) {
+export default function BoardDrawer({ open, onOpen, totalMembers }: BoardDrawerProps) {
   const theme = useTheme()
 
   const [changeBackgroundDrawer, setChangeBackgroundDrawer] = useState(false)
@@ -86,7 +87,7 @@ export default function BoardDrawer({ open, onOpen }: BoardDrawerProps) {
             <ListItemIcon>
               <GroupsIcon />
             </ListItemIcon>
-            <ListItemText secondary='Members (8)' />
+            <ListItemText secondary={`Members (${totalMembers})`} />
           </ListItemButton>
         </ListItem>
 

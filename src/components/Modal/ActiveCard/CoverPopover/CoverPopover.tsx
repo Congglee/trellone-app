@@ -11,7 +11,8 @@ import Grid from '@mui/material/Unstable_Grid2'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
 import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
-import { useUploadImageMutation } from '~/queries/medias'
+import PhotoSearch from '~/components/Modal/ActiveCard/CoverPopover/PhotoSearch'
+import { useGetUnsplashSearchPhotosQuery, useUploadImageMutation } from '~/queries/medias'
 import { singleFileValidator } from '~/utils/validators'
 
 interface CoverPopoverProps {
@@ -24,18 +25,39 @@ export default function CoverPopover({ onUpdateCardCoverPhoto }: CoverPopoverPro
 
   const popoverId = isCoverPopoverOpen ? 'cover-popover' : undefined
 
+  const [showCoverPhoto, setShowCoverPhoto] = useState(false)
+  const [showUnsplashPhotoSearch, setShowUnsplashPhotoSearch] = useState(false)
+
+  const [searchQuery, setSearchQuery] = useState('Wallpapers')
+
+  const { data: searchPhotosData } = useGetUnsplashSearchPhotosQuery(searchQuery || 'Wallpapers')
+  const searchPhotos = searchPhotosData?.result || []
+
   const [uploadImageMutation] = useUploadImageMutation()
+
+  const onSearchQueryChange = (query: string) => {
+    setSearchQuery(query)
+  }
 
   const toggleCoverPopover = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (!anchorCoverPopoverElement) {
       setAnchorCoverPopoverElement(event.currentTarget)
+      setShowCoverPhoto(true)
     } else {
       setAnchorCoverPopoverElement(null)
+      setShowCoverPhoto(false)
     }
   }
 
   const handleCoverPopoverClose = () => {
     setAnchorCoverPopoverElement(null)
+    setShowCoverPhoto(false)
+    setShowUnsplashPhotoSearch(false)
+  }
+
+  const onBackToCoverPhoto = () => {
+    setShowUnsplashPhotoSearch(false)
+    setShowCoverPhoto(true)
   }
 
   const uploadCardCoverPhoto = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,15 +99,6 @@ export default function CoverPopover({ onUpdateCardCoverPhoto }: CoverPopoverPro
     '#344563'
   ]
 
-  const unsplashPhotos = [
-    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop',
-    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop',
-    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop',
-    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop',
-    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop',
-    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop'
-  ]
-
   return (
     <>
       <Button
@@ -118,178 +131,219 @@ export default function CoverPopover({ onUpdateCardCoverPhoto }: CoverPopoverPro
               width: 350,
               bgcolor: 'background.paper',
               p: 2,
-              borderRadius: 1
+              borderRadius: 1,
+              display: !isCoverPopoverOpen ? 'none' : 'block'
             }
           }
         }}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            mb: 2
-          }}
-        >
-          <IconButton size='small' sx={{ padding: 0, opacity: 0, visibility: 'hidden' }}>
-            <InfoOutlinedIcon />
-          </IconButton>
-          <Typography
-            variant='h6'
-            component='div'
-            sx={{
-              textAlign: 'center',
-              flexGrow: 1,
-              fontWeight: 600
-            }}
-          >
-            Cover
-          </Typography>
-          <IconButton onClick={handleCoverPopoverClose} size='small'>
-            <CloseIcon />
-          </IconButton>
-        </Box>
-
-        <Box sx={{ mb: 2 }}>
-          <Button variant='contained' size='small' color='inherit' fullWidth sx={{ py: 0.75, px: 1.5 }}>
-            Remove cover
-          </Button>
-        </Box>
-
-        <Box sx={{ mb: 2 }}>
-          <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
-            Colors
-          </Typography>
-          <Grid container spacing={1}>
-            {colors.map((color, index) => (
-              <Grid xs={2.4} key={index}>
-                <Box
-                  sx={{
-                    width: '100%',
-                    height: 32,
-                    bgcolor: color,
-                    borderRadius: 1,
-                    cursor: 'pointer',
-                    border: '1px solid',
-                    borderColor: 'grey.300',
-                    '&:hover': {
-                      opacity: 0.8
-                    }
-                  }}
-                />
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-
-        <Box sx={{ mb: 2 }}>
-          <Button variant='contained' size='small' color='inherit' fullWidth sx={{ py: 0.75, px: 1.5 }}>
-            Enable colorblind friendly mode
-          </Button>
-        </Box>
-
-        <Divider />
-
-        <Box sx={{ mt: 1, mb: 3 }}>
-          <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
-            Attachments
-          </Typography>
-
-          <Button
-            variant='contained'
-            size='small'
-            color='inherit'
-            component='label'
-            fullWidth
-            sx={{ mb: 1, py: 0.75, px: 1.5 }}
-          >
-            Upload a cover image
-            <VisuallyHiddenInput type='file' accept='image/*' onChange={uploadCardCoverPhoto} />
-          </Button>
-
-          <Typography
-            variant='body2'
-            sx={{
-              color: (theme) => (theme.palette.mode === 'dark' ? '#9fadbc' : '#5e6c84'),
-              fontSize: '0.75rem',
-              fontStyle: 'italic'
-            }}
-          >
-            Tip: Drag an image on to the card to upload it.
-          </Typography>
-        </Box>
-
-        <Box sx={{ mb: 2 }}>
-          <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
-            Photos from Unsplash
-          </Typography>
-          <Grid container spacing={1}>
-            {unsplashPhotos.map((photo, index) => (
-              <Grid xs={4} key={index}>
-                <Box
-                  sx={{
-                    width: '100%',
-                    height: 60,
-                    backgroundImage: `url(${photo})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    borderRadius: 1,
-                    cursor: 'pointer',
-                    border: '1px solid',
-                    borderColor: 'grey.300',
-                    '&:hover': {
-                      opacity: 0.8
-                    }
-                  }}
-                />
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-
-        <Box>
-          <Button variant='contained' size='small' color='inherit' fullWidth sx={{ py: 0.75, px: 1.5 }}>
-            Search for photos
-          </Button>
-
-          <Typography
-            variant='caption'
-            sx={{
-              display: 'block',
-              textAlign: 'center',
-              color: (theme) => (theme.palette.mode === 'dark' ? '#8c9bad' : '#6b778c'),
-              mt: 1,
-              fontSize: '0.7rem'
-            }}
-          >
-            By using images from Unsplash, you agree to their{' '}
+        {showCoverPhoto && (
+          <Box>
             <Box
-              component='span'
               sx={{
-                color: (theme) => (theme.palette.mode === 'dark' ? '#579dff' : '#0052cc'),
-                cursor: 'pointer',
-                '&:hover': {
-                  textDecoration: 'underline'
-                }
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                mb: 2
               }}
             >
-              license
-            </Box>{' '}
-            and{' '}
-            <Box
-              component='span'
-              sx={{
-                color: (theme) => (theme.palette.mode === 'dark' ? '#579dff' : '#0052cc'),
-                cursor: 'pointer',
-                '&:hover': {
-                  textDecoration: 'underline'
-                }
-              }}
-            >
-              Terms of Service
+              <IconButton size='small' sx={{ padding: 0, opacity: 0, visibility: 'hidden' }}>
+                <InfoOutlinedIcon />
+              </IconButton>
+              <Typography
+                variant='h6'
+                component='div'
+                sx={{
+                  textAlign: 'center',
+                  flexGrow: 1,
+                  fontWeight: 600
+                }}
+              >
+                Cover
+              </Typography>
+              <IconButton onClick={handleCoverPopoverClose} size='small'>
+                <CloseIcon />
+              </IconButton>
             </Box>
-          </Typography>
-        </Box>
+
+            <Box sx={{ mb: 2 }}>
+              <Button
+                variant='contained'
+                size='small'
+                color='inherit'
+                fullWidth
+                sx={{ py: 0.75, px: 1.5 }}
+                onClick={() => onUpdateCardCoverPhoto('')}
+              >
+                Remove cover
+              </Button>
+            </Box>
+
+            <Box sx={{ mb: 2 }}>
+              <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
+                Colors
+              </Typography>
+              <Grid container spacing={1}>
+                {colors.map((color, index) => (
+                  <Grid xs={2.4} key={index}>
+                    <Box
+                      sx={{
+                        width: '100%',
+                        height: 32,
+                        bgcolor: color,
+                        borderRadius: 1,
+                        cursor: 'pointer',
+                        border: '1px solid',
+                        borderColor: 'grey.300',
+                        '&:hover': {
+                          opacity: 0.8
+                        }
+                      }}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+
+            <Box sx={{ mb: 2 }}>
+              <Button variant='contained' size='small' color='inherit' fullWidth sx={{ py: 0.75, px: 1.5 }}>
+                Enable colorblind friendly mode
+              </Button>
+            </Box>
+
+            <Divider />
+
+            <Box sx={{ mt: 1, mb: 3 }}>
+              <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
+                Attachments
+              </Typography>
+
+              <Button
+                variant='contained'
+                size='small'
+                color='inherit'
+                component='label'
+                fullWidth
+                sx={{ mb: 1, py: 0.75, px: 1.5 }}
+              >
+                Upload a cover image
+                <VisuallyHiddenInput type='file' accept='image/*' onChange={uploadCardCoverPhoto} />
+              </Button>
+
+              <Typography
+                variant='body2'
+                sx={{
+                  color: (theme) => (theme.palette.mode === 'dark' ? '#9fadbc' : '#5e6c84'),
+                  fontSize: '0.75rem',
+                  fontStyle: 'italic'
+                }}
+              >
+                Tip: Drag an image on to the card to upload it.
+              </Typography>
+            </Box>
+
+            <Box sx={{ mb: 2 }}>
+              <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
+                Photos from Unsplash
+              </Typography>
+              <Grid container spacing={1}>
+                {searchPhotos?.length > 0 ? (
+                  searchPhotos.slice(0, 6).map((photo) => (
+                    <Grid xs={4} key={photo.id}>
+                      <Box
+                        sx={{
+                          width: '100%',
+                          height: 60,
+                          backgroundImage: `url(${photo.urls.thumb})`,
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center',
+                          borderRadius: 1,
+                          cursor: 'pointer',
+                          border: '1px solid',
+                          borderColor: 'grey.300',
+                          '&:hover': {
+                            opacity: 0.8
+                          }
+                        }}
+                        onClick={() => onUpdateCardCoverPhoto(photo.urls.regular)}
+                      />
+                    </Grid>
+                  ))
+                ) : (
+                  <Grid xs={12}>
+                    <Typography variant='body2' sx={{ color: 'text.secondary' }}>
+                      No photos found
+                    </Typography>
+                  </Grid>
+                )}
+              </Grid>
+            </Box>
+
+            <Box>
+              <Button
+                variant='contained'
+                size='small'
+                color='inherit'
+                fullWidth
+                sx={{ py: 0.75, px: 1.5 }}
+                onClick={() => {
+                  setShowCoverPhoto(false)
+                  setShowUnsplashPhotoSearch(true)
+                }}
+              >
+                Search for photos
+              </Button>
+
+              <Typography
+                variant='caption'
+                sx={{
+                  display: 'block',
+                  textAlign: 'center',
+                  color: (theme) => (theme.palette.mode === 'dark' ? '#8c9bad' : '#6b778c'),
+                  mt: 1,
+                  fontSize: '0.7rem'
+                }}
+              >
+                By using images from Unsplash, you agree to their{' '}
+                <Box
+                  component='span'
+                  sx={{
+                    color: (theme) => (theme.palette.mode === 'dark' ? '#579dff' : '#0052cc'),
+                    cursor: 'pointer',
+                    '&:hover': {
+                      textDecoration: 'underline'
+                    }
+                  }}
+                >
+                  license
+                </Box>{' '}
+                and{' '}
+                <Box
+                  component='span'
+                  sx={{
+                    color: (theme) => (theme.palette.mode === 'dark' ? '#579dff' : '#0052cc'),
+                    cursor: 'pointer',
+                    '&:hover': {
+                      textDecoration: 'underline'
+                    }
+                  }}
+                >
+                  Terms of Service
+                </Box>
+              </Typography>
+            </Box>
+          </Box>
+        )}
+
+        {showUnsplashPhotoSearch && (
+          <PhotoSearch
+            onClose={handleCoverPopoverClose}
+            onBackToCoverPhoto={onBackToCoverPhoto}
+            searchPhotos={searchPhotos}
+            onUpdateCardCoverPhoto={onUpdateCardCoverPhoto}
+            onSearchQueryChange={onSearchQueryChange}
+          />
+        )}
       </Popover>
     </>
   )

@@ -15,12 +15,7 @@ import { useParams } from 'react-router-dom'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
 import { mockWorkspacesList } from '~/constants/mock-data'
 
-interface CollapseListProps {
-  activeMenu: string
-  onActiveMenuChange: (menuItem: string) => void
-}
-
-export default function CollapseList({ activeMenu }: CollapseListProps) {
+export default function CollapseList() {
   const [visibleItems, setVisibleItems] = useState<boolean[]>([])
 
   const { workspaceId } = useParams()
@@ -33,15 +28,9 @@ export default function CollapseList({ activeMenu }: CollapseListProps) {
     setVisibleItems(visibleItems.map((item, idx) => (idx === index ? !item : item)))
   }
 
-  const handleListItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    const targetTextContent = event.currentTarget.textContent
-    console.log(targetTextContent)
-    // onActiveMenuChange(`${workspaceId}${targetTextContent}`)
-  }
-
   return (
     <Box sx={{ overflowY: 'auto', maxHeight: 'calc(100vh - 254px)' }}>
-      {mockWorkspacesList.length > 0 &&
+      {mockWorkspacesList?.length > 0 &&
         mockWorkspacesList?.map((workspace, index) => (
           <div key={workspace._id}>
             <ListItemButton
@@ -57,44 +46,28 @@ export default function CollapseList({ activeMenu }: CollapseListProps) {
 
             <Collapse in={visibleItems[index]} timeout='auto' unmountOnExit>
               <List component='div' disablePadding sx={{ fontSize: '15px' }}>
-                <ListItemButton
-                  selected={activeMenu === `${workspaceId}Boards`}
-                  onClick={handleListItemClick}
-                  sx={{ pl: 4 }}
-                >
+                <ListItemButton sx={{ pl: 4 }}>
                   <ListItemIcon>
                     <DashboardIcon />
                   </ListItemIcon>
                   <ListItemText disableTypography primary='Boards' />
                 </ListItemButton>
 
-                <ListItemButton
-                  selected={activeMenu === `${workspaceId}Highlights`}
-                  onClick={handleListItemClick}
-                  sx={{ pl: 4 }}
-                >
+                <ListItemButton sx={{ pl: 4 }}>
                   <ListItemIcon>
                     <FavoriteBorderIcon />
                   </ListItemIcon>
                   <ListItemText disableTypography primary='Highlights' />
                 </ListItemButton>
 
-                <ListItemButton
-                  selected={activeMenu === `${workspaceId}Members`}
-                  onClick={handleListItemClick}
-                  sx={{ pl: 4 }}
-                >
+                <ListItemButton sx={{ pl: 4 }}>
                   <ListItemIcon>
                     <GroupsIcon />
                   </ListItemIcon>
                   <ListItemText disableTypography primary='Members' />
                 </ListItemButton>
 
-                <ListItemButton
-                  selected={activeMenu === `${workspaceId}Settings`}
-                  onClick={handleListItemClick}
-                  sx={{ pl: 4 }}
-                >
+                <ListItemButton sx={{ pl: 4 }}>
                   <ListItemIcon>
                     <SettingsIcon />
                   </ListItemIcon>

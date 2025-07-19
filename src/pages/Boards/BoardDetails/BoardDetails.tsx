@@ -270,7 +270,11 @@ export default function BoardDetails() {
             />
           </Main>
 
-          <BoardDrawer open={boardDrawerOpen} onOpen={setBoardDrawerOpen} />
+          <BoardDrawer
+            open={boardDrawerOpen}
+            onOpen={setBoardDrawerOpen}
+            totalMembers={activeBoard.FE_AllUsers?.length || 0}
+          />
         </Box>
       </Box>
     </Container>

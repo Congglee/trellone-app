@@ -41,12 +41,6 @@ export default function NavigationMenu() {
     navigate(targetPath)
   }
 
-  const onActiveMenuChange = (menuItem: string) => {
-    if (getActiveMenuFromPath(location.pathname) !== menuItem) {
-      setActiveMenu(menuItem)
-    }
-  }
-
   return (
     <List
       sx={{
@@ -80,7 +74,7 @@ export default function NavigationMenu() {
               <AddSharpIcon />
             </ListItemIcon>
           </ListItemButton>
-          <CollapseList activeMenu={activeMenu} onActiveMenuChange={onActiveMenuChange} />
+          <CollapseList />
         </>
       )}
     </List>

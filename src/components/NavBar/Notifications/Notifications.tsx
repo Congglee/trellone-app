@@ -156,7 +156,7 @@ export default function Notifications() {
         MenuListProps={{ 'aria-labelledby': 'basic-button-open-notification' }}
         sx={{ mt: 2 }}
       >
-        {(!notifications || notifications.length === 0) && (
+        {(!notifications || notifications?.length === 0) && (
           <MenuItem sx={{ minWidth: 200 }}>You do not have any new notifications.</MenuItem>
         )}
 

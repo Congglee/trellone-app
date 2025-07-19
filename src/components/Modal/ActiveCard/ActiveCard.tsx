@@ -208,7 +208,7 @@ export default function ActiveCard() {
               />
             </Box>
 
-            {activeCard?.attachments && !!activeCard.attachments.length && (
+            {activeCard?.attachments && !!activeCard.attachments?.length && (
               <Box sx={{ mb: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                   <AttachmentIcon />

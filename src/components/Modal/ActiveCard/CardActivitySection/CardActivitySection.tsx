@@ -143,7 +143,7 @@ export default function CardActivitySection({
         </Box>
       </Box>
 
-      {cardComments.length === 0 && (
+      {cardComments?.length === 0 && (
         <Typography
           sx={{
             pl: '45px',
