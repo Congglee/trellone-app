@@ -3,11 +3,6 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Ensure smooth transitions when content changes */
-* {
-  scroll-behavior: smooth;
-}
-
 /* Fix for potential layout shift with fixed navbar */
 body {
   margin: 0;

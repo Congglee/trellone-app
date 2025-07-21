@@ -36,7 +36,7 @@ export default function BoardUserGroup({ boardUsers = [], limit = 4 }: BoardUser
         }
       })}
 
-      {boardUsers.length > limit && (
+      {boardUsers?.length > limit && (
         <Tooltip title='Show more'>
           <Box
             aria-describedby={popoverId}

@@ -13,13 +13,13 @@ import { useState } from 'react'
 import { toast } from 'react-toastify'
 import { CardAttachmentType } from '~/schemas/card.schema'
 
-interface AttachmentPreviewModalProps {
+interface FileAttachmentPreviewModalProps {
   open: boolean
   onClose: () => void
   attachment: CardAttachmentType | null
 }
 
-export default function AttachmentPreviewModal({ open, onClose, attachment }: AttachmentPreviewModalProps) {
+export default function FileAttachmentPreviewModal({ open, onClose, attachment }: FileAttachmentPreviewModalProps) {
   const [imageError, setImageError] = useState(false)
 
   if (!attachment) {

@@ -20,6 +20,7 @@ import { injectStore } from '~/lib/http'
 import { persistor, store } from '~/lib/redux/store'
 import theme from '~/theme'
 
+// Inject store solution is a technique used when it is necessary to use the redux store variable in files outside the scope of react components
 injectStore(store)
 
 createRoot(document.getElementById('root')!).render(

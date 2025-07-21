@@ -184,7 +184,6 @@ export default function Login() {
                 sx={{
                   '& span': {
                     fontSize: '0.875rem',
-                    color: 'rgba(255, 255, 255, 0.7)',
                     '& .MuiSvgIcon-root': {
                       fontSize: '1.25rem'
                     }

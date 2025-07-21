@@ -150,7 +150,8 @@ export default function BoardBar({
               <Box ref={editBoardTitleClickAwayRef}>
                 <TextField
                   sx={{
-                    bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#22272b' : '#feff0026')
+                    bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#22272b' : '#feff0026'),
+                    width: '230px'
                   }}
                   variant='outlined'
                   size='small'

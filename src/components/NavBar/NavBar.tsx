@@ -1,5 +1,6 @@
 import AppsIcon from '@mui/icons-material/Apps'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
+import MenuIcon from '@mui/icons-material/Menu'
 import { useMediaQuery } from '@mui/material'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
@@ -10,7 +11,7 @@ import SvgIcon from '@mui/material/SvgIcon'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
 import AutoCompleteSearchBoard from '~/components/NavBar/AutoCompleteSearchBoard'
 import Create from '~/components/NavBar/Create'
@@ -30,14 +31,8 @@ export default function NavBar() {
   const theme = useTheme()
   const isScreenBelowMedium = useMediaQuery(theme.breakpoints.down('md'))
 
-  const navigate = useNavigate()
-
   const toggleMenuDrawer = (newOpen: boolean) => {
-    if (isScreenBelowMedium) {
-      setOpen(newOpen)
-    } else {
-      navigate(path.boardsList)
-    }
+    setOpen(newOpen)
   }
 
   return (
@@ -55,26 +50,37 @@ export default function NavBar() {
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <IconButton size='small' sx={{ padding: 0 }} onClick={() => toggleMenuDrawer(true)}>
+          <IconButton
+            size='small'
+            sx={{ padding: 0, display: { xs: 'inline-flex', md: 'none' } }}
+            onClick={() => toggleMenuDrawer(true)}
+          >
+            <MenuIcon />
+          </IconButton>
+
+          <IconButton
+            component={Link}
+            to={path.boardsList}
+            size='small'
+            sx={{ padding: 0, display: { xs: 'none', md: 'inline-flex' } }}
+          >
             <AppsIcon />
           </IconButton>
 
-          <Link to={path.home}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <SvgIcon
-                component={TrelloneIcon}
-                inheritViewBox
-                fontSize='small'
-                sx={{ color: (theme) => theme.palette.primary.main }}
-              />
-              <Typography
-                variant='inherit'
-                sx={{ fontSize: '1.2rem', fontWeight: 600, color: (theme) => theme.palette.secondary.main }}
-              >
-                Trellone
-              </Typography>
-            </Box>
-          </Link>
+          <Box component={Link} to={path.home} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <SvgIcon
+              component={TrelloneIcon}
+              inheritViewBox
+              fontSize='small'
+              sx={{ color: (theme) => theme.palette.primary.main }}
+            />
+            <Typography
+              variant='inherit'
+              sx={{ fontSize: '1.2rem', fontWeight: 600, color: (theme) => theme.palette.secondary.main }}
+            >
+              Trellone
+            </Typography>
+          </Box>
 
           <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
             <Workspaces />

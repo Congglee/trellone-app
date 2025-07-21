@@ -1,28 +1,17 @@
 import AddIcon from '@mui/icons-material/Add'
-import ImageIcon from '@mui/icons-material/Image'
-import LinkIcon from '@mui/icons-material/Link'
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import { Link as MuiLink } from '@mui/material'
-import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Divider from '@mui/material/Divider'
-import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemButton from '@mui/material/ListItemButton'
-import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Popover from '@mui/material/Popover'
-import Typography from '@mui/material/Typography'
-import { formatDistanceToNow } from 'date-fns'
-import { Fragment, RefObject, useMemo, useState } from 'react'
+import { RefObject, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
-import AttachmentPreviewModal from '~/components/Modal/ActiveCard/CardAttachments/AttachmentPreviewModal'
 import EditCardFileAttachmentForm from '~/components/Modal/ActiveCard/CardAttachments/EditCardFileAttachmentForm'
 import EditCardLinkAttachmentForm from '~/components/Modal/ActiveCard/CardAttachments/EditCardLinkAttachmentForm'
+import FileAttachments from '~/components/Modal/ActiveCard/CardAttachments/FileAttachments'
+import LinkAttachments from '~/components/Modal/ActiveCard/CardAttachments/LinkAttachments'
 import RemoveCardAttachmentConfirm from '~/components/Modal/ActiveCard/CardAttachments/RemoveCardAttachmentConfirm'
 import { AttachmentType, CardAttachmentAction } from '~/constants/type'
 import { CardAttachmentPayloadType, CardAttachmentType } from '~/schemas/card.schema'
@@ -42,12 +31,19 @@ export default function CardAttachments({
   const [showMenuActions, setShowMenuActions] = useState(false)
   const [showRemoveCardAttachmentConfirm, setShowRemoveCardAttachmentConfirm] = useState(false)
   const [showEditCardAttachmentForm, setShowEditCardAttachmentForm] = useState(false)
-  const [showPreviewModal, setShowPreviewModal] = useState(false)
-  const [previewAttachment, setPreviewAttachment] = useState<CardAttachmentType | null>(null)
 
   const isMenuActionsPopoverOpen = Boolean(anchorMenuActionsPopoverElement)
 
   const popoverId = isMenuActionsPopoverOpen ? 'menu-actions-popover' : undefined
+
+  const linkAttachments = useMemo(
+    () => cardAttachments.filter((attachment) => attachment.type === AttachmentType.Link),
+    [cardAttachments]
+  )
+  const fileAttachments = useMemo(
+    () => cardAttachments.filter((attachment) => attachment.type === AttachmentType.File),
+    [cardAttachments]
+  )
 
   const toggleMenuActionsPopover = (
     event: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>,
@@ -70,16 +66,6 @@ export default function CardAttachments({
     setShowRemoveCardAttachmentConfirm(false)
     setShowEditCardAttachmentForm(false)
     setActiveAttachment(null)
-  }
-
-  const handlePreviewAttachment = (attachment: CardAttachmentType) => {
-    setPreviewAttachment(attachment)
-    setShowPreviewModal(true)
-  }
-
-  const handlePreviewModalClose = () => {
-    setShowPreviewModal(false)
-    setPreviewAttachment(null)
   }
 
   const handleAddAttachmentClick = () => {
@@ -173,181 +159,11 @@ export default function CardAttachments({
       </Box>
 
       {hasLinksAttachments && (
-        <Box sx={{ mt: 1.5 }}>
-          <Typography variant='caption'>Links</Typography>
-          <List sx={{ width: '100%', bgcolor: 'transparent' }}>
-            {cardAttachments
-              .filter((attachment) => attachment.type === AttachmentType.Link)
-              .map((attachment, index, arr) => (
-                <Fragment key={index}>
-                  <ListItem
-                    disableGutters
-                    sx={{
-                      p: 1,
-                      '&:hover': {
-                        backgroundColor: 'action.hover'
-                      },
-                      bgcolor: 'background.paper',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between'
-                    }}
-                  >
-                    <MuiLink
-                      href={attachment.link.url}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                        overflow: 'hidden',
-                        textDecoration: 'none',
-                        color: 'inherit',
-                        flexGrow: 1,
-                        '&:hover': {
-                          textDecoration: 'underline'
-                        }
-                      }}
-                    >
-                      <ListItemIcon sx={{ minWidth: 'auto' }}>
-                        <LinkIcon />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={
-                          <Typography
-                            variant='body2'
-                            sx={{
-                              fontWeight: 'medium',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              color: 'primary.main'
-                            }}
-                          >
-                            {attachment.link.display_name || attachment.link.url}
-                          </Typography>
-                        }
-                        sx={{ m: 0 }}
-                      />
-                    </MuiLink>
-                    <IconButton size='small' onClick={(event) => toggleMenuActionsPopover(event, attachment)}>
-                      <MoreHorizIcon fontSize='small' />
-                    </IconButton>
-                  </ListItem>
-                  {index < arr.length - 1 && <Divider />}
-                </Fragment>
-              ))}
-          </List>
-        </Box>
+        <LinkAttachments linkAttachments={linkAttachments} onToggleMenuActionsPopover={toggleMenuActionsPopover} />
       )}
 
       {hasFilesAttachments && (
-        <Box sx={{ mt: 1.5 }}>
-          <Typography variant='caption'>Files</Typography>
-          <List sx={{ width: '100%', bgcolor: 'transparent' }}>
-            {cardAttachments
-              .filter((attachment) => attachment.type === AttachmentType.File)
-              .map((attachment, index) => (
-                <ListItem
-                  key={index}
-                  disableGutters
-                  component='div'
-                  sx={{
-                    borderRadius: 1,
-                    flexDirection: { xs: 'column', sm: 'row' },
-                    alignItems: { xs: 'flex-start', sm: 'center' },
-                    gap: 1,
-                    cursor: 'pointer',
-                    '&:hover': {
-                      backgroundColor: 'action.hover'
-                    }
-                  }}
-                  onClick={() => handlePreviewAttachment(attachment)}
-                  secondaryAction={
-                    <Box
-                      sx={{
-                        alignSelf: { xs: 'flex-end', sm: 'center' },
-                        mt: { xs: 1, sm: 0 }
-                      }}
-                    >
-                      <IconButton size='small' sx={{ mr: 0.5 }}>
-                        <OpenInNewIcon fontSize='small' />
-                      </IconButton>
-                      <IconButton
-                        size='small'
-                        onClick={(event) => {
-                          event.stopPropagation()
-                          toggleMenuActionsPopover(event, attachment)
-                        }}
-                      >
-                        <MoreHorizIcon />
-                      </IconButton>
-                    </Box>
-                  }
-                >
-                  <ListItemAvatar>
-                    {attachment.file.mime_type.includes('image') ? (
-                      <Avatar
-                        variant='rounded'
-                        src={attachment.file.url}
-                        alt={attachment.file.display_name}
-                        sx={{ width: { xs: 60, sm: 80 }, height: { xs: 45, sm: 60 } }}
-                      >
-                        <ImageIcon />
-                      </Avatar>
-                    ) : (
-                      <Avatar
-                        variant='rounded'
-                        sx={{
-                          bgcolor: 'grey.700',
-                          width: { xs: 60, sm: 80 },
-                          height: { xs: 45, sm: 60 },
-                          color: 'text.primary'
-                        }}
-                      >
-                        <Typography variant='button' sx={{ fontWeight: 'bold' }}>
-                          {attachment.file.original_name.split('.').pop()}
-                        </Typography>
-                      </Avatar>
-                    )}
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={
-                      <Typography
-                        variant='body2'
-                        sx={{
-                          fontWeight: 'medium',
-                          display: '-webkit-box',
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                          WebkitLineClamp: 2,
-                          textOverflow: 'ellipsis'
-                        }}
-                      >
-                        {attachment.file.display_name}
-                      </Typography>
-                    }
-                    secondary={
-                      <Box
-                        component='span'
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 0.5,
-                          flexWrap: 'wrap'
-                        }}
-                      >
-                        <Typography component='span' variant='caption' color='text.secondary'>
-                          Added {formatDistanceToNow(new Date(attachment.added_at), { addSuffix: true })}
-                        </Typography>
-                      </Box>
-                    }
-                  />
-                </ListItem>
-              ))}
-          </List>
-        </Box>
+        <FileAttachments fileAttachments={fileAttachments} onToggleMenuActionsPopover={toggleMenuActionsPopover} />
       )}
 
       <Popover
@@ -453,12 +269,6 @@ export default function CardAttachments({
             />
           ))}
       </Popover>
-
-      <AttachmentPreviewModal
-        open={showPreviewModal}
-        onClose={handlePreviewModalClose}
-        attachment={previewAttachment}
-      />
     </Box>
   )
 }
