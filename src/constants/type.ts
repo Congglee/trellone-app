@@ -7,18 +7,11 @@ export const TokenType = {
 } as const
 
 export const BoardType = {
-  Public: 'public',
-  Private: 'private'
+  Public: 'Public',
+  Private: 'Private'
 } as const
 
 export const BoardTypeValues = [BoardType.Public, BoardType.Private] as const
-
-export const Role = {
-  Client: 'client',
-  Admin: 'admin'
-} as const
-
-export const RoleValues = [Role.Client, Role.Admin] as const
 
 export const UserVerifyStatus = {
   Unverified: 0,

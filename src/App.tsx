@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import path from '~/constants/path'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
@@ -43,6 +44,18 @@ const RejectedRoute = ({ profile, isAuthenticated }: { profile: UserType | null;
   }
 
   return !isAuthenticated && !profile ? <Outlet /> : <Navigate to={path.home} />
+}
+
+const VerifiedRoute = ({ profile }: { profile: UserType | null }) => {
+  const isAccountVerified = profile?.verify === 1
+
+  useEffect(() => {
+    if (!isAccountVerified) {
+      toast.error('Please verify your account to access this page')
+    }
+  }, [isAccountVerified])
+
+  return !isAccountVerified ? <Navigate to={path.accountSettings} /> : <Outlet />
 }
 
 function App() {
@@ -97,14 +110,16 @@ function App() {
         </Route>
 
         {/* Board Details */}
-        <Route
-          path={path.boardDetails}
-          element={
-            <Suspense fallback={<PageLoadingSpinner />}>
-              <BoardDetails />
-            </Suspense>
-          }
-        />
+        <Route element={<VerifiedRoute profile={profile} />}>
+          <Route
+            path={path.boardDetails}
+            element={
+              <Suspense fallback={<PageLoadingSpinner />}>
+                <BoardDetails />
+              </Suspense>
+            }
+          />
+        </Route>
 
         {/* User Settings */}
         <Route
