@@ -6,6 +6,20 @@ export const TokenType = {
   InviteToken: 4
 } as const
 
+export const WorkspaceType = {
+  Public: 'Public',
+  Private: 'Private'
+} as const
+
+export const WorkspaceTypeValues = [WorkspaceType.Public, WorkspaceType.Private] as const
+
+export const WorkspaceRole = {
+  Admin: 'Admin',
+  Normal: 'Normal'
+} as const
+
+export const WorkspaceRoleValues = [WorkspaceRole.Admin, WorkspaceRole.Normal] as const
+
 export const BoardType = {
   Public: 'Public',
   Private: 'Private'

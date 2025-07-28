@@ -128,7 +128,7 @@ export default function WorkspaceDrawer({ open, onOpen, boardId }: WorkspaceDraw
       >
         <DrawerHeader sx={{ justifyContent: 'space-between', minHeight: '49px!important' }}>
           <Stack ml={1} gap={1} alignItems='center' direction='row'>
-            <WorkspaceAvatar workspaceName='My Project' avatarSize={{ width: 30, height: 30 }} />
+            <WorkspaceAvatar title='My Project' size={{ width: 30, height: 30 }} />
             <Typography variant='subtitle1'>My Project</Typography>
           </Stack>
           <IconButton color='inherit' onClick={() => onOpen(false)}>

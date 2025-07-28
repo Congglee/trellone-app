@@ -54,7 +54,8 @@ export const CreateBoardBody = z.object({
     .refine((val) => val === undefined || val.length <= 256, {
       message: 'Description must be at most 256 characters long'
     }),
-  type: z.enum(BoardTypeValues, { message: 'Type must be either public or private' }).default(BoardType.Public)
+  type: z.enum(BoardTypeValues, { message: 'Type must be either public or private' }).default(BoardType.Public),
+  workspace_id: z.string().min(1, { message: 'Please select a workspace' })
 })
 
 export type CreateBoardBodyType = z.TypeOf<typeof CreateBoardBody>

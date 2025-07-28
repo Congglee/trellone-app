@@ -8,6 +8,7 @@ import { columnApi } from '~/queries/columns'
 import { invitationApi } from '~/queries/invitations'
 import { mediaApi } from '~/queries/medias'
 import { userApi } from '~/queries/users'
+import { workspaceApi } from '~/queries/workspaces'
 import rootReducer from '~/store/root.reducer'
 
 const rootPersistConfig = {
@@ -20,6 +21,7 @@ const rootPersistConfig = {
 const persistedReducers = persistReducer(rootPersistConfig, rootReducer)
 
 const apiMiddlewares = [
+  workspaceApi.middleware,
   boardApi.middleware,
   columnApi.middleware,
   cardApi.middleware,

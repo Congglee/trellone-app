@@ -1,13 +1,21 @@
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
 import { Helmet } from 'react-helmet-async'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
-import { mockWorkspacesList } from '~/constants/mock-data'
+import { useQueryConfig } from '~/hooks/use-query-config'
 import WorkspaceBoards from '~/pages/Workspaces/BoardsList/components/WorkspaceBoards'
+import { useGetWorkspacesQuery } from '~/queries/workspaces'
 
 export default function BoardsList() {
+  const queryConfig = useQueryConfig()
+
+  const { data: workspacesData, isLoading } = useGetWorkspacesQuery(queryConfig)
+  const workspaces = workspacesData?.result.workspaces || []
+
   return (
-    <Stack spacing={4}>
+    <Box>
       <Helmet>
         <title>Boards | Trellone</title>
         <meta
@@ -16,19 +24,46 @@ export default function BoardsList() {
         />
       </Helmet>
 
-      <Typography variant='h6' sx={{ pl: 1 }}>
+      <Typography variant='h6' sx={{ pl: 1, mb: 2.5 }}>
         Your Workspaces
       </Typography>
 
-      {mockWorkspacesList?.map((workspace) => (
-        <Stack key={workspace._id} spacing={1}>
-          <Stack alignItems='center' direction='row' spacing={1} sx={{ pl: 1 }}>
-            <WorkspaceAvatar workspaceName={workspace.title} avatarSize={{ width: 25, height: 25 }} />
-            <Typography variant='subtitle1'>Your Boards</Typography>
-          </Stack>
-          <WorkspaceBoards />
+      {workspaces?.map((workspace) => (
+        <Stack key={workspace._id} spacing={2} mb={4.5}>
+          {isLoading ? (
+            <Stack alignItems='center' direction='row' spacing={2} pl={1}>
+              <Skeleton
+                animation='wave'
+                variant='circular'
+                width={32}
+                height={32}
+                sx={{
+                  bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'grey.800' : 'grey.300')
+                }}
+              />
+              <Skeleton
+                animation='wave'
+                variant='rectangular'
+                width={180}
+                height={24}
+                sx={{
+                  bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'grey.800' : 'grey.300'),
+                  borderRadius: 1
+                }}
+              />
+            </Stack>
+          ) : (
+            <Stack alignItems='center' direction='row' spacing={2} pl={1}>
+              <WorkspaceAvatar title={workspace.title} logo={workspace.logo} size={{ width: 32, height: 32 }} />
+              <Typography variant='h6' fontWeight={600}>
+                {workspace.title}
+              </Typography>
+            </Stack>
+          )}
+
+          <WorkspaceBoards workspace={workspace} isLoading={isLoading} />
         </Stack>
       ))}
-    </Stack>
+    </Box>
   )
 }

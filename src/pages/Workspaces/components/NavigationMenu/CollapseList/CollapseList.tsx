@@ -13,16 +13,23 @@ import ListItemText from '@mui/material/ListItemText'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
-import { mockWorkspacesList } from '~/constants/mock-data'
+
+import { useQueryConfig } from '~/hooks/use-query-config'
+import { useGetWorkspacesQuery } from '~/queries/workspaces'
 
 export default function CollapseList() {
   const [visibleItems, setVisibleItems] = useState<boolean[]>([])
 
+  const queryConfig = useQueryConfig()
+  const { data: workspacesData } = useGetWorkspacesQuery(queryConfig)
+
+  const workspaces = workspacesData?.result.workspaces || []
+
   const { workspaceId } = useParams()
 
   useEffect(() => {
-    setVisibleItems(Array(mockWorkspacesList.length).fill(false))
-  }, [])
+    setVisibleItems(Array(workspaces.length).fill(false))
+  }, [workspaces.length])
 
   const handleWorkspaceClick = (index: number) => {
     setVisibleItems(visibleItems.map((item, idx) => (idx === index ? !item : item)))
@@ -30,17 +37,27 @@ export default function CollapseList() {
 
   return (
     <Box sx={{ overflowY: 'auto', maxHeight: 'calc(100vh - 254px)' }}>
-      {mockWorkspacesList?.length > 0 &&
-        mockWorkspacesList?.map((workspace, index) => (
+      {workspaces?.length > 0 &&
+        workspaces?.map((workspace, index) => (
           <div key={workspace._id}>
             <ListItemButton
               selected={!visibleItems[index] && workspaceId === workspace._id}
               onClick={() => handleWorkspaceClick(index)}
+              sx={{ gap: 0.5 }}
             >
               <ListItemIcon>
-                <WorkspaceAvatar workspaceName={workspace.title} avatarSize={{ width: 25, height: 25 }} />
+                <WorkspaceAvatar title={workspace.title} logo={workspace.logo} size={{ width: 25, height: 25 }} />
               </ListItemIcon>
-              <ListItemText primary={workspace.title} />
+              <ListItemText
+                primary={workspace.title}
+                sx={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  display: '-webkit-box',
+                  WebkitLineClamp: '2',
+                  WebkitBoxOrient: 'vertical'
+                }}
+              />
               {visibleItems[index] ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
 

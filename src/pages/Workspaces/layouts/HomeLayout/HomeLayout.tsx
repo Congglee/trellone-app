@@ -15,7 +15,7 @@ export default function HomeLayout() {
     <Container disableGutters maxWidth={false}>
       <NavBar />
       <Container maxWidth='lg'>
-        <Stack direction={isMobileScreen ? 'column' : 'row'} useFlexGap={true} spacing={2} py={{ xs: 3, sm: 5 }}>
+        <Stack direction={isMobileScreen ? 'column' : 'row'} useFlexGap={true} spacing={4} py={{ xs: 3, sm: 5 }}>
           <NavigationMenu />
           <Box sx={{ width: '100%', maxWidth: { xs: '100%', sm: '70vw' } }}>
             <Outlet />
