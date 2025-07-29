@@ -15,16 +15,18 @@ import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useNavigate, useParams } from 'react-router-dom'
 import NewBoardDialog from '~/components/Dialog/NewBoardDialog'
-import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
 import path from '~/constants/path'
 import BoardCard from '~/pages/Workspaces/components/BoardCard'
 import NewBoardCard from '~/pages/Workspaces/components/NewBoardCard'
+import EditWorkspaceDialog from '~/pages/Workspaces/pages/WorkspaceBoardsList/components/EditWorkspaceDialog'
+import WorkspaceLogo from '~/pages/Workspaces/pages/WorkspaceBoardsList/components/WorkspaceLogo'
 import { useGetWorkspaceQuery } from '~/queries/workspaces'
 
 export default function WorkspaceBoardsList() {
   const { workspaceId } = useParams<{ workspaceId: string }>()
 
   const [newBoardOpen, setNewBoardOpen] = useState(false)
+  const [editWorkspaceOpen, setEditWorkspaceOpen] = useState(false)
 
   const { data: workspaceData, isLoading } = useGetWorkspaceQuery(workspaceId!)
   const workspace = workspaceData?.result
@@ -84,18 +86,19 @@ export default function WorkspaceBoardsList() {
             </Stack>
           </Stack>
         ) : (
-          <Stack alignItems='center' direction='row' spacing={2}>
-            <WorkspaceAvatar
-              title={workspace?.title as string}
-              logo={workspace?.logo}
-              size={{ width: 80, height: 80 }}
-            />
+          <Stack alignItems='center' direction='row' flexWrap='wrap' useFlexGap spacing={2}>
+            <WorkspaceLogo workspace={workspace!} />
+
             <Stack spacing={0.5}>
               <Stack alignItems='center' direction='row' spacing={1}>
-                <Typography variant='h4' fontWeight={600}>
+                <Typography
+                  variant='h4'
+                  fontWeight={600}
+                  sx={{ whiteSpace: 'pre-wrap', wordBreak: { xs: 'break-all', sm: 'normal' } }}
+                >
                   {workspace?.title}
                 </Typography>
-                <IconButton size='small' sx={{ color: 'text.secondary' }}>
+                <IconButton size='small' sx={{ color: 'text.secondary' }} onClick={() => setEditWorkspaceOpen(true)}>
                   <EditIcon fontSize='small' />
                 </IconButton>
               </Stack>
@@ -187,6 +190,14 @@ export default function WorkspaceBoardsList() {
         onNewBoardClose={() => setNewBoardOpen(false)}
         defaultWorkspaceId={workspaceId}
       />
+
+      {workspace && (
+        <EditWorkspaceDialog
+          open={editWorkspaceOpen}
+          onEditWorkspaceClose={() => setEditWorkspaceOpen(false)}
+          workspace={workspace}
+        />
+      )}
     </Box>
   )
 }

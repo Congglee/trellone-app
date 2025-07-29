@@ -12,11 +12,17 @@ interface WorkspaceAvatarProps {
 
 export default function WorkspaceAvatar({ title, logo, size: { width, height } }: WorkspaceAvatarProps) {
   return logo ? (
-    <Avatar src={logo} alt={title} sx={{ width, height }} />
+    <Avatar variant='square' src={logo} alt={title} sx={{ width, height, borderRadius: 0.5 }} />
   ) : (
     <Avatar
       variant='square'
-      sx={{ width, height, bgcolor: generateColorFromString(title), fontSize: `calc(0.6 * ${width}px)` }}
+      sx={{
+        width,
+        height,
+        bgcolor: generateColorFromString(title),
+        fontSize: `calc(0.6 * ${width}px)`,
+        borderRadius: 0.5
+      }}
     >
       {title.charAt(0).toUpperCase()}
     </Avatar>

@@ -39,6 +39,7 @@ export default function NewBoardDialog({ open, onNewBoardClose, defaultWorkspace
     control,
     setError,
     handleSubmit,
+    reset,
     formState: { errors }
   } = useForm<CreateBoardBodyType>({
     resolver: zodResolver(CreateBoardBody),
@@ -62,6 +63,17 @@ export default function NewBoardDialog({ open, onNewBoardClose, defaultWorkspace
       }
     })
   })
+
+  useEffect(() => {
+    if (defaultWorkspaceId && open) {
+      reset({
+        title: '',
+        description: '',
+        type: BoardType.Public,
+        workspace_id: defaultWorkspaceId || ''
+      })
+    }
+  }, [defaultWorkspaceId, reset, open])
 
   useEffect(() => {
     if (isError && isUnprocessableEntityError<CreateBoardBodyType>(error)) {

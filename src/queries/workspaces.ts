@@ -1,7 +1,12 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
-import { CreateWorkspaceBodyType, WorkspaceListResType, WorkspaceResType } from '~/schemas/workspace.schema'
+import {
+  CreateWorkspaceBodyType,
+  UpdateWorkspaceBodyType,
+  WorkspaceListResType,
+  WorkspaceResType
+} from '~/schemas/workspace.schema'
 import { CommonQueryParams } from '~/types/query-params.type'
 
 const WORKSPACE_API_URL = '/workspaces' as const
@@ -41,11 +46,29 @@ export const workspaceApi = createApi({
     getWorkspace: build.query<WorkspaceResType, string>({
       query: (id) => ({ url: `${WORKSPACE_API_URL}/${id}`, method: 'GET' }),
       providesTags: (result) => (result ? [{ type: 'Workspace', id: result.result._id }] : tagTypes)
+    }),
+
+    updateWorkspace: build.mutation<WorkspaceResType, { id: string; body: UpdateWorkspaceBodyType }>({
+      query: ({ id, body }) => ({ url: `${WORKSPACE_API_URL}/${id}`, method: 'PUT', data: body }),
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled
+          toast.success(data.message)
+        } catch (error) {
+          toast.error('There was an error updating the workspace')
+          console.error(error)
+        }
+      },
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Workspace', id },
+        { type: 'Workspace', id: 'LIST' }
+      ]
     })
   })
 })
 
-export const { useAddWorkspaceMutation, useGetWorkspacesQuery, useGetWorkspaceQuery } = workspaceApi
+export const { useAddWorkspaceMutation, useGetWorkspacesQuery, useGetWorkspaceQuery, useUpdateWorkspaceMutation } =
+  workspaceApi
 
 const workspaceApiReducer = workspaceApi.reducer
 
