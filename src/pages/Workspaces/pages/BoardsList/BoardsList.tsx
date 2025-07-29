@@ -5,7 +5,7 @@ import Skeleton from '@mui/material/Skeleton'
 import { Helmet } from 'react-helmet-async'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
 import { useQueryConfig } from '~/hooks/use-query-config'
-import WorkspaceBoards from '~/pages/Workspaces/BoardsList/components/WorkspaceBoards'
+import WorkspaceBoards from '~/pages/Workspaces/pages/BoardsList/components/WorkspaceBoards'
 import { useGetWorkspacesQuery } from '~/queries/workspaces'
 
 export default function BoardsList() {

@@ -21,8 +21,9 @@ const Login = lazy(() => import('~/pages/Auth/Login'))
 const Register = lazy(() => import('~/pages/Auth/Register'))
 const ForgotPassword = lazy(() => import('~/pages/Auth/ForgotPassword'))
 const ResetPassword = lazy(() => import('~/pages/Auth/ResetPassword'))
-const Home = lazy(() => import('~/pages/Workspaces/Home'))
-const BoardsList = lazy(() => import('~/pages/Workspaces/BoardsList'))
+const Home = lazy(() => import('~/pages/Workspaces/pages/Home'))
+const BoardsList = lazy(() => import('~/pages/Workspaces/pages/BoardsList'))
+const WorkspaceBoardsList = lazy(() => import('~/pages/Workspaces/pages/WorkspaceBoardsList'))
 const BoardDetails = lazy(() => import('~/pages/Boards/BoardDetails'))
 const Settings = lazy(() => import('~/pages/Settings'))
 const NotFound = lazy(() => import('~/pages/404/NotFound'))
@@ -107,6 +108,7 @@ function App() {
         >
           <Route path={path.home} element={<Home />} />
           <Route path={path.boardsList} element={<BoardsList />} />
+          <Route path={path.workspaceBoardsList} element={<WorkspaceBoardsList />} />
         </Route>
 
         {/* Board Details */}

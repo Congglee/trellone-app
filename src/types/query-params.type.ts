@@ -27,4 +27,5 @@ export interface BoardInvitationQueryParams {
 
 export interface BoardQueryParams extends CommonQueryParams {
   keyword?: string
+  workspace_id?: string
 }

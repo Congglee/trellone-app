@@ -36,11 +36,16 @@ export const workspaceApi = createApi({
               { type: 'Workspace' as const, id: 'LIST' }
             ]
           : [{ type: 'Workspace' as const, id: 'LIST' }]
+    }),
+
+    getWorkspace: build.query<WorkspaceResType, string>({
+      query: (id) => ({ url: `${WORKSPACE_API_URL}/${id}`, method: 'GET' }),
+      providesTags: (result) => (result ? [{ type: 'Workspace', id: result.result._id }] : tagTypes)
     })
   })
 })
 
-export const { useAddWorkspaceMutation, useGetWorkspacesQuery } = workspaceApi
+export const { useAddWorkspaceMutation, useGetWorkspacesQuery, useGetWorkspaceQuery } = workspaceApi
 
 const workspaceApiReducer = workspaceApi.reducer
 

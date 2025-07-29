@@ -30,9 +30,10 @@ import { isUnprocessableEntityError } from '~/utils/error-handlers'
 interface NewBoardDialogProps {
   open: boolean
   onNewBoardClose: () => void
+  defaultWorkspaceId?: string
 }
 
-export default function NewBoardDialog({ open, onNewBoardClose }: NewBoardDialogProps) {
+export default function NewBoardDialog({ open, onNewBoardClose, defaultWorkspaceId }: NewBoardDialogProps) {
   const {
     register,
     control,
@@ -41,7 +42,7 @@ export default function NewBoardDialog({ open, onNewBoardClose }: NewBoardDialog
     formState: { errors }
   } = useForm<CreateBoardBodyType>({
     resolver: zodResolver(CreateBoardBody),
-    defaultValues: { title: '', description: '', type: BoardType.Public, workspace_id: '' }
+    defaultValues: { title: '', description: '', type: BoardType.Public, workspace_id: defaultWorkspaceId || '' }
   })
 
   const queryConfig = useQueryConfig()

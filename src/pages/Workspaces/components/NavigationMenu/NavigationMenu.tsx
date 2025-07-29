@@ -1,13 +1,11 @@
 import AddSharpIcon from '@mui/icons-material/AddSharp'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import HomeIcon from '@mui/icons-material/Home'
-import { useMediaQuery } from '@mui/material'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import { useTheme } from '@mui/material/styles'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import path from '~/constants/path'
@@ -25,9 +23,6 @@ const getActiveMenuFromPath = (pathname: string) => {
 }
 
 export default function NavigationMenu() {
-  const theme = useTheme()
-  const isScreenAboveMobileScreen = useMediaQuery(theme.breakpoints.up('sm'))
-
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -65,18 +60,16 @@ export default function NavigationMenu() {
         <ListItemText primary='Boards' />
       </ListItemButton>
 
-      {isScreenAboveMobileScreen && (
-        <>
-          <Divider component='li' sx={{ my: '10px' }} />
-          <ListItemButton>
-            <ListItemText primary='Workspaces' />
-            <ListItemIcon sx={{ justifyContent: 'flex-end' }}>
-              <AddSharpIcon />
-            </ListItemIcon>
-          </ListItemButton>
-          <CollapseList />
-        </>
-      )}
+      <Divider component='div' sx={{ display: { xs: 'none', sm: 'block' }, my: '10px' }} />
+
+      <ListItemButton>
+        <ListItemText primary='Workspaces' />
+        <ListItemIcon sx={{ justifyContent: 'flex-end' }}>
+          <AddSharpIcon />
+        </ListItemIcon>
+      </ListItemButton>
+
+      <CollapseList />
     </List>
   )
 }
