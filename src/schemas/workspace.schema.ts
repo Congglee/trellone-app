@@ -45,18 +45,17 @@ export type WorkspaceListResType = z.TypeOf<typeof WorkspaceListRes>
 export const CreateWorkspaceBody = z.object({
   title: z
     .string()
-    .min(3, { message: 'Title must be at least 3 characters long' })
+    .min(1, { message: 'Title must be at least 1 characters long' })
     .max(50, { message: 'Title must be at most 50 characters long' }),
   description: z
     .string()
-    .transform((val) => (val === '' ? undefined : val))
-    .optional()
-    .refine((val) => val === undefined || val.length >= 3, {
-      message: 'Description must be at least 3 characters long'
+    .refine((val) => val === '' || val.length >= 1, {
+      message: 'Description must be at least 1 characters long'
     })
-    .refine((val) => val === undefined || val.length <= 256, {
+    .refine((val) => val === '' || val.length <= 256, {
       message: 'Description must be at most 256 characters long'
     })
+    .optional()
 })
 
 export type CreateWorkspaceBodyType = z.TypeOf<typeof CreateWorkspaceBody>
@@ -64,19 +63,18 @@ export type CreateWorkspaceBodyType = z.TypeOf<typeof CreateWorkspaceBody>
 export const UpdateWorkspaceBody = z.object({
   title: z
     .string()
-    .min(3, { message: 'Title must be at least 3 characters long' })
+    .min(1, { message: 'Title must be at least 1 characters long' })
     .max(50, { message: 'Title must be at most 50 characters long' })
     .optional(),
   description: z
     .string()
-    .transform((val) => (val === '' ? undefined : val))
-    .optional()
-    .refine((val) => val === undefined || val.length >= 3, {
-      message: 'Description must be at least 3 characters long'
+    .refine((val) => val === '' || val.length >= 1, {
+      message: 'Description must be at least 1 characters long'
     })
-    .refine((val) => val === undefined || val.length <= 256, {
+    .refine((val) => val === '' || val.length <= 256, {
       message: 'Description must be at most 256 characters long'
-    }),
+    })
+    .optional(),
   type: z
     .enum(WorkspaceTypeValues, { message: 'Type must be either public or private' })
     .default(WorkspaceType.Public)

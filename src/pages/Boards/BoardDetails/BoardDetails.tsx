@@ -242,7 +242,12 @@ export default function BoardDetails() {
         )}
 
         <Box sx={{ display: 'flex' }}>
-          <WorkspaceDrawer open={workspaceDrawerOpen} onOpen={setWorkspaceDrawerOpen} boardId={boardId} />
+          <WorkspaceDrawer
+            open={workspaceDrawerOpen}
+            onOpen={setWorkspaceDrawerOpen}
+            boardId={boardId}
+            workspaceId={activeBoard.workspace_id}
+          />
 
           <BoardBar
             workspaceDrawerOpen={workspaceDrawerOpen}

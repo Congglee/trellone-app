@@ -3,22 +3,25 @@ import ExpandLess from '@mui/icons-material/ExpandLess'
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import GroupsIcon from '@mui/icons-material/Groups'
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import SettingsIcon from '@mui/icons-material/Settings'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Collapse from '@mui/material/Collapse'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
+import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '~/constants/pagination'
 import path from '~/constants/path'
-import { useQueryConfig } from '~/hooks/use-query-config'
 import { useGetWorkspacesQuery } from '~/queries/workspaces'
+import { WorkspaceResType } from '~/schemas/workspace.schema'
 
 // Helper function to determine if a workspace should be active/selected
-const isWorkspaceActive = (workspaceId: string, currentWorkspaceId: string | undefined, pathname: string): boolean => {
+const isWorkspaceActive = (workspaceId: string, currentWorkspaceId: string | undefined, pathname: string) => {
   // Check if we're on a workspace-specific route
   const workspaceBoardsPath = path.workspaceBoardsList.replace(':workspaceId', workspaceId)
 
@@ -29,7 +32,7 @@ const isWorkspaceActive = (workspaceId: string, currentWorkspaceId: string | und
 }
 
 // Helper function to determine if a specific menu item should be active
-const isMenuItemActive = (workspaceId: string, menuType: string, pathname: string): boolean => {
+const isMenuItemActive = (workspaceId: string, menuType: string, pathname: string) => {
   switch (menuType) {
     case 'boards': {
       const workspaceBoardsPath = path.workspaceBoardsList.replace(':workspaceId', workspaceId)
@@ -56,15 +59,44 @@ const shouldAutoExpandWorkspace = (
   return isWorkspaceActive(workspaceId, currentWorkspaceId, pathname)
 }
 
+type WorkspaceItem = WorkspaceResType['result']
+
 export default function CollapseList() {
   const [visibleItems, setVisibleItems] = useState<boolean[]>([])
+  const [pagination, setPagination] = useState({
+    page: DEFAULT_PAGINATION_PAGE,
+    total_page: 0
+  })
+  const [workspaces, setWorkspaces] = useState<WorkspaceItem[]>([])
 
-  const queryConfig = useQueryConfig()
-  const { data: workspacesData } = useGetWorkspacesQuery(queryConfig)
   const location = useLocation()
   const { workspaceId } = useParams()
 
-  const workspaces = useMemo(() => workspacesData?.result.workspaces || [], [workspacesData?.result.workspaces])
+  const { data: workspacesData } = useGetWorkspacesQuery({
+    page: pagination.page,
+    limit: DEFAULT_PAGINATION_LIMIT
+  })
+
+  useEffect(() => {
+    if (workspacesData) {
+      const { workspaces: workspacesList, page, total_page } = workspacesData.result
+
+      setPagination({ page, total_page })
+
+      if (page === DEFAULT_PAGINATION_PAGE) {
+        // First page - replace workspaces
+        setWorkspaces(workspacesList)
+      } else {
+        // Subsequent pages - append new workspaces, avoiding duplicates
+        setWorkspaces((prev) => {
+          const newWorkspaces = workspacesList.filter(
+            (newWorkspace) => !prev.some((oldWorkspace) => oldWorkspace._id === newWorkspace._id)
+          )
+          return [...prev, ...newWorkspaces]
+        })
+      }
+    }
+  }, [workspacesData])
 
   // Initialize visible items when workspaces first load
   useEffect(() => {
@@ -84,6 +116,14 @@ export default function CollapseList() {
   const handleWorkspaceClick = (index: number) => {
     setVisibleItems((prevItems) => prevItems.map((item, idx) => (idx === index ? !item : item)))
   }
+
+  const getMoreWorkspaces = () => {
+    if (pagination.page < pagination.total_page) {
+      setPagination((prev) => ({ ...prev, page: prev.page + 1 }))
+    }
+  }
+
+  const showMoreButton = pagination.page < pagination.total_page
 
   return (
     <Box
@@ -171,6 +211,27 @@ export default function CollapseList() {
             </div>
           )
         })}
+
+      {showMoreButton && (
+        <Button
+          variant='text'
+          size='medium'
+          fullWidth
+          color='primary'
+          endIcon={<MoreHorizIcon />}
+          sx={{
+            textTransform: 'none',
+            fontSize: '0.875rem',
+            fontWeight: 500,
+            '&:hover': {
+              backgroundColor: 'rgba(25, 118, 210, 0.04)'
+            }
+          }}
+          onClick={getMoreWorkspaces}
+        >
+          Show more workspaces
+        </Button>
+      )}
     </Box>
   )
 }

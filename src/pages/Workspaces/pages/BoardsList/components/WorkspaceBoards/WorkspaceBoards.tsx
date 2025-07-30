@@ -1,6 +1,4 @@
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import Skeleton from '@mui/material/Skeleton'
 import Grid from '@mui/material/Unstable_Grid2'
@@ -19,8 +17,6 @@ export default function WorkspaceBoards({ workspace, isLoading }: WorkspaceBoard
   const [newBoardOpen, setNewBoardOpen] = useState(false)
 
   const boards = workspace.boards || []
-
-  const hasClosedBoards = boards.some((board) => board._destroy)
 
   if (isLoading) {
     return (
@@ -45,36 +41,13 @@ export default function WorkspaceBoards({ workspace, isLoading }: WorkspaceBoard
 
           <NewBoardCard onNewBoardOpen={() => setNewBoardOpen(true)} />
         </Grid>
-
-        {hasClosedBoards && (
-          <Box sx={{ mt: 3 }}>
-            <Button
-              variant='outlined'
-              startIcon={<VisibilityOffIcon />}
-              onClick={() => console.log('View all closed boards clicked')}
-              sx={{
-                textTransform: 'none',
-                fontWeight: 600,
-                px: 3,
-                py: 1,
-                borderRadius: 2,
-                color: (theme) => (theme.palette.mode === 'dark' ? '#90caf9' : '#1976d2'),
-                borderColor: (theme) => (theme.palette.mode === 'dark' ? '#525252' : '#e0e0e0'),
-                bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'transparent' : '#fafafa'),
-                '&:hover': {
-                  borderColor: (theme) => theme.palette.primary.main,
-                  bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#33485D' : '#e3f2fd'),
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-                }
-              }}
-            >
-              View all closed boards
-            </Button>
-          </Box>
-        )}
       </Box>
 
-      <NewBoardDialog open={newBoardOpen} onNewBoardClose={() => setNewBoardOpen(false)} />
+      <NewBoardDialog
+        open={newBoardOpen}
+        onNewBoardClose={() => setNewBoardOpen(false)}
+        defaultWorkspaceId={workspace._id}
+      />
     </>
   )
 }

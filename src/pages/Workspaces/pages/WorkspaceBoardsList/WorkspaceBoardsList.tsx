@@ -30,7 +30,7 @@ export default function WorkspaceBoardsList() {
 
   const { data: workspaceData, isLoading } = useGetWorkspaceQuery(workspaceId!)
   const workspace = workspaceData?.result
-  const boards = workspaceData?.result.boards || []
+  const boards = workspace?.boards || []
 
   const hasClosedBoards = boards.some((board) => board._destroy)
 
