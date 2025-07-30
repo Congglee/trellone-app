@@ -1,15 +1,15 @@
 import AccessTimeIcon from '@mui/icons-material/AccessTime'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
 import List from '@mui/material/List'
 import ListSubheader from '@mui/material/ListSubheader'
 import Stack from '@mui/material/Stack'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import CardActions from '@mui/material/CardActions'
-import RecentlyViewed from '~/pages/Workspaces/Home/components/RecentlyViewed'
 import { Helmet } from 'react-helmet-async'
+import RecentlyViewed from '~/pages/Workspaces/pages/Home/components/RecentlyViewed'
 
 export default function Home() {
   const bulletPoint = (

@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import path from '~/constants/path'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
@@ -20,8 +21,9 @@ const Login = lazy(() => import('~/pages/Auth/Login'))
 const Register = lazy(() => import('~/pages/Auth/Register'))
 const ForgotPassword = lazy(() => import('~/pages/Auth/ForgotPassword'))
 const ResetPassword = lazy(() => import('~/pages/Auth/ResetPassword'))
-const Home = lazy(() => import('~/pages/Workspaces/Home'))
-const BoardsList = lazy(() => import('~/pages/Workspaces/BoardsList'))
+const Home = lazy(() => import('~/pages/Workspaces/pages/Home'))
+const BoardsList = lazy(() => import('~/pages/Workspaces/pages/BoardsList'))
+const WorkspaceBoardsList = lazy(() => import('~/pages/Workspaces/pages/WorkspaceBoardsList'))
 const BoardDetails = lazy(() => import('~/pages/Boards/BoardDetails'))
 const Settings = lazy(() => import('~/pages/Settings'))
 const NotFound = lazy(() => import('~/pages/404/NotFound'))
@@ -43,6 +45,18 @@ const RejectedRoute = ({ profile, isAuthenticated }: { profile: UserType | null;
   }
 
   return !isAuthenticated && !profile ? <Outlet /> : <Navigate to={path.home} />
+}
+
+const VerifiedRoute = ({ profile }: { profile: UserType | null }) => {
+  const isAccountVerified = profile?.verify === 1
+
+  useEffect(() => {
+    if (!isAccountVerified) {
+      toast.error('Please verify your account to access this page')
+    }
+  }, [isAccountVerified])
+
+  return !isAccountVerified ? <Navigate to={path.accountSettings} /> : <Outlet />
 }
 
 function App() {
@@ -94,17 +108,20 @@ function App() {
         >
           <Route path={path.home} element={<Home />} />
           <Route path={path.boardsList} element={<BoardsList />} />
+          <Route path={path.workspaceBoardsList} element={<WorkspaceBoardsList />} />
         </Route>
 
         {/* Board Details */}
-        <Route
-          path={path.boardDetails}
-          element={
-            <Suspense fallback={<PageLoadingSpinner />}>
-              <BoardDetails />
-            </Suspense>
-          }
-        />
+        <Route element={<VerifiedRoute profile={profile} />}>
+          <Route
+            path={path.boardDetails}
+            element={
+              <Suspense fallback={<PageLoadingSpinner />}>
+                <BoardDetails />
+              </Suspense>
+            }
+          />
+        </Route>
 
         {/* User Settings */}
         <Route

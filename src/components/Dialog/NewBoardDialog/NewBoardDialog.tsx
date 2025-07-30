@@ -21,35 +21,39 @@ import { useNavigate } from 'react-router-dom'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
 import { BoardType } from '~/constants/type'
+import { useQueryConfig } from '~/hooks/use-query-config'
 import { useAddBoardMutation } from '~/queries/boards'
+import { useGetWorkspacesQuery } from '~/queries/workspaces'
 import { CreateBoardBody, CreateBoardBodyType } from '~/schemas/board.schema'
 import { isUnprocessableEntityError } from '~/utils/error-handlers'
 
 interface NewBoardDialogProps {
   open: boolean
   onNewBoardClose: () => void
+  defaultWorkspaceId?: string
 }
 
-export default function NewBoardDialog({ open, onNewBoardClose }: NewBoardDialogProps) {
+export default function NewBoardDialog({ open, onNewBoardClose, defaultWorkspaceId }: NewBoardDialogProps) {
   const {
     register,
     control,
     setError,
     handleSubmit,
-    formState: { errors },
-    reset
+    reset,
+    formState: { errors }
   } = useForm<CreateBoardBodyType>({
     resolver: zodResolver(CreateBoardBody),
-    defaultValues: { title: '', description: '', type: BoardType.Public }
+    defaultValues: { title: '', description: '', type: BoardType.Public, workspace_id: defaultWorkspaceId || '' }
   })
+
+  const queryConfig = useQueryConfig()
+  const { data: workspacesData } = useGetWorkspacesQuery(queryConfig)
+
+  const workspaces = workspacesData?.result.workspaces || []
 
   const [addBoardMutation, { isError, error }] = useAddBoardMutation()
 
   const navigate = useNavigate()
-
-  const onReset = () => {
-    reset({ title: '', description: '', type: BoardType.Public })
-  }
 
   const onSubmit = handleSubmit((values) => {
     addBoardMutation(values).then((res) => {
@@ -59,6 +63,17 @@ export default function NewBoardDialog({ open, onNewBoardClose }: NewBoardDialog
       }
     })
   })
+
+  useEffect(() => {
+    if (defaultWorkspaceId && open) {
+      reset({
+        title: '',
+        description: '',
+        type: BoardType.Public,
+        workspace_id: defaultWorkspaceId || ''
+      })
+    }
+  }, [defaultWorkspaceId, reset, open])
 
   useEffect(() => {
     if (isError && isUnprocessableEntityError<CreateBoardBodyType>(error)) {
@@ -82,6 +97,11 @@ export default function NewBoardDialog({ open, onNewBoardClose }: NewBoardDialog
       onClose={onNewBoardClose}
       aria-labelledby='scroll-dialog-title'
       aria-describedby='scroll-dialog-description'
+      PaperProps={{
+        sx: {
+          width: { xs: 'auto', sm: 450 }
+        }
+      }}
     >
       <DialogTitle align='center'>Create Board</DialogTitle>
 
@@ -92,7 +112,7 @@ export default function NewBoardDialog({ open, onNewBoardClose }: NewBoardDialog
       </div>
 
       <form onSubmit={onSubmit}>
-        <DialogContent sx={{ width: { xs: '100%', sm: 400 } }}>
+        <DialogContent>
           <DialogContentText sx={{ opacity: 0, visibility: 'hidden', height: 0 }}>
             To create a board, please fill in the required fields below.
           </DialogContentText>
@@ -151,26 +171,35 @@ export default function NewBoardDialog({ open, onNewBoardClose }: NewBoardDialog
           </Box>
 
           <Box sx={{ marginTop: '1em' }}>
-            <FormControl fullWidth>
-              <InputLabel id='workspace-select-label'>Workspace *</InputLabel>
-              <Select
-                labelId='workspace-select-label'
-                id='workspace-select'
-                label='Workspace*'
-                disabled
-                sx={{ '& .MuiSelect-select.Mui-disabled': { cursor: 'not-allowed' } }}
-              >
-                <MenuItem value='project-management'>Project Management</MenuItem>
-              </Select>
+            <FormControl fullWidth error={!!errors.workspace_id}>
+              <InputLabel id='workspace-select-label'>Workspace</InputLabel>
+              <Controller
+                name='workspace_id'
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    labelId='workspace-select-label'
+                    id='workspace-select'
+                    label='Workspace'
+                    value={field.value || ''}
+                    onChange={(event) => field.onChange(event.target.value)}
+                  >
+                    {workspaces.map((workspace) => (
+                      <MenuItem key={workspace._id} value={workspace._id}>
+                        {workspace.title}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
             </FormControl>
+            <FieldErrorAlert errorMessage={errors.workspace_id?.message} />
           </Box>
         </DialogContent>
 
-        <DialogActions>
-          <Button type='button' onClick={onReset}>
-            Cancel
-          </Button>
-          <Button type='submit' variant='contained' className='interceptor-loading'>
+        <DialogActions sx={{ py: 2.5, px: 3 }}>
+          <Button fullWidth type='submit' variant='contained' className='interceptor-loading'>
             Create
           </Button>
         </DialogActions>

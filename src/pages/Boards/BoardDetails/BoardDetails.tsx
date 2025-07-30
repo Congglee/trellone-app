@@ -14,7 +14,7 @@ import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import BoardBar from '~/pages/Boards/BoardDetails/components/BoardBar'
 import BoardContent from '~/pages/Boards/BoardDetails/components/BoardContent'
 import BoardDrawer from '~/pages/Boards/BoardDetails/components/BoardDrawer'
-import BoardNotFound from '~/pages/Boards/BoardDetails/components/BoardNotFound'
+import BoardErrorView from '~/pages/Boards/BoardDetails/components/BoardErrorView'
 import WorkspaceDrawer from '~/pages/Boards/BoardDetails/components/WorkspaceDrawer'
 import { useMoveCardToDifferentColumnMutation, useUpdateBoardMutation } from '~/queries/boards'
 import { useUpdateColumnMutation } from '~/queries/columns'
@@ -197,7 +197,11 @@ export default function BoardDetails() {
   }
 
   if (error || !activeBoard) {
-    return <BoardNotFound />
+    if (error?.includes('403')) {
+      return <BoardErrorView title='Access Denied' description='You do not have permission to access this board.' />
+    }
+
+    return <BoardErrorView />
   }
 
   return (
@@ -238,7 +242,12 @@ export default function BoardDetails() {
         )}
 
         <Box sx={{ display: 'flex' }}>
-          <WorkspaceDrawer open={workspaceDrawerOpen} onOpen={setWorkspaceDrawerOpen} boardId={boardId} />
+          <WorkspaceDrawer
+            open={workspaceDrawerOpen}
+            onOpen={setWorkspaceDrawerOpen}
+            boardId={boardId}
+            workspaceId={activeBoard.workspace_id}
+          />
 
           <BoardBar
             workspaceDrawerOpen={workspaceDrawerOpen}

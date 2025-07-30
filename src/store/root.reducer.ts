@@ -6,11 +6,13 @@ import columnApiReducer, { columnApi } from '~/queries/columns'
 import invitationApiReducer, { invitationApi } from '~/queries/invitations'
 import mediaApiReducer, { mediaApi } from '~/queries/medias'
 import userApiReducer, { userApi } from '~/queries/users'
+import workspaceApiReducer, { workspaceApi } from '~/queries/workspaces'
 import appReducer from '~/store/slices/app.slice'
 import authReducer from '~/store/slices/auth.slice'
 import boardReducer from '~/store/slices/board.slice'
 import cardReducer from '~/store/slices/card.slice'
 import notificationReducer from '~/store/slices/notification.slice'
+import workspaceReducer from '~/store/slices/workspace.slice'
 
 const rootReducer = combineReducers({
   app: appReducer,
@@ -18,9 +20,11 @@ const rootReducer = combineReducers({
   board: boardReducer,
   card: cardReducer,
   notification: notificationReducer,
+  workspace: workspaceReducer,
 
   [authApi.reducerPath]: authApiReducer,
   [userApi.reducerPath]: userApiReducer,
+  [workspaceApi.reducerPath]: workspaceApiReducer,
   [boardApi.reducerPath]: boardApiReducer,
   [columnApi.reducerPath]: columnApiReducer,
   [cardApi.reducerPath]: cardApiReducer,

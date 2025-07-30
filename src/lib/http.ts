@@ -5,7 +5,7 @@ import HttpStatusCode from '~/constants/http-status-code'
 import { AppStore } from '~/lib/redux/store'
 import { AUTH_API_URL, authApi } from '~/queries/auth'
 import { AuthResType } from '~/schemas/auth.schema'
-import { isAxiosExpiredTokenError, isAxiosUnauthorizedError } from '~/utils/error-handlers'
+import { isAxiosExpiredTokenError, isAxiosUnauthorizedError, isAxiosUnverifiedError } from '~/utils/error-handlers'
 import {
   clearLS,
   getAccessTokenFromLS,
@@ -83,7 +83,9 @@ export class Http {
         interceptorLoadingElements(false)
 
         if (
-          ![HttpStatusCode.UnprocessableEntity, HttpStatusCode.Unauthorized].includes(error.response?.status as number)
+          ![HttpStatusCode.UnprocessableEntity, HttpStatusCode.Unauthorized, HttpStatusCode.Forbidden].includes(
+            error.response?.status as number
+          )
         ) {
           const data: any | undefined = error.response?.data
           const message = data?.message || error.message
@@ -116,6 +118,11 @@ export class Http {
           this.accessToken = ''
           this.refreshToken = ''
           axiosReduxStore.dispatch(authApi.endpoints.logout.initiate(undefined))
+        }
+
+        // Override the unverified error message to show a custom message
+        if (isAxiosUnverifiedError(error)) {
+          toast.error('User not verified, please go to account settings page to verify your account')
         }
 
         return Promise.reject(error)

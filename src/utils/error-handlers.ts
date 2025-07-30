@@ -11,8 +11,19 @@ export function isAxiosUnauthorizedError<UnauthorizedError>(error: unknown): err
   return isAxiosError(error) && error.response?.status === HttpStatusCode.Unauthorized
 }
 
+export function isAxiosForbiddenError<ForbiddenError>(error: unknown): error is AxiosError<ForbiddenError> {
+  return isAxiosError(error) && error.response?.status === HttpStatusCode.Forbidden
+}
+
 export function isAxiosExpiredTokenError<UnauthorizedError>(error: unknown): error is AxiosError<UnauthorizedError> {
   return isAxiosUnauthorizedError<{ message: string }>(error) && error.response?.data?.message === 'Jwt expired'
+}
+
+export function isAxiosUnverifiedError<UnauthorizedError>(error: unknown): error is AxiosError<UnauthorizedError> {
+  return (
+    isAxiosForbiddenError<{ message: string }>(error) &&
+    error.response?.data?.message === 'User not verified, please verify your account'
+  )
 }
 
 export function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {

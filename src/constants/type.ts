@@ -6,19 +6,26 @@ export const TokenType = {
   InviteToken: 4
 } as const
 
+export const WorkspaceType = {
+  Public: 'Public',
+  Private: 'Private'
+} as const
+
+export const WorkspaceTypeValues = [WorkspaceType.Public, WorkspaceType.Private] as const
+
+export const WorkspaceRole = {
+  Admin: 'Admin',
+  Normal: 'Normal'
+} as const
+
+export const WorkspaceRoleValues = [WorkspaceRole.Admin, WorkspaceRole.Normal] as const
+
 export const BoardType = {
-  Public: 'public',
-  Private: 'private'
+  Public: 'Public',
+  Private: 'Private'
 } as const
 
 export const BoardTypeValues = [BoardType.Public, BoardType.Private] as const
-
-export const Role = {
-  Client: 'client',
-  Admin: 'admin'
-} as const
-
-export const RoleValues = [Role.Client, Role.Admin] as const
 
 export const UserVerifyStatus = {
   Unverified: 0,

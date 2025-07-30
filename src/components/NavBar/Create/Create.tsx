@@ -9,6 +9,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import NewBoardDialog from '~/components/Dialog/NewBoardDialog'
+import NewWorkspaceDialog from '~/components/Dialog/NewWorkspaceDialog'
 
 const MENU_ITEM_STYLES = {
   display: 'flex',
@@ -24,6 +25,8 @@ interface CreateProps {
 
 export default function Create({ styles }: CreateProps) {
   const [anchorCreateMenuElement, setAnchorCreateMenuElement] = useState<null | HTMLElement>(null)
+
+  const [newWorkspaceOpen, setNewWorkspaceOpen] = useState(false)
   const [newBoardOpen, setNewBoardOpen] = useState(false)
 
   const isCreateMenuOpen = Boolean(anchorCreateMenuElement)
@@ -36,6 +39,11 @@ export default function Create({ styles }: CreateProps) {
     setAnchorCreateMenuElement(null)
   }
 
+  const handleNewWorkspaceOpen = () => {
+    setNewWorkspaceOpen(true)
+    handleCreateMenuClose()
+  }
+
   const handleNewBoardOpen = () => {
     setNewBoardOpen(true)
     handleCreateMenuClose()
@@ -43,6 +51,10 @@ export default function Create({ styles }: CreateProps) {
 
   const onNewBoardClose = () => {
     setNewBoardOpen(false)
+  }
+
+  const onNewWorkspaceClose = () => {
+    setNewWorkspaceOpen(false)
   }
 
   return (
@@ -69,7 +81,7 @@ export default function Create({ styles }: CreateProps) {
           'aria-labelledby': 'basic-button-create'
         }}
       >
-        <MenuItem sx={MENU_ITEM_STYLES}>
+        <MenuItem onClick={handleNewWorkspaceOpen} sx={MENU_ITEM_STYLES}>
           <div style={{ display: 'flex', gap: '5px' }}>
             <WorkspacesIcon />
             <Typography variant='subtitle1'>Create Workspace</Typography>
@@ -91,6 +103,8 @@ export default function Create({ styles }: CreateProps) {
           </Typography>
         </MenuItem>
       </Menu>
+
+      {newWorkspaceOpen && <NewWorkspaceDialog open={newWorkspaceOpen} onNewWorkspaceClose={onNewWorkspaceClose} />}
 
       {newBoardOpen && <NewBoardDialog open={newBoardOpen} onNewBoardClose={onNewBoardClose} />}
     </Box>
