@@ -1,6 +1,10 @@
+import CloseIcon from '@mui/icons-material/Close'
+import InfoIcon from '@mui/icons-material/Info'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
-import { Button, CircularProgress } from '@mui/material'
+import { Button, CircularProgress, Link as MuiLink } from '@mui/material'
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import Popover from '@mui/material/Popover'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -12,12 +16,52 @@ import { useInfiniteScroll } from '~/hooks/use-infinite-scroll'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import WorkspaceBoards from '~/pages/Workspaces/pages/BoardsList/components/WorkspaceBoards'
 import { useGetWorkspacesQuery } from '~/queries/workspaces'
-import { appendWorkspaces, clearWorkspaces, setWorkspaces } from '~/store/slices/workspace.slice'
 import { WorkspaceResType } from '~/schemas/workspace.schema'
+import { appendWorkspaces, clearWorkspaces, setWorkspaces } from '~/store/slices/workspace.slice'
+
+// Utility functions for workspace categorization
+const categorizeWorkspaces = (workspaces: WorkspaceResType['result'][], currentUserId: string) => {
+  const memberWorkspaces: WorkspaceResType['result'][] = []
+  const guestWorkspaces: WorkspaceResType['result'][] = []
+
+  workspaces.forEach((workspace) => {
+    // Check if user is in members array
+    const isMember = workspace.members.some((member) => member.user_id === currentUserId)
+
+    if (isMember) {
+      memberWorkspaces.push(workspace)
+    } else {
+      // Check if user is in guests array
+      const isGuest = workspace.guests.some((id) => id === currentUserId)
+
+      if (isGuest) {
+        guestWorkspaces.push(workspace)
+      }
+    }
+  })
+
+  return { memberWorkspaces, guestWorkspaces }
+}
 
 export default function BoardsList() {
   const dispatch = useAppDispatch()
   const { workspaces } = useAppSelector((state) => state.workspace)
+  const { profile } = useAppSelector((state) => state.auth)
+
+  const [anchorGuestWorkspaceInfoPopoverElement, setAnchorGuestWorkspaceInfoPopoverElement] =
+    useState<HTMLElement | null>(null)
+
+  const isGuestWorkspaceInfoPopoverOpen = Boolean(anchorGuestWorkspaceInfoPopoverElement)
+
+  const guestWorkspaceInfoPopoverId = 'guest-workspace-info-popover'
+
+  const toggleGuestWorkspaceInfoPopover = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (isGuestWorkspaceInfoPopoverOpen) {
+      setAnchorGuestWorkspaceInfoPopoverElement(null)
+    } else {
+      setAnchorGuestWorkspaceInfoPopoverElement(event.currentTarget)
+    }
+  }
 
   // Create skeleton workspace for loading state
   const generateSkeletonWorkspace = (index: number): WorkspaceResType['result'] => ({
@@ -69,12 +113,10 @@ export default function BoardsList() {
         dispatch(appendWorkspaces(workspacesList))
       }
 
-      // Reset loading more state after data is loaded
       setIsLoadingMore(false)
     }
   }, [workspacesData, dispatch])
 
-  // Load more workspaces function
   const loadMoreWorkspaces = () => {
     if (pagination.page < pagination.total_page && !isFetching) {
       setIsLoadingMore(true)
@@ -90,6 +132,11 @@ export default function BoardsList() {
     threshold: 200, // Trigger when 200px from bottom
     useWindowScroll: true // Use window scroll instead of container scroll
   })
+
+  // Categorize workspaces based on current user's role
+  const { memberWorkspaces, guestWorkspaces } = useMemo(() => {
+    return categorizeWorkspaces(workspaces, profile?._id as string)
+  }, [workspaces, profile?._id])
 
   const hasClosedBoards = useMemo(
     () => workspaces.some((workspace) => workspace.boards.some((board) => board._destroy)),
@@ -111,17 +158,6 @@ export default function BoardsList() {
       </Typography>
 
       <Box>
-        {isError && (
-          <Box sx={{ textAlign: 'center', py: 4 }}>
-            <Typography color='error' variant='body1'>
-              Failed to load workspaces. Please try again.
-            </Typography>
-            <Button variant='outlined' onClick={() => window.location.reload()} sx={{ mt: 2 }}>
-              Retry
-            </Button>
-          </Box>
-        )}
-
         {isLoading && workspaces.length === 0 && !isError && (
           <>
             {Array.from({ length: 3 }).map((_, index) => (
@@ -153,26 +189,92 @@ export default function BoardsList() {
           </>
         )}
 
-        {!isLoading && !isError && workspaces.length === 0 && (
-          <Box sx={{ textAlign: 'center', py: 4 }}>
+        {(isError || (!isLoading && memberWorkspaces.length === 0)) && (
+          <Box sx={{ pl: 1, mb: 2.5 }}>
             <Typography variant='body1' color='text.secondary'>
-              No workspaces found. Create your first workspace to get started.
+              You are not a member of any workspace. Create a Workspace
             </Typography>
           </Box>
         )}
 
-        {workspaces?.map((workspace) => (
-          <Stack key={workspace._id} spacing={2} mb={4.5}>
-            <Stack alignItems='center' direction='row' spacing={2} pl={1}>
-              <WorkspaceAvatar title={workspace.title} logo={workspace.logo} size={{ width: 32, height: 32 }} />
-              <Typography variant='h6' fontWeight={600}>
-                {workspace.title}
-              </Typography>
-            </Stack>
+        {memberWorkspaces.length > 0 &&
+          memberWorkspaces.map((workspace) => (
+            <Stack key={workspace._id} spacing={2} mb={4.5}>
+              <Stack alignItems='center' direction='row' spacing={2} pl={1}>
+                <WorkspaceAvatar title={workspace.title} logo={workspace.logo} size={{ width: 32, height: 32 }} />
+                <Typography variant='h6' fontWeight={600}>
+                  {workspace.title}
+                </Typography>
+              </Stack>
 
-            <WorkspaceBoards workspace={workspace} isLoading={false} />
-          </Stack>
-        ))}
+              <WorkspaceBoards workspace={workspace} isLoading={false} />
+            </Stack>
+          ))}
+
+        {guestWorkspaces.length > 0 &&
+          guestWorkspaces.map((workspace) => (
+            <>
+              <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, mb: 2.5, gap: 1 }}>
+                <Typography variant='h6'>Guest Workspaces</Typography>
+                <IconButton size='small' disableRipple sx={{ p: 0 }} onClick={toggleGuestWorkspaceInfoPopover}>
+                  <InfoIcon />
+                </IconButton>
+
+                <Popover
+                  id={guestWorkspaceInfoPopoverId}
+                  open={isGuestWorkspaceInfoPopoverOpen}
+                  anchorEl={anchorGuestWorkspaceInfoPopoverElement}
+                  onClose={toggleGuestWorkspaceInfoPopover}
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                  transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                  slotProps={{
+                    paper: { sx: { borderRadius: 2 } }
+                  }}
+                >
+                  <Box sx={{ p: 1.5, maxWidth: '300px', width: '100%' }}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        mb: 2,
+                        position: 'relative'
+                      }}
+                    >
+                      <Typography variant='subtitle1' sx={{ fontWeight: 'medium' }}>
+                        Guest Workspaces
+                      </Typography>
+                      <IconButton
+                        size='small'
+                        onClick={toggleGuestWorkspaceInfoPopover}
+                        sx={{ position: 'absolute', right: 0 }}
+                      >
+                        <CloseIcon fontSize='small' />
+                      </IconButton>
+                    </Box>
+
+                    <Typography variant='body2' sx={{ mb: 3, color: 'text.secondary', fontSize: '0.875rem' }}>
+                      You’re a member of these boards, but not a member of the Workspace the boards are in.{' '}
+                      <MuiLink href='#' sx={{ textDecoration: 'underline' }}>
+                        Learn more
+                      </MuiLink>
+                    </Typography>
+                  </Box>
+                </Popover>
+              </Box>
+
+              <Stack key={workspace._id} spacing={2} mb={4.5}>
+                <Stack alignItems='center' direction='row' spacing={2} pl={1}>
+                  <WorkspaceAvatar title={workspace.title} logo={workspace.logo} size={{ width: 32, height: 32 }} />
+                  <Typography variant='h6' fontWeight={600}>
+                    {workspace.title}
+                  </Typography>
+                </Stack>
+
+                <WorkspaceBoards workspace={workspace} isLoading={false} />
+              </Stack>
+            </>
+          ))}
 
         {isLoadingMore && (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>

@@ -114,6 +114,7 @@ export const useInfiniteScroll = ({
     } else {
       // Container scroll logic
       const container = containerRef.current
+
       if (!container) {
         return
       }

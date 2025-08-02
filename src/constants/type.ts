@@ -20,6 +20,14 @@ export const WorkspaceRole = {
 
 export const WorkspaceRoleValues = [WorkspaceRole.Admin, WorkspaceRole.Normal] as const
 
+export const BoardRole = {
+  Admin: 'Admin',
+  Member: 'Member',
+  Observer: 'Observer'
+} as const
+
+export const BoardRoleValues = [BoardRole.Admin, BoardRole.Member, BoardRole.Observer] as const
+
 export const BoardType = {
   Public: 'Public',
   Private: 'Private'

@@ -4,6 +4,7 @@ import { BoardSchema } from '~/schemas/board.schema'
 import { UserSchema } from '~/schemas/user.schema'
 
 export const WorkspaceMemberSchema = UserSchema.extend({
+  user_id: z.string(),
   role: z.enum(WorkspaceRoleValues),
   joined_at: z.date(),
   invited_by: z.string().optional()
@@ -16,7 +17,7 @@ export const WorkspaceSchema = z.object({
   type: z.enum(WorkspaceTypeValues),
   logo: z.string().optional(),
   members: z.array(WorkspaceMemberSchema),
-  guests: z.array(UserSchema),
+  guests: z.union([z.array(UserSchema), z.array(z.string())]),
   boards: z.array(BoardSchema),
   _destroy: z.boolean(),
   created_at: z.date(),

@@ -10,6 +10,7 @@ import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import Main from '~/components/Main'
 import ActiveCard from '~/components/Modal/ActiveCard'
 import NavBar from '~/components/NavBar'
+import { BoardRole } from '~/constants/type'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import BoardBar from '~/pages/Boards/BoardDetails/components/BoardBar'
 import BoardContent from '~/pages/Boards/BoardDetails/components/BoardContent'
@@ -88,8 +89,12 @@ export default function BoardDetails() {
       const newMember = cloneDeep(invitee)
       const newActiveBoard = cloneDeep(activeBoard)
 
-      newActiveBoard?.members?.push(newMember)
-      newActiveBoard?.FE_AllUsers?.push(newMember)
+      newActiveBoard?.members?.push({
+        ...newMember,
+        role: BoardRole.Member,
+        joined_at: new Date(),
+        user_id: newMember._id
+      })
 
       dispatch(updateActiveBoard(newActiveBoard))
     }
@@ -282,7 +287,7 @@ export default function BoardDetails() {
           <BoardDrawer
             open={boardDrawerOpen}
             onOpen={setBoardDrawerOpen}
-            totalMembers={activeBoard.FE_AllUsers?.length || 0}
+            totalMembers={activeBoard.members?.length || 0}
           />
         </Box>
       </Box>
