@@ -7,7 +7,6 @@ export const mockWorkspacesList = [
     description: 'This is a workspace description',
     type: 'Public',
     logo: 'https://images6.alphacoders.com/138/thumbbig-1386838.webp',
-    owners: [],
     members: [],
     _destroy: false,
     created_at: new Date('2023-10-01T00:00:00.000Z'),
@@ -24,7 +23,6 @@ export const mockBoardsList: BoardResType['result'][] = [
     cover_photo: 'https://images6.alphacoders.com/138/thumbbig-1386838.webp',
     workspace_id: 'workspace-id-01',
     column_order_ids: ['column-id-01', 'column-id-02', 'column-id-03'],
-    owners: [],
     members: [],
     _destroy: false,
     created_at: new Date('2023-10-01T00:00:00.000Z'),
@@ -40,7 +38,6 @@ export const mockBoardDetails: BoardResType['result'] = {
   cover_photo: 'https://images6.alphacoders.com/138/thumbbig-1386838.webp',
   workspace_id: 'workspace-id-01',
   column_order_ids: ['column-id-01', 'column-id-02', 'column-id-03', 'column-id-04'],
-  owners: [],
   members: [],
   columns: [
     {

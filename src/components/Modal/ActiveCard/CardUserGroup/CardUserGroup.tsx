@@ -33,8 +33,8 @@ export default function CardUserGroup({ cardMembers, onUpdateCardMembers }: Card
   const { activeBoard } = useAppSelector((state) => state.board)
 
   const FE_CardMembers = useMemo(
-    () => cardMembers.map((id) => activeBoard?.FE_AllUsers?.find((user) => user._id === id)),
-    [cardMembers, activeBoard?.FE_AllUsers]
+    () => cardMembers.map((id) => activeBoard?.members?.find((user) => user._id === id)),
+    [cardMembers, activeBoard?.members]
   )
 
   const updateCardMembers = (user: UserType) => {
@@ -96,7 +96,7 @@ export default function CardUserGroup({ cardMembers, onUpdateCardMembers }: Card
             gap: 1.5
           }}
         >
-          {activeBoard?.FE_AllUsers?.map((user, index) => (
+          {activeBoard?.members?.map((user, index) => (
             <Tooltip title={user?.display_name} key={index}>
               <Badge
                 sx={{ cursor: 'pointer' }}

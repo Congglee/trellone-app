@@ -77,8 +77,6 @@ export const boardSlice = createSlice({
 
           let board = action.payload.result
 
-          board.FE_AllUsers = board.owners.concat(board.members)
-
           board.columns = mapOrder(board.columns, board.column_order_ids, '_id')
 
           board.columns.forEach((column) => {

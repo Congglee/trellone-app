@@ -1,7 +1,14 @@
 import z from 'zod'
-import { BoardType, BoardTypeValues } from '~/constants/type'
+import { BoardRoleValues, BoardType, BoardTypeValues } from '~/constants/type'
 import { ColumnSchema } from '~/schemas/column.schema'
 import { UserSchema } from '~/schemas/user.schema'
+
+export const BoardMemberSchema = UserSchema.extend({
+  user_id: z.string(),
+  role: z.enum(BoardRoleValues),
+  joined_at: z.date(),
+  invited_by: z.string().optional()
+})
 
 export const BoardSchema = z.object({
   _id: z.string(),
@@ -11,13 +18,11 @@ export const BoardSchema = z.object({
   cover_photo: z.string().optional(),
   workspace_id: z.string(),
   column_order_ids: z.array(z.string()),
-  owners: z.array(UserSchema),
-  members: z.array(UserSchema),
+  members: z.array(BoardMemberSchema),
   columns: z.array(ColumnSchema).optional(),
   _destroy: z.boolean(),
   created_at: z.date(),
-  updated_at: z.date(),
-  FE_AllUsers: z.array(UserSchema).optional()
+  updated_at: z.date()
 })
 
 export const BoardRes = z.object({

@@ -61,7 +61,7 @@ export default function LinkAttachments({ linkAttachments, onToggleMenuActionsPo
   }
 
   const getUserDisplayName = (userId: string) => {
-    const user = activeBoard?.FE_AllUsers?.find((user) => user._id === userId)
+    const user = activeBoard?.members?.find((user) => user._id === userId)
     return user?.display_name || 'Unknown User'
   }
 

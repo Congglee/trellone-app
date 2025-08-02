@@ -199,7 +199,7 @@ export default function BoardBar({
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, ml: 'auto' }}>
           <InviteBoardUser boardId={board._id} />
 
-          <BoardUserGroup boardUsers={board?.FE_AllUsers} />
+          <BoardUserGroup boardUsers={board?.members} />
 
           <IconButton
             color='inherit'

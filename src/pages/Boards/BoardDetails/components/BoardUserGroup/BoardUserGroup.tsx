@@ -6,7 +6,7 @@ import Box from '@mui/material/Box'
 import Popover from '@mui/material/Popover'
 
 interface BoardUserGroupProps {
-  boardUsers: BoardResType['result']['FE_AllUsers']
+  boardUsers: BoardResType['result']['members']
   limit?: number
 }
 
