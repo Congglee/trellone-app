@@ -84,19 +84,3 @@ export const UpdateBoardBody = z.object({
 })
 
 export type UpdateBoardBodyType = z.TypeOf<typeof UpdateBoardBody>
-
-export const MoveCardToDifferentColumnBody = z.object({
-  current_card_id: z.string(),
-  prev_column_id: z.string(),
-  prev_card_order_ids: z.array(z.string()),
-  next_column_id: z.string(),
-  next_card_order_ids: z.array(z.string())
-})
-
-export type MoveCardToDifferentColumnBodyType = z.TypeOf<typeof MoveCardToDifferentColumnBody>
-
-export const MoveCardToDifferentColumnRes = z.object({
-  message: z.string()
-})
-
-export type MoveCardToDifferentColumnResType = z.TypeOf<typeof MoveCardToDifferentColumnRes>

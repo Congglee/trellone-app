@@ -16,6 +16,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
 import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '~/constants/pagination'
+import { useCategorizeWorkspaces } from '~/hooks/use-categorize-workspaces'
 import path from '~/constants/path'
 import { useGetWorkspacesQuery } from '~/queries/workspaces'
 import { WorkspaceResType } from '~/schemas/workspace.schema'
@@ -77,6 +78,8 @@ export default function CollapseList() {
     limit: DEFAULT_PAGINATION_LIMIT
   })
 
+  const { memberWorkspaces } = useCategorizeWorkspaces(workspaces)
+
   useEffect(() => {
     if (workspacesData) {
       const { workspaces: workspacesList, page, total_page } = workspacesData.result
@@ -100,18 +103,20 @@ export default function CollapseList() {
 
   // Initialize visible items when workspaces first load
   useEffect(() => {
-    if (workspaces.length > 0) {
+    if (memberWorkspaces.length > 0) {
       setVisibleItems((prevItems) => {
         // If we already have items for this workspace count, keep them
-        if (prevItems.length === workspaces.length) {
+        if (prevItems.length === memberWorkspaces.length) {
           return prevItems
         }
 
         // Otherwise, initialize with auto-expansion for active workspace
-        return workspaces.map((workspace) => shouldAutoExpandWorkspace(workspace._id, workspaceId, location.pathname))
+        return memberWorkspaces.map((workspace) =>
+          shouldAutoExpandWorkspace(workspace._id, workspaceId, location.pathname)
+        )
       })
     }
-  }, [workspaces, workspaceId, location.pathname])
+  }, [memberWorkspaces, workspaceId, location.pathname])
 
   const handleWorkspaceClick = (index: number) => {
     setVisibleItems((prevItems) => prevItems.map((item, idx) => (idx === index ? !item : item)))
@@ -135,8 +140,8 @@ export default function CollapseList() {
         gap: 0.5
       }}
     >
-      {workspaces?.length > 0 &&
-        workspaces?.map((workspace, index) => {
+      {memberWorkspaces?.length > 0 &&
+        memberWorkspaces?.map((workspace, index) => {
           const isActive = isWorkspaceActive(workspace._id, workspaceId, location.pathname)
           const isExpanded = visibleItems[index]
 

@@ -1,14 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
-import {
-  BoardListResType,
-  BoardResType,
-  CreateBoardBodyType,
-  MoveCardToDifferentColumnBodyType,
-  MoveCardToDifferentColumnResType,
-  UpdateBoardBodyType
-} from '~/schemas/board.schema'
+import { BoardListResType, BoardResType, CreateBoardBodyType, UpdateBoardBodyType } from '~/schemas/board.schema'
 import { BoardQueryParams } from '~/types/query-params.type'
 
 const BOARD_API_URL = '/boards' as const
@@ -59,24 +52,11 @@ export const boardApi = createApi({
         { type: 'Board', id },
         { type: 'Board', id: 'LIST' }
       ]
-    }),
-
-    moveCardToDifferentColumn: build.mutation<MoveCardToDifferentColumnResType, MoveCardToDifferentColumnBodyType>({
-      query: (body) => ({ url: `${BOARD_API_URL}/supports/moving-card`, method: 'PUT', data: body }),
-      async onQueryStarted(_args, { queryFulfilled }) {
-        try {
-          await queryFulfilled
-        } catch (error) {
-          toast.error('There was an error moving the card to a different column')
-          console.error(error)
-        }
-      }
     })
   })
 })
 
-export const { useAddBoardMutation, useGetBoardsQuery, useUpdateBoardMutation, useMoveCardToDifferentColumnMutation } =
-  boardApi
+export const { useAddBoardMutation, useGetBoardsQuery, useUpdateBoardMutation } = boardApi
 
 const boardApiReducer = boardApi.reducer
 

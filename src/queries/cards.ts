@@ -5,6 +5,8 @@ import {
   CardResType,
   CreateCardBodyType,
   DeleteCardResType,
+  MoveCardToDifferentColumnBodyType,
+  MoveCardToDifferentColumnResType,
   ReactToCardCommentBodyType,
   UpdateCardBodyType
 } from '~/schemas/card.schema'
@@ -74,12 +76,29 @@ export const cardApi = createApi({
           console.error(error)
         }
       }
+    }),
+
+    moveCardToDifferentColumn: build.mutation<MoveCardToDifferentColumnResType, MoveCardToDifferentColumnBodyType>({
+      query: (body) => ({ url: `${CARD_API_URL}/supports/moving-card`, method: 'PUT', data: body }),
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          await queryFulfilled
+        } catch (error) {
+          toast.error('There was an error moving the card to a different column')
+          console.error(error)
+        }
+      }
     })
   })
 })
 
-export const { useAddCardMutation, useUpdateCardMutation, useReactToCardCommentMutation, useDeleteCardMutation } =
-  cardApi
+export const {
+  useAddCardMutation,
+  useUpdateCardMutation,
+  useReactToCardCommentMutation,
+  useDeleteCardMutation,
+  useMoveCardToDifferentColumnMutation
+} = cardApi
 
 export const cardApiReducer = cardApi.reducer
 
