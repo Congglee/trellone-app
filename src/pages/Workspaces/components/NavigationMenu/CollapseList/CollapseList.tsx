@@ -194,6 +194,8 @@ export default function CollapseList() {
 
                   <ListItemButton
                     sx={{ pl: 4 }}
+                    component={Link}
+                    to={path.workspaceMembers.replace(':workspaceId', workspace._id)}
                     selected={isMenuItemActive(workspace._id, 'members', location.pathname)}
                   >
                     <ListItemIcon>

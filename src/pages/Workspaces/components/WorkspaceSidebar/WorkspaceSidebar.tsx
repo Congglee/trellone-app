@@ -1,14 +1,9 @@
-import AddIcon from '@mui/icons-material/Add'
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import GroupsIcon from '@mui/icons-material/Groups'
 import SettingsIcon from '@mui/icons-material/Settings'
-import { useTheme } from '@mui/material'
 import Avatar from '@mui/material/Avatar'
+import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
-import Drawer from '@mui/material/Drawer'
-import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
@@ -17,60 +12,43 @@ import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Link } from 'react-router-dom'
-import DrawerHeader from '~/components/DrawerHeader'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
 import { useGetWorkspaceQuery } from '~/queries/workspaces'
 
-interface WorkspaceDrawerProps {
-  open: boolean
-  onOpen: (open: boolean) => void
-  boardId?: string
+interface WorkspaceSidebarProps {
   workspaceId?: string
 }
 
-export default function WorkspaceDrawer({ open, onOpen, boardId, workspaceId }: WorkspaceDrawerProps) {
-  const theme = useTheme()
-  const isDarkMode = theme.palette.mode === 'dark'
-
+export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps) {
   const { data: workspaceData } = useGetWorkspaceQuery(workspaceId!)
   const workspace = workspaceData?.result
   const boards = workspace?.boards || []
 
   return (
-    <Drawer
+    <Box
       sx={{
-        width: theme.trellone.workspaceDrawerWidth,
+        width: (theme) => theme.trellone.workspaceDrawerWidth,
+        height: (theme) => `calc(100vh - ${theme.trellone.navBarHeight})`,
+        overflowY: 'auto',
         flexShrink: 0,
-        '& .MuiPaper-root': {
-          backgroundColor: isDarkMode ? 'rgb(0 0 0 / 70%)' : 'rgb(255 255 255 / 70%)'
-        },
-        '& .MuiDrawer-paper': {
-          backdropFilter: 'blur(16px)',
-          width: theme.trellone.workspaceDrawerWidth,
-          boxSizing: 'border-box',
-          top: 'auto',
-          height: `calc(100% - ${theme.trellone.navBarHeight})`
-        }
+        boxSizing: 'border-box',
+        borderRight: (theme) => `1px solid ${theme.palette.divider}`,
+        backgroundColor: (theme) => (theme.palette.mode === 'dark' ? 'rgb(0 0 0 / 70%)' : 'rgb(255 255 255 / 70%)'),
+        backdropFilter: 'blur(16px)'
       }}
-      variant='persistent'
-      anchor='left'
-      open={open}
     >
-      <DrawerHeader sx={{ justifyContent: 'space-between', minHeight: '49px!important' }}>
-        <Stack ml={1} gap={1} alignItems='center' direction='row'>
+      <Stack sx={{ p: 2, height: '49px', justifyContent: 'center' }}>
+        <Stack gap={1} alignItems='center' direction='row'>
           <WorkspaceAvatar logo={workspace?.logo} title={workspace?.title || ''} size={{ width: 30, height: 30 }} />
           <Typography variant='subtitle1'>{workspace?.title}</Typography>
         </Stack>
-        <IconButton color='inherit' onClick={() => onOpen(false)}>
-          {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-        </IconButton>
-      </DrawerHeader>
+      </Stack>
 
       <Divider />
 
       <List>
         <ListItem disablePadding>
-          <ListItemButton onClick={() => {}}>
+          <ListItemButton>
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
@@ -78,15 +56,8 @@ export default function WorkspaceDrawer({ open, onOpen, boardId, workspaceId }: 
           </ListItemButton>
         </ListItem>
 
-        <ListItem
-          disablePadding
-          secondaryAction={
-            <IconButton edge='end' aria-label='add' size='small' sx={{ borderRadius: 0.5 }}>
-              <AddIcon />
-            </IconButton>
-          }
-        >
-          <ListItemButton onClick={() => {}}>
+        <ListItem disablePadding>
+          <ListItemButton>
             <ListItemIcon>
               <GroupsIcon />
             </ListItemIcon>
@@ -95,7 +66,7 @@ export default function WorkspaceDrawer({ open, onOpen, boardId, workspaceId }: 
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton onClick={() => {}}>
+          <ListItemButton>
             <ListItemIcon>
               <SettingsIcon />
             </ListItemIcon>
@@ -114,7 +85,7 @@ export default function WorkspaceDrawer({ open, onOpen, boardId, workspaceId }: 
         {boards?.length > 0 &&
           boards.map((board) => (
             <ListItem key={board._id} disablePadding>
-              <ListItemButton component={Link} to={`/boards/${board._id}`} selected={boardId === board._id}>
+              <ListItemButton component={Link} to={`/boards/${board._id}`}>
                 <ListItemIcon>
                   <Avatar sx={{ width: 24, height: 24 }} variant='rounded' src={board?.cover_photo}>
                     {board?.title.charAt(0)}
@@ -125,6 +96,6 @@ export default function WorkspaceDrawer({ open, onOpen, boardId, workspaceId }: 
             </ListItem>
           ))}
       </List>
-    </Drawer>
+    </Box>
   )
 }

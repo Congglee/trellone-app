@@ -115,3 +115,10 @@ export const CardCommentReactionActionValues = [
   CardCommentReactionAction.Add,
   CardCommentReactionAction.Remove
 ] as const
+
+export const RoleLevel = {
+  Workspace: 'Workspace',
+  Board: 'Board'
+}
+
+export const RoleLevelValues = [RoleLevel.Workspace, RoleLevel.Board] as const
