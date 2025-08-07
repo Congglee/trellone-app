@@ -27,7 +27,10 @@ const path = {
   // Verification Pages
   accountVerification: '/account/verification',
   forgotPasswordVerification: '/forgot-password/verification',
-  boardInvitationVerification: '/board-invitation/verification'
+  boardInvitationVerification: '/board-invitation/verification',
+
+  // Access Control
+  accessDenied: '/access-denied'
 } as const
 
 export default path

@@ -13,9 +13,12 @@ import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import NewBoardDialog from '~/components/Dialog/NewBoardDialog'
+import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
 import path from '~/constants/path'
+import { PERMISSIONS } from '~/constants/roles'
+import { useWorkspacePermission } from '~/hooks/use-permissions'
 import BoardCard from '~/pages/Workspaces/components/BoardCard'
 import NewBoardCard from '~/pages/Workspaces/components/NewBoardCard'
 import EditWorkspaceDialog from '~/pages/Workspaces/pages/WorkspaceBoardsList/components/EditWorkspaceDialog'
@@ -23,7 +26,7 @@ import WorkspaceLogo from '~/pages/Workspaces/pages/WorkspaceBoardsList/componen
 import { useGetWorkspaceQuery } from '~/queries/workspaces'
 
 export default function WorkspaceBoardsList() {
-  const { workspaceId } = useParams<{ workspaceId: string }>()
+  const { workspaceId } = useParams()
 
   const [newBoardOpen, setNewBoardOpen] = useState(false)
   const [editWorkspaceOpen, setEditWorkspaceOpen] = useState(false)
@@ -32,13 +35,16 @@ export default function WorkspaceBoardsList() {
   const workspace = workspaceData?.result
   const boards = workspace?.boards || []
 
+  const { hasPermission, isGuest } = useWorkspacePermission(workspace)
+
   const hasClosedBoards = boards.some((board) => board._destroy)
 
-  const navigate = useNavigate()
+  if (isGuest) {
+    return <Navigate to={path.boardsList} replace />
+  }
 
   if (!workspace && !isLoading) {
-    navigate(path.boardsList)
-    return null
+    return <Navigate to={path.boardsList} />
   }
 
   return (
@@ -87,7 +93,15 @@ export default function WorkspaceBoardsList() {
           </Stack>
         ) : (
           <Stack alignItems='center' direction='row' flexWrap='wrap' useFlexGap spacing={2}>
-            <WorkspaceLogo workspace={workspace!} />
+            {hasPermission(PERMISSIONS.UPDATE_WORKSPACE) ? (
+              <WorkspaceLogo workspace={workspace!} />
+            ) : (
+              <WorkspaceAvatar
+                title={workspace?.title as string}
+                logo={workspace?.logo}
+                size={{ width: 80, height: 80 }}
+              />
+            )}
 
             <Stack spacing={0.5}>
               <Stack alignItems='center' direction='row' spacing={1}>
@@ -98,9 +112,11 @@ export default function WorkspaceBoardsList() {
                 >
                   {workspace?.title}
                 </Typography>
-                <IconButton size='small' sx={{ color: 'text.secondary' }} onClick={() => setEditWorkspaceOpen(true)}>
-                  <EditIcon fontSize='small' />
-                </IconButton>
+                {hasPermission(PERMISSIONS.UPDATE_WORKSPACE) && (
+                  <IconButton size='small' sx={{ color: 'text.secondary' }} onClick={() => setEditWorkspaceOpen(true)}>
+                    <EditIcon fontSize='small' />
+                  </IconButton>
+                )}
               </Stack>
               <Stack alignItems='center' direction='row' spacing={0.5}>
                 <PublicIcon
