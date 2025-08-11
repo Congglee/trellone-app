@@ -61,7 +61,7 @@
 - **react-infinite-scroll-component 6.1.0**: Infinite scrolling functionality
 - **rehype-sanitize 6.0.0**: Markdown content sanitization
 
-**Note**: All dependencies are current as of January 2025 and represent the latest stable versions. Verified package.json confirms all versions are current.
+**Note**: All dependencies are current as of August 2025 and represent the latest stable versions. Verified `package.json` confirms all versions are current.
 
 ### SEO & Branding Integration
 
@@ -77,9 +77,10 @@
 
 - **Vite Configuration**:
   - SWC for fast compilation
-  - SVG-to-React component loading
-  - Development server with HMR
+  - SVG-to-React component loading via `vite-plugin-svgr`
+  - Development server with HMR (server port `3000`)
   - Optimized production builds
+  - Bundle analyzer via `rollup-plugin-visualizer`
 
 ### Code Quality & Standards
 
@@ -94,7 +95,9 @@
 src/
 ├── components/          # Reusable UI components
 ├── pages/              # Route-specific page components
-├── store/              # Redux store and slices
+├── store/              # Redux slices and root reducer
+│   ├── slices/         # Feature slices
+│   └── root.reducer.ts # Root reducer
 ├── queries/            # RTK Query API definitions
 ├── schemas/            # Zod validation schemas
 ├── types/              # TypeScript type definitions
@@ -102,6 +105,8 @@ src/
 ├── constants/          # Application constants
 ├── hooks/              # Custom React hooks
 ├── lib/                # Core libraries (HTTP, Redux, Socket)
+│   └── redux/
+│       └── store.ts    # Redux store configuration
 └── assets/             # Static assets
 ```
 
@@ -245,9 +250,9 @@ src/
 - **WebSocket Support**: Required for real-time features
 - **Local Storage**: Required for authentication persistence
 
-## Current Deployment Status (January 2025)
+## Current Deployment Status (August 2025)
 
-- **Git Repository**: Clean working tree on `dev` branch
+- **Git Repository**: Clean working tree (ensure branch sync before release)
 - **Build System**: Vite 6.1.0 with optimized production configuration
 - **Dependencies**: All packages updated to latest stable versions
 - **SEO Ready**: Complete meta tag optimization and favicon system

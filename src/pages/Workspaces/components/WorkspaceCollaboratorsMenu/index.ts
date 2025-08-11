@@ -1,0 +1,3 @@
+import WorkspaceCollaboratorsMenu from '~/pages/Workspaces/components/WorkspaceCollaboratorsMenu/WorkspaceCollaboratorsMenu'
+
+export default WorkspaceCollaboratorsMenu

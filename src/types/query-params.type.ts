@@ -20,6 +20,11 @@ export interface OAuthQueryParams {
   verify?: UserType['verify']
 }
 
+export interface WorkspaceInvitationQueryParams {
+  token?: string
+  workspace_id?: string
+}
+
 export interface BoardInvitationQueryParams {
   token?: string
   board_id?: string

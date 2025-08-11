@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import path from '~/constants/path'
 import { BoardInvitationStatus } from '~/constants/type'
 import { useQueryConfig } from '~/hooks/use-query-config'
 import { decodeToken } from '~/lib/jwt-decode'
 import { useAppSelector } from '~/lib/redux/hooks'
-import { useUpdateBoardInvitationMutation, useVerifyBoardInvitationMutation } from '~/queries/invitations'
+import { useUpdateBoardInvitationMutation, useVerifyInvitationMutation } from '~/queries/invitations'
 import { UserType } from '~/schemas/user.schema'
 import { InviteTokenPayload } from '~/types/jwt.type'
 import { BoardInvitationQueryParams } from '~/types/query-params.type'
@@ -20,36 +21,33 @@ export default function BoardInvitationVerification() {
   const { socket } = useAppSelector((state) => state.app)
 
   const [
-    verifyBoardInvitationMutation,
-    {
-      isSuccess: isVerifyBoardInvitationSuccess,
-      isLoading: isVerifyBoardInvitationLoading,
-      isError: isVerifyBoardInvitationError
-    }
-  ] = useVerifyBoardInvitationMutation()
+    verifyInvitationMutation,
+    { isSuccess: isVerifyInvitationSuccess, isLoading: isVerifyInvitationLoading, isError: isVerifyInvitationError }
+  ] = useVerifyInvitationMutation()
 
   const [
     updateBoardInvitationMutation,
     {
       isLoading: isUpdateBoardInvitationLoading,
       isSuccess: isUpdateBoardInvitationSuccess,
-      isError: isUpdateBoardInvitationError
+      isError: isUpdateBoardInvitationError,
+      error: updateBoardInvitationError
     }
   ] = useUpdateBoardInvitationMutation()
 
-  const isLoading = isVerifyBoardInvitationLoading || isUpdateBoardInvitationLoading
+  const isLoading = isVerifyInvitationLoading || isUpdateBoardInvitationLoading
 
   // Once there is a verification token on the URL, verify the invitation
   useEffect(() => {
     if (token) {
-      verifyBoardInvitationMutation({ invite_token: token })
+      verifyInvitationMutation({ invite_token: token })
     }
   }, [token])
 
   // If the invitation is verified successfully, update the invitation status to accepted and set the invitee
   useEffect(() => {
     const updateBoardInvitation = async () => {
-      if (isVerifyBoardInvitationSuccess && token) {
+      if (isVerifyInvitationSuccess && token) {
         const invitationId = decodeToken<InviteTokenPayload>(token as string).invitation_id
 
         const updateBoardInvitationRes = await updateBoardInvitationMutation({
@@ -64,7 +62,7 @@ export default function BoardInvitationVerification() {
     }
 
     updateBoardInvitation()
-  }, [isVerifyBoardInvitationSuccess, token])
+  }, [isVerifyInvitationSuccess, token])
 
   // If the invitation is updated successfully, emit socket event to notify other users about the new member addition and navigate to the board details page
   useEffect(() => {
@@ -79,10 +77,15 @@ export default function BoardInvitationVerification() {
 
   // If there is an error, navigate to the login page
   useEffect(() => {
-    if (isVerifyBoardInvitationError || isUpdateBoardInvitationError) {
+    if (isVerifyInvitationError || isUpdateBoardInvitationError) {
       navigate(path.login)
+
+      const errorMessage =
+        (updateBoardInvitationError as any)?.data?.message || 'There was an error verifying your invitation'
+
+      toast.error(errorMessage)
     }
-  }, [isVerifyBoardInvitationError, isUpdateBoardInvitationError, navigate, board_id])
+  }, [isVerifyInvitationError, isUpdateBoardInvitationError, navigate, board_id, updateBoardInvitationError])
 
   // If there is no token or board_id on the URL, navigate to the 404 page (this prevent the user from accessing the page directly)
   if (!token || !board_id) {

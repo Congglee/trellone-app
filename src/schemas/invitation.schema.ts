@@ -1,10 +1,24 @@
 import z from 'zod'
-import { BoardInvitationStatusValues, InvitationTypeValues } from '~/constants/type'
+import {
+  BoardInvitationStatusValues,
+  BoardRoleValues,
+  InvitationTypeValues,
+  WorkspaceInvitationStatusValues,
+  WorkspaceRoleValues
+} from '~/constants/type'
 import { BoardSchema } from '~/schemas/board.schema'
 import { UserSchema } from '~/schemas/user.schema'
 
+const WorkspaceInvitationSchema = z.object({
+  workspace_id: z.string(),
+  role: z.enum(WorkspaceRoleValues),
+  status: z.enum(WorkspaceInvitationStatusValues)
+})
+
 const BoardInvitationSchema = z.object({
   board_id: z.string(),
+  workspace_id: z.string(),
+  role: z.enum(BoardRoleValues),
   status: z.enum(BoardInvitationStatusValues)
 })
 
@@ -16,6 +30,7 @@ export const InvitationSchema = z.object({
   invitee_id: z.string(),
   type: z.enum(InvitationTypeValues),
   board_invitation: BoardInvitationSchema.optional(),
+  workspace_invitation: WorkspaceInvitationSchema.optional(),
   inviter: UserSchema,
   invitee: UserSchema,
   board: BoardSchema,
@@ -33,23 +48,47 @@ export const InvitationRes = z.object({
 
 export type InvitationResType = z.TypeOf<typeof InvitationRes>
 
-export const VerifyBoardInvitationRes = z.object({
+export const VerifyInvitationRes = z.object({
   message: z.string()
 })
 
-export type VerifyBoardInvitationResType = z.TypeOf<typeof VerifyBoardInvitationRes>
+export type VerifyInvitationResType = z.TypeOf<typeof VerifyInvitationRes>
+
+export const CreateNewWorkspaceInvitationBody = z.object({
+  invitee_email: z.string().min(1, { message: 'Email is required' }).email({ message: 'Invalid email address' }),
+  role: z.enum(WorkspaceRoleValues, { message: 'Workspace role must be either member or admin' })
+})
+
+export type CreateNewWorkspaceInvitationBodyType = z.TypeOf<typeof CreateNewWorkspaceInvitationBody>
 
 export const CreateNewBoardInvitationBody = z.object({
-  invitee_email: z.string().min(1, { message: 'Email is required' }).email({ message: 'Invalid email address' })
+  invitee_email: z.string().min(1, { message: 'Email is required' }).email({ message: 'Invalid email address' }),
+  role: z.enum(BoardRoleValues, { message: 'Board role must be either member or admin' })
 })
 
 export type CreateNewBoardInvitationBodyType = z.TypeOf<typeof CreateNewBoardInvitationBody>
+
+export const UpdateWorkspaceInvitationBody = z.object({
+  status: z.enum(WorkspaceInvitationStatusValues)
+})
+
+export type UpdateWorkspaceInvitationBodyType = z.TypeOf<typeof UpdateWorkspaceInvitationBody>
 
 export const UpdateBoardInvitationBody = z.object({
   status: z.enum(BoardInvitationStatusValues)
 })
 
 export type UpdateBoardInvitationBodyType = z.TypeOf<typeof UpdateBoardInvitationBody>
+
+export const UpdateWorkspaceInvitationRes = z.object({
+  message: z.string(),
+  result: z.object({
+    invitation: InvitationSchema,
+    invitee: UserSchema
+  })
+})
+
+export type UpdateWorkspaceInvitationResType = z.TypeOf<typeof UpdateWorkspaceInvitationRes>
 
 export const UpdateBoardInvitationRes = z.object({
   message: z.string(),
