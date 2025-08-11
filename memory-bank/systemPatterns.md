@@ -94,6 +94,12 @@ store/
 └── notification: { notifications, hasNew }
 ```
 
+Store location and composition:
+
+- Store configuration: `src/lib/redux/store.ts`
+- Root reducer: `src/store/root.reducer.ts`
+- Feature slices: `src/store/slices/*`
+
 ### RTK Query API Slices
 
 ```
@@ -474,7 +480,7 @@ const ProtectedRoute = ({ profile, isAuthenticated }) => {
 useEffect(() => {
   const token = getAccessTokenFromLS()
   if (isAuthenticated && profile) {
-    dispatch(setSocket(generateSocketInstance(token)))
+    dispatch(setSocket(generateSocketInstace(token)))
   }
 }, [isAuthenticated, profile])
 ```
@@ -500,7 +506,7 @@ const validateFile = (file: File) => {
 }
 ```
 
-## Verified Current Patterns (December 2024) ✅
+## Verified Current Patterns (August 2025) ✅
 
 ### Component Architecture Verification
 

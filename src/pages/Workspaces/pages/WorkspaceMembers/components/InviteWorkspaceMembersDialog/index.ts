@@ -1,0 +1,3 @@
+import InviteWorkspaceMembersDialog from '~/pages/Workspaces/pages/WorkspaceMembers/components/InviteWorkspaceMembersDialog/InviteWorkspaceMembersDialog'
+
+export default InviteWorkspaceMembersDialog

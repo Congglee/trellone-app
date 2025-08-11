@@ -9,6 +9,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Divider from '@mui/material/Divider'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
 import { useUpdateWorkspaceMutation } from '~/queries/workspaces'
@@ -46,6 +47,7 @@ export default function EditWorkspaceDialog({ open, onEditWorkspaceClose, worksp
     updateWorkspaceMutation({ id: workspace._id, body: values }).then((res) => {
       if (!res.error) {
         onEditWorkspaceClose()
+        toast.success(res.data?.message || 'Workspace updated successfully')
       }
     })
   })

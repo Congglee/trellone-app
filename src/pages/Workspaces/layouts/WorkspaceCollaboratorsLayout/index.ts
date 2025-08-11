@@ -1,0 +1,3 @@
+import WorkspaceCollaboratorsLayout from '~/pages/Workspaces/layouts/WorkspaceCollaboratorsLayout/WorkspaceCollaboratorsLayout'
+
+export default WorkspaceCollaboratorsLayout

@@ -8,7 +8,7 @@ import Popover from '@mui/material/Popover'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
 import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '~/constants/pagination'
@@ -186,7 +186,7 @@ export default function BoardsList() {
 
         {guestWorkspaces.length > 0 &&
           guestWorkspaces.map((workspace) => (
-            <>
+            <Fragment key={workspace._id}>
               <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, mb: 2.5, gap: 1 }}>
                 <Typography variant='h6'>Guest Workspaces</Typography>
                 <IconButton size='small' disableRipple sx={{ p: 0 }} onClick={toggleGuestWorkspaceInfoPopover}>
@@ -246,7 +246,7 @@ export default function BoardsList() {
 
                 <WorkspaceBoards workspace={workspace} isLoading={false} />
               </Stack>
-            </>
+            </Fragment>
           ))}
 
         {isLoadingMore && (

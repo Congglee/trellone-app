@@ -5,11 +5,12 @@ import MenuItem from '@mui/material/MenuItem'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { WorkspaceRoleValues } from '~/constants/type'
 import Box from '@mui/material/Box'
+import { WorkspaceMemberRoleType } from '~/schemas/workspace.schema'
 
 interface RoleSelectProps {
-  currentRole: string
+  currentRole: WorkspaceMemberRoleType
   disabled?: boolean
-  onRoleChange?: (newRole: string) => void
+  onRoleChange?: (newRole: WorkspaceMemberRoleType) => void
 }
 
 export default function RoleSelect({ currentRole, disabled = false, onRoleChange }: RoleSelectProps) {
@@ -26,7 +27,7 @@ export default function RoleSelect({ currentRole, disabled = false, onRoleChange
     setAnchorRoleMenuElement(null)
   }
 
-  const handleRoleSelect = (role: string) => {
+  const handleRoleSelect = (role: WorkspaceMemberRoleType) => {
     if (onRoleChange && role !== currentRole) {
       onRoleChange(role)
     }
@@ -45,12 +46,7 @@ export default function RoleSelect({ currentRole, disabled = false, onRoleChange
         variant='outlined'
         disabled={disabled}
         endIcon={!disabled ? <KeyboardArrowDownIcon /> : undefined}
-        sx={{
-          borderRadius: 1,
-          textTransform: 'none',
-          minWidth: 120,
-          justifyContent: 'space-between'
-        }}
+        sx={{ borderRadius: 1, textTransform: 'none', minWidth: 120 }}
       >
         {currentRole}
       </Button>
@@ -62,14 +58,8 @@ export default function RoleSelect({ currentRole, disabled = false, onRoleChange
         MenuListProps={{
           'aria-labelledby': 'role-select-button'
         }}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left'
-        }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
       >
         {WorkspaceRoleValues.map((role) => (
           <MenuItem
