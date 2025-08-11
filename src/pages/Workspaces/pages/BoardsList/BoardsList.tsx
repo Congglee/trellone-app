@@ -244,7 +244,7 @@ export default function BoardsList() {
                   </Typography>
                 </Stack>
 
-                <WorkspaceBoards workspace={workspace} isLoading={false} />
+                <WorkspaceBoards workspace={workspace} isLoading={false} showNewBoardCard={false} />
               </Stack>
             </Fragment>
           ))}

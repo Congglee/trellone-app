@@ -14,6 +14,7 @@ import { WorkspaceMemberAction, WorkspaceRole } from '~/constants/type'
 import { useAppSelector } from '~/lib/redux/hooks'
 import WorkspaceCollaboratorsHeader from '~/pages/Workspaces/components/WorkspaceCollaboratorsHeader'
 import LeaveWorkspace from '~/pages/Workspaces/pages/WorkspaceMembers/components/LeaveWorkspace'
+import MemberItemSkeleton from '~/pages/Workspaces/components/SkeletonLoading/MemberItemSkeleton'
 import RemoveMemberWorkspace from '~/pages/Workspaces/pages/WorkspaceMembers/components/RemoveMemberWorkspace'
 import RoleSelect from '~/pages/Workspaces/pages/WorkspaceMembers/components/RoleSelect'
 import ViewMemberBoards from '~/pages/Workspaces/pages/WorkspaceMembers/components/ViewMemberBoards'
@@ -96,7 +97,7 @@ export default function WorkspaceMembers() {
       </Helmet>
 
       <WorkspaceCollaboratorsHeader
-        heading={`Workspace members (${members.length})`}
+        heading={isLoading ? 'Workspace members' : `Workspace members (${members.length})`}
         description='Workspace members can view and join all Workspace visible boards and create new boards in the Workspace.'
       />
 
@@ -122,102 +123,105 @@ export default function WorkspaceMembers() {
       </Paper>
 
       <List disablePadding sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-        {members.length > 0 &&
-          members.map((member) => {
-            const isCurrentUser = member.user_id === profile?._id
-            const currentUserMember = members.find((m) => m.user_id === profile?._id)
-            const currentUserRole = currentUserMember?.role
+        {isLoading
+          ? Array.from({ length: 4 }).map((_, index) => <MemberItemSkeleton key={`skeleton-${index}`} />)
+          : members.length > 0 &&
+            members.map((member) => {
+              const isCurrentUser = member.user_id === profile?._id
+              const currentUserMember = members.find((m) => m.user_id === profile?._id)
+              const currentUserRole = currentUserMember?.role
 
-            let buttonText = 'Remove'
-            let isDisabled = false
+              let buttonText = 'Remove'
+              let isDisabled = false
 
-            if (isCurrentUser) {
-              buttonText = 'Leave'
-            } else if (currentUserRole === WorkspaceRole.Admin) {
-              buttonText = 'Remove'
-              isDisabled = false
-            } else if (currentUserRole === WorkspaceRole.Normal) {
-              buttonText = 'Remove'
-              isDisabled = true
-            }
+              if (isCurrentUser) {
+                buttonText = 'Leave'
+              } else if (currentUserRole === WorkspaceRole.Admin) {
+                buttonText = 'Remove'
+                isDisabled = false
+              } else if (currentUserRole === WorkspaceRole.Normal) {
+                buttonText = 'Remove'
+                isDisabled = true
+              }
 
-            const memberBoards =
-              workspace?.boards.filter((board) => board.members?.some((m) => m.user_id === member.user_id)) || []
+              const memberBoards =
+                workspace?.boards.filter((board) => board.members?.some((m) => m.user_id === member.user_id)) || []
 
-            const totalMemberBoardCounts = memberBoards.length
+              const totalMemberBoardCounts = memberBoards.length
 
-            return (
-              <Paper
-                key={member._id}
-                variant='outlined'
-                sx={{
-                  p: 1.25,
-                  borderRadius: 1,
-                  bgcolor: 'transparent'
-                }}
-              >
-                <Stack
-                  direction={{ xs: 'column', md: 'row' }}
-                  alignItems={{ xs: 'flex-start', md: 'center' }}
-                  justifyContent='space-between'
-                  gap={2}
+              return (
+                <Paper
+                  key={member._id}
+                  variant='outlined'
+                  sx={{
+                    p: 1.25,
+                    borderRadius: 1,
+                    bgcolor: 'transparent'
+                  }}
                 >
-                  <Stack direction='row' alignItems='center' gap={1.5} sx={{ minWidth: 0 }}>
-                    <Avatar
-                      src={member.avatar}
-                      alt='User avatar'
-                      sx={{
-                        width: 36,
-                        height: 36,
-                        bgcolor: (t) => (t.palette.mode === 'dark' ? 'grey.800' : 'grey.400'),
-                        color: (t) => (t.palette.mode === 'dark' ? 'grey.100' : 'white')
-                      }}
-                    />
-
-                    <Box sx={{ minWidth: 0 }}>
-                      <Typography noWrap fontWeight={700}>
-                        {member.display_name}
-                      </Typography>
-                      <Typography variant='body2' color='text.secondary'>
-                        {member.username}
-                      </Typography>
-                    </Box>
-                  </Stack>
-
-                  <Stack direction='row' alignItems='center' gap={1} flexWrap='wrap'>
-                    <ViewMemberBoards
-                      totalMemberBoardCounts={totalMemberBoardCounts}
-                      memberBoards={memberBoards}
-                      member={member}
-                      isCurrentUser={isCurrentUser}
-                      onRemoveMemberFromWorkspaceBoard={onRemoveMemberFromWorkspaceBoard}
-                    />
-                    <RoleSelect
-                      currentRole={member.role}
-                      disabled={currentUserRole !== WorkspaceRole.Admin || isCurrentUser}
-                      onRoleChange={(newRole) => onMemberWorkspaceRoleChange(member.user_id, newRole)}
-                    />
-                    {buttonText === 'Remove' && (
-                      <RemoveMemberWorkspace
-                        isDisabled={isDisabled}
-                        buttonText={buttonText}
-                        onRemoveMemberFromWorkspace={onRemoveMemberFromWorkspace}
-                        userId={member.user_id}
+                  <Stack
+                    direction={{ xs: 'column', md: 'row' }}
+                    alignItems={{ xs: 'flex-start', md: 'center' }}
+                    justifyContent='space-between'
+                    gap={2}
+                  >
+                    <Stack direction='row' alignItems='center' gap={1.5} sx={{ minWidth: 0 }}>
+                      <Avatar
+                        src={member.avatar}
+                        alt='User avatar'
+                        sx={{
+                          width: 36,
+                          height: 36,
+                          bgcolor: (t) => (t.palette.mode === 'dark' ? 'grey.800' : 'grey.400'),
+                          color: (t) => (t.palette.mode === 'dark' ? 'grey.100' : 'white')
+                        }}
                       />
-                    )}
-                    {buttonText === 'Leave' && (
-                      <LeaveWorkspace
-                        isDisabled={isDisabled}
-                        buttonText={buttonText}
-                        onLeaveWorkspace={onLeaveWorkspace}
-                        userId={member.user_id}
+
+                      <Box sx={{ minWidth: 0 }}>
+                        <Typography noWrap fontWeight={700}>
+                          {member.display_name}
+                        </Typography>
+                        <Typography variant='body2' color='text.secondary'>
+                          {member.username}
+                        </Typography>
+                      </Box>
+                    </Stack>
+
+                    <Stack direction='row' alignItems='center' gap={1} flexWrap='wrap'>
+                      <ViewMemberBoards
+                        totalMemberBoardCounts={totalMemberBoardCounts}
+                        memberBoards={memberBoards}
+                        member={member}
+                        isCurrentUser={isCurrentUser}
+                        currentUserRole={currentUserRole as WorkspaceMemberRoleType}
+                        onRemoveMemberFromWorkspaceBoard={onRemoveMemberFromWorkspaceBoard}
                       />
-                    )}
+                      <RoleSelect
+                        currentRole={member.role}
+                        disabled={currentUserRole !== WorkspaceRole.Admin || isCurrentUser}
+                        onRoleChange={(newRole) => onMemberWorkspaceRoleChange(member.user_id, newRole)}
+                      />
+                      {buttonText === 'Remove' && (
+                        <RemoveMemberWorkspace
+                          isDisabled={isDisabled}
+                          buttonText={buttonText}
+                          onRemoveMemberFromWorkspace={onRemoveMemberFromWorkspace}
+                          userId={member.user_id}
+                        />
+                      )}
+                      {buttonText === 'Leave' && (
+                        <LeaveWorkspace
+                          isDisabled={isDisabled}
+                          buttonText={buttonText}
+                          onLeaveWorkspace={onLeaveWorkspace}
+                          userId={member.user_id}
+                        />
+                      )}
+                    </Stack>
                   </Stack>
-                </Stack>
-              </Paper>
-            )
-          })}
+                </Paper>
+              )
+            })}
       </List>
     </Box>
   )

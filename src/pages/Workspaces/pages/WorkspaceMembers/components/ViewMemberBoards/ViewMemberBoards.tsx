@@ -9,13 +9,15 @@ import Popover from '@mui/material/Popover'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
+import { WorkspaceRole } from '~/constants/type'
 import { BoardResType } from '~/schemas/board.schema'
-import { WorkspaceMemberType } from '~/schemas/workspace.schema'
+import { WorkspaceMemberRoleType, WorkspaceMemberType } from '~/schemas/workspace.schema'
 
 interface ViewMemberBoardsProps {
   totalMemberBoardCounts: number
   memberBoards: BoardResType['result'][]
   isCurrentUser: boolean
+  currentUserRole: WorkspaceMemberRoleType
   onRemoveMemberFromWorkspaceBoard: (userId: string, boardId: string) => Promise<void>
   member: WorkspaceMemberType
 }
@@ -24,6 +26,7 @@ export default function ViewMemberBoards({
   totalMemberBoardCounts = 0,
   memberBoards,
   isCurrentUser,
+  currentUserRole,
   onRemoveMemberFromWorkspaceBoard,
   member
 }: ViewMemberBoardsProps) {
@@ -51,6 +54,8 @@ export default function ViewMemberBoards({
     await onRemoveMemberFromWorkspaceBoard(member.user_id, boardId)
     handleViewMemberBoardsPopoverClose()
   }
+
+  const showRemoveButton = !isCurrentUser && currentUserRole === WorkspaceRole.Admin
 
   return (
     <>
@@ -135,7 +140,7 @@ export default function ViewMemberBoards({
                       {board.title}
                     </Typography>
                   </Stack>
-                  {!isCurrentUser && (
+                  {showRemoveButton && (
                     <Button
                       size='small'
                       variant='contained'
