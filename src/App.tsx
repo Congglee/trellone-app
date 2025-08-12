@@ -11,6 +11,9 @@ import AuthLayout from '~/pages/Auth/layouts/AuthLayout'
 import OAuth from '~/pages/Auth/OAuth'
 import BoardInvitationVerification from '~/pages/Boards/BoardInvitationVerification'
 import HomeLayout from '~/pages/Workspaces/layouts/HomeLayout'
+import WorkspaceCollaboratorsLayout from '~/pages/Workspaces/layouts/WorkspaceCollaboratorsLayout'
+import WorkspaceDetailsLayout from '~/pages/Workspaces/layouts/WorkspaceDetailsLayout'
+import WorkspaceInvitationVerification from '~/pages/Workspaces/pages/WorkspaceInvitationVerification'
 import { UserType } from '~/schemas/user.schema'
 import { disconnectSocket, setSocket } from '~/store/slices/app.slice'
 import { reset } from '~/store/slices/auth.slice'
@@ -24,8 +27,11 @@ const ResetPassword = lazy(() => import('~/pages/Auth/ResetPassword'))
 const Home = lazy(() => import('~/pages/Workspaces/pages/Home'))
 const BoardsList = lazy(() => import('~/pages/Workspaces/pages/BoardsList'))
 const WorkspaceBoardsList = lazy(() => import('~/pages/Workspaces/pages/WorkspaceBoardsList'))
+const WorkspaceMembers = lazy(() => import('~/pages/Workspaces/pages/WorkspaceMembers'))
+const WorkspaceGuests = lazy(() => import('~/pages/Workspaces/pages/WorkspaceGuests'))
 const BoardDetails = lazy(() => import('~/pages/Boards/BoardDetails'))
 const Settings = lazy(() => import('~/pages/Settings'))
+const AccessDenied = lazy(() => import('~/pages/AccessDenied'))
 const NotFound = lazy(() => import('~/pages/404/NotFound'))
 
 const ProtectedRoute = ({ profile, isAuthenticated }: { profile: UserType | null; isAuthenticated: boolean }) => {
@@ -38,7 +44,8 @@ const RejectedRoute = ({ profile, isAuthenticated }: { profile: UserType | null;
   const isVerificationPath =
     location.pathname === path.accountVerification ||
     location.pathname === path.forgotPasswordVerification ||
-    location.pathname === path.boardInvitationVerification
+    location.pathname === path.boardInvitationVerification ||
+    location.pathname === path.workspaceInvitationVerification
 
   if (isVerificationPath) {
     return <Outlet />
@@ -106,9 +113,31 @@ function App() {
             </Suspense>
           }
         >
+          {/* Home */}
           <Route path={path.home} element={<Home />} />
+
+          {/* Boards List */}
           <Route path={path.boardsList} element={<BoardsList />} />
+
+          {/* Workspace Boards List */}
           <Route path={path.workspaceBoardsList} element={<WorkspaceBoardsList />} />
+        </Route>
+
+        <Route
+          path=''
+          element={
+            <Suspense fallback={<PageLoadingSpinner />}>
+              <WorkspaceDetailsLayout />
+            </Suspense>
+          }
+        >
+          <Route path='' element={<WorkspaceCollaboratorsLayout />}>
+            {/* Workspace Members */}
+            <Route path={path.workspaceMembers} element={<WorkspaceMembers />} />
+
+            {/* Workspace Guests */}
+            <Route path={path.workspaceGuests} element={<WorkspaceGuests />} />
+          </Route>
         </Route>
 
         {/* Board Details */}
@@ -161,10 +190,21 @@ function App() {
         <Route path={path.accountVerification} element={<AccountVerification />} />
         <Route path={path.forgotPasswordVerification} element={<ForgotPasswordVerification />} />
         <Route path={path.boardInvitationVerification} element={<BoardInvitationVerification />} />
+        <Route path={path.workspaceInvitationVerification} element={<WorkspaceInvitationVerification />} />
       </Route>
 
       {/* OAuth */}
       <Route path={path.oauth} element={<OAuth />} />
+
+      {/* Access Denied Page */}
+      <Route
+        path={path.accessDenied}
+        element={
+          <Suspense fallback={<PageLoadingSpinner />}>
+            <AccessDenied />
+          </Suspense>
+        }
+      />
 
       {/* 404 not found page */}
       <Route

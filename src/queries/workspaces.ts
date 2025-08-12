@@ -50,15 +50,6 @@ export const workspaceApi = createApi({
 
     updateWorkspace: build.mutation<WorkspaceResType, { id: string; body: UpdateWorkspaceBodyType }>({
       query: ({ id, body }) => ({ url: `${WORKSPACE_API_URL}/${id}`, method: 'PUT', data: body }),
-      async onQueryStarted(_args, { queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled
-          toast.success(data.message)
-        } catch (error) {
-          toast.error('There was an error updating the workspace')
-          console.error(error)
-        }
-      },
       invalidatesTags: (_result, _error, { id }) => [
         { type: 'Workspace', id },
         { type: 'Workspace', id: 'LIST' }

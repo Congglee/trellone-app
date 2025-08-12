@@ -3,11 +3,14 @@ import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
 import {
   CreateNewBoardInvitationBodyType,
+  CreateNewWorkspaceInvitationBodyType,
   InvitationListResType,
   InvitationResType,
   UpdateBoardInvitationBodyType,
   UpdateBoardInvitationResType,
-  VerifyBoardInvitationResType
+  UpdateWorkspaceInvitationBodyType,
+  UpdateWorkspaceInvitationResType,
+  VerifyInvitationResType
 } from '~/schemas/invitation.schema'
 import { CommonQueryParams } from '~/types/query-params.type'
 
@@ -21,7 +24,25 @@ export const invitationApi = createApi({
   tagTypes,
   baseQuery: axiosBaseQuery(),
   endpoints: (build) => ({
-    addNewBoardInvitation: build.mutation<InvitationResType, CreateNewBoardInvitationBodyType & { board_id: string }>({
+    addNewWorkspaceInvitation: build.mutation<
+      InvitationResType,
+      CreateNewWorkspaceInvitationBodyType & { workspace_id: string }
+    >({
+      query: (body) => ({ url: `${INVITATION_API_URL}/workspace`, method: 'POST', data: body }),
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled
+          toast.success(data.message)
+        } catch (error) {
+          console.error(error)
+        }
+      }
+    }),
+
+    addNewBoardInvitation: build.mutation<
+      InvitationResType,
+      CreateNewBoardInvitationBodyType & { board_id: string; workspace_id: string }
+    >({
       query: (body) => ({ url: `${INVITATION_API_URL}/board`, method: 'POST', data: body }),
       async onQueryStarted(_args, { queryFulfilled }) {
         try {
@@ -33,8 +54,19 @@ export const invitationApi = createApi({
       }
     }),
 
-    verifyBoardInvitation: build.mutation<VerifyBoardInvitationResType, { invite_token: string }>({
-      query: (body) => ({ url: `${INVITATION_API_URL}/verify-board-invitation`, method: 'POST', data: body })
+    verifyInvitation: build.mutation<VerifyInvitationResType, { invite_token: string }>({
+      query: (body) => ({ url: `${INVITATION_API_URL}/verify-invitation`, method: 'POST', data: body })
+    }),
+
+    updateWorkspaceInvitation: build.mutation<
+      UpdateWorkspaceInvitationResType,
+      { id: string; body: UpdateWorkspaceInvitationBodyType }
+    >({
+      query: ({ id, body }) => ({ url: `${INVITATION_API_URL}/workspace/${id}`, method: 'PUT', data: body }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Invitation', id },
+        { type: 'Invitation', id: 'LIST' }
+      ]
     }),
 
     updateBoardInvitation: build.mutation<
@@ -62,10 +94,12 @@ export const invitationApi = createApi({
 })
 
 export const {
+  useAddNewWorkspaceInvitationMutation,
   useAddNewBoardInvitationMutation,
   useGetInvitationsQuery,
-  useVerifyBoardInvitationMutation,
-  useUpdateBoardInvitationMutation
+  useVerifyInvitationMutation,
+  useUpdateBoardInvitationMutation,
+  useUpdateWorkspaceInvitationMutation
 } = invitationApi
 
 export const invitationApiReducer = invitationApi.reducer

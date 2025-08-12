@@ -8,19 +8,20 @@ import VpnLockIcon from '@mui/icons-material/VpnLock'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
+import TextField from '@mui/material/TextField'
 import Toolbar from '@mui/material/Toolbar'
 import Tooltip from '@mui/material/Tooltip'
+import { useClickAway } from '@uidotdev/usehooks'
 import { useEffect, useState } from 'react'
 import AppBar from '~/components/AppBar'
-import BoardUserGroup from '~/pages/Boards/BoardDetails/components/BoardUserGroup'
-import InviteBoardUser from '~/pages/Boards/BoardDetails/components/InviteBoardUser'
-import { BoardResType } from '~/schemas/board.schema'
-import { capitalizeFirstLetter } from '~/utils/formatters'
-import TextField from '@mui/material/TextField'
-import { useClickAway } from '@uidotdev/usehooks'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
-import { updateActiveBoard } from '~/store/slices/board.slice'
+import BoardUserGroup from '~/pages/Boards/BoardDetails/components/BoardUserGroup'
+import InviteBoardMembersDialog from '~/pages/Boards/BoardDetails/components/InviteBoardMembersDialog'
+
 import { useUpdateBoardMutation } from '~/queries/boards'
+import { BoardResType } from '~/schemas/board.schema'
+import { updateActiveBoard } from '~/store/slices/board.slice'
+import { capitalizeFirstLetter } from '~/utils/formatters'
 
 interface BoardBarProps {
   workspaceDrawerOpen: boolean
@@ -197,7 +198,7 @@ export default function BoardBar({
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, ml: 'auto' }}>
-          <InviteBoardUser boardId={board._id} />
+          <InviteBoardMembersDialog boardId={board._id} workspaceId={board.workspace_id} />
 
           <BoardUserGroup boardUsers={board?.members} />
 

@@ -11,9 +11,10 @@ import { WorkspaceResType } from '~/schemas/workspace.schema'
 interface WorkspaceBoardsProps {
   workspace: WorkspaceResType['result']
   isLoading: boolean
+  showNewBoardCard?: boolean
 }
 
-export default function WorkspaceBoards({ workspace, isLoading }: WorkspaceBoardsProps) {
+export default function WorkspaceBoards({ workspace, isLoading, showNewBoardCard = true }: WorkspaceBoardsProps) {
   const [newBoardOpen, setNewBoardOpen] = useState(false)
 
   const boards = workspace.boards || []
@@ -28,7 +29,7 @@ export default function WorkspaceBoards({ workspace, isLoading }: WorkspaceBoard
             </Card>
           </Grid>
         ))}
-        <NewBoardCard onNewBoardOpen={() => setNewBoardOpen(true)} />
+        {showNewBoardCard && <NewBoardCard onNewBoardOpen={() => setNewBoardOpen(true)} />}
       </Grid>
     )
   }
@@ -39,7 +40,7 @@ export default function WorkspaceBoards({ workspace, isLoading }: WorkspaceBoard
         <Grid container spacing={2}>
           {boards?.length > 0 && boards.map((board) => <BoardCard key={board._id} board={board} />)}
 
-          <NewBoardCard onNewBoardOpen={() => setNewBoardOpen(true)} />
+          {showNewBoardCard && <NewBoardCard onNewBoardOpen={() => setNewBoardOpen(true)} />}
         </Grid>
       </Box>
 

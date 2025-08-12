@@ -1,0 +1,3 @@
+import WorkspaceCollaboratorsHeader from '~/pages/Workspaces/components/WorkspaceCollaboratorsHeader/WorkspaceCollaboratorsHeader'
+
+export default WorkspaceCollaboratorsHeader

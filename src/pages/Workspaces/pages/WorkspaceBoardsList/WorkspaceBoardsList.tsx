@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import NewBoardDialog from '~/components/Dialog/NewBoardDialog'
 import path from '~/constants/path'
 import BoardCard from '~/pages/Workspaces/components/BoardCard'
@@ -23,7 +23,7 @@ import WorkspaceLogo from '~/pages/Workspaces/pages/WorkspaceBoardsList/componen
 import { useGetWorkspaceQuery } from '~/queries/workspaces'
 
 export default function WorkspaceBoardsList() {
-  const { workspaceId } = useParams<{ workspaceId: string }>()
+  const { workspaceId } = useParams()
 
   const [newBoardOpen, setNewBoardOpen] = useState(false)
   const [editWorkspaceOpen, setEditWorkspaceOpen] = useState(false)
@@ -34,11 +34,8 @@ export default function WorkspaceBoardsList() {
 
   const hasClosedBoards = boards.some((board) => board._destroy)
 
-  const navigate = useNavigate()
-
   if (!workspace && !isLoading) {
-    navigate(path.boardsList)
-    return null
+    return <Navigate to={path.boardsList} />
   }
 
   return (

@@ -54,7 +54,11 @@ export default function WorkspaceLogo({ workspace }: WorkspaceLogoProps) {
     })
     const imageUrl = uploadImageRes.result[0].url
 
-    await updateWorkspaceMutation({ id: workspace._id, body: { logo: imageUrl } })
+    await updateWorkspaceMutation({ id: workspace._id, body: { logo: imageUrl } }).then((res) => {
+      if (!res.error) {
+        toast.success(res.data?.message || 'Workspace logo updated successfully')
+      }
+    })
 
     event.target.value = ''
   }

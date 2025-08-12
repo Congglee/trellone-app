@@ -1,0 +1,3 @@
+import WorkspaceInvitationVerification from '~/pages/Workspaces/pages/WorkspaceInvitationVerification/WorkspaceInvitationVerification'
+
+export default WorkspaceInvitationVerification

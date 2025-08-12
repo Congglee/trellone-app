@@ -8,6 +8,7 @@ const path = {
   workspaceBoardsList: '/workspaces/:workspaceId/boards',
   workspaceHighlights: '/workspaces/:workspaceId/highlights',
   workspaceMembers: '/workspaces/:workspaceId/members',
+  workspaceGuests: '/workspaces/:workspaceId/members/guests',
   workspaceSettings: '/workspaces/:workspaceId/settings',
 
   // Board Details Page
@@ -27,7 +28,11 @@ const path = {
   // Verification Pages
   accountVerification: '/account/verification',
   forgotPasswordVerification: '/forgot-password/verification',
-  boardInvitationVerification: '/board-invitation/verification'
+  boardInvitationVerification: '/board-invitation/verification',
+  workspaceInvitationVerification: '/workspace-invitation/verification',
+
+  // Access Control
+  accessDenied: '/access-denied'
 } as const
 
 export default path

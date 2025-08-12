@@ -67,6 +67,18 @@ export const InvitationType = {
 
 export const InvitationTypeValues = [InvitationType.BoardInvitation] as const
 
+export const WorkspaceInvitationStatus = {
+  Pending: 'PENDING',
+  Accepted: 'ACCEPTED',
+  Rejected: 'REJECTED'
+}
+
+export const WorkspaceInvitationStatusValues = [
+  WorkspaceInvitationStatus.Pending,
+  WorkspaceInvitationStatus.Accepted,
+  WorkspaceInvitationStatus.Rejected
+] as const
+
 export const BoardInvitationStatus = {
   Pending: 'PENDING',
   Accepted: 'ACCEPTED',
@@ -114,4 +126,37 @@ export const CardCommentReactionAction = {
 export const CardCommentReactionActionValues = [
   CardCommentReactionAction.Add,
   CardCommentReactionAction.Remove
+] as const
+
+export const RoleLevel = {
+  Workspace: 'Workspace',
+  Board: 'Board'
+} as const
+
+export const RoleLevelValues = [RoleLevel.Workspace, RoleLevel.Board] as const
+
+export const WorkspaceMemberAction = {
+  EditRole: 'EDIT_ROLE',
+  RemoveFromWorkspace: 'REMOVE_FROM_WORKSPACE',
+  RemoveFromBoard: 'REMOVE_FROM_BOARD',
+  Leave: 'LEAVE'
+} as const
+
+export const WorkspaceMemberActionValues = [
+  WorkspaceMemberAction.EditRole,
+  WorkspaceMemberAction.RemoveFromWorkspace,
+  WorkspaceMemberAction.RemoveFromBoard,
+  WorkspaceMemberAction.Leave
+] as const
+
+export const WorkspaceGuestAction = {
+  AddToWorkspace: 'ADD_TO_WORKSPACE',
+  RemoveFromWorkspace: 'REMOVE_FROM_WORKSPACE',
+  RemoveFromBoard: 'REMOVE_FROM_BOARD'
+} as const
+
+export const WorkspaceGuestActionValues = [
+  WorkspaceGuestAction.AddToWorkspace,
+  WorkspaceGuestAction.RemoveFromWorkspace,
+  WorkspaceGuestAction.RemoveFromBoard
 ] as const

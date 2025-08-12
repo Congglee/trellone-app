@@ -8,10 +8,11 @@ import Popover from '@mui/material/Popover'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
 import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '~/constants/pagination'
+import { useCategorizeWorkspaces } from '~/hooks/use-categorize-workspaces'
 import { useInfiniteScroll } from '~/hooks/use-infinite-scroll'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import WorkspaceBoards from '~/pages/Workspaces/pages/BoardsList/components/WorkspaceBoards'
@@ -19,34 +20,9 @@ import { useGetWorkspacesQuery } from '~/queries/workspaces'
 import { WorkspaceResType } from '~/schemas/workspace.schema'
 import { appendWorkspaces, clearWorkspaces, setWorkspaces } from '~/store/slices/workspace.slice'
 
-// Utility functions for workspace categorization
-const categorizeWorkspaces = (workspaces: WorkspaceResType['result'][], currentUserId: string) => {
-  const memberWorkspaces: WorkspaceResType['result'][] = []
-  const guestWorkspaces: WorkspaceResType['result'][] = []
-
-  workspaces.forEach((workspace) => {
-    // Check if user is in members array
-    const isMember = workspace.members.some((member) => member.user_id === currentUserId)
-
-    if (isMember) {
-      memberWorkspaces.push(workspace)
-    } else {
-      // Check if user is in guests array
-      const isGuest = workspace.guests.some((id) => id === currentUserId)
-
-      if (isGuest) {
-        guestWorkspaces.push(workspace)
-      }
-    }
-  })
-
-  return { memberWorkspaces, guestWorkspaces }
-}
-
 export default function BoardsList() {
   const dispatch = useAppDispatch()
   const { workspaces } = useAppSelector((state) => state.workspace)
-  const { profile } = useAppSelector((state) => state.auth)
 
   const [anchorGuestWorkspaceInfoPopoverElement, setAnchorGuestWorkspaceInfoPopoverElement] =
     useState<HTMLElement | null>(null)
@@ -133,10 +109,7 @@ export default function BoardsList() {
     useWindowScroll: true // Use window scroll instead of container scroll
   })
 
-  // Categorize workspaces based on current user's role
-  const { memberWorkspaces, guestWorkspaces } = useMemo(() => {
-    return categorizeWorkspaces(workspaces, profile?._id as string)
-  }, [workspaces, profile?._id])
+  const { memberWorkspaces, guestWorkspaces } = useCategorizeWorkspaces(workspaces)
 
   const hasClosedBoards = useMemo(
     () => workspaces.some((workspace) => workspace.boards.some((board) => board._destroy)),
@@ -213,7 +186,7 @@ export default function BoardsList() {
 
         {guestWorkspaces.length > 0 &&
           guestWorkspaces.map((workspace) => (
-            <>
+            <Fragment key={workspace._id}>
               <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, mb: 2.5, gap: 1 }}>
                 <Typography variant='h6'>Guest Workspaces</Typography>
                 <IconButton size='small' disableRipple sx={{ p: 0 }} onClick={toggleGuestWorkspaceInfoPopover}>
@@ -253,7 +226,7 @@ export default function BoardsList() {
                       </IconButton>
                     </Box>
 
-                    <Typography variant='body2' sx={{ mb: 3, color: 'text.secondary', fontSize: '0.875rem' }}>
+                    <Typography variant='body2' sx={{ mb: 1, color: 'text.secondary', fontSize: '0.875rem' }}>
                       You’re a member of these boards, but not a member of the Workspace the boards are in.{' '}
                       <MuiLink href='#' sx={{ textDecoration: 'underline' }}>
                         Learn more
@@ -271,9 +244,9 @@ export default function BoardsList() {
                   </Typography>
                 </Stack>
 
-                <WorkspaceBoards workspace={workspace} isLoading={false} />
+                <WorkspaceBoards workspace={workspace} isLoading={false} showNewBoardCard={false} />
               </Stack>
-            </>
+            </Fragment>
           ))}
 
         {isLoadingMore && (

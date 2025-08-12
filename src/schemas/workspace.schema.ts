@@ -1,14 +1,26 @@
 import z from 'zod'
-import { WorkspaceRoleValues, WorkspaceType, WorkspaceTypeValues } from '~/constants/type'
+import {
+  WorkspaceGuestActionValues,
+  WorkspaceMemberActionValues,
+  WorkspaceRoleValues,
+  WorkspaceType,
+  WorkspaceTypeValues
+} from '~/constants/type'
 import { BoardSchema } from '~/schemas/board.schema'
 import { UserSchema } from '~/schemas/user.schema'
 
+export const WorkspaceMemberRoleSchema = z.enum(WorkspaceRoleValues)
+
+export type WorkspaceMemberRoleType = z.TypeOf<typeof WorkspaceMemberRoleSchema>
+
 export const WorkspaceMemberSchema = UserSchema.extend({
   user_id: z.string(),
-  role: z.enum(WorkspaceRoleValues),
+  role: WorkspaceMemberRoleSchema,
   joined_at: z.date(),
   invited_by: z.string().optional()
 })
+
+export type WorkspaceMemberType = z.TypeOf<typeof WorkspaceMemberSchema>
 
 export const WorkspaceSchema = z.object({
   _id: z.string(),
@@ -61,6 +73,23 @@ export const CreateWorkspaceBody = z.object({
 
 export type CreateWorkspaceBodyType = z.TypeOf<typeof CreateWorkspaceBody>
 
+const WorkspaceMemberPayloadSchema = z.object({
+  action: z.enum(WorkspaceMemberActionValues),
+  user_id: z.string(),
+  role: WorkspaceMemberRoleSchema.optional(),
+  board_id: z.string().optional()
+})
+
+export type WorkspaceMemberPayloadType = z.TypeOf<typeof WorkspaceMemberPayloadSchema>
+
+const WorkspaceGuestPayloadSchema = z.object({
+  action: z.enum(WorkspaceGuestActionValues),
+  user_id: z.string(),
+  board_id: z.string().optional()
+})
+
+export type WorkspaceGuestPayloadType = z.TypeOf<typeof WorkspaceGuestPayloadSchema>
+
 export const UpdateWorkspaceBody = z.object({
   title: z
     .string()
@@ -80,7 +109,9 @@ export const UpdateWorkspaceBody = z.object({
     .enum(WorkspaceTypeValues, { message: 'Type must be either public or private' })
     .default(WorkspaceType.Public)
     .optional(),
-  logo: z.string().url().optional()
+  logo: z.string().url().optional(),
+  member: WorkspaceMemberPayloadSchema.optional(),
+  guest: WorkspaceGuestPayloadSchema.optional()
 })
 
 export type UpdateWorkspaceBodyType = z.TypeOf<typeof UpdateWorkspaceBody>

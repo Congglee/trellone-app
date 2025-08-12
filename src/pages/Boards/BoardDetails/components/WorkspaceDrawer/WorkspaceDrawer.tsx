@@ -16,7 +16,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import DrawerHeader from '~/components/DrawerHeader'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
 import { useGetWorkspaceQuery } from '~/queries/workspaces'
@@ -32,15 +32,9 @@ export default function WorkspaceDrawer({ open, onOpen, boardId, workspaceId }: 
   const theme = useTheme()
   const isDarkMode = theme.palette.mode === 'dark'
 
-  const navigate = useNavigate()
-
   const { data: workspaceData } = useGetWorkspaceQuery(workspaceId!)
   const workspace = workspaceData?.result
   const boards = workspace?.boards || []
-
-  const handleListBoardItemClick = (id: string) => {
-    navigate(`/boards/${id}`)
-  }
 
   return (
     <Drawer
@@ -120,7 +114,7 @@ export default function WorkspaceDrawer({ open, onOpen, boardId, workspaceId }: 
         {boards?.length > 0 &&
           boards.map((board) => (
             <ListItem key={board._id} disablePadding>
-              <ListItemButton onClick={() => handleListBoardItemClick(board._id)} selected={boardId === board._id}>
+              <ListItemButton component={Link} to={`/boards/${board._id}`} selected={boardId === board._id}>
                 <ListItemIcon>
                   <Avatar sx={{ width: 24, height: 24 }} variant='rounded' src={board?.cover_photo}>
                     {board?.title.charAt(0)}

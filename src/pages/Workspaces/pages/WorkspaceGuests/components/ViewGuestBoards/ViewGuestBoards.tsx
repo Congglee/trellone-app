@@ -1,0 +1,175 @@
+import { useState } from 'react'
+import CloseIcon from '@mui/icons-material/Close'
+import Avatar from '@mui/material/Avatar'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import Popover from '@mui/material/Popover'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { BoardResType } from '~/schemas/board.schema'
+import { UserType } from '~/schemas/user.schema'
+
+interface ViewGuestBoardsProps {
+  totalGuestBoardCounts: number
+  guestBoards: BoardResType['result'][]
+  guest: UserType
+  showRemoveButton: boolean
+  onRemoveGuestFromWorkspaceBoard: (guestId: string, boardId: string) => Promise<void>
+}
+
+export default function ViewGuestBoards({
+  totalGuestBoardCounts,
+  guestBoards,
+  guest,
+  showRemoveButton,
+  onRemoveGuestFromWorkspaceBoard
+}: ViewGuestBoardsProps) {
+  const [anchorViewGuestBoardsPopoverElement, setAnchorViewGuestBoardsPopoverElement] = useState<HTMLElement | null>(
+    null
+  )
+
+  const isViewGuestBoardsPopoverOpen = Boolean(anchorViewGuestBoardsPopoverElement)
+
+  const viewGuestBoardsPopoverId = 'view-guest-boards-popover'
+
+  const toggleViewGuestBoardsPopover = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (isViewGuestBoardsPopoverOpen) {
+      setAnchorViewGuestBoardsPopoverElement(null)
+    } else {
+      setAnchorViewGuestBoardsPopoverElement(event.currentTarget)
+    }
+  }
+
+  const handleViewGuestBoardsPopoverClose = () => {
+    setAnchorViewGuestBoardsPopoverElement(null)
+  }
+
+  const removeGuestFromWorkspaceBoard = async (boardId: string) => {
+    await onRemoveGuestFromWorkspaceBoard(guest._id, boardId)
+    handleViewGuestBoardsPopoverClose()
+  }
+
+  return (
+    <>
+      <Button
+        size='small'
+        variant='outlined'
+        disabled={totalGuestBoardCounts === 0}
+        onClick={toggleViewGuestBoardsPopover}
+        sx={{ borderRadius: 1, textTransform: 'none', minWidth: 120 }}
+      >
+        View boards ({totalGuestBoardCounts || 0})
+      </Button>
+
+      <Popover
+        id={viewGuestBoardsPopoverId}
+        open={isViewGuestBoardsPopoverOpen}
+        anchorEl={anchorViewGuestBoardsPopoverElement}
+        onClose={toggleViewGuestBoardsPopover}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        sx={{
+          '& .MuiPopover-paper': {
+            width: 320,
+            maxHeight: 400,
+            borderRadius: 1,
+            bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#2c2c2c' : '#ffffff'),
+            border: (theme) => (theme.palette.mode === 'dark' ? '1px solid #444' : '1px solid #e0e0e0'),
+            boxShadow: (theme) =>
+              theme.palette.mode === 'dark' ? '0 8px 32px rgba(0, 0, 0, 0.4)' : '0 8px 32px rgba(0, 0, 0, 0.12)'
+          }
+        }}
+      >
+        <Box sx={{ p: 1.5, maxWidth: '350px', width: '100%' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2, position: 'relative' }}>
+            <Typography variant='subtitle1' sx={{ fontWeight: 'medium' }}>
+              Workspace boards
+            </Typography>
+            <IconButton size='small' onClick={toggleViewGuestBoardsPopover} sx={{ position: 'absolute', right: 0 }}>
+              <CloseIcon fontSize='small' />
+            </IconButton>
+          </Box>
+
+          <Typography variant='body2' sx={{ mb: 2, color: 'text.secondary' }}>
+            {guest.display_name} is a member of the following Workspace boards:
+          </Typography>
+
+          <List disablePadding sx={{ maxHeight: 280, overflowY: 'auto' }}>
+            {guestBoards.map((board) => (
+              <ListItem
+                key={board._id}
+                disablePadding
+                sx={{
+                  mb: 1,
+                  '&:last-child': { mb: 0 }
+                }}
+              >
+                <Stack
+                  direction='row'
+                  alignItems='center'
+                  justifyContent='space-between'
+                  sx={{
+                    width: '100%',
+                    p: 1,
+                    borderRadius: 1,
+                    bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)'),
+                    border: (theme) => (theme.palette.mode === 'dark' ? '1px solid #444' : '1px solid #e0e0e0')
+                  }}
+                >
+                  <Stack direction='row' alignItems='center' gap={1.5} sx={{ flex: 1, minWidth: 0 }}>
+                    <Avatar
+                      src={board.cover_photo}
+                      variant='rounded'
+                      sx={{
+                        width: 32,
+                        height: 32,
+                        bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#444' : '#f5f5f5'),
+                        fontSize: '0.75rem'
+                      }}
+                    >
+                      {board.title.charAt(0).toUpperCase()}
+                    </Avatar>
+                    <Typography variant='body2' fontWeight={500} color='text.primary' noWrap sx={{ flex: 1 }}>
+                      {board.title}
+                    </Typography>
+                  </Stack>
+                  {showRemoveButton && (
+                    <Button
+                      size='small'
+                      variant='contained'
+                      color='error'
+                      sx={{
+                        minWidth: 'auto',
+                        px: 2,
+                        py: 0.5,
+                        fontSize: '0.75rem',
+                        fontWeight: 500,
+                        textTransform: 'none',
+                        borderRadius: 1,
+                        bgcolor: '#d32f2f',
+                        '&:hover': { bgcolor: '#b71c1c' }
+                      }}
+                      onClick={() => removeGuestFromWorkspaceBoard(board._id)}
+                    >
+                      Remove
+                    </Button>
+                  )}
+                </Stack>
+              </ListItem>
+            ))}
+          </List>
+
+          {guestBoards.length === 0 && (
+            <Box sx={{ textAlign: 'center', py: 1 }}>
+              <Typography variant='body2' color='text.secondary'>
+                {guest.display_name} is not a member of any workspace boards.
+              </Typography>
+            </Box>
+          )}
+        </Box>
+      </Popover>
+    </>
+  )
+}
