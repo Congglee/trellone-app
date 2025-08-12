@@ -1,4 +1,3 @@
-import ClearIcon from '@mui/icons-material/Clear'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -8,20 +7,30 @@ import List from '@mui/material/List'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Navigate, useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import path from '~/constants/path'
+import { WorkspaceGuestAction, WorkspaceRole } from '~/constants/type'
+import { useAppSelector } from '~/lib/redux/hooks'
 import MemberItemSkeleton from '~/pages/Workspaces/components/SkeletonLoading/MemberItemSkeleton'
 import WorkspaceCollaboratorsHeader from '~/pages/Workspaces/components/WorkspaceCollaboratorsHeader'
-import { useGetWorkspaceQuery } from '~/queries/workspaces'
+import RemoveGuestWorkspace from '~/pages/Workspaces/pages/WorkspaceGuests/components/RemoveGuestWorkspace'
+import ViewGuestBoards from '~/pages/Workspaces/pages/WorkspaceGuests/components/ViewGuestBoards'
+import { useGetWorkspaceQuery, useUpdateWorkspaceMutation } from '~/queries/workspaces'
 import { UserType } from '~/schemas/user.schema'
 
 export default function WorkspaceGuests() {
   const { workspaceId } = useParams()
 
+  const { profile } = useAppSelector((state) => state.auth)
+
   const { data: workspaceData, isLoading } = useGetWorkspaceQuery(workspaceId!)
   const workspace = workspaceData?.result
+  const members = workspace?.members || []
+
+  const currentUserMember = members.find((member) => member.user_id === profile?._id)
 
   const guests = useMemo(() => {
     return (workspace?.guests || []) as UserType[]
@@ -62,6 +71,42 @@ export default function WorkspaceGuests() {
 
     return { singleBoardGuestCount: singleBoardCount }
   }, [workspace?.boards, guests])
+
+  const [updateWorkspaceMutation, { isError }] = useUpdateWorkspaceMutation()
+
+  const addGuestToWorkspace = async (userId: string) => {
+    const payload = {
+      action: WorkspaceGuestAction.AddToWorkspace,
+      user_id: userId
+    }
+
+    await updateWorkspaceMutation({ id: workspaceId as string, body: { guest: payload } })
+  }
+
+  const onRemoveGuestFromWorkspace = async (userId: string) => {
+    const payload = {
+      action: WorkspaceGuestAction.RemoveFromWorkspace,
+      user_id: userId
+    }
+
+    await updateWorkspaceMutation({ id: workspaceId as string, body: { guest: payload } })
+  }
+
+  const onRemoveGuestFromWorkspaceBoard = async (userId: string, boardId: string) => {
+    const payload = {
+      action: WorkspaceGuestAction.RemoveFromBoard,
+      user_id: userId,
+      board_id: boardId
+    }
+
+    await updateWorkspaceMutation({ id: workspaceId as string, body: { guest: payload } })
+  }
+
+  useEffect(() => {
+    if (isError) {
+      toast.error('Not enough admins')
+    }
+  }, [isError])
 
   if (!workspace && !isLoading) {
     return <Navigate to={path.boardsList} />
@@ -127,6 +172,8 @@ export default function WorkspaceGuests() {
             {isLoading
               ? Array.from({ length: 4 }).map((_, index) => <MemberItemSkeleton key={`skeleton-${index}`} />)
               : guests.map((guest) => {
+                  const isCurrentGuestUser = guest._id === profile?._id
+
                   const guestBoards =
                     workspace?.boards.filter((board) => board.members?.some((m) => m.user_id === guest._id)) || []
                   const totalGuestBoardCounts = guestBoards.length
@@ -170,30 +217,25 @@ export default function WorkspaceGuests() {
                         </Stack>
 
                         <Stack direction='row' alignItems='center' gap={1} flexWrap='wrap'>
+                          <ViewGuestBoards
+                            totalGuestBoardCounts={totalGuestBoardCounts}
+                            guestBoards={guestBoards}
+                            guest={guest}
+                            showRemoveButton={!isCurrentGuestUser && currentUserMember?.role === WorkspaceRole.Admin}
+                            onRemoveGuestFromWorkspaceBoard={onRemoveGuestFromWorkspaceBoard}
+                          />
                           <Button
                             size='small'
                             variant='outlined'
-                            disabled={totalGuestBoardCounts === 0}
-                            sx={{ borderRadius: 1, textTransform: 'none', minWidth: 120 }}
-                          >
-                            View boards ({totalGuestBoardCounts})
-                          </Button>
-                          <Button
-                            size='small'
-                            variant='outlined'
-                            disabled
+                            onClick={() => addGuestToWorkspace(guest._id)}
                             sx={{ borderRadius: 1, textTransform: 'none', minWidth: 120 }}
                           >
                             Add to Workspace
                           </Button>
-                          <Button
-                            size='small'
-                            variant='outlined'
-                            sx={{ borderRadius: 1, textTransform: 'none', minWidth: 120 }}
-                            startIcon={<ClearIcon />}
-                          >
-                            Remove...
-                          </Button>
+                          <RemoveGuestWorkspace
+                            onRemoveGuestFromWorkspace={onRemoveGuestFromWorkspace}
+                            userId={guest._id}
+                          />
                         </Stack>
                       </Stack>
                     </Paper>

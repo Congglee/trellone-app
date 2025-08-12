@@ -148,3 +148,15 @@ export const WorkspaceMemberActionValues = [
   WorkspaceMemberAction.RemoveFromBoard,
   WorkspaceMemberAction.Leave
 ] as const
+
+export const WorkspaceGuestAction = {
+  AddToWorkspace: 'ADD_TO_WORKSPACE',
+  RemoveFromWorkspace: 'REMOVE_FROM_WORKSPACE',
+  RemoveFromBoard: 'REMOVE_FROM_BOARD'
+} as const
+
+export const WorkspaceGuestActionValues = [
+  WorkspaceGuestAction.AddToWorkspace,
+  WorkspaceGuestAction.RemoveFromWorkspace,
+  WorkspaceGuestAction.RemoveFromBoard
+] as const

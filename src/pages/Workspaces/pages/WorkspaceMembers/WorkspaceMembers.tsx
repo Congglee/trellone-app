@@ -137,10 +137,10 @@ export default function WorkspaceMembers() {
               if (isCurrentUser) {
                 buttonText = 'Leave'
               } else if (currentUserRole === WorkspaceRole.Admin) {
-                buttonText = 'Remove'
+                buttonText = 'Remove...'
                 isDisabled = false
               } else if (currentUserRole === WorkspaceRole.Normal) {
-                buttonText = 'Remove'
+                buttonText = 'Remove...'
                 isDisabled = true
               }
 
@@ -192,8 +192,7 @@ export default function WorkspaceMembers() {
                         totalMemberBoardCounts={totalMemberBoardCounts}
                         memberBoards={memberBoards}
                         member={member}
-                        isCurrentUser={isCurrentUser}
-                        currentUserRole={currentUserRole as WorkspaceMemberRoleType}
+                        showRemoveButton={!isCurrentUser && currentUserRole === WorkspaceRole.Admin}
                         onRemoveMemberFromWorkspaceBoard={onRemoveMemberFromWorkspaceBoard}
                       />
                       <RoleSelect
@@ -201,7 +200,7 @@ export default function WorkspaceMembers() {
                         disabled={currentUserRole !== WorkspaceRole.Admin || isCurrentUser}
                         onRoleChange={(newRole) => onMemberWorkspaceRoleChange(member.user_id, newRole)}
                       />
-                      {buttonText === 'Remove' && (
+                      {buttonText === 'Remove...' && (
                         <RemoveMemberWorkspace
                           isDisabled={isDisabled}
                           buttonText={buttonText}

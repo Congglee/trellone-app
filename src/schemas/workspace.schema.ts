@@ -1,5 +1,11 @@
 import z from 'zod'
-import { WorkspaceMemberActionValues, WorkspaceRoleValues, WorkspaceType, WorkspaceTypeValues } from '~/constants/type'
+import {
+  WorkspaceGuestActionValues,
+  WorkspaceMemberActionValues,
+  WorkspaceRoleValues,
+  WorkspaceType,
+  WorkspaceTypeValues
+} from '~/constants/type'
 import { BoardSchema } from '~/schemas/board.schema'
 import { UserSchema } from '~/schemas/user.schema'
 
@@ -76,6 +82,14 @@ const WorkspaceMemberPayloadSchema = z.object({
 
 export type WorkspaceMemberPayloadType = z.TypeOf<typeof WorkspaceMemberPayloadSchema>
 
+const WorkspaceGuestPayloadSchema = z.object({
+  action: z.enum(WorkspaceGuestActionValues),
+  user_id: z.string(),
+  board_id: z.string().optional()
+})
+
+export type WorkspaceGuestPayloadType = z.TypeOf<typeof WorkspaceGuestPayloadSchema>
+
 export const UpdateWorkspaceBody = z.object({
   title: z
     .string()
@@ -96,7 +110,8 @@ export const UpdateWorkspaceBody = z.object({
     .default(WorkspaceType.Public)
     .optional(),
   logo: z.string().url().optional(),
-  member: WorkspaceMemberPayloadSchema.optional()
+  member: WorkspaceMemberPayloadSchema.optional(),
+  guest: WorkspaceGuestPayloadSchema.optional()
 })
 
 export type UpdateWorkspaceBodyType = z.TypeOf<typeof UpdateWorkspaceBody>

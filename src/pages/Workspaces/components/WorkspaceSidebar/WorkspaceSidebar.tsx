@@ -1,6 +1,7 @@
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import GroupsIcon from '@mui/icons-material/Groups'
 import SettingsIcon from '@mui/icons-material/Settings'
+import ViewKanbanIcon from '@mui/icons-material/ViewKanban'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
@@ -81,9 +82,9 @@ export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps)
         Your Boards
       </Typography>
 
-      <List>
-        {boards?.length > 0 &&
-          boards.map((board) => (
+      {boards?.length > 0 ? (
+        <List>
+          {boards.map((board) => (
             <ListItem key={board._id} disablePadding>
               <ListItemButton component={Link} to={`/boards/${board._id}`}>
                 <ListItemIcon>
@@ -95,7 +96,51 @@ export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps)
               </ListItemButton>
             </ListItem>
           ))}
-      </List>
+        </List>
+      ) : (
+        <Box
+          sx={{
+            mx: 2,
+            mb: 2,
+            p: 3,
+            borderRadius: 1,
+            backgroundColor: (theme) =>
+              theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.02)',
+            border: (theme) =>
+              `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'}`,
+            textAlign: 'center'
+          }}
+        >
+          <Stack alignItems='center' spacing={2}>
+            <ViewKanbanIcon
+              sx={{
+                fontSize: 48,
+                color: (theme) => (theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)')
+              }}
+            />
+            <Stack spacing={1}>
+              <Typography
+                variant='body2'
+                sx={{
+                  color: (theme) => (theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)'),
+                  fontWeight: 500
+                }}
+              >
+                No boards yet
+              </Typography>
+              <Typography
+                variant='caption'
+                sx={{
+                  color: (theme) => (theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)'),
+                  lineHeight: 1.4
+                }}
+              >
+                Create your first board to get started
+              </Typography>
+            </Stack>
+          </Stack>
+        </Box>
+      )}
     </Box>
   )
 }

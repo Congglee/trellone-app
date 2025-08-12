@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import CloseIcon from '@mui/icons-material/Close'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
@@ -8,48 +9,47 @@ import ListItem from '@mui/material/ListItem'
 import Popover from '@mui/material/Popover'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useState } from 'react'
 import { BoardResType } from '~/schemas/board.schema'
-import { WorkspaceMemberType } from '~/schemas/workspace.schema'
+import { UserType } from '~/schemas/user.schema'
 
-interface ViewMemberBoardsProps {
-  totalMemberBoardCounts: number
-  memberBoards: BoardResType['result'][]
-  onRemoveMemberFromWorkspaceBoard: (userId: string, boardId: string) => Promise<void>
-  member: WorkspaceMemberType
+interface ViewGuestBoardsProps {
+  totalGuestBoardCounts: number
+  guestBoards: BoardResType['result'][]
+  guest: UserType
   showRemoveButton: boolean
+  onRemoveGuestFromWorkspaceBoard: (guestId: string, boardId: string) => Promise<void>
 }
 
-export default function ViewMemberBoards({
-  totalMemberBoardCounts = 0,
-  memberBoards,
-  onRemoveMemberFromWorkspaceBoard,
-  member,
-  showRemoveButton
-}: ViewMemberBoardsProps) {
-  const [anchorViewMemberBoardsPopoverElement, setAnchorViewMemberBoardsPopoverElement] = useState<HTMLElement | null>(
+export default function ViewGuestBoards({
+  totalGuestBoardCounts,
+  guestBoards,
+  guest,
+  showRemoveButton,
+  onRemoveGuestFromWorkspaceBoard
+}: ViewGuestBoardsProps) {
+  const [anchorViewGuestBoardsPopoverElement, setAnchorViewGuestBoardsPopoverElement] = useState<HTMLElement | null>(
     null
   )
 
-  const isViewMemberBoardsPopoverOpen = Boolean(anchorViewMemberBoardsPopoverElement)
+  const isViewGuestBoardsPopoverOpen = Boolean(anchorViewGuestBoardsPopoverElement)
 
-  const viewMemberBoardsPopoverId = 'view-member-boards-popover'
+  const viewGuestBoardsPopoverId = 'view-guest-boards-popover'
 
-  const toggleViewMemberBoardsPopover = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    if (isViewMemberBoardsPopoverOpen) {
-      setAnchorViewMemberBoardsPopoverElement(null)
+  const toggleViewGuestBoardsPopover = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (isViewGuestBoardsPopoverOpen) {
+      setAnchorViewGuestBoardsPopoverElement(null)
     } else {
-      setAnchorViewMemberBoardsPopoverElement(event.currentTarget)
+      setAnchorViewGuestBoardsPopoverElement(event.currentTarget)
     }
   }
 
-  const handleViewMemberBoardsPopoverClose = () => {
-    setAnchorViewMemberBoardsPopoverElement(null)
+  const handleViewGuestBoardsPopoverClose = () => {
+    setAnchorViewGuestBoardsPopoverElement(null)
   }
 
-  const removeMemberFromWorkspaceBoard = async (boardId: string) => {
-    await onRemoveMemberFromWorkspaceBoard(member.user_id, boardId)
-    handleViewMemberBoardsPopoverClose()
+  const removeGuestFromWorkspaceBoard = async (boardId: string) => {
+    await onRemoveGuestFromWorkspaceBoard(guest._id, boardId)
+    handleViewGuestBoardsPopoverClose()
   }
 
   return (
@@ -57,18 +57,18 @@ export default function ViewMemberBoards({
       <Button
         size='small'
         variant='outlined'
-        disabled={totalMemberBoardCounts === 0}
-        onClick={toggleViewMemberBoardsPopover}
+        disabled={totalGuestBoardCounts === 0}
+        onClick={toggleViewGuestBoardsPopover}
         sx={{ borderRadius: 1, textTransform: 'none', minWidth: 120 }}
       >
-        View boards ({totalMemberBoardCounts || 0})
+        View boards ({totalGuestBoardCounts || 0})
       </Button>
 
       <Popover
-        id={viewMemberBoardsPopoverId}
-        open={isViewMemberBoardsPopoverOpen}
-        anchorEl={anchorViewMemberBoardsPopoverElement}
-        onClose={toggleViewMemberBoardsPopover}
+        id={viewGuestBoardsPopoverId}
+        open={isViewGuestBoardsPopoverOpen}
+        anchorEl={anchorViewGuestBoardsPopoverElement}
+        onClose={toggleViewGuestBoardsPopover}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         sx={{
           '& .MuiPopover-paper': {
@@ -87,17 +87,17 @@ export default function ViewMemberBoards({
             <Typography variant='subtitle1' sx={{ fontWeight: 'medium' }}>
               Workspace boards
             </Typography>
-            <IconButton size='small' onClick={toggleViewMemberBoardsPopover} sx={{ position: 'absolute', right: 0 }}>
+            <IconButton size='small' onClick={toggleViewGuestBoardsPopover} sx={{ position: 'absolute', right: 0 }}>
               <CloseIcon fontSize='small' />
             </IconButton>
           </Box>
 
           <Typography variant='body2' sx={{ mb: 2, color: 'text.secondary' }}>
-            {member.display_name} is a member of the following Workspace boards:
+            {guest.display_name} is a member of the following Workspace boards:
           </Typography>
 
           <List disablePadding sx={{ maxHeight: 280, overflowY: 'auto' }}>
-            {memberBoards.map((board) => (
+            {guestBoards.map((board) => (
               <ListItem
                 key={board._id}
                 disablePadding
@@ -149,11 +149,9 @@ export default function ViewMemberBoards({
                         textTransform: 'none',
                         borderRadius: 1,
                         bgcolor: '#d32f2f',
-                        '&:hover': {
-                          bgcolor: '#b71c1c'
-                        }
+                        '&:hover': { bgcolor: '#b71c1c' }
                       }}
-                      onClick={() => removeMemberFromWorkspaceBoard(board._id)}
+                      onClick={() => removeGuestFromWorkspaceBoard(board._id)}
                     >
                       Remove
                     </Button>
@@ -163,10 +161,10 @@ export default function ViewMemberBoards({
             ))}
           </List>
 
-          {memberBoards.length === 0 && (
+          {guestBoards.length === 0 && (
             <Box sx={{ textAlign: 'center', py: 1 }}>
               <Typography variant='body2' color='text.secondary'>
-                {member.display_name} is not a member of any workspace boards.
+                {guest.display_name} is not a member of any workspace boards.
               </Typography>
             </Box>
           )}

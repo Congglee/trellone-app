@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import Popover from '@mui/material/Popover'
+import ClearIcon from '@mui/icons-material/Clear'
 
 interface RemoveMemberWorkspaceProps {
   isDisabled: boolean
@@ -51,6 +52,7 @@ export default function RemoveMemberWorkspace({
         disabled={isDisabled}
         sx={{ borderRadius: 1, textTransform: 'none', minWidth: 120 }}
         onClick={toggleRemoveMemberWorkspacePopover}
+        startIcon={<ClearIcon />}
       >
         {buttonText}
       </Button>
@@ -99,11 +101,11 @@ export default function RemoveMemberWorkspace({
               sx={{
                 color: 'text.secondary',
                 width: '100%',
-                textDecoration: 'underline'
+                textDecoration: 'underline',
+                fontSize: 12
               }}
             >
-              Remove all access to the Workspace. The member will remain on all their boards in this Workspace. They
-              will receive a notification.
+              Remove all access to the Workspace. The member will remain on all their boards in this Workspace.
             </Typography>
           </Button>
         </Box>
