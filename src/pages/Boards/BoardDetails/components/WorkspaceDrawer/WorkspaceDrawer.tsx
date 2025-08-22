@@ -19,21 +19,20 @@ import Typography from '@mui/material/Typography'
 import { Link } from 'react-router-dom'
 import DrawerHeader from '~/components/DrawerHeader'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
-import { useGetWorkspaceQuery } from '~/queries/workspaces'
+import path from '~/constants/path'
+import { WorkspaceResType } from '~/schemas/workspace.schema'
 
 interface WorkspaceDrawerProps {
   open: boolean
   onOpen: (open: boolean) => void
   boardId?: string
-  workspaceId?: string
+  workspace?: WorkspaceResType['result']
 }
 
-export default function WorkspaceDrawer({ open, onOpen, boardId, workspaceId }: WorkspaceDrawerProps) {
+export default function WorkspaceDrawer({ open, onOpen, boardId, workspace }: WorkspaceDrawerProps) {
   const theme = useTheme()
   const isDarkMode = theme.palette.mode === 'dark'
 
-  const { data: workspaceData } = useGetWorkspaceQuery(workspaceId!)
-  const workspace = workspaceData?.result
   const boards = workspace?.boards || []
 
   return (
@@ -86,7 +85,7 @@ export default function WorkspaceDrawer({ open, onOpen, boardId, workspaceId }: 
             </IconButton>
           }
         >
-          <ListItemButton onClick={() => {}}>
+          <ListItemButton component={Link} to={path.workspaceMembers.replace(':workspaceId', workspace?._id as string)}>
             <ListItemIcon>
               <GroupsIcon />
             </ListItemIcon>
@@ -111,19 +110,27 @@ export default function WorkspaceDrawer({ open, onOpen, boardId, workspaceId }: 
       </Typography>
 
       <List>
-        {boards?.length > 0 &&
-          boards.map((board) => (
-            <ListItem key={board._id} disablePadding>
-              <ListItemButton component={Link} to={`/boards/${board._id}`} selected={boardId === board._id}>
-                <ListItemIcon>
-                  <Avatar sx={{ width: 24, height: 24 }} variant='rounded' src={board?.cover_photo}>
-                    {board?.title.charAt(0)}
-                  </Avatar>
-                </ListItemIcon>
-                <ListItemText secondary={board?.title} />
-              </ListItemButton>
-            </ListItem>
-          ))}
+        {boards.map((board) => (
+          <ListItem key={board._id} disablePadding>
+            <ListItemButton
+              component={Link}
+              to={`/boards/${board._id}`}
+              selected={boardId === board._id}
+              sx={{
+                '&.Mui-selected': {
+                  color: (theme) => (theme.palette.mode === 'dark' ? 'primary.contrastText' : 'primary.contrastText')
+                }
+              }}
+            >
+              <ListItemIcon>
+                <Avatar sx={{ width: 24, height: 24 }} variant='rounded' src={board?.cover_photo}>
+                  {board?.title.charAt(0)}
+                </Avatar>
+              </ListItemIcon>
+              <ListItemText>{board?.title}</ListItemText>
+            </ListItemButton>
+          </ListItem>
+        ))}
       </List>
     </Drawer>
   )

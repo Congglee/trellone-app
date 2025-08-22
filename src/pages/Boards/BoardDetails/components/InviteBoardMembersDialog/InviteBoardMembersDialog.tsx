@@ -242,79 +242,77 @@ export default function InviteBoardMembersDialog({ boardId, workspaceId }: Invit
               }}
             >
               <Tab label={`Board members ${boardMembers.length}`} />
-              <Tab label='Join requests' disabled />
             </Tabs>
 
             {activeTab === 0 && (
               <Box>
-                {boardMembers.length > 0 &&
-                  boardMembers.map((member) => {
-                    const isCurrentUser = member.user_id === profile?._id
+                {boardMembers.map((member) => {
+                  const isCurrentUser = member.user_id === profile?._id
 
-                    return (
-                      <Box
-                        key={member._id}
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          gap: 2,
-                          py: 2,
-                          borderBottom: (theme) => `1px solid ${theme.palette.mode === 'dark' ? '#4a5568' : '#e2e8f0'}`,
-                          '&:last-child': {
-                            borderBottom: 'none'
-                          }
-                        }}
-                      >
-                        <Box sx={{ display: 'flex', flex: 1, alignItems: 'center', gap: 2 }}>
-                          <Avatar
+                  return (
+                    <Box
+                      key={member._id}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 2,
+                        py: 2,
+                        borderBottom: (theme) => `1px solid ${theme.palette.mode === 'dark' ? '#4a5568' : '#e2e8f0'}`,
+                        '&:last-child': {
+                          borderBottom: 'none'
+                        }
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', flex: 1, alignItems: 'center', gap: 2 }}>
+                        <Avatar
+                          sx={{
+                            width: 32,
+                            height: 32,
+                            backgroundColor: (theme) => (theme.palette.mode === 'dark' ? '#4a5568' : '#e2e8f0'),
+                            color: (theme) => (theme.palette.mode === 'dark' ? '#ffffff' : '#000000'),
+                            fontSize: '14px'
+                          }}
+                          src={member.avatar}
+                          alt={member.display_name}
+                        />
+                        <Box>
+                          <Typography
                             sx={{
-                              width: 32,
-                              height: 32,
-                              backgroundColor: (theme) => (theme.palette.mode === 'dark' ? '#4a5568' : '#e2e8f0'),
-                              color: (theme) => (theme.palette.mode === 'dark' ? '#ffffff' : '#000000'),
-                              fontSize: '14px'
+                              fontSize: '14px',
+                              fontWeight: 500,
+                              color: (theme) => (theme.palette.mode === 'dark' ? '#ffffff' : '#000000')
                             }}
-                            src={member.avatar}
-                            alt={member.display_name}
-                          />
-                          <Box>
-                            <Typography
-                              sx={{
-                                fontSize: '14px',
-                                fontWeight: 500,
-                                color: (theme) => (theme.palette.mode === 'dark' ? '#ffffff' : '#000000')
-                              }}
-                            >
-                              {member.display_name} {isCurrentUser && '(you)'}
-                            </Typography>
-                            <Typography
-                              sx={{
-                                fontSize: '12px',
-                                color: (theme) => (theme.palette.mode === 'dark' ? '#a0aec0' : '#4a5568')
-                              }}
-                            >
-                              @{member.username} • {getWorkspaceRole(member.user_id, workspace)}
-                            </Typography>
-                          </Box>
+                          >
+                            {member.display_name} {isCurrentUser && '(you)'}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontSize: '12px',
+                              color: (theme) => (theme.palette.mode === 'dark' ? '#a0aec0' : '#4a5568')
+                            }}
+                          >
+                            @{member.username} • {getWorkspaceRole(member.user_id, workspace)}
+                          </Typography>
                         </Box>
-                        <FormControl size='small' sx={{ width: { xs: '60px', sm: '100px' }, flexShrink: 0 }}>
-                          <Select value={member.role} disabled>
-                            {BoardRoleValues.map((role) => (
-                              <MenuItem key={role} value={role}>
-                                <Typography
-                                  variant='body2'
-                                  sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
-                                >
-                                  {role}
-                                </Typography>
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
                       </Box>
-                    )
-                  })}
+                      <FormControl size='small' sx={{ width: { xs: '60px', sm: '100px' }, flexShrink: 0 }}>
+                        <Select value={member.role} disabled>
+                          {BoardRoleValues.map((role) => (
+                            <MenuItem key={role} value={role}>
+                              <Typography
+                                variant='body2'
+                                sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+                              >
+                                {role}
+                              </Typography>
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  )
+                })}
               </Box>
             )}
           </Box>

@@ -6,7 +6,7 @@ import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import { useClickAway } from '@uidotdev/usehooks'
 import cloneDeep from 'lodash/cloneDeep'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import Column from '~/pages/Boards/BoardDetails/components/Column/Column'
 import { useAddColumnMutation } from '~/queries/columns'
@@ -22,7 +22,7 @@ export default function ColumnsList({ columns }: ColumnsListProps) {
   const [newColumnFormOpen, setNewColumnFormOpen] = useState(false)
   const [newColumnTitle, setNewColumnTitle] = useState('')
 
-  const activeColumns = useMemo(() => columns.filter((column) => !column._destroy), [columns])
+  const activeColumns = columns.filter((column) => !column._destroy)
 
   const { activeBoard } = useAppSelector((state) => state.board)
   const { socket } = useAppSelector((state) => state.app)

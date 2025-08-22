@@ -11,26 +11,26 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
-import { CardAttachmentAction } from '~/constants/type'
 import {
-  CardAttachmentPayloadType,
   CardAttachmentType,
   UpdateCardLinkAttachmentBody,
   UpdateCardLinkAttachmentBodyType
 } from '~/schemas/card.schema'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import CloseIcon from '@mui/icons-material/Close'
+import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
+import { useUpdateCardAttachmentMutation } from '~/queries/cards'
+import { updateActiveCard } from '~/store/slices/card.slice'
+import { updateCardInBoard } from '~/store/slices/board.slice'
 
 interface EditCardLinkAttachmentFormProps {
   attachment: CardAttachmentType
-  onUpdateCardAttachment: (attachment: CardAttachmentPayloadType) => Promise<void>
   onBackToMenuActions: () => void
   onClose: () => void
 }
 
 export default function EditCardLinkAttachmentForm({
   attachment,
-  onUpdateCardAttachment,
   onBackToMenuActions,
   onClose
 }: EditCardLinkAttachmentFormProps) {
@@ -51,17 +51,34 @@ export default function EditCardLinkAttachmentForm({
     }
   }, [attachment, reset])
 
+  const dispatch = useAppDispatch()
+
+  const { activeCard } = useAppSelector((state) => state.card)
+  const { socket } = useAppSelector((state) => state.app)
+
+  const [updateCardAttachmentMutation] = useUpdateCardAttachmentMutation()
+
   const onSubmit = handleSubmit(async (values) => {
     const payload = {
-      action: CardAttachmentAction.Edit,
       type: attachment.type,
-      link: values,
-      attachment_id: attachment.attachment_id
+      link: values
     }
 
-    onUpdateCardAttachment(payload).finally(() => {
-      onClose()
-    })
+    const updatedCardRes = await updateCardAttachmentMutation({
+      card_id: activeCard?._id as string,
+      attachment_id: attachment.attachment_id,
+      body: payload
+    }).unwrap()
+
+    const updatedCard = updatedCardRes.result
+
+    dispatch(updateActiveCard(updatedCard))
+    dispatch(updateCardInBoard(updatedCard))
+
+    // Emit socket event to broadcast the card update to other users
+    socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
+
+    onClose()
   })
 
   return (

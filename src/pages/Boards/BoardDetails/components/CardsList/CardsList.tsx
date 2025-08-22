@@ -1,6 +1,5 @@
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
-import { useMemo } from 'react'
 import Card from '~/pages/Boards/BoardDetails/components/Card/Card'
 import { CardType } from '~/schemas/card.schema'
 
@@ -9,7 +8,7 @@ interface CardsListProps {
 }
 
 export default function CardsList({ cards }: CardsListProps) {
-  const activeCards = useMemo(() => cards.filter((card) => !card._destroy), [cards])
+  const activeCards = cards.filter((card) => !card._destroy)
 
   return (
     <SortableContext items={activeCards.map((card) => card._id)} strategy={verticalListSortingStrategy}>

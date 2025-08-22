@@ -1,23 +1,13 @@
-import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
-import AddToDriveOutlinedIcon from '@mui/icons-material/AddToDriveOutlined'
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined'
-import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined'
-import AspectRatioOutlinedIcon from '@mui/icons-material/AspectRatioOutlined'
 import AttachmentIcon from '@mui/icons-material/Attachment'
-import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined'
-import AutoFixHighOutlinedIcon from '@mui/icons-material/AutoFixHighOutlined'
 import CancelIcon from '@mui/icons-material/Cancel'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined'
 import CreditCardIcon from '@mui/icons-material/CreditCard'
 import DvrOutlinedIcon from '@mui/icons-material/DvrOutlined'
 import ExitToAppIcon from '@mui/icons-material/ExitToApp'
-import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined'
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
-import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import SubjectRoundedIcon from '@mui/icons-material/SubjectRounded'
-import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Modal from '@mui/material/Modal'
@@ -36,15 +26,9 @@ import CardUserGroup from '~/components/Modal/ActiveCard/CardUserGroup'
 import CoverPopover from '~/components/Modal/ActiveCard/CoverPopover'
 import DatesMenu from '~/components/Modal/ActiveCard/DatesMenu'
 import RemoveActiveCardPopover from '~/components/Modal/ActiveCard/RemoveActiveCardPopover'
-import { CardMemberAction } from '~/constants/type'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
-import { useUpdateCardMutation } from '~/queries/cards'
-import {
-  CardAttachmentPayloadType,
-  CardMemberPayloadType,
-  CommentPayloadType,
-  UpdateCardBodyType
-} from '~/schemas/card.schema'
+import { useAddCardMemberMutation, useRemoveCardMemberMutation, useUpdateCardMutation } from '~/queries/cards'
+import { UpdateCardBodyType } from '~/schemas/card.schema'
 import { updateCardInBoard } from '~/store/slices/board.slice'
 import { clearAndHideActiveCardModal, updateActiveCard } from '~/store/slices/card.slice'
 
@@ -75,6 +59,8 @@ export default function ActiveCard() {
   const { socket } = useAppSelector((state) => state.app)
 
   const [updateCardMutation] = useUpdateCardMutation()
+  const [addCardMemberMutation] = useAddCardMemberMutation()
+  const [removeCardMemberMutation] = useRemoveCardMemberMutation()
 
   const handleActiveCardModalClose = () => {
     dispatch(clearAndHideActiveCardModal())
@@ -109,14 +95,6 @@ export default function ActiveCard() {
     handleUpdateActiveCard({ cover_photo })
   }
 
-  const onUpdateCardComment = async (comment: CommentPayloadType) => {
-    handleUpdateActiveCard({ comment })
-  }
-
-  const onUpdateCardMembers = async (member: CardMemberPayloadType) => {
-    handleUpdateActiveCard({ member })
-  }
-
   const onUpdateCardDueDateAndStatus = async (due_date: Date | null, is_completed: boolean | null) => {
     handleUpdateActiveCard({ due_date, is_completed })
   }
@@ -125,8 +103,34 @@ export default function ActiveCard() {
     handleUpdateActiveCard({ _destroy })
   }
 
-  const onUpdateCardAttachment = async (attachment: CardAttachmentPayloadType) => {
-    handleUpdateActiveCard({ attachment })
+  const onAddCardMember = async (user_id: string) => {
+    const addCardMemberRes = await addCardMemberMutation({
+      card_id: activeCard?._id as string,
+      body: { user_id }
+    }).unwrap()
+
+    const updatedCard = addCardMemberRes.result
+
+    dispatch(updateActiveCard(updatedCard))
+    dispatch(updateCardInBoard(updatedCard))
+
+    // Emit socket event to broadcast the card update to other users
+    socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
+  }
+
+  const onRemoveCardMember = async (user_id: string) => {
+    const removeCardMemberRes = await removeCardMemberMutation({
+      card_id: activeCard?._id as string,
+      user_id
+    }).unwrap()
+
+    const updatedCard = removeCardMemberRes.result
+
+    dispatch(updateActiveCard(updatedCard))
+    dispatch(updateCardInBoard(updatedCard))
+
+    // Emit socket event to broadcast the card update to other users
+    socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
   }
 
   return (
@@ -183,7 +187,11 @@ export default function ActiveCard() {
             <Box sx={{ mb: 3 }}>
               <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Members</Typography>
 
-              <CardUserGroup cardMembers={activeCard?.members || []} onUpdateCardMembers={onUpdateCardMembers} />
+              <CardUserGroup
+                cardMembers={activeCard?.members || []}
+                onAddCardMember={onAddCardMember}
+                onRemoveCardMember={onRemoveCardMember}
+              />
             </Box>
 
             {activeCard?.due_date && (
@@ -219,7 +227,6 @@ export default function ActiveCard() {
 
                 <CardAttachments
                   cardAttachments={activeCard?.attachments || []}
-                  onUpdateCardAttachment={onUpdateCardAttachment}
                   attachmentPopoverButtonRef={attachmentButtonRef}
                 />
               </Box>
@@ -233,11 +240,7 @@ export default function ActiveCard() {
                 </Typography>
               </Box>
 
-              <CardActivitySection
-                cardComments={activeCard?.comments || []}
-                onUpdateCardComment={onUpdateCardComment}
-                onUpdateActiveCard={handleUpdateActiveCard}
-              />
+              <CardActivitySection cardComments={activeCard?.comments || []} />
             </Box>
           </Grid>
 
@@ -250,26 +253,13 @@ export default function ActiveCard() {
                     color: 'error.light',
                     '&:hover': { color: 'error.light' }
                   }}
-                  onClick={() =>
-                    onUpdateCardMembers({
-                      user_id: profile?._id as string,
-                      action: CardMemberAction.Remove
-                    })
-                  }
+                  onClick={() => onRemoveCardMember(profile?._id as string)}
                 >
                   <ExitToAppIcon fontSize='small' />
                   Leave
                 </SidebarItem>
               ) : (
-                <SidebarItem
-                  className='active'
-                  onClick={() =>
-                    onUpdateCardMembers({
-                      user_id: profile?._id as string,
-                      action: CardMemberAction.Add
-                    })
-                  }
-                >
+                <SidebarItem className='active' onClick={() => onAddCardMember(profile?._id as string)}>
                   <Box
                     sx={{
                       width: '100%',
@@ -294,15 +284,7 @@ export default function ActiveCard() {
               </SidebarItem>
 
               <SidebarItem className='active' sx={{ p: 0 }}>
-                <AttachmentPopover ref={attachmentButtonRef} onUpdateCardAttachment={onUpdateCardAttachment} />
-              </SidebarItem>
-              <SidebarItem>
-                <LocalOfferOutlinedIcon fontSize='small' />
-                Labels
-              </SidebarItem>
-              <SidebarItem>
-                <TaskAltOutlinedIcon fontSize='small' />
-                Checklist
+                <AttachmentPopover ref={attachmentButtonRef} />
               </SidebarItem>
               <SidebarItem className='active' sx={{ p: 0 }}>
                 <DatesMenu
@@ -311,46 +293,12 @@ export default function ActiveCard() {
                   onUpdateCardDueDate={onUpdateCardDueDateAndStatus}
                 />
               </SidebarItem>
-              <SidebarItem>
-                <AutoFixHighOutlinedIcon fontSize='small' />
-                Custom Fields
-              </SidebarItem>
-            </Stack>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Power-Ups</Typography>
-            <Stack direction='column' spacing={1}>
-              <SidebarItem>
-                <AspectRatioOutlinedIcon fontSize='small' />
-                Card Size
-              </SidebarItem>
-              <SidebarItem>
-                <AddToDriveOutlinedIcon fontSize='small' />
-                Google Drive
-              </SidebarItem>
-              <SidebarItem>
-                <AddOutlinedIcon fontSize='small' />
-                Add Power-Ups
-              </SidebarItem>
             </Stack>
 
             <Divider sx={{ my: 2 }} />
 
             <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Actions</Typography>
             <Stack direction='column' spacing={1}>
-              <SidebarItem>
-                <ArrowForwardOutlinedIcon fontSize='small' />
-                Move
-              </SidebarItem>
-              <SidebarItem>
-                <ContentCopyOutlinedIcon fontSize='small' />
-                Copy
-              </SidebarItem>
-              <SidebarItem>
-                <AutoAwesomeOutlinedIcon fontSize='small' />
-                Make Template
-              </SidebarItem>
               <SidebarItem className='active' onClick={() => onUpdateCardArchiveStatus(!activeCard?._destroy)}>
                 {activeCard?._destroy ? (
                   <>
@@ -369,10 +317,6 @@ export default function ActiveCard() {
                   <RemoveActiveCardPopover cardId={activeCard?._id} columnId={activeCard?.column_id} />
                 </SidebarItem>
               )}
-              <SidebarItem>
-                <ShareOutlinedIcon fontSize='small' />
-                Share
-              </SidebarItem>
             </Stack>
           </Grid>
         </Grid>

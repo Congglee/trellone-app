@@ -8,12 +8,13 @@ import { useState } from 'react'
 import { CardCommentReactionAction } from '~/constants/type'
 import { useReactToCardCommentMutation } from '~/queries/cards'
 import { CardType, CommentType } from '~/schemas/card.schema'
-import { useAppSelector } from '~/lib/redux/hooks'
+import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
+import { updateActiveCard } from '~/store/slices/card.slice'
+import { updateCardInBoard } from '~/store/slices/board.slice'
 
 interface EmojiPickerPopoverProps {
   activeCard: CardType | null
   activeComment: CommentType | null
-  onUpdateActiveCard: (card: CardType) => Promise<CardType>
   onSetActiveComment: (comment: CommentType | null) => void
   comment: CommentType
 }
@@ -21,12 +22,15 @@ interface EmojiPickerPopoverProps {
 export default function EmojiPickerPopover({
   activeCard,
   activeComment,
-  onUpdateActiveCard,
   onSetActiveComment,
   comment
 }: EmojiPickerPopoverProps) {
   const { mode } = useColorScheme()
+
+  const dispatch = useAppDispatch()
+
   const { profile } = useAppSelector((state) => state.auth)
+  const { socket } = useAppSelector((state) => state.app)
 
   const [anchorEmojiPickerElement, setAnchorEmojiPickerElement] = useState<HTMLElement | null>(null)
 
@@ -68,9 +72,15 @@ export default function EmojiPickerPopover({
 
       const updatedCard = updatedCardRes.result
 
-      onUpdateActiveCard(updatedCard).finally(() => {
-        handleEmojiPickerClose()
-      })
+      dispatch(updateActiveCard(updatedCard))
+      dispatch(updateCardInBoard(updatedCard))
+
+      // Emit socket event to broadcast the card update to other users
+      socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
+
+      // onUpdateActiveCard(updatedCard).finally(() => {
+      //   handleEmojiPickerClose()
+      // })
     }
   }
 

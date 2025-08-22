@@ -1,32 +1,32 @@
 import AddIcon from '@mui/icons-material/Add'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Tooltip from '@mui/material/Tooltip'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import Popover from '@mui/material/Popover'
-import { RefObject, useMemo, useState } from 'react'
+import { RefObject, useState } from 'react'
 import { toast } from 'react-toastify'
 import EditCardFileAttachmentForm from '~/components/Modal/ActiveCard/CardAttachments/EditCardFileAttachmentForm'
 import EditCardLinkAttachmentForm from '~/components/Modal/ActiveCard/CardAttachments/EditCardLinkAttachmentForm'
 import FileAttachments from '~/components/Modal/ActiveCard/CardAttachments/FileAttachments'
 import LinkAttachments from '~/components/Modal/ActiveCard/CardAttachments/LinkAttachments'
 import RemoveCardAttachmentConfirm from '~/components/Modal/ActiveCard/CardAttachments/RemoveCardAttachmentConfirm'
-import { AttachmentType, CardAttachmentAction } from '~/constants/type'
-import { CardAttachmentPayloadType, CardAttachmentType } from '~/schemas/card.schema'
+import { AttachmentType } from '~/constants/type'
+import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
+import { useRemoveCardAttachmentMutation } from '~/queries/cards'
+import { CardAttachmentType } from '~/schemas/card.schema'
+import { updateCardInBoard } from '~/store/slices/board.slice'
+import { updateActiveCard } from '~/store/slices/card.slice'
 
 interface CardAttachmentsProps {
   cardAttachments: CardAttachmentType[]
-  onUpdateCardAttachment: (attachment: CardAttachmentPayloadType) => Promise<void>
   attachmentPopoverButtonRef?: RefObject<HTMLButtonElement | null>
 }
 
-export default function CardAttachments({
-  cardAttachments,
-  attachmentPopoverButtonRef,
-  onUpdateCardAttachment
-}: CardAttachmentsProps) {
+export default function CardAttachments({ cardAttachments, attachmentPopoverButtonRef }: CardAttachmentsProps) {
   const [anchorMenuActionsPopoverElement, setAnchorMenuActionsPopoverElement] = useState<HTMLElement | null>(null)
   const [showMenuActions, setShowMenuActions] = useState(false)
   const [showRemoveCardAttachmentConfirm, setShowRemoveCardAttachmentConfirm] = useState(false)
@@ -36,14 +36,9 @@ export default function CardAttachments({
 
   const popoverId = isMenuActionsPopoverOpen ? 'menu-actions-popover' : undefined
 
-  const linkAttachments = useMemo(
-    () => cardAttachments.filter((attachment) => attachment.type === AttachmentType.Link),
-    [cardAttachments]
-  )
-  const fileAttachments = useMemo(
-    () => cardAttachments.filter((attachment) => attachment.type === AttachmentType.File),
-    [cardAttachments]
-  )
+  const linkAttachments = cardAttachments.filter((attachment) => attachment.type === AttachmentType.Link)
+
+  const fileAttachments = cardAttachments.filter((attachment) => attachment.type === AttachmentType.File)
 
   const toggleMenuActionsPopover = (
     event: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>,
@@ -108,15 +103,9 @@ export default function CardAttachments({
 
   const [activeAttachment, setActiveAttachment] = useState<CardAttachmentType | null>(null)
 
-  const hasFilesAttachments = useMemo(
-    () => cardAttachments.some((attachment) => attachment.type === AttachmentType.File),
-    [cardAttachments]
-  )
+  const hasFilesAttachments = cardAttachments.some((attachment) => attachment.type === AttachmentType.File)
 
-  const hasLinksAttachments = useMemo(
-    () => cardAttachments.some((attachment) => attachment.type === AttachmentType.Link),
-    [cardAttachments]
-  )
+  const hasLinksAttachments = cardAttachments.some((attachment) => attachment.type === AttachmentType.Link)
 
   const onBackToMenuActionsFromRemove = () => {
     setShowRemoveCardAttachmentConfirm(false)
@@ -128,18 +117,32 @@ export default function CardAttachments({
     setShowMenuActions(true)
   }
 
-  const onRemoveCardAttachment = () => {
-    if (activeAttachment) {
-      const payload = {
-        action: CardAttachmentAction.Remove,
-        type: activeAttachment.type,
-        attachment_id: activeAttachment.attachment_id
-      }
+  const dispatch = useAppDispatch()
 
-      onUpdateCardAttachment(payload).finally(() => {
-        handleMenuActionsPopoverClose()
-      })
+  const { activeCard } = useAppSelector((state) => state.card)
+  const { socket } = useAppSelector((state) => state.app)
+
+  const [removeCardAttachmentMutation] = useRemoveCardAttachmentMutation()
+
+  const onRemoveCardAttachment = async () => {
+    if (!activeAttachment) {
+      return
     }
+
+    const updatedCardRes = await removeCardAttachmentMutation({
+      card_id: activeCard?._id as string,
+      attachment_id: activeAttachment.attachment_id
+    }).unwrap()
+
+    const updatedCard = updatedCardRes.result
+
+    dispatch(updateActiveCard(updatedCard))
+    dispatch(updateCardInBoard(updatedCard))
+
+    // Emit socket event to broadcast the card update to other users
+    socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
+
+    handleMenuActionsPopoverClose()
   }
 
   return (
@@ -200,16 +203,18 @@ export default function CardAttachments({
                 />
               </ListItemButton>
             </ListItem>
-            <ListItem disablePadding>
-              <ListItemButton sx={{ py: 0.5 }}>
-                <ListItemText
-                  primary='Comment'
-                  sx={{
-                    '& .MuiTypography-body1': { fontSize: '1em' }
-                  }}
-                />
-              </ListItemButton>
-            </ListItem>
+            <Tooltip title='This feature is under development for future release' arrow>
+              <ListItem disablePadding>
+                <ListItemButton sx={{ py: 0.5 }}>
+                  <ListItemText
+                    primary='Comment'
+                    sx={{
+                      '& .MuiTypography-body1': { fontSize: '1em' }
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            </Tooltip>
             {activeAttachment?.type === AttachmentType.File && (
               <ListItem disablePadding>
                 <ListItemButton
@@ -256,14 +261,12 @@ export default function CardAttachments({
           (activeAttachment?.type === AttachmentType.File ? (
             <EditCardFileAttachmentForm
               attachment={activeAttachment!}
-              onUpdateCardAttachment={onUpdateCardAttachment}
               onBackToMenuActions={onBackToMenuActionsFromEdit}
               onClose={handleMenuActionsPopoverClose}
             />
           ) : (
             <EditCardLinkAttachmentForm
               attachment={activeAttachment!}
-              onUpdateCardAttachment={onUpdateCardAttachment}
               onBackToMenuActions={onBackToMenuActionsFromEdit}
               onClose={handleMenuActionsPopoverClose}
             />

@@ -1,10 +1,6 @@
-import AddToDriveIcon from '@mui/icons-material/AddToDrive'
-import BoltIcon from '@mui/icons-material/Bolt'
-import FilterListIcon from '@mui/icons-material/FilterList'
 import MenuIcon from '@mui/icons-material/Menu'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard'
-import VpnLockIcon from '@mui/icons-material/VpnLock'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
@@ -17,11 +13,9 @@ import AppBar from '~/components/AppBar'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import BoardUserGroup from '~/pages/Boards/BoardDetails/components/BoardUserGroup'
 import InviteBoardMembersDialog from '~/pages/Boards/BoardDetails/components/InviteBoardMembersDialog'
-
 import { useUpdateBoardMutation } from '~/queries/boards'
 import { BoardResType } from '~/schemas/board.schema'
 import { updateActiveBoard } from '~/store/slices/board.slice'
-import { capitalizeFirstLetter } from '~/utils/formatters'
 
 interface BoardBarProps {
   workspaceDrawerOpen: boolean
@@ -172,28 +166,6 @@ export default function BoardBar({
                 onClick={toggleEditBoardTitleForm}
               />
             )}
-          </Tooltip>
-
-          <Tooltip title={capitalizeFirstLetter('public')}>
-            <IconButton color='inherit'>
-              <VpnLockIcon />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title='Add to Drive'>
-            <IconButton color='inherit'>
-              <AddToDriveIcon />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title='Automation'>
-            <IconButton color='inherit'>
-              <BoltIcon />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title='Filters'>
-            <Chip sx={MENU_STYLES} icon={<FilterListIcon />} label='Filters' clickable />
           </Tooltip>
         </Box>
 

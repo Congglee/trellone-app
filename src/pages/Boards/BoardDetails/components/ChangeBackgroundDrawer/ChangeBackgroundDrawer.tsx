@@ -30,9 +30,6 @@ import { useGetUnsplashSearchPhotosQuery, useUploadImageMutation } from '~/queri
 import { updateActiveBoard } from '~/store/slices/board.slice'
 import { singleFileValidator } from '~/utils/validators'
 
-// @ts-expect-error - Missing type definitions for mui-color-input package
-import { MuiColorInput, MuiColorInputValue } from 'mui-color-input'
-
 interface ChangeBackgroundDrawerProps {
   open: boolean
   onOpen: (open: boolean) => void
@@ -41,12 +38,7 @@ interface ChangeBackgroundDrawerProps {
 export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroundDrawerProps) {
   const theme = useTheme()
 
-  const [color, setColor] = useState<MuiColorInputValue>('')
   const [query, setQuery] = useState('Wallpapers')
-
-  const handleColorInputChange = (newValue: string) => {
-    setColor(newValue)
-  }
 
   const handleInputSearchPhotosChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = event.target.value
@@ -150,13 +142,6 @@ export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroun
 
           <Box>
             <Typography variant='caption' fontWeight={500}>
-              Colors
-            </Typography>
-            <MuiColorInput size='small' fullWidth value={color} onChange={handleColorInputChange} format='hex8' />{' '}
-          </Box>
-
-          <Box>
-            <Typography variant='caption' fontWeight={500}>
               Options
             </Typography>
 
@@ -192,21 +177,20 @@ export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroun
                 </ListItemButton>
               </ListItem>
 
-              {searchPhotos?.length > 0 &&
-                searchPhotos.map((photo) => {
-                  const { id, urls, description } = photo
+              {searchPhotos.map((photo) => {
+                const { id, urls, description } = photo
 
-                  return (
-                    <ImageListItem
-                      onClick={() => handleUpdateBoardCoverPhoto(urls.regular)}
-                      sx={{ p: 0 }}
-                      component={ListItemButton}
-                      key={id}
-                    >
-                      <img loading='lazy' src={urls?.thumb} alt={description ?? ''} />
-                    </ImageListItem>
-                  )
-                })}
+                return (
+                  <ImageListItem
+                    onClick={() => handleUpdateBoardCoverPhoto(urls.regular)}
+                    sx={{ p: 0 }}
+                    component={ListItemButton}
+                    key={id}
+                  >
+                    <img loading='lazy' src={urls?.thumb} alt={description ?? ''} />
+                  </ImageListItem>
+                )
+              })}
 
               {isLoading &&
                 Array.from({ length: 8 }).map((_, index) => (

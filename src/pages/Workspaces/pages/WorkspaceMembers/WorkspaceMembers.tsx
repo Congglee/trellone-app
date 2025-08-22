@@ -5,82 +5,27 @@ import List from '@mui/material/List'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import { Navigate, useParams } from 'react-router-dom'
 import path from '~/constants/path'
-import { WorkspaceMemberAction, WorkspaceRole } from '~/constants/type'
+import { WorkspaceRole } from '~/constants/type'
 import { useAppSelector } from '~/lib/redux/hooks'
+import MemberItemSkeleton from '~/pages/Workspaces/components/SkeletonLoading/MemberItemSkeleton'
 import WorkspaceCollaboratorsHeader from '~/pages/Workspaces/components/WorkspaceCollaboratorsHeader'
 import LeaveWorkspace from '~/pages/Workspaces/pages/WorkspaceMembers/components/LeaveWorkspace'
-import MemberItemSkeleton from '~/pages/Workspaces/components/SkeletonLoading/MemberItemSkeleton'
 import RemoveMemberWorkspace from '~/pages/Workspaces/pages/WorkspaceMembers/components/RemoveMemberWorkspace'
 import RoleSelect from '~/pages/Workspaces/pages/WorkspaceMembers/components/RoleSelect'
 import ViewMemberBoards from '~/pages/Workspaces/pages/WorkspaceMembers/components/ViewMemberBoards'
-import { useGetWorkspaceQuery, useUpdateWorkspaceMutation } from '~/queries/workspaces'
-import { WorkspaceMemberRoleType } from '~/schemas/workspace.schema'
+import { useGetWorkspaceQuery } from '~/queries/workspaces'
 
 export default function WorkspaceMembers() {
   const { workspaceId } = useParams()
 
   const { profile } = useAppSelector((state) => state.auth)
 
-  const navigate = useNavigate()
-
   const { data: workspaceData, isLoading } = useGetWorkspaceQuery(workspaceId!)
   const workspace = workspaceData?.result
   const members = workspace?.members || []
-
-  const [updateWorkspaceMutation, { isError }] = useUpdateWorkspaceMutation()
-
-  const onLeaveWorkspace = async (userId: string) => {
-    const payload = {
-      action: WorkspaceMemberAction.Leave,
-      user_id: userId
-    }
-
-    await updateWorkspaceMutation({ id: workspaceId as string, body: { member: payload } }).then((res) => {
-      if (!res.error) {
-        navigate(path.boardsList)
-      }
-    })
-  }
-
-  const onMemberWorkspaceRoleChange = async (userId: string, newRole: WorkspaceMemberRoleType) => {
-    const payload = {
-      action: WorkspaceMemberAction.EditRole,
-      user_id: userId,
-      role: newRole
-    }
-
-    await updateWorkspaceMutation({ id: workspaceId as string, body: { member: payload } })
-  }
-
-  const onRemoveMemberFromWorkspace = async (userId: string) => {
-    const payload = {
-      action: WorkspaceMemberAction.RemoveFromWorkspace,
-      user_id: userId
-    }
-
-    await updateWorkspaceMutation({ id: workspaceId as string, body: { member: payload } })
-  }
-
-  const onRemoveMemberFromWorkspaceBoard = async (userId: string, boardId: string) => {
-    const payload = {
-      action: WorkspaceMemberAction.RemoveFromBoard,
-      user_id: userId,
-      board_id: boardId
-    }
-
-    await updateWorkspaceMutation({ id: workspaceId as string, body: { member: payload } })
-  }
-
-  useEffect(() => {
-    if (isError) {
-      toast.error('Not enough admins')
-    }
-  }, [isError])
 
   if (!workspace && !isLoading) {
     return <Navigate to={path.boardsList} />
@@ -172,8 +117,8 @@ export default function WorkspaceMembers() {
                         sx={{
                           width: 36,
                           height: 36,
-                          bgcolor: (t) => (t.palette.mode === 'dark' ? 'grey.800' : 'grey.400'),
-                          color: (t) => (t.palette.mode === 'dark' ? 'grey.100' : 'white')
+                          bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'grey.800' : 'grey.400'),
+                          color: (theme) => (theme.palette.mode === 'dark' ? 'grey.100' : 'white')
                         }}
                       />
 
@@ -191,20 +136,22 @@ export default function WorkspaceMembers() {
                       <ViewMemberBoards
                         totalMemberBoardCounts={totalMemberBoardCounts}
                         memberBoards={memberBoards}
-                        member={member}
+                        workspaceId={workspaceId as string}
+                        userId={member.user_id}
+                        memberDisplayName={member.display_name}
                         showRemoveButton={!isCurrentUser && currentUserRole === WorkspaceRole.Admin}
-                        onRemoveMemberFromWorkspaceBoard={onRemoveMemberFromWorkspaceBoard}
                       />
                       <RoleSelect
                         currentRole={member.role}
                         disabled={currentUserRole !== WorkspaceRole.Admin || isCurrentUser}
-                        onRoleChange={(newRole) => onMemberWorkspaceRoleChange(member.user_id, newRole)}
+                        userId={member.user_id}
+                        workspaceId={workspaceId as string}
                       />
                       {buttonText === 'Remove...' && (
                         <RemoveMemberWorkspace
                           isDisabled={isDisabled}
                           buttonText={buttonText}
-                          onRemoveMemberFromWorkspace={onRemoveMemberFromWorkspace}
+                          workspaceId={workspaceId as string}
                           userId={member.user_id}
                         />
                       )}
@@ -212,8 +159,7 @@ export default function WorkspaceMembers() {
                         <LeaveWorkspace
                           isDisabled={isDisabled}
                           buttonText={buttonText}
-                          onLeaveWorkspace={onLeaveWorkspace}
-                          userId={member.user_id}
+                          workspaceId={workspaceId as string}
                         />
                       )}
                     </Stack>

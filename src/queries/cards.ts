@@ -2,13 +2,18 @@ import { createApi } from '@reduxjs/toolkit/query/react'
 import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
 import {
+  AddCardAttachmentBodyType,
+  AddCardCommentBodyType,
+  AddCardMemberBodyType,
   CardResType,
   CreateCardBodyType,
   DeleteCardResType,
   MoveCardToDifferentColumnBodyType,
   MoveCardToDifferentColumnResType,
   ReactToCardCommentBodyType,
-  UpdateCardBodyType
+  UpdateCardAttachmentBodyType,
+  UpdateCardBodyType,
+  UpdateCardCommentBodyType
 } from '~/schemas/card.schema'
 
 const CARD_API_URL = '/cards' as const
@@ -44,6 +49,61 @@ export const cardApi = createApi({
           console.error(error)
         }
       }
+    }),
+
+    addCardComment: build.mutation<CardResType, { card_id: string; body: AddCardCommentBodyType }>({
+      query: ({ card_id, body }) => ({ url: `${CARD_API_URL}/${card_id}/comments`, method: 'POST', data: body })
+    }),
+
+    updateCardComment: build.mutation<
+      CardResType,
+      { card_id: string; comment_id: string; body: UpdateCardCommentBodyType }
+    >({
+      query: ({ card_id, comment_id, body }) => ({
+        url: `${CARD_API_URL}/${card_id}/comments/${comment_id}`,
+        method: 'PUT',
+        data: body
+      })
+    }),
+
+    removeCardComment: build.mutation<CardResType, { card_id: string; comment_id: string }>({
+      query: ({ card_id, comment_id }) => ({
+        url: `${CARD_API_URL}/${card_id}/comments/${comment_id}`,
+        method: 'DELETE'
+      })
+    }),
+
+    addCardAttachment: build.mutation<CardResType, { card_id: string; body: AddCardAttachmentBodyType }>({
+      query: ({ card_id, body }) => ({ url: `${CARD_API_URL}/${card_id}/attachments`, method: 'POST', data: body })
+    }),
+
+    updateCardAttachment: build.mutation<
+      CardResType,
+      { card_id: string; attachment_id: string; body: UpdateCardAttachmentBodyType }
+    >({
+      query: ({ card_id, attachment_id, body }) => ({
+        url: `${CARD_API_URL}/${card_id}/attachments/${attachment_id}`,
+        method: 'PUT',
+        data: body
+      })
+    }),
+
+    removeCardAttachment: build.mutation<CardResType, { card_id: string; attachment_id: string }>({
+      query: ({ card_id, attachment_id }) => ({
+        url: `${CARD_API_URL}/${card_id}/attachments/${attachment_id}`,
+        method: 'DELETE'
+      })
+    }),
+
+    addCardMember: build.mutation<CardResType, { card_id: string; body: AddCardMemberBodyType }>({
+      query: ({ card_id, body }) => ({ url: `${CARD_API_URL}/${card_id}/members`, method: 'POST', data: body })
+    }),
+
+    removeCardMember: build.mutation<CardResType, { card_id: string; user_id: string }>({
+      query: ({ card_id, user_id }) => ({
+        url: `${CARD_API_URL}/${card_id}/members/${user_id}`,
+        method: 'DELETE'
+      })
     }),
 
     reactToCardComment: build.mutation<
@@ -95,6 +155,14 @@ export const cardApi = createApi({
 export const {
   useAddCardMutation,
   useUpdateCardMutation,
+  useAddCardCommentMutation,
+  useUpdateCardCommentMutation,
+  useRemoveCardCommentMutation,
+  useAddCardAttachmentMutation,
+  useUpdateCardAttachmentMutation,
+  useRemoveCardAttachmentMutation,
+  useAddCardMemberMutation,
+  useRemoveCardMemberMutation,
   useReactToCardCommentMutation,
   useDeleteCardMutation,
   useMoveCardToDifferentColumnMutation

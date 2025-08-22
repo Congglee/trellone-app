@@ -6,13 +6,14 @@ import IconButton from '@mui/material/IconButton'
 import Popover from '@mui/material/Popover'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
+import { useRemoveGuestFromWorkspaceMutation } from '~/queries/workspaces'
 
 interface RemoveGuestWorkspaceProps {
-  onRemoveGuestFromWorkspace: (userId: string) => Promise<void>
   userId: string
+  workspaceId: string
 }
 
-export default function RemoveGuestWorkspace({ onRemoveGuestFromWorkspace, userId }: RemoveGuestWorkspaceProps) {
+export default function RemoveGuestWorkspace({ userId, workspaceId }: RemoveGuestWorkspaceProps) {
   const [anchorRemoveGuestWorkspacePopoverElement, setAnchorRemoveGuestWorkspacePopoverElement] =
     useState<HTMLElement | null>(null)
 
@@ -32,8 +33,10 @@ export default function RemoveGuestWorkspace({ onRemoveGuestFromWorkspace, userI
     setAnchorRemoveGuestWorkspacePopoverElement(null)
   }
 
+  const [removeGuestFromWorkspaceMutation] = useRemoveGuestFromWorkspaceMutation()
+
   const removeGuestWorkspace = async () => {
-    await onRemoveGuestFromWorkspace(userId)
+    await removeGuestFromWorkspaceMutation({ workspace_id: workspaceId, user_id: userId })
     handleRemoveGuestWorkspacePopoverClose()
   }
 

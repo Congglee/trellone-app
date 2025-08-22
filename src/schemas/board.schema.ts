@@ -20,6 +20,18 @@ export const BoardSchema = z.object({
   column_order_ids: z.array(z.string()),
   members: z.array(BoardMemberSchema),
   columns: z.array(ColumnSchema).optional(),
+  workspace: z.object({
+    _id: z.string(),
+    title: z.string(),
+    logo: z.string().optional(),
+    boards: z.array(
+      z.object({
+        _id: z.string(),
+        title: z.string(),
+        cover_photo: z.string().optional()
+      })
+    )
+  }),
   _destroy: z.boolean(),
   created_at: z.date(),
   updated_at: z.date()

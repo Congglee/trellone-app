@@ -86,19 +86,6 @@ export default function CoverPopover({ onUpdateCardCoverPhoto }: CoverPopoverPro
     })
   }
 
-  const colors = [
-    '#61bd4f',
-    '#f2d600',
-    '#ff9f1a',
-    '#eb5a46',
-    '#c377e0',
-    '#0079bf',
-    '#00c2e0',
-    '#51e898',
-    '#ff78cb',
-    '#344563'
-  ]
-
   return (
     <>
       <Button
@@ -176,38 +163,6 @@ export default function CoverPopover({ onUpdateCardCoverPhoto }: CoverPopoverPro
                 onClick={() => onUpdateCardCoverPhoto('')}
               >
                 Remove cover
-              </Button>
-            </Box>
-
-            <Box sx={{ mb: 2 }}>
-              <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
-                Colors
-              </Typography>
-              <Grid container spacing={1}>
-                {colors.map((color, index) => (
-                  <Grid xs={2.4} key={index}>
-                    <Box
-                      sx={{
-                        width: '100%',
-                        height: 32,
-                        bgcolor: color,
-                        borderRadius: 1,
-                        cursor: 'pointer',
-                        border: '1px solid',
-                        borderColor: 'grey.300',
-                        '&:hover': {
-                          opacity: 0.8
-                        }
-                      }}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
-
-            <Box sx={{ mb: 2 }}>
-              <Button variant='contained' size='small' color='inherit' fullWidth sx={{ py: 0.75, px: 1.5 }}>
-                Enable colorblind friendly mode
               </Button>
             </Box>
 

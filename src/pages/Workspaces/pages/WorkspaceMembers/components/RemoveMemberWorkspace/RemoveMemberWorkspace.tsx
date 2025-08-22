@@ -1,24 +1,26 @@
 import Button from '@mui/material/Button'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import Popover from '@mui/material/Popover'
 import ClearIcon from '@mui/icons-material/Clear'
+import { useRemoveWorkspaceMemberMutation } from '~/queries/workspaces'
+import { toast } from 'react-toastify'
 
 interface RemoveMemberWorkspaceProps {
   isDisabled: boolean
   buttonText: string
-  onRemoveMemberFromWorkspace: (userId: string) => Promise<void>
   userId: string
+  workspaceId: string
 }
 
 export default function RemoveMemberWorkspace({
   isDisabled,
   buttonText,
-  onRemoveMemberFromWorkspace,
-  userId
+  userId,
+  workspaceId
 }: RemoveMemberWorkspaceProps) {
   const [anchorRemoveMemberWorkspacePopoverElement, setAnchorRemoveMemberWorkspacePopoverElement] =
     useState<HTMLElement | null>(null)
@@ -39,10 +41,18 @@ export default function RemoveMemberWorkspace({
     setAnchorRemoveMemberWorkspacePopoverElement(null)
   }
 
+  const [removeWorkspaceMemberMutation, { isError }] = useRemoveWorkspaceMemberMutation()
+
   const removeMemberFromWorkspace = async () => {
-    await onRemoveMemberFromWorkspace(userId)
+    await removeWorkspaceMemberMutation({ workspace_id: workspaceId, user_id: userId })
     handleRemoveMemberWorkspacePopoverClose()
   }
+
+  useEffect(() => {
+    if (isError) {
+      toast.error('Not enough admins')
+    }
+  }, [isError])
 
   return (
     <>

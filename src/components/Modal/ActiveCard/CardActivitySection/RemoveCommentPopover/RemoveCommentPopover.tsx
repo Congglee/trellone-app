@@ -5,24 +5,29 @@ import Popover from '@mui/material/Popover'
 import Typography from '@mui/material/Typography'
 import CloseIcon from '@mui/icons-material/Close'
 import { useState } from 'react'
-import { CommentPayloadType, CommentType } from '~/schemas/card.schema'
-import { useAppSelector } from '~/lib/redux/hooks'
-import { CommentAction } from '~/constants/type'
+import { CommentType } from '~/schemas/card.schema'
+import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
+import { useRemoveCardCommentMutation } from '~/queries/cards'
+import { updateActiveCard } from '~/store/slices/card.slice'
+import { updateCardInBoard } from '~/store/slices/board.slice'
 
 interface RemoveCommentPopoverProps {
   activeComment: CommentType | null
   onSetActiveComment: (comment: CommentType | null) => void
-  onUpdateCardComment: (comment: CommentPayloadType) => Promise<void>
   comment: CommentType
 }
 
 export default function RemoveCommentPopover({
   activeComment,
   onSetActiveComment,
-  onUpdateCardComment,
   comment
 }: RemoveCommentPopoverProps) {
-  const { profile } = useAppSelector((state) => state.auth)
+  const dispatch = useAppDispatch()
+
+  const { activeCard } = useAppSelector((state) => state.card)
+  const { socket } = useAppSelector((state) => state.app)
+
+  const [removeCardCommentMutation] = useRemoveCardCommentMutation()
 
   const [anchorRemoveCommentPopoverElement, setAnchorRemoveCommentPopoverElement] = useState<HTMLElement | null>(null)
 
@@ -45,21 +50,25 @@ export default function RemoveCommentPopover({
     onSetActiveComment(null)
   }
 
-  const removeCardComment = () => {
-    if (activeComment) {
-      const payload = {
-        action: CommentAction.Remove,
-        comment_id: activeComment.comment_id,
-        user_email: profile?.email as string,
-        user_display_name: profile?.display_name as string,
-        user_avatar: profile?.avatar as string,
-        content: activeComment.content
-      }
-
-      onUpdateCardComment(payload).finally(() => {
-        handleRemoveCommentPopoverClose()
-      })
+  const removeCardComment = async () => {
+    if (!activeComment) {
+      return
     }
+
+    const updatedCardRes = await removeCardCommentMutation({
+      card_id: activeCard?._id as string,
+      comment_id: activeComment.comment_id
+    }).unwrap()
+
+    const updatedCard = updatedCardRes.result
+
+    dispatch(updateActiveCard(updatedCard))
+    dispatch(updateCardInBoard(updatedCard))
+
+    // Emit socket event to broadcast the card update to other users
+    socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
+
+    handleRemoveCommentPopoverClose()
   }
 
   return (
