@@ -1,5 +1,4 @@
 import Logout from '@mui/icons-material/Logout'
-import PersonAdd from '@mui/icons-material/PersonAdd'
 import Settings from '@mui/icons-material/Settings'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
@@ -75,20 +74,12 @@ export default function Profiles() {
         onClick={handleProfilesMenuClose}
         MenuListProps={{ 'aria-labelledby': 'basic-button-profiles' }}
       >
-        <Link to={path.accountSettings} style={{ textDecoration: 'none', color: 'inherit' }}>
-          <MenuItem sx={{ '&:hover': { color: 'success.light' } }}>
-            <Avatar sx={{ width: 28, height: 28, mr: 2 }} alt={profile?.display_name} src={profile?.avatar} />
-            <span>{profile?.display_name}</span>
-          </MenuItem>
-        </Link>
-        <Divider />
-        <MenuItem>
-          <ListItemIcon>
-            <PersonAdd fontSize='small' />
-          </ListItemIcon>
-          Add another account
+        <MenuItem sx={{ '&:hover': { color: 'success.light' } }}>
+          <Avatar sx={{ width: 28, height: 28, mr: 2 }} alt={profile?.display_name} src={profile?.avatar} />
+          <span>{profile?.display_name}</span>
         </MenuItem>
-        <MenuItem>
+        <Divider />
+        <MenuItem component={Link} to={path.accountSettings}>
           <ListItemIcon>
             <Settings fontSize='small' />
           </ListItemIcon>

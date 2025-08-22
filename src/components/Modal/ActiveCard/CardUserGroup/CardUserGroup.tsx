@@ -6,17 +6,16 @@ import Box from '@mui/material/Box'
 import Popover from '@mui/material/Popover'
 import Tooltip from '@mui/material/Tooltip'
 import { useMemo, useState } from 'react'
-import { CardMemberAction } from '~/constants/type'
 import { useAppSelector } from '~/lib/redux/hooks'
-import { CardMemberPayloadType } from '~/schemas/card.schema'
 import { UserType } from '~/schemas/user.schema'
 
 interface CardUserGroupProps {
   cardMembers: string[]
-  onUpdateCardMembers: (member: CardMemberPayloadType) => Promise<void>
+  onAddCardMember: (user_id: string) => Promise<void>
+  onRemoveCardMember: (user_id: string) => Promise<void>
 }
 
-export default function CardUserGroup({ cardMembers, onUpdateCardMembers }: CardUserGroupProps) {
+export default function CardUserGroup({ cardMembers, onAddCardMember, onRemoveCardMember }: CardUserGroupProps) {
   const [anchorGroupActionsPopoverElement, setAnchorGroupActionsPopoverElement] = useState<HTMLElement | null>(null)
   const isGroupActionsPopoverOpen = Boolean(anchorGroupActionsPopoverElement)
 
@@ -38,12 +37,11 @@ export default function CardUserGroup({ cardMembers, onUpdateCardMembers }: Card
   )
 
   const updateCardMembers = (user: UserType) => {
-    const payload = {
-      user_id: user._id,
-      action: cardMembers.includes(user._id) ? CardMemberAction.Remove : CardMemberAction.Add
+    if (cardMembers.includes(user._id)) {
+      onRemoveCardMember(user._id)
+    } else {
+      onAddCardMember(user._id)
     }
-
-    onUpdateCardMembers(payload)
   }
 
   return (

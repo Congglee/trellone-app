@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import CloseIcon from '@mui/icons-material/Close'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
@@ -11,13 +11,15 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { BoardResType } from '~/schemas/board.schema'
 import { UserType } from '~/schemas/user.schema'
+import { useRemoveGuestFromBoardMutation } from '~/queries/workspaces'
+import { toast } from 'react-toastify'
 
 interface ViewGuestBoardsProps {
   totalGuestBoardCounts: number
   guestBoards: BoardResType['result'][]
   guest: UserType
   showRemoveButton: boolean
-  onRemoveGuestFromWorkspaceBoard: (guestId: string, boardId: string) => Promise<void>
+  workspaceId: string
 }
 
 export default function ViewGuestBoards({
@@ -25,7 +27,7 @@ export default function ViewGuestBoards({
   guestBoards,
   guest,
   showRemoveButton,
-  onRemoveGuestFromWorkspaceBoard
+  workspaceId
 }: ViewGuestBoardsProps) {
   const [anchorViewGuestBoardsPopoverElement, setAnchorViewGuestBoardsPopoverElement] = useState<HTMLElement | null>(
     null
@@ -47,10 +49,22 @@ export default function ViewGuestBoards({
     setAnchorViewGuestBoardsPopoverElement(null)
   }
 
+  const [removeGuestFromBoardMutation, { isError }] = useRemoveGuestFromBoardMutation()
+
   const removeGuestFromWorkspaceBoard = async (boardId: string) => {
-    await onRemoveGuestFromWorkspaceBoard(guest._id, boardId)
+    await removeGuestFromBoardMutation({
+      workspace_id: workspaceId,
+      user_id: guest._id,
+      body: { board_id: boardId }
+    })
     handleViewGuestBoardsPopoverClose()
   }
+
+  useEffect(() => {
+    if (isError) {
+      toast.error('Not enough admins')
+    }
+  }, [isError])
 
   return (
     <>

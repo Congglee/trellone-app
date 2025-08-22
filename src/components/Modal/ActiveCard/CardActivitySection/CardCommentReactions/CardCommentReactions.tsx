@@ -2,18 +2,22 @@ import Box from '@mui/material/Box'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { CardCommentReactionAction } from '~/constants/type'
-import { useAppSelector } from '~/lib/redux/hooks'
+import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { useReactToCardCommentMutation } from '~/queries/cards'
 import { CardType, CommentType } from '~/schemas/card.schema'
+import { updateCardInBoard } from '~/store/slices/board.slice'
+import { updateActiveCard } from '~/store/slices/card.slice'
 
 interface CardCommentReactionsProps {
   activeCard: CardType | null
   comment: CommentType
-  onUpdateActiveCard: (card: CardType) => void
 }
 
-export default function CardCommentReactions({ activeCard, comment, onUpdateActiveCard }: CardCommentReactionsProps) {
+export default function CardCommentReactions({ activeCard, comment }: CardCommentReactionsProps) {
+  const dispatch = useAppDispatch()
+
   const { profile } = useAppSelector((state) => state.auth)
+  const { socket } = useAppSelector((state) => state.app)
 
   const [reactToCardCommentMutation] = useReactToCardCommentMutation()
 
@@ -37,7 +41,11 @@ export default function CardCommentReactions({ activeCard, comment, onUpdateActi
 
     const updatedCard = updatedCardRes.result
 
-    onUpdateActiveCard(updatedCard)
+    dispatch(updateActiveCard(updatedCard))
+    dispatch(updateCardInBoard(updatedCard))
+
+    // Emit socket event to broadcast the card update to other users
+    socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
   }
 
   return (

@@ -1,11 +1,5 @@
 import z from 'zod'
-import {
-  AttachmentType,
-  CardAttachmentActionValues,
-  CardCommentReactionActionValues,
-  CardMemberAction,
-  CommentActionValues
-} from '~/constants/type'
+import { AttachmentType, CardCommentReactionActionValues } from '~/constants/type'
 
 const CommentReactionSchema = z.object({
   reaction_id: z.string(),
@@ -29,21 +23,6 @@ const CommentSchema = z.object({
 
 export type CommentType = z.TypeOf<typeof CommentSchema>
 
-const CommentPayloadSchema = z.object({
-  action: z.enum(CommentActionValues),
-  content: z.string(),
-  comment_id: z.string().optional()
-})
-
-export type CommentPayloadType = z.TypeOf<typeof CommentPayloadSchema>
-
-const CardMemberPayloadSchema = z.object({
-  action: z.enum([CardMemberAction.Add, CardMemberAction.Remove]),
-  user_id: z.string()
-})
-
-export type CardMemberPayloadType = z.TypeOf<typeof CardMemberPayloadSchema>
-
 const CardAttachmentSchema = z.object({
   attachment_id: z.string(),
   type: z.enum([AttachmentType.File, AttachmentType.Link]),
@@ -64,29 +43,6 @@ const CardAttachmentSchema = z.object({
 })
 
 export type CardAttachmentType = z.TypeOf<typeof CardAttachmentSchema>
-
-const CardAttachmentPayloadSchema = z.object({
-  action: z.enum(CardAttachmentActionValues),
-  type: z.enum([AttachmentType.File, AttachmentType.Link]),
-  file: z
-    .object({
-      url: z.string().url(),
-      display_name: z.string().optional(),
-      mime_type: z.string(),
-      size: z.number(),
-      original_name: z.string()
-    })
-    .optional(),
-  link: z
-    .object({
-      url: z.string().url(),
-      display_name: z.string().optional(),
-      favicon_url: z.string().url().optional()
-    })
-    .optional()
-})
-
-export type CardAttachmentPayloadType = z.TypeOf<typeof CardAttachmentPayloadSchema>
 
 export const CardSchema = z.object({
   _id: z.string(),
@@ -136,13 +92,68 @@ export const UpdateCardBody = z.object({
   is_completed: z.boolean().nullable().optional(),
   description: z.string().optional(),
   cover_photo: z.string().url().optional(),
-  _destroy: z.boolean().optional(),
-  comment: CommentPayloadSchema.optional(),
-  member: CardMemberPayloadSchema.optional(),
-  attachment: CardAttachmentPayloadSchema.optional()
+  _destroy: z.boolean().optional()
 })
 
 export type UpdateCardBodyType = z.TypeOf<typeof UpdateCardBody>
+
+export const AddCardCommentBody = z.object({
+  content: z.string()
+})
+
+export type AddCardCommentBodyType = z.TypeOf<typeof AddCardCommentBody>
+
+export const UpdateCardCommentBody = z.object({
+  content: z.string().optional()
+})
+
+export type UpdateCardCommentBodyType = z.TypeOf<typeof UpdateCardCommentBody>
+
+export const AddCardAttachmentBody = z.object({
+  type: z.enum([AttachmentType.File, AttachmentType.Link]),
+  file: z.object({
+    url: z.string().url(),
+    display_name: z.string().optional(),
+    mime_type: z.string(),
+    size: z.number(),
+    original_name: z.string()
+  }),
+  link: z.object({
+    url: z.string().url(),
+    display_name: z.string().optional(),
+    favicon_url: z.string().url().optional()
+  })
+})
+
+export type AddCardAttachmentBodyType = z.TypeOf<typeof AddCardAttachmentBody>
+
+export const UpdateCardAttachmentBody = z.object({
+  type: z.enum([AttachmentType.File, AttachmentType.Link]),
+  file: z
+    .object({
+      url: z.string().url(),
+      display_name: z.string().optional(),
+      mime_type: z.string(),
+      size: z.number(),
+      original_name: z.string()
+    })
+    .optional(),
+  link: z
+    .object({
+      url: z.string().url(),
+      display_name: z.string().optional(),
+      favicon_url: z.string().url().optional()
+    })
+    .optional()
+})
+
+export type UpdateCardAttachmentBodyType = z.TypeOf<typeof UpdateCardAttachmentBody>
+
+export const AddCardMemberBody = z.object({
+  user_id: z.string()
+})
+
+export type AddCardMemberBodyType = z.TypeOf<typeof AddCardMemberBody>
 
 export const AddCardLinkAttachmentBody = z.object({
   url: z.string().url({ message: 'Enter a valid URL' }),

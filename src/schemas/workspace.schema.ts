@@ -1,11 +1,5 @@
 import z from 'zod'
-import {
-  WorkspaceGuestActionValues,
-  WorkspaceMemberActionValues,
-  WorkspaceRoleValues,
-  WorkspaceType,
-  WorkspaceTypeValues
-} from '~/constants/type'
+import { WorkspaceRoleValues, WorkspaceType, WorkspaceTypeValues } from '~/constants/type'
 import { BoardSchema } from '~/schemas/board.schema'
 import { UserSchema } from '~/schemas/user.schema'
 
@@ -73,23 +67,6 @@ export const CreateWorkspaceBody = z.object({
 
 export type CreateWorkspaceBodyType = z.TypeOf<typeof CreateWorkspaceBody>
 
-const WorkspaceMemberPayloadSchema = z.object({
-  action: z.enum(WorkspaceMemberActionValues),
-  user_id: z.string(),
-  role: WorkspaceMemberRoleSchema.optional(),
-  board_id: z.string().optional()
-})
-
-export type WorkspaceMemberPayloadType = z.TypeOf<typeof WorkspaceMemberPayloadSchema>
-
-const WorkspaceGuestPayloadSchema = z.object({
-  action: z.enum(WorkspaceGuestActionValues),
-  user_id: z.string(),
-  board_id: z.string().optional()
-})
-
-export type WorkspaceGuestPayloadType = z.TypeOf<typeof WorkspaceGuestPayloadSchema>
-
 export const UpdateWorkspaceBody = z.object({
   title: z
     .string()
@@ -109,9 +86,25 @@ export const UpdateWorkspaceBody = z.object({
     .enum(WorkspaceTypeValues, { message: 'Type must be either public or private' })
     .default(WorkspaceType.Public)
     .optional(),
-  logo: z.string().url().optional(),
-  member: WorkspaceMemberPayloadSchema.optional(),
-  guest: WorkspaceGuestPayloadSchema.optional()
+  logo: z.string().url().optional()
 })
 
 export type UpdateWorkspaceBodyType = z.TypeOf<typeof UpdateWorkspaceBody>
+
+export const EditWorkspaceMemberRoleBody = z.object({
+  role: z.enum(WorkspaceRoleValues)
+})
+
+export type EditWorkspaceMemberRoleBodyType = z.TypeOf<typeof EditWorkspaceMemberRoleBody>
+
+export const RemoveWorkspaceMemberFromBoardBody = z.object({
+  board_id: z.string()
+})
+
+export type RemoveWorkspaceMemberFromBoardBodyType = z.TypeOf<typeof RemoveWorkspaceMemberFromBoardBody>
+
+export const RemoveGuestFromBoardBody = z.object({
+  board_id: z.string()
+})
+
+export type RemoveGuestFromBoardBodyType = z.TypeOf<typeof RemoveGuestFromBoardBody>

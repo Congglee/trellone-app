@@ -3,6 +3,9 @@ import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
 import {
   CreateWorkspaceBodyType,
+  EditWorkspaceMemberRoleBodyType,
+  RemoveGuestFromBoardBodyType,
+  RemoveWorkspaceMemberFromBoardBodyType,
   UpdateWorkspaceBodyType,
   WorkspaceListResType,
   WorkspaceResType
@@ -54,12 +57,95 @@ export const workspaceApi = createApi({
         { type: 'Workspace', id },
         { type: 'Workspace', id: 'LIST' }
       ]
+    }),
+
+    editWorkspaceMemberRole: build.mutation<
+      WorkspaceResType,
+      { workspace_id: string; user_id: string; body: EditWorkspaceMemberRoleBodyType }
+    >({
+      query: ({ workspace_id, user_id, body }) => ({
+        url: `${WORKSPACE_API_URL}/${workspace_id}/members/${user_id}/role`,
+        method: 'PUT',
+        data: body
+      }),
+      invalidatesTags: (_result, _error, { workspace_id }) => [{ type: 'Workspace', id: workspace_id }]
+    }),
+
+    leaveWorkspace: build.mutation<WorkspaceResType, string>({
+      query: (id) => ({
+        url: `${WORKSPACE_API_URL}/${id}/members/me/leave`,
+        method: 'POST'
+      }),
+      invalidatesTags: (_result, _error, id) => [{ type: 'Workspace', id }]
+    }),
+
+    removeWorkspaceMember: build.mutation<WorkspaceResType, { workspace_id: string; user_id: string }>({
+      query: ({ workspace_id, user_id }) => ({
+        url: `${WORKSPACE_API_URL}/${workspace_id}/members/${user_id}`,
+        method: 'DELETE'
+      }),
+      invalidatesTags: (_result, _error, { workspace_id }) => [{ type: 'Workspace', id: workspace_id }]
+    }),
+
+    removeWorkspaceMemberFromBoard: build.mutation<
+      WorkspaceResType,
+      {
+        workspace_id: string
+        user_id: string
+        body: RemoveWorkspaceMemberFromBoardBodyType
+      }
+    >({
+      query: ({ workspace_id, user_id, body }) => ({
+        url: `${WORKSPACE_API_URL}/${workspace_id}/members/${user_id}/boards`,
+        method: 'DELETE',
+        data: body
+      }),
+      invalidatesTags: (_result, _error, { workspace_id }) => [{ type: 'Workspace', id: workspace_id }]
+    }),
+
+    addGuestToWorkspace: build.mutation<WorkspaceResType, { workspace_id: string; user_id: string }>({
+      query: ({ workspace_id, user_id }) => ({
+        url: `${WORKSPACE_API_URL}/${workspace_id}/guests/${user_id}/add-to-workspace`,
+        method: 'POST'
+      }),
+      invalidatesTags: (_result, _error, { workspace_id }) => [{ type: 'Workspace', id: workspace_id }]
+    }),
+
+    removeGuestFromWorkspace: build.mutation<WorkspaceResType, { workspace_id: string; user_id: string }>({
+      query: ({ workspace_id, user_id }) => ({
+        url: `${WORKSPACE_API_URL}/${workspace_id}/guests/${user_id}`,
+        method: 'DELETE'
+      }),
+      invalidatesTags: (_result, _error, { workspace_id }) => [{ type: 'Workspace', id: workspace_id }]
+    }),
+
+    removeGuestFromBoard: build.mutation<
+      WorkspaceResType,
+      { workspace_id: string; user_id: string; body: RemoveGuestFromBoardBodyType }
+    >({
+      query: ({ workspace_id, user_id, body }) => ({
+        url: `${WORKSPACE_API_URL}/${workspace_id}/guests/${user_id}/boards`,
+        method: 'DELETE',
+        data: body
+      }),
+      invalidatesTags: (_result, _error, { workspace_id }) => [{ type: 'Workspace', id: workspace_id }]
     })
   })
 })
 
-export const { useAddWorkspaceMutation, useGetWorkspacesQuery, useGetWorkspaceQuery, useUpdateWorkspaceMutation } =
-  workspaceApi
+export const {
+  useAddWorkspaceMutation,
+  useGetWorkspacesQuery,
+  useGetWorkspaceQuery,
+  useUpdateWorkspaceMutation,
+  useEditWorkspaceMemberRoleMutation,
+  useLeaveWorkspaceMutation,
+  useRemoveWorkspaceMemberMutation,
+  useRemoveWorkspaceMemberFromBoardMutation,
+  useAddGuestToWorkspaceMutation,
+  useRemoveGuestFromWorkspaceMutation,
+  useRemoveGuestFromBoardMutation
+} = workspaceApi
 
 const workspaceApiReducer = workspaceApi.reducer
 

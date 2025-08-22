@@ -8,24 +8,27 @@ import ListItem from '@mui/material/ListItem'
 import Popover from '@mui/material/Popover'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { toast } from 'react-toastify'
+import { useRemoveWorkspaceMemberFromBoardMutation } from '~/queries/workspaces'
 import { BoardResType } from '~/schemas/board.schema'
-import { WorkspaceMemberType } from '~/schemas/workspace.schema'
 
 interface ViewMemberBoardsProps {
   totalMemberBoardCounts: number
   memberBoards: BoardResType['result'][]
-  onRemoveMemberFromWorkspaceBoard: (userId: string, boardId: string) => Promise<void>
-  member: WorkspaceMemberType
   showRemoveButton: boolean
+  workspaceId: string
+  userId: string
+  memberDisplayName: string
 }
 
 export default function ViewMemberBoards({
   totalMemberBoardCounts = 0,
   memberBoards,
-  onRemoveMemberFromWorkspaceBoard,
-  member,
-  showRemoveButton
+  showRemoveButton,
+  workspaceId,
+  userId,
+  memberDisplayName
 }: ViewMemberBoardsProps) {
   const [anchorViewMemberBoardsPopoverElement, setAnchorViewMemberBoardsPopoverElement] = useState<HTMLElement | null>(
     null
@@ -47,10 +50,22 @@ export default function ViewMemberBoards({
     setAnchorViewMemberBoardsPopoverElement(null)
   }
 
+  const [removeWorkspaceMemberFromBoardMutation, { isError }] = useRemoveWorkspaceMemberFromBoardMutation()
+
   const removeMemberFromWorkspaceBoard = async (boardId: string) => {
-    await onRemoveMemberFromWorkspaceBoard(member.user_id, boardId)
+    await removeWorkspaceMemberFromBoardMutation({
+      workspace_id: workspaceId,
+      user_id: userId,
+      body: { board_id: boardId }
+    })
     handleViewMemberBoardsPopoverClose()
   }
+
+  useEffect(() => {
+    if (isError) {
+      toast.error('Not enough admins')
+    }
+  }, [isError])
 
   return (
     <>
@@ -93,7 +108,7 @@ export default function ViewMemberBoards({
           </Box>
 
           <Typography variant='body2' sx={{ mb: 2, color: 'text.secondary' }}>
-            {member.display_name} is a member of the following Workspace boards:
+            {memberDisplayName} is a member of the following Workspace boards:
           </Typography>
 
           <List disablePadding sx={{ maxHeight: 280, overflowY: 'auto' }}>
@@ -166,7 +181,7 @@ export default function ViewMemberBoards({
           {memberBoards.length === 0 && (
             <Box sx={{ textAlign: 'center', py: 1 }}>
               <Typography variant='body2' color='text.secondary'>
-                {member.display_name} is not a member of any workspace boards.
+                {memberDisplayName} is not a member of any workspace boards.
               </Typography>
             </Box>
           )}

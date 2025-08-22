@@ -14,10 +14,34 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Link } from 'react-router-dom'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
+import path from '~/constants/path'
 import { useGetWorkspaceQuery } from '~/queries/workspaces'
 
 interface WorkspaceSidebarProps {
   workspaceId?: string
+}
+
+// Helper function to determine if a specific menu item should be active
+const isMenuItemActive = (workspaceId: string, menuType: string, pathname: string) => {
+  switch (menuType) {
+    case 'boards': {
+      const workspaceBoardsPath = path.workspaceBoardsList.replace(':workspaceId', workspaceId)
+      return pathname === workspaceBoardsPath
+    }
+
+    case 'members': {
+      const workspaceMembersPath = path.workspaceMembers.replace(':workspaceId', workspaceId)
+      return pathname === workspaceMembersPath
+    }
+
+    case 'settings': {
+      const workspaceSettingsPath = path.workspaceSettings.replace(':workspaceId', workspaceId)
+      return pathname === workspaceSettingsPath
+    }
+
+    default:
+      return false
+  }
 }
 
 export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps) {
@@ -49,7 +73,13 @@ export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps)
 
       <List>
         <ListItem disablePadding>
-          <ListItemButton>
+          <ListItemButton
+            sx={{
+              '&.Mui-selected': {
+                color: (theme) => (theme.palette.mode === 'dark' ? 'primary.contrastText' : 'primary.contrastText')
+              }
+            }}
+          >
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
@@ -58,20 +88,35 @@ export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps)
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton>
+          <ListItemButton
+            component={Link}
+            to={path.workspaceMembers.replace(':workspaceId', workspace?._id as string)}
+            selected={isMenuItemActive(workspace?._id as string, 'members', location.pathname)}
+            sx={{
+              '&.Mui-selected': {
+                color: (theme) => (theme.palette.mode === 'dark' ? 'primary.contrastText' : 'primary.contrastText')
+              }
+            }}
+          >
             <ListItemIcon>
               <GroupsIcon />
             </ListItemIcon>
-            <ListItemText secondary='Members' />
+            <ListItemText>Members</ListItemText>
           </ListItemButton>
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton>
+          <ListItemButton
+            sx={{
+              '&.Mui-selected': {
+                color: (theme) => (theme.palette.mode === 'dark' ? 'primary.contrastText' : 'primary.contrastText')
+              }
+            }}
+          >
             <ListItemIcon>
               <SettingsIcon />
             </ListItemIcon>
-            <ListItemText secondary='Workspace Settings' />
+            <ListItemText>Settings</ListItemText>
           </ListItemButton>
         </ListItem>
       </List>
@@ -82,7 +127,7 @@ export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps)
         Your Boards
       </Typography>
 
-      {boards?.length > 0 ? (
+      {boards.length > 0 && (
         <List>
           {boards.map((board) => (
             <ListItem key={board._id} disablePadding>
@@ -97,7 +142,9 @@ export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps)
             </ListItem>
           ))}
         </List>
-      ) : (
+      )}
+
+      {boards.length === 0 && (
         <Box
           sx={{
             mx: 2,

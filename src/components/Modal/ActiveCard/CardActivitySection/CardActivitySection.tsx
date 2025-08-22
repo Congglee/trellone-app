@@ -12,21 +12,17 @@ import rehypeSanitize from 'rehype-sanitize'
 import CardCommentReactions from '~/components/Modal/ActiveCard/CardActivitySection/CardCommentReactions'
 import EmojiPickerPopover from '~/components/Modal/ActiveCard/CardActivitySection/EmojiPickerPopover'
 import RemoveCommentPopover from '~/components/Modal/ActiveCard/CardActivitySection/RemoveCommentPopover'
-import { CommentAction } from '~/constants/type'
-import { useAppSelector } from '~/lib/redux/hooks'
-import { CardType, CommentPayloadType, CommentType } from '~/schemas/card.schema'
+import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
+import { useAddCardCommentMutation, useUpdateCardCommentMutation } from '~/queries/cards'
+import { CommentType } from '~/schemas/card.schema'
+import { updateCardInBoard } from '~/store/slices/board.slice'
+import { updateActiveCard } from '~/store/slices/card.slice'
 
 interface CardActivitySectionProps {
   cardComments: CommentType[]
-  onUpdateCardComment: (comment: CommentPayloadType) => Promise<void>
-  onUpdateActiveCard: (card: CardType) => Promise<CardType>
 }
 
-export default function CardActivitySection({
-  cardComments,
-  onUpdateCardComment,
-  onUpdateActiveCard
-}: CardActivitySectionProps) {
+export default function CardActivitySection({ cardComments }: CardActivitySectionProps) {
   const { profile } = useAppSelector((state) => state.auth)
   const { mode } = useColorScheme()
 
@@ -36,7 +32,13 @@ export default function CardActivitySection({
   const [newCommentContent, setNewCommentContent] = useState<string>('')
   const [isMarkdownEditorOpen, setIsMarkdownEditorOpen] = useState<boolean>(false)
 
+  const dispatch = useAppDispatch()
+
   const { activeCard } = useAppSelector((state) => state.card)
+  const { socket } = useAppSelector((state) => state.app)
+
+  const [addCardCommentMutation] = useAddCardCommentMutation()
+  const [updateCardCommentMutation] = useUpdateCardCommentMutation()
 
   const handleEditingCommentClose = () => {
     setEditingCommentIndex(null)
@@ -55,23 +57,28 @@ export default function CardActivitySection({
     setNewCommentContent('')
   }
 
-  const addCardComment = () => {
+  const addCardComment = async () => {
     if (!newCommentContent.trim()) {
       return
     }
 
-    const payload = {
-      action: CommentAction.Add,
-      content: newCommentContent.trim()
-    }
+    const payload = { content: newCommentContent.trim() }
 
-    onUpdateCardComment(payload).then(() => {
-      setNewCommentContent('')
-      setIsMarkdownEditorOpen(false)
-    })
+    const updatedCardRes = await addCardCommentMutation({ card_id: activeCard?._id as string, body: payload }).unwrap()
+
+    const updatedCard = updatedCardRes.result
+
+    dispatch(updateActiveCard(updatedCard))
+    dispatch(updateCardInBoard(updatedCard))
+
+    // Emit socket event to broadcast the card update to other users
+    socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
+
+    setNewCommentContent('')
+    setIsMarkdownEditorOpen(false)
   }
 
-  const updateCardComment = () => {
+  const updateCardComment = async () => {
     if (!activeComment || !editingCommentContent.trim()) {
       handleEditingCommentClose()
       return
@@ -82,15 +89,23 @@ export default function CardActivitySection({
       return
     }
 
-    const payload = {
-      action: CommentAction.Edit,
-      content: editingCommentContent.trim(),
-      comment_id: activeComment.comment_id
-    }
+    const payload = { content: editingCommentContent.trim() }
 
-    onUpdateCardComment(payload).finally(() => {
-      handleEditingCommentClose()
-    })
+    const updatedCardRes = await updateCardCommentMutation({
+      card_id: activeCard?._id as string,
+      comment_id: activeComment.comment_id,
+      body: payload
+    }).unwrap()
+
+    const updatedCard = updatedCardRes.result
+
+    dispatch(updateActiveCard(updatedCard))
+    dispatch(updateCardInBoard(updatedCard))
+
+    // Emit socket event to broadcast the card update to other users
+    socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
+
+    handleEditingCommentClose()
   }
 
   return (
@@ -244,18 +259,11 @@ export default function CardActivitySection({
                     mt: 0.5
                   }}
                 >
-                  {hasReactions && (
-                    <CardCommentReactions
-                      activeCard={activeCard}
-                      comment={comment}
-                      onUpdateActiveCard={onUpdateActiveCard}
-                    />
-                  )}
+                  {hasReactions && <CardCommentReactions activeCard={activeCard} comment={comment} />}
 
                   <EmojiPickerPopover
                     activeCard={activeCard}
                     activeComment={activeComment}
-                    onUpdateActiveCard={onUpdateActiveCard}
                     onSetActiveComment={setActiveComment}
                     comment={comment}
                   />
@@ -286,7 +294,6 @@ export default function CardActivitySection({
                       <RemoveCommentPopover
                         activeComment={activeComment}
                         onSetActiveComment={setActiveComment}
-                        onUpdateCardComment={onUpdateCardComment}
                         comment={comment}
                       />
                     </>
