@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -6,14 +6,17 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { WorkspaceRoleValues } from '~/constants/type'
 import Box from '@mui/material/Box'
 import { WorkspaceMemberRoleType } from '~/schemas/workspace.schema'
+import { useEditWorkspaceMemberRoleMutation } from '~/queries/workspaces'
+import { toast } from 'react-toastify'
 
 interface RoleSelectProps {
   currentRole: WorkspaceMemberRoleType
   disabled?: boolean
-  onRoleChange?: (newRole: WorkspaceMemberRoleType) => void
+  userId: string
+  workspaceId: string
 }
 
-export default function RoleSelect({ currentRole, disabled = false, onRoleChange }: RoleSelectProps) {
+export default function RoleSelect({ currentRole, disabled = false, userId, workspaceId }: RoleSelectProps) {
   const [anchorRoleMenuElement, setAnchorRoleMenuElement] = useState<null | HTMLElement>(null)
   const isRoleMenuOpen = Boolean(anchorRoleMenuElement)
 
@@ -27,12 +30,25 @@ export default function RoleSelect({ currentRole, disabled = false, onRoleChange
     setAnchorRoleMenuElement(null)
   }
 
-  const handleRoleSelect = (role: WorkspaceMemberRoleType) => {
-    if (onRoleChange && role !== currentRole) {
-      onRoleChange(role)
+  const [editWorkspaceMemberRoleMutation, { isError }] = useEditWorkspaceMemberRoleMutation()
+
+  const handleRoleSelect = async (role: WorkspaceMemberRoleType) => {
+    if (role !== currentRole) {
+      await editWorkspaceMemberRoleMutation({
+        workspace_id: workspaceId,
+        user_id: userId,
+        body: { role }
+      })
     }
+
     handleRoleMenuClose()
   }
+
+  useEffect(() => {
+    if (isError) {
+      toast.error('Not enough admins')
+    }
+  }, [isError])
 
   return (
     <Box>

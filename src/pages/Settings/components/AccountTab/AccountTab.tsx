@@ -52,6 +52,7 @@ export default function AccountTab() {
     if (file) {
       return URL.createObjectURL(file)
     }
+
     return avatar
   }, [avatar, file])
 

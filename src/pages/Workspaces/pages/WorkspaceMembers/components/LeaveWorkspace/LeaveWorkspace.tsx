@@ -1,18 +1,22 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Button from '@mui/material/Button'
 import Popover from '@mui/material/Popover'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
+import { useLeaveWorkspaceMutation } from '~/queries/workspaces'
+import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
+import path from '~/constants/path'
 
 interface LeaveWorkspaceProps {
   isDisabled: boolean
   buttonText: string
-  onLeaveWorkspace: (userId: string) => Promise<void>
-  userId: string
+  workspaceId: string
 }
-export default function LeaveWorkspace({ isDisabled, buttonText, onLeaveWorkspace, userId }: LeaveWorkspaceProps) {
+
+export default function LeaveWorkspace({ isDisabled, buttonText, workspaceId }: LeaveWorkspaceProps) {
   const [anchorLeaveWorkspacePopoverElement, setAnchorLeaveWorkspacePopoverElement] = useState<HTMLElement | null>(null)
 
   const isLeaveWorkspacePopoverOpen = Boolean(anchorLeaveWorkspacePopoverElement)
@@ -31,10 +35,26 @@ export default function LeaveWorkspace({ isDisabled, buttonText, onLeaveWorkspac
     setAnchorLeaveWorkspacePopoverElement(null)
   }
 
+  const navigate = useNavigate()
+
+  const [leaveWorkspaceMutation, { isError, isSuccess }] = useLeaveWorkspaceMutation()
+
   const leaveWorkspace = async () => {
-    await onLeaveWorkspace(userId)
+    await leaveWorkspaceMutation(workspaceId)
     handleLeaveWorkspacePopoverClose()
   }
+
+  useEffect(() => {
+    if (isSuccess) {
+      navigate(path.boardsList)
+    }
+  }, [isSuccess, navigate])
+
+  useEffect(() => {
+    if (isError) {
+      toast.error('Not enough admins')
+    }
+  }, [isError])
 
   return (
     <>

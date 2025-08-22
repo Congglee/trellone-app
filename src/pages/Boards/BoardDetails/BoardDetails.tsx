@@ -252,7 +252,7 @@ export default function BoardDetails() {
             open={workspaceDrawerOpen}
             onOpen={setWorkspaceDrawerOpen}
             boardId={boardId}
-            workspaceId={activeBoard.workspace_id}
+            workspace={activeBoard.workspace as any}
           />
 
           <BoardBar

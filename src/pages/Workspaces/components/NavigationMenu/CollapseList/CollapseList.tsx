@@ -140,84 +140,83 @@ export default function CollapseList() {
         gap: 0.5
       }}
     >
-      {memberWorkspaces?.length > 0 &&
-        memberWorkspaces?.map((workspace, index) => {
-          const isActive = isWorkspaceActive(workspace._id, workspaceId, location.pathname)
-          const isExpanded = visibleItems[index]
+      {memberWorkspaces?.map((workspace, index) => {
+        const isActive = isWorkspaceActive(workspace._id, workspaceId, location.pathname)
+        const isExpanded = visibleItems[index]
 
-          return (
-            <div key={workspace._id}>
-              <ListItemButton
-                selected={isActive && !isExpanded}
-                onClick={() => handleWorkspaceClick(index)}
-                sx={{ gap: 0.5 }}
-              >
-                <ListItemIcon>
-                  <WorkspaceAvatar title={workspace.title} logo={workspace.logo} size={{ width: 25, height: 25 }} />
-                </ListItemIcon>
-                <ListItemText
-                  primary={workspace.title}
-                  sx={{
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    display: '-webkit-box',
-                    WebkitLineClamp: '2',
-                    WebkitBoxOrient: 'vertical'
-                  }}
-                />
-                {isExpanded ? <ExpandLess /> : <ExpandMore />}
-              </ListItemButton>
+        return (
+          <div key={workspace._id}>
+            <ListItemButton
+              selected={isActive && !isExpanded}
+              onClick={() => handleWorkspaceClick(index)}
+              sx={{ gap: 0.5 }}
+            >
+              <ListItemIcon>
+                <WorkspaceAvatar title={workspace.title} logo={workspace.logo} size={{ width: 25, height: 25 }} />
+              </ListItemIcon>
+              <ListItemText
+                primary={workspace.title}
+                sx={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  display: '-webkit-box',
+                  WebkitLineClamp: '2',
+                  WebkitBoxOrient: 'vertical'
+                }}
+              />
+              {isExpanded ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
 
-              <Collapse in={isExpanded} timeout='auto' unmountOnExit>
-                <List component='div' disablePadding sx={{ fontSize: '15px' }}>
-                  <ListItemButton
-                    sx={{ pl: 4 }}
-                    component={Link}
-                    to={path.workspaceBoardsList.replace(':workspaceId', workspace._id)}
-                    selected={isMenuItemActive(workspace._id, 'boards', location.pathname)}
-                  >
-                    <ListItemIcon>
-                      <DashboardIcon />
-                    </ListItemIcon>
-                    <ListItemText disableTypography primary='Boards' />
-                  </ListItemButton>
+            <Collapse in={isExpanded} timeout='auto' unmountOnExit>
+              <List component='div' disablePadding sx={{ fontSize: '15px' }}>
+                <ListItemButton
+                  sx={{ pl: 4 }}
+                  component={Link}
+                  to={path.workspaceBoardsList.replace(':workspaceId', workspace._id)}
+                  selected={isMenuItemActive(workspace._id, 'boards', location.pathname)}
+                >
+                  <ListItemIcon>
+                    <DashboardIcon />
+                  </ListItemIcon>
+                  <ListItemText disableTypography primary='Boards' />
+                </ListItemButton>
 
-                  <ListItemButton
-                    sx={{ pl: 4 }}
-                    selected={isMenuItemActive(workspace._id, 'highlights', location.pathname)}
-                  >
-                    <ListItemIcon>
-                      <FavoriteBorderIcon />
-                    </ListItemIcon>
-                    <ListItemText disableTypography primary='Highlights' />
-                  </ListItemButton>
+                <ListItemButton
+                  sx={{ pl: 4 }}
+                  selected={isMenuItemActive(workspace._id, 'highlights', location.pathname)}
+                >
+                  <ListItemIcon>
+                    <FavoriteBorderIcon />
+                  </ListItemIcon>
+                  <ListItemText disableTypography primary='Highlights' />
+                </ListItemButton>
 
-                  <ListItemButton
-                    sx={{ pl: 4 }}
-                    component={Link}
-                    to={path.workspaceMembers.replace(':workspaceId', workspace._id)}
-                    selected={isMenuItemActive(workspace._id, 'members', location.pathname)}
-                  >
-                    <ListItemIcon>
-                      <GroupsIcon />
-                    </ListItemIcon>
-                    <ListItemText disableTypography primary='Members' />
-                  </ListItemButton>
+                <ListItemButton
+                  sx={{ pl: 4 }}
+                  component={Link}
+                  to={path.workspaceMembers.replace(':workspaceId', workspace._id)}
+                  selected={isMenuItemActive(workspace._id, 'members', location.pathname)}
+                >
+                  <ListItemIcon>
+                    <GroupsIcon />
+                  </ListItemIcon>
+                  <ListItemText disableTypography primary='Members' />
+                </ListItemButton>
 
-                  <ListItemButton
-                    sx={{ pl: 4 }}
-                    selected={isMenuItemActive(workspace._id, 'settings', location.pathname)}
-                  >
-                    <ListItemIcon>
-                      <SettingsIcon />
-                    </ListItemIcon>
-                    <ListItemText disableTypography primary='Settings' />
-                  </ListItemButton>
-                </List>
-              </Collapse>
-            </div>
-          )
-        })}
+                <ListItemButton
+                  sx={{ pl: 4 }}
+                  selected={isMenuItemActive(workspace._id, 'settings', location.pathname)}
+                >
+                  <ListItemIcon>
+                    <SettingsIcon />
+                  </ListItemIcon>
+                  <ListItemText disableTypography primary='Settings' />
+                </ListItemButton>
+              </List>
+            </Collapse>
+          </div>
+        )
+      })}
 
       {showMoreButton && (
         <Button

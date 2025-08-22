@@ -1,5 +1,3 @@
-import { BoardResType } from '~/schemas/board.schema'
-
 export const mockWorkspacesList = [
   {
     _id: 'workspace-id-01',
@@ -14,7 +12,7 @@ export const mockWorkspacesList = [
   }
 ]
 
-export const mockBoardsList: BoardResType['result'][] = [
+export const mockBoardsList = [
   {
     _id: 'board-id-01',
     title: 'Conggglee Trellone Board',
@@ -30,7 +28,7 @@ export const mockBoardsList: BoardResType['result'][] = [
   }
 ]
 
-export const mockBoardDetails: BoardResType['result'] = {
+export const mockBoardDetails = {
   _id: 'board-id-01',
   title: 'Conggglee Trellone Board',
   description: 'This is a board description',

@@ -43,7 +43,12 @@ export default function NewBoardDialog({ open, onNewBoardClose, defaultWorkspace
     formState: { errors }
   } = useForm<CreateBoardBodyType>({
     resolver: zodResolver(CreateBoardBody),
-    defaultValues: { title: '', description: '', type: BoardType.Public, workspace_id: defaultWorkspaceId || '' }
+    defaultValues: {
+      title: '',
+      description: '',
+      type: BoardType.Public,
+      workspace_id: defaultWorkspaceId || ''
+    }
   })
 
   const queryConfig = useQueryConfig()

@@ -54,13 +54,6 @@ export const MediaType = {
 
 export const MediaTypeValues = [MediaType.Image, MediaType.Document] as const
 
-export const CardMemberAction = {
-  Add: 'ADD',
-  Remove: 'REMOVE'
-} as const
-
-export const CardMemberActionValues = [CardMemberAction.Add, CardMemberAction.Remove] as const
-
 export const InvitationType = {
   BoardInvitation: 'BOARD_INVITATION'
 }
@@ -98,26 +91,6 @@ export const AttachmentType = {
 
 export const AttachmentTypeValues = [AttachmentType.Link, AttachmentType.File] as const
 
-export const CardAttachmentAction = {
-  Add: 'ADD',
-  Edit: 'EDIT',
-  Remove: 'REMOVE'
-} as const
-
-export const CardAttachmentActionValues = [
-  CardAttachmentAction.Add,
-  CardAttachmentAction.Edit,
-  CardAttachmentAction.Remove
-] as const
-
-export const CommentAction = {
-  Add: 'ADD',
-  Edit: 'EDIT',
-  Remove: 'REMOVE'
-} as const
-
-export const CommentActionValues = [CommentAction.Add, CommentAction.Edit, CommentAction.Remove] as const
-
 export const CardCommentReactionAction = {
   Add: 'ADD',
   Remove: 'REMOVE'
@@ -134,29 +107,3 @@ export const RoleLevel = {
 } as const
 
 export const RoleLevelValues = [RoleLevel.Workspace, RoleLevel.Board] as const
-
-export const WorkspaceMemberAction = {
-  EditRole: 'EDIT_ROLE',
-  RemoveFromWorkspace: 'REMOVE_FROM_WORKSPACE',
-  RemoveFromBoard: 'REMOVE_FROM_BOARD',
-  Leave: 'LEAVE'
-} as const
-
-export const WorkspaceMemberActionValues = [
-  WorkspaceMemberAction.EditRole,
-  WorkspaceMemberAction.RemoveFromWorkspace,
-  WorkspaceMemberAction.RemoveFromBoard,
-  WorkspaceMemberAction.Leave
-] as const
-
-export const WorkspaceGuestAction = {
-  AddToWorkspace: 'ADD_TO_WORKSPACE',
-  RemoveFromWorkspace: 'REMOVE_FROM_WORKSPACE',
-  RemoveFromBoard: 'REMOVE_FROM_BOARD'
-} as const
-
-export const WorkspaceGuestActionValues = [
-  WorkspaceGuestAction.AddToWorkspace,
-  WorkspaceGuestAction.RemoveFromWorkspace,
-  WorkspaceGuestAction.RemoveFromBoard
-] as const

@@ -15,20 +15,20 @@ import { toast } from 'react-toastify'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
 import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
-import { AttachmentType, CardAttachmentAction } from '~/constants/type'
+import { AttachmentType } from '~/constants/type'
+import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
+import { useAddCardAttachmentMutation } from '~/queries/cards'
 import { useUploadDocumentMutation } from '~/queries/medias'
 import {
+  AddCardAttachmentBodyType,
   AddCardLinkAttachmentBody,
-  AddCardLinkAttachmentBodyType,
-  CardAttachmentPayloadType
+  AddCardLinkAttachmentBodyType
 } from '~/schemas/card.schema'
+import { updateCardInBoard } from '~/store/slices/board.slice'
+import { updateActiveCard } from '~/store/slices/card.slice'
 import { multipleDocumentFilesValidator } from '~/utils/validators'
 
-interface AttachmentPopoverProps {
-  onUpdateCardAttachment: (attachment: CardAttachmentPayloadType) => Promise<void>
-}
-
-const AttachmentPopover = forwardRef<HTMLButtonElement, AttachmentPopoverProps>(({ onUpdateCardAttachment }, ref) => {
+const AttachmentPopover = forwardRef<HTMLButtonElement>((_, ref) => {
   const [anchorAttachmentPopoverElement, setAnchorAttachmentPopoverElement] = useState<HTMLElement | null>(null)
   const isAttachmentPopoverOpen = Boolean(anchorAttachmentPopoverElement)
 
@@ -57,23 +57,40 @@ const AttachmentPopover = forwardRef<HTMLButtonElement, AttachmentPopoverProps>(
     reset({ url: '', display_name: '' })
   }
 
+  const dispatch = useAppDispatch()
+
+  const { activeCard } = useAppSelector((state) => state.card)
+  const { socket } = useAppSelector((state) => state.app)
+
   const [uploadDocumentMutation] = useUploadDocumentMutation()
+  const [addCardAttachmentMutation] = useAddCardAttachmentMutation()
 
   const addCardLinkAttachment = handleSubmit(async (values) => {
     const payload = {
-      action: CardAttachmentAction.Add,
       type: AttachmentType.Link,
       link: {
         url: values.url,
         display_name: values.display_name,
         favicon_url: `https://www.google.com/s2/favicons?domain=${new URL(values.url).hostname}`
-      }
-    }
+      },
+      file: {}
+    } as AddCardAttachmentBodyType
 
-    onUpdateCardAttachment(payload).finally(() => {
-      onReset()
-      setAnchorAttachmentPopoverElement(null)
-    })
+    const updatedCardRes = await addCardAttachmentMutation({
+      card_id: activeCard?._id as string,
+      body: payload
+    }).unwrap()
+
+    const updatedCard = updatedCardRes.result
+
+    dispatch(updateActiveCard(updatedCard))
+    dispatch(updateCardInBoard(updatedCard))
+
+    // Emit socket event to broadcast the card update to other users
+    socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
+
+    onReset()
+    setAnchorAttachmentPopoverElement(null)
   })
 
   const uploadFileAttachment = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,7 +120,6 @@ const AttachmentPopover = forwardRef<HTMLButtonElement, AttachmentPopoverProps>(
     await Promise.all(
       uploadDocumentRes.result.map(async (file) => {
         const payload = {
-          action: CardAttachmentAction.Add,
           type: AttachmentType.File,
           file: {
             url: file.url,
@@ -111,10 +127,22 @@ const AttachmentPopover = forwardRef<HTMLButtonElement, AttachmentPopoverProps>(
             mime_type: file.mime_type,
             size: file.size,
             original_name: file.original_name
-          }
-        }
+          },
+          link: {}
+        } as AddCardAttachmentBodyType
 
-        await onUpdateCardAttachment(payload)
+        const updatedCardRes = await addCardAttachmentMutation({
+          card_id: activeCard?._id as string,
+          body: payload
+        }).unwrap()
+
+        const updatedCard = updatedCardRes.result
+
+        dispatch(updateActiveCard(updatedCard))
+        dispatch(updateCardInBoard(updatedCard))
+
+        // Emit socket event to broadcast the card update to other users
+        socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
       })
     ).finally(() => {
       onReset()

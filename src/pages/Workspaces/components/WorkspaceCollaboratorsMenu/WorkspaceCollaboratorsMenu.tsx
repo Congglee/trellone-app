@@ -1,11 +1,8 @@
-import MailOutlineOutlinedIcon from '@mui/icons-material/MailOutlineOutlined'
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
-import Divider from '@mui/material/Divider'
-import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Link, useLocation, useParams } from 'react-router-dom'
@@ -54,14 +51,14 @@ export default function WorkspaceCollaboratorsMenu() {
             justifyContent: 'flex-start',
             textTransform: 'none',
             bgcolor: isMembersActive
-              ? (t) => (t.palette.mode === 'dark' ? 'primary.dark' : 'primary.light')
+              ? (theme) => (theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.light')
               : 'transparent',
             color: isMembersActive
-              ? (t) => (t.palette.mode === 'dark' ? 'primary.contrastText' : 'primary.contrastText')
+              ? (theme) => (theme.palette.mode === 'dark' ? 'primary.contrastText' : 'primary.contrastText')
               : 'text.secondary',
             '&:hover': {
               bgcolor: isMembersActive
-                ? (t) => (t.palette.mode === 'dark' ? 'primary.dark' : 'primary.light')
+                ? (theme) => (theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.light')
                 : 'action.hover'
             },
             borderRadius: 1,
@@ -81,14 +78,14 @@ export default function WorkspaceCollaboratorsMenu() {
             justifyContent: 'flex-start',
             textTransform: 'none',
             bgcolor: isGuestsActive
-              ? (t) => (t.palette.mode === 'dark' ? 'primary.dark' : 'primary.light')
+              ? (theme) => (theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.light')
               : 'transparent',
             color: isGuestsActive
-              ? (t) => (t.palette.mode === 'dark' ? 'primary.contrastText' : 'primary.contrastText')
+              ? (theme) => (theme.palette.mode === 'dark' ? 'primary.contrastText' : 'primary.contrastText')
               : 'text.secondary',
             '&:hover': {
               bgcolor: isGuestsActive
-                ? (t) => (t.palette.mode === 'dark' ? 'primary.dark' : 'primary.light')
+                ? (theme) => (theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.light')
                 : 'action.hover'
             },
             borderRadius: 1,
@@ -98,59 +95,7 @@ export default function WorkspaceCollaboratorsMenu() {
         >
           Guests ({guests.length})
         </Button>
-
-        <Button
-          disabled
-          fullWidth
-          startIcon={<MailOutlineOutlinedIcon />}
-          sx={{
-            justifyContent: 'flex-start',
-            textTransform: 'none',
-            color: 'text.secondary',
-            borderRadius: 1,
-            px: 1.25,
-            py: 1
-          }}
-        >
-          Join requests (0)
-        </Button>
-
-        <Divider sx={{ my: 2 }} />
       </Stack>
-
-      <Paper
-        variant='outlined'
-        sx={{
-          p: 2,
-          borderRadius: 2,
-          bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(120, 81, 169, 0.25)' : 'rgba(120, 81, 169, 0.1)'),
-          borderColor: (t) => (t.palette.mode === 'dark' ? 'primary.dark' : 'primary.light')
-        }}
-      >
-        <Typography fontWeight={700} gutterBottom>
-          Upgrade for more permissions controls
-        </Typography>
-        <Typography variant='body2' color='text.secondary'>
-          Decide who can send invitations, edit Workspace settings, and more with Premium.
-        </Typography>
-        <Box sx={{ mt: 1.5 }}>
-          <Button
-            disabled
-            variant='text'
-            color='primary'
-            sx={{
-              textTransform: 'none',
-              px: 0,
-              '&:hover': {
-                textDecoration: 'underline',
-                bgcolor: 'transparent'
-              }
-            }}
-          >
-            Try Premium free for 14 days
-          </Button>
-        </Box>
-      </Paper>
     </Box>
   )
 }

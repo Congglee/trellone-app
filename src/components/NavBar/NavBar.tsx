@@ -1,5 +1,4 @@
 import AppsIcon from '@mui/icons-material/Apps'
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import MenuIcon from '@mui/icons-material/Menu'
 import { useMediaQuery } from '@mui/material'
 import Box from '@mui/material/Box'
@@ -8,7 +7,6 @@ import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import { useTheme } from '@mui/material/styles'
 import SvgIcon from '@mui/material/SvgIcon'
-import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -19,10 +17,6 @@ import MenuDrawer from '~/components/NavBar/MenuDrawer'
 import ModeSelect from '~/components/NavBar/ModeSelect'
 import Notifications from '~/components/NavBar/Notifications'
 import Profiles from '~/components/NavBar/Profiles'
-import Recent from '~/components/NavBar/Recent'
-import Starred from '~/components/NavBar/Starred'
-import Templates from '~/components/NavBar/Templates'
-import Workspaces from '~/components/NavBar/Workspaces'
 import path from '~/constants/path'
 
 export default function NavBar() {
@@ -82,11 +76,7 @@ export default function NavBar() {
             </Typography>
           </Box>
 
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
-            <Workspaces />
-            <Recent />
-            <Starred />
-            <Templates />
+          <Box sx={{ ml: 0.5, display: { xs: 'none', md: 'flex' }, gap: 1 }}>
             <Create />
           </Box>
         </Box>
@@ -99,9 +89,6 @@ export default function NavBar() {
             </>
           )}
           <Notifications />
-          <Tooltip title='Help'>
-            <HelpOutlineIcon sx={{ cursor: 'pointer' }} />
-          </Tooltip>
           <Profiles />
         </Box>
       </Box>
