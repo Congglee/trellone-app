@@ -10,29 +10,29 @@ How to add new cursor rules to the project
 
 1. Always place rule files in PROJECT_ROOT/.cursor/rules/:
 
-   ```
-   .cursor/rules/
-   ├── your-rule-name.mdc
-   ├── another-rule.mdc
-   └── ...
-   ```
+```
+.cursor/rules/
+├── your-rule-name.mdc
+├── another-rule.mdc
+└── ...
+```
 
 2. Follow the naming convention:
 
-   - Use kebab-case for filenames
-   - Always use .mdc extension
-   - Make names descriptive of the rule's purpose
+- Use kebab-case for filenames
+- Always use .mdc extension
+- Make names descriptive of the rule's purpose
 
 3. Directory structure:
 
-   ```
-   PROJECT_ROOT/
-   ├── .cursor/
-   │   └── rules/
-   │       ├── your-rule-name.mdc
-   │       └── ...
-   └── ...
-   ```
+```
+PROJECT_ROOT/
+├── .cursor/
+│   └── rules/
+│       ├── your-rule-name.mdc
+│       └── ...
+└── ...
+```
 
 4. Never place rule files:
 
@@ -69,7 +69,3 @@ function badExample() {
   // Implementation not following guidelines
 }
 ````
-
-```
-
-```

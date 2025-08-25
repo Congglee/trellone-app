@@ -15,7 +15,7 @@ import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '~/constants/p
 import { useCategorizeWorkspaces } from '~/hooks/use-categorize-workspaces'
 import { useInfiniteScroll } from '~/hooks/use-infinite-scroll'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
-import WorkspaceBoards from '~/pages/Workspaces/pages/BoardsList/components/WorkspaceBoards'
+import BoardGrid from '~/pages/Workspaces/pages/BoardsList/components/BoardGrid'
 import { useGetWorkspacesQuery } from '~/queries/workspaces'
 import { WorkspaceResType } from '~/schemas/workspace.schema'
 import { appendWorkspaces, clearWorkspaces, setWorkspaces } from '~/store/slices/workspace.slice'
@@ -156,7 +156,7 @@ export default function BoardsList() {
                     }}
                   />
                 </Stack>
-                <WorkspaceBoards workspace={generateSkeletonWorkspace(index)} isLoading={true} />
+                <BoardGrid workspace={generateSkeletonWorkspace(index)} isLoading={true} />
               </Stack>
             ))}
           </>
@@ -180,7 +180,7 @@ export default function BoardsList() {
                 </Typography>
               </Stack>
 
-              <WorkspaceBoards workspace={workspace} isLoading={false} />
+              <BoardGrid workspace={workspace} isLoading={false} />
             </Stack>
           ))}
 
@@ -244,7 +244,7 @@ export default function BoardsList() {
                   </Typography>
                 </Stack>
 
-                <WorkspaceBoards workspace={workspace} isLoading={false} showNewBoardCard={false} />
+                <BoardGrid workspace={workspace} isLoading={false} showNewBoardCard={false} />
               </Stack>
             </Fragment>
           ))}
@@ -277,6 +277,7 @@ export default function BoardsList() {
                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
               }
             }}
+            disabled
           >
             View all closed boards
           </Button>

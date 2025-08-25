@@ -134,16 +134,7 @@ export default function ViewMemberBoards({
                   }}
                 >
                   <Stack direction='row' alignItems='center' gap={1.5} sx={{ flex: 1, minWidth: 0 }}>
-                    <Avatar
-                      src={board.cover_photo}
-                      variant='rounded'
-                      sx={{
-                        width: 32,
-                        height: 32,
-                        bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#444' : '#f5f5f5'),
-                        fontSize: '0.75rem'
-                      }}
-                    >
+                    <Avatar src={board.cover_photo} variant='rounded' sx={{ width: 30, height: 30 }}>
                       {board.title.charAt(0).toUpperCase()}
                     </Avatar>
                     <Typography variant='body2' fontWeight={500} color='text.primary' noWrap sx={{ flex: 1 }}>

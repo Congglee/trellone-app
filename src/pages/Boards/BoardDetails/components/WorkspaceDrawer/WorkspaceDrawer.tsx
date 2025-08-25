@@ -20,6 +20,8 @@ import { Link } from 'react-router-dom'
 import DrawerHeader from '~/components/DrawerHeader'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
 import path from '~/constants/path'
+import { WorkspacePermission } from '~/constants/permissions'
+import { useWorkspacePermission } from '~/hooks/use-permissions'
 import { WorkspaceResType } from '~/schemas/workspace.schema'
 
 interface WorkspaceDrawerProps {
@@ -34,6 +36,8 @@ export default function WorkspaceDrawer({ open, onOpen, boardId, workspace }: Wo
   const isDarkMode = theme.palette.mode === 'dark'
 
   const boards = workspace?.boards || []
+
+  const { hasPermission } = useWorkspacePermission(workspace)
 
   return (
     <Drawer
@@ -58,7 +62,19 @@ export default function WorkspaceDrawer({ open, onOpen, boardId, workspace }: Wo
       <DrawerHeader sx={{ justifyContent: 'space-between', minHeight: '49px!important' }}>
         <Stack ml={1} gap={1} alignItems='center' direction='row'>
           <WorkspaceAvatar logo={workspace?.logo} title={workspace?.title || ''} size={{ width: 30, height: 30 }} />
-          <Typography variant='subtitle1'>{workspace?.title}</Typography>
+          <Typography
+            variant='subtitle1'
+            sx={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              display: '-webkit-box',
+              WebkitLineClamp: '2',
+              WebkitBoxOrient: 'vertical',
+              lineHeight: '1.4'
+            }}
+          >
+            {workspace?.title}
+          </Typography>
         </Stack>
         <IconButton color='inherit' onClick={() => onOpen(false)}>
           {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
@@ -69,36 +85,46 @@ export default function WorkspaceDrawer({ open, onOpen, boardId, workspace }: Wo
 
       <List>
         <ListItem disablePadding>
-          <ListItemButton onClick={() => {}}>
+          <ListItemButton disabled={!hasPermission(WorkspacePermission.ViewWorkspace)}>
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
-            <ListItemText secondary='Boards' />
+            <ListItemText>Boards</ListItemText>
           </ListItemButton>
         </ListItem>
 
         <ListItem
           disablePadding
           secondaryAction={
-            <IconButton edge='end' aria-label='add' size='small' sx={{ borderRadius: 0.5 }}>
+            <IconButton
+              edge='end'
+              aria-label='add'
+              size='small'
+              sx={{ borderRadius: 0.5 }}
+              disabled={!hasPermission(WorkspacePermission.ViewWorkspace)}
+            >
               <AddIcon />
             </IconButton>
           }
         >
-          <ListItemButton component={Link} to={path.workspaceMembers.replace(':workspaceId', workspace?._id as string)}>
+          <ListItemButton
+            component={Link}
+            to={path.workspaceMembers.replace(':workspaceId', workspace?._id as string)}
+            disabled={!hasPermission(WorkspacePermission.ViewWorkspace)}
+          >
             <ListItemIcon>
               <GroupsIcon />
             </ListItemIcon>
-            <ListItemText secondary='Members' />
+            <ListItemText>Members</ListItemText>
           </ListItemButton>
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton onClick={() => {}}>
+          <ListItemButton disabled={!hasPermission(WorkspacePermission.ViewWorkspace)}>
             <ListItemIcon>
               <SettingsIcon />
             </ListItemIcon>
-            <ListItemText secondary='Workspace Settings' />
+            <ListItemText>Workspace Settings</ListItemText>
           </ListItemButton>
         </ListItem>
       </List>

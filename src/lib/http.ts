@@ -83,14 +83,17 @@ export class Http {
         interceptorLoadingElements(false)
 
         if (
-          ![HttpStatusCode.UnprocessableEntity, HttpStatusCode.Unauthorized, HttpStatusCode.Forbidden].includes(
-            error.response?.status as number
-          )
+          ![HttpStatusCode.UnprocessableEntity, HttpStatusCode.Unauthorized].includes(error.response?.status as number)
         ) {
           const data: any | undefined = error.response?.data
           const message = data?.message || error.message
 
-          toast.error(message)
+          // Override the unverified error message to show a custom message
+          if (isAxiosUnverifiedError(error)) {
+            toast.error('User not verified, please go to account settings page to verify your account')
+          } else {
+            toast.error(message)
+          }
         }
 
         if (isAxiosUnauthorizedError(error)) {
@@ -118,11 +121,6 @@ export class Http {
           this.accessToken = ''
           this.refreshToken = ''
           axiosReduxStore.dispatch(authApi.endpoints.logout.initiate(undefined))
-        }
-
-        // Override the unverified error message to show a custom message
-        if (isAxiosUnverifiedError(error)) {
-          toast.error('User not verified, please go to account settings page to verify your account')
         }
 
         return Promise.reject(error)

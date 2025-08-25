@@ -1,11 +1,15 @@
 import z from 'zod'
-import { BoardRoleValues, BoardType, BoardTypeValues } from '~/constants/type'
+import { BoardRoleValues, BoardType, BoardTypeValues, WorkspaceRoleValues } from '~/constants/type'
 import { ColumnSchema } from '~/schemas/column.schema'
 import { UserSchema } from '~/schemas/user.schema'
 
+export const BoardMemberRoleSchema = z.enum(BoardRoleValues)
+
+export type BoardMemberRoleType = z.TypeOf<typeof BoardMemberRoleSchema>
+
 export const BoardMemberSchema = UserSchema.extend({
   user_id: z.string(),
-  role: z.enum(BoardRoleValues),
+  role: BoardMemberRoleSchema,
   joined_at: z.date(),
   invited_by: z.string().optional()
 })
@@ -30,7 +34,16 @@ export const BoardSchema = z.object({
         title: z.string(),
         cover_photo: z.string().optional()
       })
-    )
+    ),
+    members: z.array(
+      z.object({
+        user_id: z.string(),
+        role: z.enum(WorkspaceRoleValues),
+        joined_at: z.date(),
+        invited_by: z.string().optional()
+      })
+    ),
+    guests: z.array(z.string())
   }),
   _destroy: z.boolean(),
   created_at: z.date(),

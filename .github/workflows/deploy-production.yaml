@@ -1,0 +1,80 @@
+name: Deploy Production CI/CD
+
+on:
+  push:
+    branches: ['main']
+
+env:
+  DOCKER_IMAGE: ${{ vars.REGISTRY }}/${{ vars.PROJECT_NAME }}:${{ vars.VERSION }}
+  DOCKER_CONTAINER: ${{ vars.PROJECT_NAME }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create env file
+        run: echo "${{ secrets.ENV }}" > .env
+      - name: Build the Docker image
+        run: docker build -t $DOCKER_IMAGE .
+      - name: Save Docker image as artifact
+        run: docker save $DOCKER_IMAGE -o image.tar
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: image.tar
+
+  push:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download image artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: docker-image
+          path: .
+      - name: Load Docker image
+        run: docker load -i image.tar
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Push the Docker image
+        run: docker push $DOCKER_IMAGE
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: push
+    steps:
+      - name: Executing remote ssh commands using password
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          DOCKER_IMAGE: ${{ vars.REGISTRY }}/${{ vars.PROJECT_NAME }}:${{ vars.VERSION }}
+          DOCKER_CONTAINER: ${{ vars.PROJECT_NAME }}
+        with:
+          host: ${{ secrets.HOST_PRODUCTION }}
+          username: ${{ secrets.USERNAME_PRODUCTION }}
+          password: ${{ secrets.PASSWORD_PRODUCTION }}
+          port: ${{ secrets.PORT_PRODUCTION }}
+          envs: DOCKER_IMAGE,DOCKER_CONTAINER
+          script: |
+            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+            docker pull $DOCKER_IMAGE
+
+            # Stop and remove ANY container using port 8000 (more robust)
+            EXISTING_CONTAINER=$(docker ps --filter "publish=8000" --format "{{.Names}}" | head -n1)
+            if [ ! -z "$EXISTING_CONTAINER" ]; then
+              echo "Stopping existing container: $EXISTING_CONTAINER"
+              docker stop $EXISTING_CONTAINER
+              docker rm $EXISTING_CONTAINER
+            fi
+
+            # Also ensure our expected container name is clean
+            docker rm -f $DOCKER_CONTAINER || true
+
+            # Start new container
+            docker run --name $DOCKER_CONTAINER -dp 8000:8000 --restart unless-stopped $DOCKER_IMAGE
+            docker image prune -f
+
+            # Wait for container to start and show logs
+            sleep 5
+            docker logs $DOCKER_CONTAINER

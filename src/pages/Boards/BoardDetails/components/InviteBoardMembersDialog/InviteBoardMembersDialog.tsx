@@ -23,9 +23,9 @@ import TextFieldInput from '~/components/Form/TextFieldInput'
 import { BoardRole, BoardRoleValues, WorkspaceRole } from '~/constants/type'
 import { useAppSelector } from '~/lib/redux/hooks'
 import { useAddNewBoardInvitationMutation } from '~/queries/invitations'
-import { useGetWorkspaceQuery } from '~/queries/workspaces'
+import { BoardResType } from '~/schemas/board.schema'
 import { CreateNewBoardInvitationBody, CreateNewBoardInvitationBodyType } from '~/schemas/invitation.schema'
-import { WorkspaceResType } from '~/schemas/workspace.schema'
+import { UserType } from '~/schemas/user.schema'
 import { isUnprocessableEntityError } from '~/utils/error-handlers'
 
 interface InviteBoardUserProps {
@@ -33,21 +33,25 @@ interface InviteBoardUserProps {
   workspaceId: string
 }
 
-const getWorkspaceRole = (userId: string, workspace: WorkspaceResType['result'] | undefined) => {
+type WorkspaceItem = BoardResType['result']['workspace']
+
+const getWorkspaceRole = (userId: string, workspace?: WorkspaceItem) => {
   if (!workspace) return 'Workspace member'
 
   // Check if user is in workspace members
   const workspaceMember = workspace.members.find((member) => member.user_id === userId)
+
   if (workspaceMember) {
     return workspaceMember.role === WorkspaceRole.Admin ? 'Workspace admin' : 'Workspace member'
   }
 
   // Check if user is in workspace guests
-  const isGuest = workspace.guests.some((guest) => {
+  const isGuest = workspace.guests.some((guest: string | UserType) => {
     // Handle both string and object formats for guests
     if (typeof guest === 'string') {
       return guest === userId
     }
+
     return guest._id === userId
   })
 
@@ -67,9 +71,7 @@ export default function InviteBoardMembersDialog({ boardId, workspaceId }: Invit
   const { profile } = useAppSelector((state) => state.auth)
 
   const boardMembers = activeBoard?.members || []
-
-  const { data: workspaceData } = useGetWorkspaceQuery(workspaceId!)
-  const workspace = workspaceData?.result
+  const workspace = activeBoard?.workspace
 
   const handleInviteBoardMemberOpen = () => {
     setInviteBoardMemberOpen(true)

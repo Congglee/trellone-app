@@ -7,11 +7,12 @@ import List from '@mui/material/List'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useMemo } from 'react'
+import { useMemo, useState, type ChangeEvent } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Navigate, useParams } from 'react-router-dom'
 import path from '~/constants/path'
-import { WorkspaceRole } from '~/constants/type'
+import { WorkspacePermission } from '~/constants/permissions'
+import { useWorkspacePermission } from '~/hooks/use-permissions'
 import { useAppSelector } from '~/lib/redux/hooks'
 import MemberItemSkeleton from '~/pages/Workspaces/components/SkeletonLoading/MemberItemSkeleton'
 import WorkspaceCollaboratorsHeader from '~/pages/Workspaces/components/WorkspaceCollaboratorsHeader'
@@ -19,6 +20,7 @@ import RemoveGuestWorkspace from '~/pages/Workspaces/pages/WorkspaceGuests/compo
 import ViewGuestBoards from '~/pages/Workspaces/pages/WorkspaceGuests/components/ViewGuestBoards'
 import { useAddGuestToWorkspaceMutation, useGetWorkspaceQuery } from '~/queries/workspaces'
 import { UserType } from '~/schemas/user.schema'
+import { useDebounce } from '~/hooks/use-debounce'
 
 export default function WorkspaceGuests() {
   const { workspaceId } = useParams()
@@ -27,13 +29,36 @@ export default function WorkspaceGuests() {
 
   const { data: workspaceData, isLoading } = useGetWorkspaceQuery(workspaceId!)
   const workspace = workspaceData?.result
-  const members = workspace?.members || []
-
-  const currentUserMember = members.find((member) => member.user_id === profile?._id)
 
   const guests = useMemo(() => {
     return (workspace?.guests || []) as UserType[]
   }, [workspace?.guests])
+
+  const [searchText, setSearchText] = useState('')
+  const [debouncedSearchText, setDebouncedSearchText] = useState('')
+
+  const debouncedUpdateSearch = useDebounce((value: string) => {
+    setDebouncedSearchText(value)
+  }, 300)
+
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const value = event.target.value
+    setSearchText(value)
+    debouncedUpdateSearch(value.trim().toLowerCase())
+  }
+
+  const filteredGuests = useMemo(() => {
+    if (!debouncedSearchText) {
+      return guests
+    }
+
+    return guests.filter((guest) => {
+      const username = (guest.username || '').toLowerCase()
+      const displayName = (guest.display_name || '').toLowerCase()
+
+      return username.includes(debouncedSearchText) || displayName.includes(debouncedSearchText)
+    })
+  }, [guests, debouncedSearchText])
 
   // Calculate guest board counts and single-board guests
   const { singleBoardGuestCount } = useMemo(() => {
@@ -76,6 +101,8 @@ export default function WorkspaceGuests() {
   const addGuestToWorkspace = async (userId: string) => {
     await addGuestToWorkspaceMutation({ workspace_id: workspaceId as string, user_id: userId })
   }
+
+  const { hasPermission } = useWorkspacePermission(workspace)
 
   if (!workspace && !isLoading) {
     return <Navigate to={path.boardsList} />
@@ -132,6 +159,8 @@ export default function WorkspaceGuests() {
                   width: '100%',
                   color: 'text.primary'
                 }}
+                value={searchText}
+                onChange={handleSearchChange}
                 inputProps={{ 'aria-label': 'filter by name' }}
               />
             </Paper>
@@ -140,7 +169,7 @@ export default function WorkspaceGuests() {
           <List disablePadding sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             {isLoading
               ? Array.from({ length: 4 }).map((_, index) => <MemberItemSkeleton key={`skeleton-${index}`} />)
-              : guests.map((guest) => {
+              : filteredGuests.map((guest) => {
                   const isCurrentGuestUser = guest._id === profile?._id
 
                   const guestBoards =
@@ -190,7 +219,7 @@ export default function WorkspaceGuests() {
                             totalGuestBoardCounts={totalGuestBoardCounts}
                             guestBoards={guestBoards}
                             guest={guest}
-                            showRemoveButton={!isCurrentGuestUser && currentUserMember?.role === WorkspaceRole.Admin}
+                            showRemoveButton={!isCurrentGuestUser && hasPermission(WorkspacePermission.ManageGuests)}
                             workspaceId={workspaceId as string}
                           />
                           <Button
@@ -198,10 +227,15 @@ export default function WorkspaceGuests() {
                             variant='outlined'
                             onClick={() => addGuestToWorkspace(guest._id)}
                             sx={{ borderRadius: 1, textTransform: 'none', minWidth: 120 }}
+                            disabled={!hasPermission(WorkspacePermission.ManageGuests)}
                           >
                             Add to Workspace
                           </Button>
-                          <RemoveGuestWorkspace userId={guest._id} workspaceId={workspaceId as string} />
+                          <RemoveGuestWorkspace
+                            userId={guest._id}
+                            workspaceId={workspaceId as string}
+                            isDisabled={!hasPermission(WorkspacePermission.ManageGuests)}
+                          />
                         </Stack>
                       </Stack>
                     </Paper>

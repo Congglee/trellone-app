@@ -240,7 +240,7 @@ export default function AccountTab() {
 
             <Box>
               <Button className='interceptor-loading' type='submit' variant='contained' color='primary' fullWidth>
-                Update
+                Save
               </Button>
             </Box>
           </Box>

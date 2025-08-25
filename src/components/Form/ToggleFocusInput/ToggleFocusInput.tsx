@@ -56,7 +56,6 @@ export default function ToggleFocusInput({
       onKeyDown={handleKeyDown}
       {...rest}
       sx={{
-        '& label': {},
         '& input': { fontSize: inputFontSize, fontWeight: 'medium' },
         '& .MuiOutlinedInput-root': {
           backgroundColor: 'transparent',

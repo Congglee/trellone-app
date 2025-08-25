@@ -18,7 +18,6 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useState } from 'react'
 import ChangeBackgroundDrawer from '~/pages/Boards/BoardDetails/components/ChangeBackgroundDrawer'
-import Tooltip from '@mui/material/Tooltip'
 
 interface BoardDrawerProps {
   open: boolean
@@ -63,16 +62,14 @@ export default function BoardDrawer({ open, onOpen, totalMembers }: BoardDrawerP
       <Divider />
 
       <List>
-        <Tooltip title='This feature is under development for future release' arrow>
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <DashboardIcon />
-              </ListItemIcon>
-              <ListItemText secondary='About this board' />
-            </ListItemButton>
-          </ListItem>
-        </Tooltip>
+        <ListItem disablePadding>
+          <ListItemButton disabled>
+            <ListItemIcon>
+              <DashboardIcon />
+            </ListItemIcon>
+            <ListItemText secondary='About this board' />
+          </ListItemButton>
+        </ListItem>
 
         <ListItem disablePadding>
           <ListItemButton onClick={() => onOpenChangeBackgroundDrawer(true)}>
@@ -85,27 +82,23 @@ export default function BoardDrawer({ open, onOpen, totalMembers }: BoardDrawerP
 
         <ChangeBackgroundDrawer open={changeBackgroundDrawer} onOpen={onOpenChangeBackgroundDrawer} />
 
-        <Tooltip title='This feature is under development for future release' arrow>
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <GroupsIcon />
-              </ListItemIcon>
-              <ListItemText secondary={`Members (${totalMembers})`} />
-            </ListItemButton>
-          </ListItem>
-        </Tooltip>
+        <ListItem disablePadding>
+          <ListItemButton disabled>
+            <ListItemIcon>
+              <GroupsIcon />
+            </ListItemIcon>
+            <ListItemText secondary={`Members (${totalMembers})`} />
+          </ListItemButton>
+        </ListItem>
 
-        <Tooltip title='This feature is under development for future release' arrow>
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <DeleteIcon />
-              </ListItemIcon>
-              <ListItemText secondary='Delete this board' />
-            </ListItemButton>
-          </ListItem>
-        </Tooltip>
+        <ListItem disablePadding>
+          <ListItemButton disabled>
+            <ListItemIcon>
+              <DeleteIcon />
+            </ListItemIcon>
+            <ListItemText secondary='Delete this board' />
+          </ListItemButton>
+        </ListItem>
       </List>
     </Drawer>
   )

@@ -5,10 +5,14 @@ import List from '@mui/material/List'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useMemo, useState, type ChangeEvent } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Navigate, useParams } from 'react-router-dom'
 import path from '~/constants/path'
+import { WorkspacePermission } from '~/constants/permissions'
 import { WorkspaceRole } from '~/constants/type'
+import { useWorkspacePermission } from '~/hooks/use-permissions'
+import { useDebounce } from '~/hooks/use-debounce'
 import { useAppSelector } from '~/lib/redux/hooks'
 import MemberItemSkeleton from '~/pages/Workspaces/components/SkeletonLoading/MemberItemSkeleton'
 import WorkspaceCollaboratorsHeader from '~/pages/Workspaces/components/WorkspaceCollaboratorsHeader'
@@ -25,7 +29,38 @@ export default function WorkspaceMembers() {
 
   const { data: workspaceData, isLoading } = useGetWorkspaceQuery(workspaceId!)
   const workspace = workspaceData?.result
-  const members = workspace?.members || []
+  const rawMembers = workspace?.members
+  const members = useMemo(() => rawMembers ?? [], [rawMembers])
+
+  const { hasPermission } = useWorkspacePermission(workspace)
+
+  const [searchText, setSearchText] = useState('')
+  const [debouncedSearchText, setDebouncedSearchText] = useState('')
+
+  const debouncedUpdateSearch = useDebounce((value: string) => {
+    setDebouncedSearchText(value)
+  }, 300)
+
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const value = event.target.value
+    setSearchText(value)
+    // Normalize once here to avoid repeating in filter
+    debouncedUpdateSearch(value.trim().toLowerCase())
+  }
+
+  // Memoized filtering by username and display name (case-insensitive)
+  const filteredMembers = useMemo(() => {
+    if (!debouncedSearchText) {
+      return members
+    }
+
+    return members.filter((member) => {
+      const username = (member.username || '').toLowerCase()
+      const displayName = (member.display_name || '').toLowerCase()
+
+      return username.includes(debouncedSearchText) || displayName.includes(debouncedSearchText)
+    })
+  }, [members, debouncedSearchText])
 
   if (!workspace && !isLoading) {
     return <Navigate to={path.boardsList} />
@@ -63,6 +98,8 @@ export default function WorkspaceMembers() {
             width: '100%',
             color: 'text.primary'
           }}
+          value={searchText}
+          onChange={handleSearchChange}
           inputProps={{ 'aria-label': 'filter by name' }}
         />
       </Paper>
@@ -70,23 +107,20 @@ export default function WorkspaceMembers() {
       <List disablePadding sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
         {isLoading
           ? Array.from({ length: 4 }).map((_, index) => <MemberItemSkeleton key={`skeleton-${index}`} />)
-          : members.length > 0 &&
-            members.map((member) => {
+          : filteredMembers.length > 0 &&
+            filteredMembers.map((member) => {
               const isCurrentUser = member.user_id === profile?._id
               const currentUserMember = members.find((m) => m.user_id === profile?._id)
               const currentUserRole = currentUserMember?.role
 
               let buttonText = 'Remove'
-              let isDisabled = false
 
               if (isCurrentUser) {
                 buttonText = 'Leave'
               } else if (currentUserRole === WorkspaceRole.Admin) {
                 buttonText = 'Remove...'
-                isDisabled = false
               } else if (currentUserRole === WorkspaceRole.Normal) {
                 buttonText = 'Remove...'
-                isDisabled = true
               }
 
               const memberBoards =
@@ -139,28 +173,24 @@ export default function WorkspaceMembers() {
                         workspaceId={workspaceId as string}
                         userId={member.user_id}
                         memberDisplayName={member.display_name}
-                        showRemoveButton={!isCurrentUser && currentUserRole === WorkspaceRole.Admin}
+                        showRemoveButton={!isCurrentUser && hasPermission(WorkspacePermission.ManageMembers)}
                       />
                       <RoleSelect
                         currentRole={member.role}
-                        disabled={currentUserRole !== WorkspaceRole.Admin || isCurrentUser}
+                        disabled={!hasPermission(WorkspacePermission.ManageMembers) || isCurrentUser}
                         userId={member.user_id}
                         workspaceId={workspaceId as string}
                       />
                       {buttonText === 'Remove...' && (
                         <RemoveMemberWorkspace
-                          isDisabled={isDisabled}
+                          isDisabled={!hasPermission(WorkspacePermission.ManageMembers)}
                           buttonText={buttonText}
                           workspaceId={workspaceId as string}
                           userId={member.user_id}
                         />
                       )}
                       {buttonText === 'Leave' && (
-                        <LeaveWorkspace
-                          isDisabled={isDisabled}
-                          buttonText={buttonText}
-                          workspaceId={workspaceId as string}
-                        />
+                        <LeaveWorkspace buttonText={buttonText} workspaceId={workspaceId as string} />
                       )}
                     </Stack>
                   </Stack>
