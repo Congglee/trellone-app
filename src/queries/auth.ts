@@ -5,6 +5,7 @@ import { AppDispatch } from '~/lib/redux/store'
 import { boardApi } from '~/queries/boards'
 import { invitationApi } from '~/queries/invitations'
 import { userApi } from '~/queries/users'
+import { workspaceApi } from '~/queries/workspaces'
 import {
   AuthResType,
   ForgotPasswordBodyType,
@@ -26,7 +27,7 @@ export const AUTH_API_URL = '/auth' as const
 const reducerPath = 'auth/api' as const
 const tagTypes = ['Auth'] as const
 
-export const apiSlicesToReset = [boardApi, userApi, invitationApi]
+export const apiSlicesToReset = [workspaceApi, boardApi, userApi, invitationApi]
 
 export const resetApiState = (dispatch: AppDispatch) => {
   apiSlicesToReset.forEach((api) => {

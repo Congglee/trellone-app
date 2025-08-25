@@ -8,13 +8,13 @@ import BoardCard from '~/pages/Workspaces/components/BoardCard'
 import NewBoardCard from '~/pages/Workspaces/components/NewBoardCard'
 import { WorkspaceResType } from '~/schemas/workspace.schema'
 
-interface WorkspaceBoardsProps {
+interface BoardGridProps {
   workspace: WorkspaceResType['result']
   isLoading: boolean
   showNewBoardCard?: boolean
 }
 
-export default function WorkspaceBoards({ workspace, isLoading, showNewBoardCard = true }: WorkspaceBoardsProps) {
+export default function BoardGrid({ workspace, isLoading, showNewBoardCard = true }: BoardGridProps) {
   const [newBoardOpen, setNewBoardOpen] = useState(false)
 
   const boards = workspace.boards || []

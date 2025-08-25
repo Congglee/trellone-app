@@ -75,7 +75,7 @@ export default function Profiles() {
         MenuListProps={{ 'aria-labelledby': 'basic-button-profiles' }}
       >
         <MenuItem sx={{ '&:hover': { color: 'success.light' } }}>
-          <Avatar sx={{ width: 28, height: 28, mr: 2 }} alt={profile?.display_name} src={profile?.avatar} />
+          <Avatar sx={{ width: 28, height: 28, mr: 1.5 }} alt={profile?.display_name} src={profile?.avatar} />
           <span>{profile?.display_name}</span>
         </MenuItem>
         <Divider />

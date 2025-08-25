@@ -11,12 +11,11 @@ import { useNavigate } from 'react-router-dom'
 import path from '~/constants/path'
 
 interface LeaveWorkspaceProps {
-  isDisabled: boolean
   buttonText: string
   workspaceId: string
 }
 
-export default function LeaveWorkspace({ isDisabled, buttonText, workspaceId }: LeaveWorkspaceProps) {
+export default function LeaveWorkspace({ buttonText, workspaceId }: LeaveWorkspaceProps) {
   const [anchorLeaveWorkspacePopoverElement, setAnchorLeaveWorkspacePopoverElement] = useState<HTMLElement | null>(null)
 
   const isLeaveWorkspacePopoverOpen = Boolean(anchorLeaveWorkspacePopoverElement)
@@ -61,7 +60,6 @@ export default function LeaveWorkspace({ isDisabled, buttonText, workspaceId }: 
       <Button
         size='small'
         variant='outlined'
-        disabled={isDisabled}
         sx={{ borderRadius: 1, textTransform: 'none', minWidth: 120 }}
         onClick={toggleLeaveWorkspacePopover}
       >

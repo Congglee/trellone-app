@@ -31,7 +31,8 @@ const isMenuItemActive = (workspaceId: string, menuType: string, pathname: strin
 
     case 'members': {
       const workspaceMembersPath = path.workspaceMembers.replace(':workspaceId', workspaceId)
-      return pathname === workspaceMembersPath
+      const workspaceGuestsPath = path.workspaceGuests.replace(':workspaceId', workspaceId)
+      return pathname === workspaceMembersPath || pathname === workspaceGuestsPath
     }
 
     case 'settings': {
@@ -83,7 +84,7 @@ export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps)
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
-            <ListItemText secondary='Boards' />
+            <ListItemText>Boards</ListItemText>
           </ListItemButton>
         </ListItem>
 

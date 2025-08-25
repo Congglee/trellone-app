@@ -1,7 +1,6 @@
 import AddIcon from '@mui/icons-material/Add'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Tooltip from '@mui/material/Tooltip'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
@@ -203,18 +202,16 @@ export default function CardAttachments({ cardAttachments, attachmentPopoverButt
                 />
               </ListItemButton>
             </ListItem>
-            <Tooltip title='This feature is under development for future release' arrow>
-              <ListItem disablePadding>
-                <ListItemButton sx={{ py: 0.5 }}>
-                  <ListItemText
-                    primary='Comment'
-                    sx={{
-                      '& .MuiTypography-body1': { fontSize: '1em' }
-                    }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            </Tooltip>
+            <ListItem disablePadding>
+              <ListItemButton sx={{ py: 0.5 }} disabled>
+                <ListItemText
+                  primary='Comment'
+                  sx={{
+                    '& .MuiTypography-body1': { fontSize: '1em' }
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
             {activeAttachment?.type === AttachmentType.File && (
               <ListItem disablePadding>
                 <ListItemButton

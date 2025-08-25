@@ -11,9 +11,10 @@ import { useRemoveGuestFromWorkspaceMutation } from '~/queries/workspaces'
 interface RemoveGuestWorkspaceProps {
   userId: string
   workspaceId: string
+  isDisabled: boolean
 }
 
-export default function RemoveGuestWorkspace({ userId, workspaceId }: RemoveGuestWorkspaceProps) {
+export default function RemoveGuestWorkspace({ userId, workspaceId, isDisabled }: RemoveGuestWorkspaceProps) {
   const [anchorRemoveGuestWorkspacePopoverElement, setAnchorRemoveGuestWorkspacePopoverElement] =
     useState<HTMLElement | null>(null)
 
@@ -48,6 +49,7 @@ export default function RemoveGuestWorkspace({ userId, workspaceId }: RemoveGues
         sx={{ borderRadius: 1, textTransform: 'none', minWidth: 120 }}
         startIcon={<ClearIcon />}
         onClick={toggleRemoveGuestWorkspacePopover}
+        disabled={isDisabled}
       >
         Remove...
       </Button>

@@ -15,7 +15,10 @@ import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Navigate, useParams } from 'react-router-dom'
 import NewBoardDialog from '~/components/Dialog/NewBoardDialog'
+import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
 import path from '~/constants/path'
+import { WorkspacePermission } from '~/constants/permissions'
+import { useWorkspacePermission } from '~/hooks/use-permissions'
 import BoardCard from '~/pages/Workspaces/components/BoardCard'
 import NewBoardCard from '~/pages/Workspaces/components/NewBoardCard'
 import EditWorkspaceDialog from '~/pages/Workspaces/pages/WorkspaceBoardsList/components/EditWorkspaceDialog'
@@ -33,6 +36,8 @@ export default function WorkspaceBoardsList() {
   const boards = workspace?.boards || []
 
   const hasClosedBoards = boards.some((board) => board._destroy)
+
+  const { hasPermission } = useWorkspacePermission(workspace)
 
   if (!workspace && !isLoading) {
     return <Navigate to={path.boardsList} />
@@ -84,7 +89,15 @@ export default function WorkspaceBoardsList() {
           </Stack>
         ) : (
           <Stack alignItems='center' direction='row' flexWrap='wrap' useFlexGap spacing={2}>
-            <WorkspaceLogo workspace={workspace!} />
+            {hasPermission(WorkspacePermission.ManageWorkspace) ? (
+              <WorkspaceLogo workspace={workspace!} />
+            ) : (
+              <WorkspaceAvatar
+                title={workspace?.title as string}
+                logo={workspace?.logo}
+                size={{ width: 80, height: 80 }}
+              />
+            )}
 
             <Stack spacing={0.5}>
               <Stack alignItems='center' direction='row' spacing={1}>
@@ -95,9 +108,11 @@ export default function WorkspaceBoardsList() {
                 >
                   {workspace?.title}
                 </Typography>
-                <IconButton size='small' sx={{ color: 'text.secondary' }} onClick={() => setEditWorkspaceOpen(true)}>
-                  <EditIcon fontSize='small' />
-                </IconButton>
+                {hasPermission(WorkspacePermission.ManageWorkspace) && (
+                  <IconButton size='small' sx={{ color: 'text.secondary' }} onClick={() => setEditWorkspaceOpen(true)}>
+                    <EditIcon fontSize='small' />
+                  </IconButton>
+                )}
               </Stack>
               <Stack alignItems='center' direction='row' spacing={0.5}>
                 <PublicIcon
