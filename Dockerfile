@@ -10,6 +10,6 @@ COPY . .
 
 RUN npm run build
 
-EXPOSE 8000
+EXPOSE 3000
 
-CMD ["npm", "run", "preview", "--", "--host", "--port", "8000"]
+CMD ["npm", "run", "preview", "--", "--host", "--port", "3000"]
