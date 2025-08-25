@@ -60,8 +60,8 @@ jobs:
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
             docker pull $DOCKER_IMAGE
 
-            # Stop and remove ANY container using port 8000 (more robust)
-            EXISTING_CONTAINER=$(docker ps --filter "publish=8000" --format "{{.Names}}" | head -n1)
+            # Stop and remove ANY container using port 3000 (more robust)
+            EXISTING_CONTAINER=$(docker ps --filter "publish=3000" --format "{{.Names}}" | head -n1)
             if [ ! -z "$EXISTING_CONTAINER" ]; then
               echo "Stopping existing container: $EXISTING_CONTAINER"
               docker stop $EXISTING_CONTAINER
@@ -72,7 +72,7 @@ jobs:
             docker rm -f $DOCKER_CONTAINER || true
 
             # Start new container
-            docker run --name $DOCKER_CONTAINER -dp 8000:8000 --restart unless-stopped $DOCKER_IMAGE
+            docker run --name $DOCKER_CONTAINER -dp 3000:3000 --restart unless-stopped $DOCKER_IMAGE
             docker image prune -f
 
             # Wait for container to start and show logs
