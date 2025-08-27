@@ -16,9 +16,10 @@ import { generatePlaceholderCard } from '~/utils/utils'
 
 interface ColumnsListProps {
   columns: ColumnType[]
+  isBoardMember: boolean
 }
 
-export default function ColumnsList({ columns }: ColumnsListProps) {
+export default function ColumnsList({ columns, isBoardMember }: ColumnsListProps) {
   const [newColumnFormOpen, setNewColumnFormOpen] = useState(false)
   const [newColumnTitle, setNewColumnTitle] = useState('')
 
@@ -34,6 +35,7 @@ export default function ColumnsList({ columns }: ColumnsListProps) {
   })
 
   const toggleNewColumnForm = () => {
+    if (!isBoardMember) return
     setNewColumnFormOpen(!newColumnFormOpen)
   }
 

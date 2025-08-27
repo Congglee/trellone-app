@@ -8,7 +8,8 @@ export enum WorkspacePermission {
   ManageWorkspace = 'WORKSPACE__MANAGE',
   ManageMembers = 'WORKSPACE__MANAGE_MEMBERS',
   ManageGuests = 'WORKSPACE__MANAGE_GUESTS',
-  DeleteWorkspace = 'WORKSPACE__DELETE'
+  DeleteWorkspace = 'WORKSPACE__DELETE',
+  JoinWorkspaceBoard = 'WORKSPACE__JOIN_BOARD'
 }
 
 export enum BoardPermission {
@@ -32,9 +33,14 @@ export const WORKSPACE_ROLE_PERMISSIONS: Record<WorkspaceMemberRoleType, Workspa
     WorkspacePermission.ManageWorkspace,
     WorkspacePermission.ManageMembers,
     WorkspacePermission.ManageGuests,
-    WorkspacePermission.DeleteWorkspace
+    WorkspacePermission.DeleteWorkspace,
+    WorkspacePermission.JoinWorkspaceBoard
   ],
-  [WorkspaceRole.Normal]: [WorkspacePermission.ViewWorkspace, WorkspacePermission.CreateBoard]
+  [WorkspaceRole.Normal]: [
+    WorkspacePermission.ViewWorkspace,
+    WorkspacePermission.CreateBoard,
+    WorkspacePermission.JoinWorkspaceBoard
+  ]
 }
 
 export const BOARD_ROLE_PERMISSIONS: Record<BoardMemberRoleType, BoardPermission[]> = {

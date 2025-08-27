@@ -23,9 +23,10 @@ interface BoardDrawerProps {
   open: boolean
   onOpen: (open: boolean) => void
   totalMembers: number
+  isBoardMember: boolean
 }
 
-export default function BoardDrawer({ open, onOpen, totalMembers }: BoardDrawerProps) {
+export default function BoardDrawer({ open, onOpen, totalMembers, isBoardMember }: BoardDrawerProps) {
   const theme = useTheme()
 
   const [changeBackgroundDrawer, setChangeBackgroundDrawer] = useState(false)
@@ -63,7 +64,7 @@ export default function BoardDrawer({ open, onOpen, totalMembers }: BoardDrawerP
 
       <List>
         <ListItem disablePadding>
-          <ListItemButton disabled>
+          <ListItemButton>
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
@@ -72,7 +73,7 @@ export default function BoardDrawer({ open, onOpen, totalMembers }: BoardDrawerP
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton onClick={() => onOpenChangeBackgroundDrawer(true)}>
+          <ListItemButton onClick={() => onOpenChangeBackgroundDrawer(true)} disabled={!isBoardMember}>
             <ListItemIcon>
               <FavoriteBorderIcon />
             </ListItemIcon>

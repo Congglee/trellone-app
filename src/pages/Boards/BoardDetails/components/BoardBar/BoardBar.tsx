@@ -10,12 +10,14 @@ import Tooltip from '@mui/material/Tooltip'
 import { useClickAway } from '@uidotdev/usehooks'
 import { useEffect, useState } from 'react'
 import AppBar from '~/components/AppBar'
+import { useBoardPermission } from '~/hooks/use-permissions'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import BoardUserGroup from '~/pages/Boards/BoardDetails/components/BoardUserGroup'
 import InviteBoardMembersDialog from '~/pages/Boards/BoardDetails/components/InviteBoardMembersDialog'
 import { useUpdateBoardMutation } from '~/queries/boards'
 import { BoardResType } from '~/schemas/board.schema'
 import { updateActiveBoard } from '~/store/slices/board.slice'
+import Button from '@mui/material/Button'
 
 interface BoardBarProps {
   workspaceDrawerOpen: boolean
@@ -58,6 +60,8 @@ export default function BoardBar({
   const { activeBoard } = useAppSelector((state) => state.board)
   const { socket } = useAppSelector((state) => state.app)
 
+  const { isMember } = useBoardPermission(board)
+
   // Update local boardTitle state whenever the board title changes
   // This ensures that when another user updates the title via socket, the local state is also updated
   useEffect(() => {
@@ -69,6 +73,10 @@ export default function BoardBar({
   const [updateBoardMutation] = useUpdateBoardMutation()
 
   const toggleEditBoardTitleForm = () => {
+    if (!isMember) {
+      return
+    }
+
     // Always set the current board title when opening the edit form
     // This ensures we're always starting with the latest title
     if (!editBoardTitleFormOpen) {
@@ -110,7 +118,8 @@ export default function BoardBar({
     <AppBar
       sx={{
         backgroundColor: (theme) => (theme.palette.mode === 'dark' ? 'rgb(0 0 0 / 40%)' : 'rgb(255 255 255 / 40%)'),
-        top: 'auto'
+        top: 'auto',
+        zIndex: 999
       }}
       position='absolute'
       workspaceDrawerOpen={workspaceDrawerOpen}
@@ -160,7 +169,7 @@ export default function BoardBar({
               </Box>
             ) : (
               <Chip
-                sx={MENU_STYLES}
+                sx={{ ...MENU_STYLES }}
                 icon={<SpaceDashboardIcon />}
                 label={board.title}
                 onClick={toggleEditBoardTitleForm}
@@ -169,8 +178,23 @@ export default function BoardBar({
           </Tooltip>
         </Box>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, ml: 'auto' }}>
-          <InviteBoardMembersDialog boardId={board._id} workspaceId={board.workspace_id} />
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+            ml: 'auto'
+          }}
+        >
+          {isMember ? (
+            <InviteBoardMembersDialog boardId={board._id} workspaceId={board.workspace_id} />
+          ) : (
+            <Tooltip title='Workspace members can join this board'>
+              <Button size='small' color='secondary' variant='contained'>
+                Join board
+              </Button>
+            </Tooltip>
+          )}
 
           <BoardUserGroup boardUsers={board?.members} />
 
