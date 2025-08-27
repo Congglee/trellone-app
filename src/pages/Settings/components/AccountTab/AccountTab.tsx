@@ -74,7 +74,7 @@ export default function AccountTab() {
     }
   }, [profile, reset])
 
-  const handleResendVerifyEmail = async () => {
+  const resendVerifyEmail = async () => {
     await resendVerifyEmailMutation()
   }
 
@@ -190,7 +190,7 @@ export default function AccountTab() {
                         </Tooltip>
                       ) : (
                         <Tooltip title='Resend verification email'>
-                          <IconButton edge='end' onClick={handleResendVerifyEmail}>
+                          <IconButton edge='end' onClick={resendVerifyEmail}>
                             <RestartAltSharpIcon fontSize='small' />
                           </IconButton>
                         </Tooltip>

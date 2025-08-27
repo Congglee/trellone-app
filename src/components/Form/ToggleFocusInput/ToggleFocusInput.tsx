@@ -1,4 +1,4 @@
-import { StandardTextFieldProps } from '@mui/material'
+import { StandardTextFieldProps, SxProps } from '@mui/material'
 import { useEffect, useState } from 'react'
 import TextField from '@mui/material/TextField'
 
@@ -6,12 +6,14 @@ interface ToggleFocusInputProps extends StandardTextFieldProps {
   value?: string
   onChangeValue?: (title: string) => Promise<void>
   inputFontSize?: string
+  styles?: SxProps
 }
 
 export default function ToggleFocusInput({
   value,
   onChangeValue,
   inputFontSize = '16px',
+  styles = {},
   ...rest
 }: ToggleFocusInputProps) {
   const [localValue, setLocalValue] = useState<string>(value as string)
@@ -74,7 +76,8 @@ export default function ToggleFocusInput({
           overflow: 'hidden',
           whiteSpace: 'nowrap',
           textOverflow: 'ellipsis'
-        }
+        },
+        ...styles
       }}
     />
   )

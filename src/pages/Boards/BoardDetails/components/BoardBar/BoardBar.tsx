@@ -53,7 +53,7 @@ export default function BoardBar({
   const [boardTitle, setBoardTitle] = useState('')
 
   const editBoardTitleClickAwayRef = useClickAway<HTMLInputElement>(() => {
-    handleUpdateBoardTitle()
+    updateBoardTitle()
   })
 
   const dispatch = useAppDispatch()
@@ -88,11 +88,11 @@ export default function BoardBar({
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      handleUpdateBoardTitle()
+      updateBoardTitle()
     }
   }
 
-  const handleUpdateBoardTitle = () => {
+  const updateBoardTitle = () => {
     setEditBoardTitleFormOpen(false)
 
     if (!boardTitle || boardTitle.trim() === '') {

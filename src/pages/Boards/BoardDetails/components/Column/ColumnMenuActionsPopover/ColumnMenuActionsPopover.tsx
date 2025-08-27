@@ -4,7 +4,6 @@ import ContentCopy from '@mui/icons-material/ContentCopy'
 import ContentCut from '@mui/icons-material/ContentCut'
 import ContentPaste from '@mui/icons-material/ContentPaste'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
-import EditIcon from '@mui/icons-material/Edit'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
@@ -19,7 +18,6 @@ import Tooltip from '@mui/material/Tooltip'
 import { useConfirm } from 'material-ui-confirm'
 import { useState } from 'react'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
-import EditColumnForm from '~/pages/Boards/BoardDetails/components/Column/EditColumnForm'
 import { useDeleteColumnMutation } from '~/queries/columns'
 import { ColumnType } from '~/schemas/column.schema'
 import { updateActiveBoard } from '~/store/slices/board.slice'
@@ -33,7 +31,6 @@ export default function ColumnMenuActionsPopover({ column }: ColumnMenuActionsPo
     HTMLElement | SVGSVGElement | null
   >(null)
   const [showMenuActions, setShowMenuActions] = useState(false)
-  const [showEditColumnForm, setShowEditColumnForm] = useState(false)
 
   const isMenuActionsPopoverOpen = Boolean(anchorMenuActionsPopoverElement)
 
@@ -60,12 +57,6 @@ export default function ColumnMenuActionsPopover({ column }: ColumnMenuActionsPo
   const handleMenuActionsPopoverClose = () => {
     setAnchorMenuActionsPopoverElement(null)
     setShowMenuActions(false)
-    setShowEditColumnForm(false)
-  }
-
-  const onBackToMenuActionsFromEdit = () => {
-    setShowEditColumnForm(false)
-    setShowMenuActions(true)
   }
 
   const confirmDeleteColumn = useConfirm()
@@ -164,21 +155,6 @@ export default function ColumnMenuActionsPopover({ column }: ColumnMenuActionsPo
             <Divider sx={{ my: 0.5 }} />
 
             <ListItem disablePadding>
-              <ListItemButton
-                sx={{ py: 0.5 }}
-                onClick={() => {
-                  setShowMenuActions(false)
-                  setShowEditColumnForm(true)
-                }}
-              >
-                <ListItemIcon>
-                  <EditIcon fontSize='small' />
-                </ListItemIcon>
-                <ListItemText>Edit this column</ListItemText>
-              </ListItemButton>
-            </ListItem>
-
-            <ListItem disablePadding>
               <ListItemButton sx={{ py: 0.5 }} onClick={deleteColumn}>
                 <ListItemIcon>
                   <DeleteForeverIcon fontSize='small' />
@@ -196,14 +172,6 @@ export default function ColumnMenuActionsPopover({ column }: ColumnMenuActionsPo
               </ListItemButton>
             </ListItem>
           </List>
-        )}
-
-        {showEditColumnForm && (
-          <EditColumnForm
-            column={column}
-            onBackToMenuActions={onBackToMenuActionsFromEdit}
-            onClose={handleMenuActionsPopoverClose}
-          />
         )}
       </Popover>
     </Box>

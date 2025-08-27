@@ -63,7 +63,7 @@ export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroun
   const [updateBoardMutation] = useUpdateBoardMutation()
   const [uploadImageMutation] = useUploadImageMutation()
 
-  const handleUpdateBoardCoverPhoto = async (cover_photo: string) => {
+  const updateBoardCoverPhoto = async (cover_photo: string) => {
     const newActiveBoard = { ...activeBoard! }
     newActiveBoard.cover_photo = cover_photo
 
@@ -78,7 +78,7 @@ export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroun
     socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
   }
 
-  const handleUploadBoardCoverPhoto = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadBoardCoverPhoto = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
 
     const errorMessage = singleFileValidator(file as File)
@@ -100,7 +100,7 @@ export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroun
 
     const imageUrl = uploadImageRes.result[0].url
 
-    handleUpdateBoardCoverPhoto(imageUrl)
+    updateBoardCoverPhoto(imageUrl)
   }
 
   return (
@@ -135,7 +135,7 @@ export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroun
             size='small'
             color='secondary'
             fullWidth
-            onClick={() => handleUpdateBoardCoverPhoto('')}
+            onClick={() => updateBoardCoverPhoto('')}
           >
             Remove Cover
           </Button>
@@ -173,7 +173,7 @@ export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroun
                   <ListItemIcon>
                     <AddIcon />
                   </ListItemIcon>
-                  <VisuallyHiddenInput type='file' accept='image/*' onChange={handleUploadBoardCoverPhoto} />
+                  <VisuallyHiddenInput type='file' accept='image/*' onChange={uploadBoardCoverPhoto} />
                 </ListItemButton>
               </ListItem>
 
@@ -182,7 +182,7 @@ export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroun
 
                 return (
                   <ImageListItem
-                    onClick={() => handleUpdateBoardCoverPhoto(urls.regular)}
+                    onClick={() => updateBoardCoverPhoto(urls.regular)}
                     sx={{ p: 0 }}
                     component={ListItemButton}
                     key={id}
