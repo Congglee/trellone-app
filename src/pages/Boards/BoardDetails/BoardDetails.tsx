@@ -11,6 +11,7 @@ import Main from '~/components/Main'
 import ActiveCard from '~/components/Modal/ActiveCard'
 import NavBar from '~/components/NavBar'
 import { BoardRole } from '~/constants/type'
+import { useBoardPermission } from '~/hooks/use-permissions'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import BoardBar from '~/pages/Boards/BoardDetails/components/BoardBar'
 import BoardContent from '~/pages/Boards/BoardDetails/components/BoardContent'
@@ -44,6 +45,8 @@ export default function BoardDetails() {
   const [updateBoardMutation] = useUpdateBoardMutation()
   const [updateColumnMutation] = useUpdateColumnMutation()
   const [moveCardToDifferentColumnMutation] = useMoveCardToDifferentColumnMutation()
+
+  const { isMember } = useBoardPermission(activeBoard)
 
   useEffect(() => {
     if (boardId) {
@@ -222,7 +225,7 @@ export default function BoardDetails() {
 
       <NavBar />
 
-      <ActiveCard />
+      <ActiveCard isBoardMember={isMember} />
 
       <Box
         sx={{
@@ -282,13 +285,16 @@ export default function BoardDetails() {
               onMoveColumns={onMoveColumns}
               onMoveCardInTheSameColumn={onMoveCardInTheSameColumn}
               onMoveCardToDifferentColumn={onMoveCardToDifferentColumn}
+              isBoardMember={isMember}
             />
           </Main>
 
           <BoardDrawer
             open={boardDrawerOpen}
             onOpen={setBoardDrawerOpen}
-            totalMembers={activeBoard.members?.length || 0}
+            boardMembers={activeBoard.members}
+            isBoardMember={isMember}
+            boardId={boardId!}
           />
         </Box>
       </Box>

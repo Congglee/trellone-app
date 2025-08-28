@@ -52,7 +52,11 @@ const SidebarItem = styled(Box)(({ theme }) => ({
   }
 }))
 
-export default function ActiveCard() {
+interface ActiveCardProps {
+  isBoardMember?: boolean
+}
+
+export default function ActiveCard({ isBoardMember }: ActiveCardProps) {
   const dispatch = useAppDispatch()
   const { isShowActiveCardModal, activeCard } = useAppSelector((state) => state.card)
   const { profile } = useAppSelector((state) => state.auth)
@@ -155,171 +159,185 @@ export default function ActiveCard() {
           backgroundColor: (theme) => (theme.palette.mode === 'dark' ? '#1A2027' : '#fff')
         }}
       >
-        <Box sx={{ position: 'absolute', top: '12px', right: '10px', cursor: 'pointer' }}>
-          <CancelIcon color='error' sx={{ '&:hover': { color: 'error.light' } }} onClick={handleActiveCardModalClose} />
-        </Box>
-
-        {activeCard?.cover_photo && (
-          <Box sx={{ mb: 4, position: 'relative' }}>
-            <Box
-              sx={{
-                backgroundImage: `url(${activeCard.cover_photo})`,
-                backgroundSize: 'contain',
-                minHeight: '116px',
-                maxHeight: '160px',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-                borderTopLeftRadius: '12px',
-                borderTopRightRadius: '12px',
-                backgroundColor: (theme) => (theme.palette.mode === 'dark' ? '#1d1f19' : '#f5f5f5')
-              }}
+        <Box sx={{ pointerEvents: isBoardMember ? 'auto' : 'none' }}>
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '12px',
+              right: '10px',
+              cursor: 'pointer',
+              pointerEvents: 'auto'
+            }}
+          >
+            <CancelIcon
+              color='error'
+              sx={{ '&:hover': { color: 'error.light' } }}
+              onClick={handleActiveCardModalClose}
             />
           </Box>
-        )}
 
-        <Box sx={{ mb: 1, mt: -3, pr: 2.5, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <CreditCardIcon />
-          <ToggleFocusInput inputFontSize='22px' value={activeCard?.title} onChangeValue={onUpdateCardTitle} />
-        </Box>
-
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid xs={12} sm={9}>
-            <Box sx={{ mb: 3 }}>
-              <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Members</Typography>
-
-              <CardUserGroup
-                cardMembers={activeCard?.members || []}
-                onAddCardMember={onAddCardMember}
-                onRemoveCardMember={onRemoveCardMember}
+          {activeCard?.cover_photo && (
+            <Box sx={{ mb: 4, position: 'relative' }}>
+              <Box
+                sx={{
+                  backgroundImage: `url(${activeCard.cover_photo})`,
+                  backgroundSize: 'contain',
+                  minHeight: '116px',
+                  maxHeight: '160px',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                  borderTopLeftRadius: '12px',
+                  borderTopRightRadius: '12px',
+                  backgroundColor: (theme) => (theme.palette.mode === 'dark' ? '#1d1f19' : '#f5f5f5')
+                }}
               />
             </Box>
+          )}
 
-            {activeCard?.due_date && (
-              <CardDueDate
-                dueDate={activeCard.due_date}
-                isCompleted={activeCard.is_completed}
-                onUpdateCardDueDateAndStatus={onUpdateCardDueDateAndStatus}
-              />
-            )}
+          <Box sx={{ mb: 1, mt: -3, pr: 2.5, display: 'flex', alignItems: 'center', gap: 1 }}>
+            <CreditCardIcon />
+            <ToggleFocusInput inputFontSize='22px' value={activeCard?.title} onChangeValue={onUpdateCardTitle} />
+          </Box>
 
-            <Box sx={{ mb: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <SubjectRoundedIcon />
-                <Typography component='span' sx={{ fontWeight: '600', fontSize: '20px' }}>
-                  Description
-                </Typography>
+          <Grid container spacing={2} sx={{ mb: 3 }}>
+            <Grid xs={12} sm={9}>
+              <Box sx={{ mb: 3 }}>
+                <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Members</Typography>
+
+                <CardUserGroup
+                  cardMembers={activeCard?.members || []}
+                  onAddCardMember={onAddCardMember}
+                  onRemoveCardMember={onRemoveCardMember}
+                />
               </Box>
 
-              <CardDescriptionMdEditor
-                description={activeCard?.description as string}
-                onUpdateCardDescription={onUpdateCardDescription}
-              />
-            </Box>
+              {activeCard?.due_date && (
+                <CardDueDate
+                  dueDate={activeCard.due_date}
+                  isCompleted={activeCard.is_completed}
+                  onUpdateCardDueDateAndStatus={onUpdateCardDueDateAndStatus}
+                />
+              )}
 
-            {activeCard?.attachments && !!activeCard.attachments?.length && (
               <Box sx={{ mb: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                  <AttachmentIcon />
+                  <SubjectRoundedIcon />
                   <Typography component='span' sx={{ fontWeight: '600', fontSize: '20px' }}>
-                    Attachments
+                    Description
                   </Typography>
                 </Box>
 
-                <CardAttachments
-                  cardAttachments={activeCard?.attachments || []}
-                  attachmentPopoverButtonRef={attachmentButtonRef}
+                <CardDescriptionMdEditor
+                  description={activeCard?.description as string}
+                  onUpdateCardDescription={onUpdateCardDescription}
                 />
               </Box>
-            )}
 
-            <Box sx={{ mb: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <DvrOutlinedIcon />
-                <Typography component='span' sx={{ fontWeight: '600', fontSize: '20px' }}>
-                  Activity
-                </Typography>
-              </Box>
-
-              <CardActivitySection cardComments={activeCard?.comments || []} />
-            </Box>
-          </Grid>
-
-          <Grid xs={12} sm={3}>
-            <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Add To Card</Typography>
-            <Stack direction='column' spacing={1}>
-              {activeCard?.members?.includes(profile?._id as string) ? (
-                <SidebarItem
-                  sx={{
-                    color: 'error.light',
-                    '&:hover': { color: 'error.light' }
-                  }}
-                  onClick={() => onRemoveCardMember(profile?._id as string)}
-                >
-                  <ExitToAppIcon fontSize='small' />
-                  Leave
-                </SidebarItem>
-              ) : (
-                <SidebarItem className='active' onClick={() => onAddCardMember(profile?._id as string)}>
-                  <Box
-                    sx={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between'
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <PersonOutlineOutlinedIcon fontSize='small' />
-                      <span>Join</span>
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <CheckCircleIcon fontSize='small' sx={{ color: '#27ae60' }} />
-                    </Box>
+              {activeCard?.attachments && !!activeCard.attachments?.length && (
+                <Box sx={{ mb: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <AttachmentIcon />
+                    <Typography component='span' sx={{ fontWeight: '600', fontSize: '20px' }}>
+                      Attachments
+                    </Typography>
                   </Box>
-                </SidebarItem>
+
+                  <CardAttachments
+                    cardAttachments={activeCard?.attachments || []}
+                    attachmentPopoverButtonRef={attachmentButtonRef}
+                  />
+                </Box>
               )}
 
-              <SidebarItem className='active' sx={{ p: 0 }}>
-                <CoverPopover onUpdateCardCoverPhoto={onUpdateCardCoverPhoto} />
-              </SidebarItem>
+              <Box sx={{ mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <DvrOutlinedIcon />
+                  <Typography component='span' sx={{ fontWeight: '600', fontSize: '20px' }}>
+                    Activity
+                  </Typography>
+                </Box>
 
-              <SidebarItem className='active' sx={{ p: 0 }}>
-                <AttachmentPopover ref={attachmentButtonRef} />
-              </SidebarItem>
-              <SidebarItem className='active' sx={{ p: 0 }}>
-                <DatesMenu
-                  dueDate={activeCard?.due_date}
-                  isCompleted={activeCard?.is_completed}
-                  onUpdateCardDueDate={onUpdateCardDueDateAndStatus}
-                />
-              </SidebarItem>
-            </Stack>
+                <CardActivitySection cardComments={activeCard?.comments || []} />
+              </Box>
+            </Grid>
 
-            <Divider sx={{ my: 2 }} />
-
-            <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Actions</Typography>
-            <Stack direction='column' spacing={1}>
-              <SidebarItem className='active' onClick={() => onUpdateCardArchiveStatus(!activeCard?._destroy)}>
-                {activeCard?._destroy ? (
-                  <>
-                    <RestartAltIcon fontSize='small' />
-                    Send to Board
-                  </>
+            <Grid xs={12} sm={3}>
+              <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Add To Card</Typography>
+              <Stack direction='column' spacing={1}>
+                {activeCard?.members?.includes(profile?._id as string) ? (
+                  <SidebarItem
+                    sx={{
+                      color: 'error.light',
+                      '&:hover': { color: 'error.light' }
+                    }}
+                    onClick={() => onRemoveCardMember(profile?._id as string)}
+                  >
+                    <ExitToAppIcon fontSize='small' />
+                    Leave
+                  </SidebarItem>
                 ) : (
-                  <>
-                    <ArchiveOutlinedIcon fontSize='small' />
-                    Archive
-                  </>
+                  <SidebarItem className='active' onClick={() => onAddCardMember(profile?._id as string)}>
+                    <Box
+                      sx={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <PersonOutlineOutlinedIcon fontSize='small' />
+                        <span>Join</span>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <CheckCircleIcon fontSize='small' sx={{ color: '#27ae60' }} />
+                      </Box>
+                    </Box>
+                  </SidebarItem>
                 )}
-              </SidebarItem>
-              {activeCard?._destroy && (
+
                 <SidebarItem className='active' sx={{ p: 0 }}>
-                  <RemoveActiveCardPopover cardId={activeCard?._id} columnId={activeCard?.column_id} />
+                  <CoverPopover onUpdateCardCoverPhoto={onUpdateCardCoverPhoto} />
                 </SidebarItem>
-              )}
-            </Stack>
+
+                <SidebarItem className='active' sx={{ p: 0 }}>
+                  <AttachmentPopover ref={attachmentButtonRef} />
+                </SidebarItem>
+                <SidebarItem className='active' sx={{ p: 0 }}>
+                  <DatesMenu
+                    dueDate={activeCard?.due_date}
+                    isCompleted={activeCard?.is_completed}
+                    onUpdateCardDueDate={onUpdateCardDueDateAndStatus}
+                  />
+                </SidebarItem>
+              </Stack>
+
+              <Divider sx={{ my: 2 }} />
+
+              <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Actions</Typography>
+              <Stack direction='column' spacing={1}>
+                <SidebarItem className='active' onClick={() => onUpdateCardArchiveStatus(!activeCard?._destroy)}>
+                  {activeCard?._destroy ? (
+                    <>
+                      <RestartAltIcon fontSize='small' />
+                      Send to Board
+                    </>
+                  ) : (
+                    <>
+                      <ArchiveOutlinedIcon fontSize='small' />
+                      Archive
+                    </>
+                  )}
+                </SidebarItem>
+                {activeCard?._destroy && (
+                  <SidebarItem className='active' sx={{ p: 0 }}>
+                    <RemoveActiveCardPopover cardId={activeCard?._id} columnId={activeCard?.column_id} />
+                  </SidebarItem>
+                )}
+              </Stack>
+            </Grid>
           </Grid>
-        </Grid>
+        </Box>
       </Box>
     </Modal>
   )

@@ -77,10 +77,6 @@ export default function EmojiPickerPopover({
 
       // Emit socket event to broadcast the card update to other users
       socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
-
-      // onUpdateActiveCard(updatedCard).finally(() => {
-      //   handleEmojiPickerClose()
-      // })
     }
   }
 

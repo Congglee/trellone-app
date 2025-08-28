@@ -14,6 +14,8 @@ export const BoardMemberSchema = UserSchema.extend({
   invited_by: z.string().optional()
 })
 
+export type BoardMemberType = z.TypeOf<typeof BoardMemberSchema>
+
 export const BoardSchema = z.object({
   _id: z.string(),
   title: z.string(),
