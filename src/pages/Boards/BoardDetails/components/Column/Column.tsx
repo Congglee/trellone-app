@@ -15,7 +15,7 @@ import { updateActiveBoard } from '~/store/slices/board.slice'
 
 interface ColumnProps {
   column: ColumnType
-  isBoardMember: boolean
+  isBoardMember?: boolean
 }
 
 export default function Column({ column, isBoardMember }: ColumnProps) {
