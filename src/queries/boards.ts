@@ -52,11 +52,15 @@ export const boardApi = createApi({
         { type: 'Board', id },
         { type: 'Board', id: 'LIST' }
       ]
+    }),
+
+    leaveBoard: build.mutation<BoardResType, string>({
+      query: (id) => ({ url: `${BOARD_API_URL}/${id}/members/me/leave`, method: 'POST' })
     })
   })
 })
 
-export const { useAddBoardMutation, useGetBoardsQuery, useUpdateBoardMutation } = boardApi
+export const { useAddBoardMutation, useGetBoardsQuery, useUpdateBoardMutation, useLeaveBoardMutation } = boardApi
 
 const boardApiReducer = boardApi.reducer
 

@@ -292,8 +292,9 @@ export default function BoardDetails() {
           <BoardDrawer
             open={boardDrawerOpen}
             onOpen={setBoardDrawerOpen}
-            totalMembers={activeBoard.members?.length || 0}
+            boardMembers={activeBoard.members}
             isBoardMember={isMember}
+            boardId={boardId!}
           />
         </Box>
       </Box>

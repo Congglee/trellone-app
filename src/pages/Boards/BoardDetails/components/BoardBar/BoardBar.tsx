@@ -18,6 +18,8 @@ import { useUpdateBoardMutation } from '~/queries/boards'
 import { BoardResType } from '~/schemas/board.schema'
 import { updateActiveBoard } from '~/store/slices/board.slice'
 import Button from '@mui/material/Button'
+import { useJoinWorkspaceBoardMutation } from '~/queries/workspaces'
+import { UserType } from '~/schemas/user.schema'
 
 interface BoardBarProps {
   workspaceDrawerOpen: boolean
@@ -57,10 +59,12 @@ export default function BoardBar({
   })
 
   const dispatch = useAppDispatch()
+
   const { activeBoard } = useAppSelector((state) => state.board)
   const { socket } = useAppSelector((state) => state.app)
+  const { profile } = useAppSelector((state) => state.auth)
 
-  const { isMember } = useBoardPermission(board)
+  const { isMember } = useBoardPermission(activeBoard)
 
   // Update local boardTitle state whenever the board title changes
   // This ensures that when another user updates the title via socket, the local state is also updated
@@ -71,6 +75,7 @@ export default function BoardBar({
   }, [board?.title])
 
   const [updateBoardMutation] = useUpdateBoardMutation()
+  const [joinWorkspaceBoardMutation] = useJoinWorkspaceBoardMutation()
 
   const toggleEditBoardTitleForm = () => {
     if (!isMember) {
@@ -112,6 +117,42 @@ export default function BoardBar({
 
     // Emit socket event to notify other users about the board title update
     socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+  }
+
+  const joinWorkspaceBoard = async () => {
+    const joinWorkspaceBoardRes = await joinWorkspaceBoardMutation({
+      workspace_id: board.workspace_id,
+      board_id: board._id
+    }).unwrap()
+
+    const joinedBoard = joinWorkspaceBoardRes.result
+    const currentUser = profile as UserType
+    const newMember = joinedBoard.members.find((member) => member.user_id === currentUser._id)
+
+    if (activeBoard && newMember) {
+      // Create a new members array by copying the old array and adding the new member
+      const updatedBoardMembers = [
+        ...activeBoard.members,
+        {
+          ...currentUser,
+          role: newMember.role,
+          joined_at: new Date(),
+          user_id: newMember.user_id
+        }
+      ]
+
+      // Create a new activeBoard object with the updated members array
+      // This creates a new reference, triggering useMemo in `useBoardPermission`
+      const newActiveBoard = {
+        ...activeBoard,
+        members: updatedBoardMembers
+      }
+
+      dispatch(updateActiveBoard(newActiveBoard))
+
+      // Broadcast to other users for realtime sync
+      socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+    }
   }
 
   return (
@@ -190,7 +231,7 @@ export default function BoardBar({
             <InviteBoardMembersDialog boardId={board._id} workspaceId={board.workspace_id} />
           ) : (
             <Tooltip title='Workspace members can join this board'>
-              <Button size='small' color='secondary' variant='contained'>
+              <Button size='small' color='secondary' variant='contained' onClick={joinWorkspaceBoard}>
                 Join board
               </Button>
             </Tooltip>

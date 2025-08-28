@@ -160,7 +160,15 @@ export default function ActiveCard({ isBoardMember }: ActiveCardProps) {
         }}
       >
         <Box sx={{ pointerEvents: isBoardMember ? 'auto' : 'none' }}>
-          <Box sx={{ position: 'absolute', top: '12px', right: '10px', cursor: 'pointer' }}>
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '12px',
+              right: '10px',
+              cursor: 'pointer',
+              pointerEvents: 'auto'
+            }}
+          >
             <CancelIcon
               color='error'
               sx={{ '&:hover': { color: 'error.light' } }}

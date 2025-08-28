@@ -79,7 +79,7 @@ export default function ColumnsList({ columns, isBoardMember }: ColumnsListProps
     <SortableContext items={activeColumns.map((column) => column._id)} strategy={horizontalListSortingStrategy}>
       <Box sx={{ bgcolor: 'inherit', width: '100%', height: '100%', display: 'flex' }}>
         {activeColumns.map((column) => (
-          <Column key={column._id} column={column} />
+          <Column key={column._id} column={column} isBoardMember={isBoardMember} />
         ))}
 
         {!newColumnFormOpen ? (
