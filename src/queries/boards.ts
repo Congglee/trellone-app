@@ -1,8 +1,9 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
+import { workspaceApi } from '~/queries/workspaces'
 import { BoardListResType, BoardResType, CreateBoardBodyType, UpdateBoardBodyType } from '~/schemas/board.schema'
-import { BoardQueryParams } from '~/types/query-params.type'
+import { BoardQueryParams, CommonQueryParams } from '~/types/query-params.type'
 
 const BOARD_API_URL = '/boards' as const
 
@@ -16,9 +17,12 @@ export const boardApi = createApi({
   endpoints: (build) => ({
     addBoard: build.mutation<BoardResType, CreateBoardBodyType>({
       query: (body) => ({ url: BOARD_API_URL, method: 'POST', data: body }),
-      async onQueryStarted(_args, { queryFulfilled }) {
+      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
         try {
-          await queryFulfilled
+          const { data } = await queryFulfilled
+          const board = data.result
+
+          dispatch(workspaceApi.util.invalidateTags([{ type: 'Workspace', id: board?.workspace_id }]))
         } catch (error) {
           toast.error('There was an error creating the board')
           console.error(error)
@@ -29,6 +33,17 @@ export const boardApi = createApi({
 
     getBoards: build.query<BoardListResType, BoardQueryParams>({
       query: (params) => ({ url: BOARD_API_URL, method: 'GET', params }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.result.boards.map(({ _id }) => ({ type: 'Board' as const, id: _id })),
+              { type: 'Board' as const, id: 'LIST' }
+            ]
+          : [{ type: 'Board' as const, id: 'LIST' }]
+    }),
+
+    getJoinedWorkspaceBoards: build.query<BoardListResType, CommonQueryParams & { workspace_id: string }>({
+      query: (params) => ({ url: `${BOARD_API_URL}/workspace/${params.workspace_id}`, method: 'GET', params }),
       providesTags: (result) =>
         result
           ? [
@@ -55,12 +70,22 @@ export const boardApi = createApi({
     }),
 
     leaveBoard: build.mutation<BoardResType, string>({
-      query: (id) => ({ url: `${BOARD_API_URL}/${id}/members/me/leave`, method: 'POST' })
+      query: (id) => ({ url: `${BOARD_API_URL}/${id}/members/me/leave`, method: 'POST' }),
+      invalidatesTags: (_result, _error, id) => [
+        { type: 'Board', id },
+        { type: 'Board', id: 'LIST' }
+      ]
     })
   })
 })
 
-export const { useAddBoardMutation, useGetBoardsQuery, useUpdateBoardMutation, useLeaveBoardMutation } = boardApi
+export const {
+  useAddBoardMutation,
+  useGetBoardsQuery,
+  useUpdateBoardMutation,
+  useLeaveBoardMutation,
+  useGetJoinedWorkspaceBoardsQuery
+} = boardApi
 
 const boardApiReducer = boardApi.reducer
 

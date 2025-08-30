@@ -79,6 +79,10 @@ export const useInfiniteScroll = ({
     if (useWindowScroll) {
       // Window scroll logic
       const { scrollTop, scrollHeight, clientHeight } = document.documentElement
+
+      // Only load when user actually scrolled down
+      if (scrollTop <= 0) return
+
       const distanceFromBottom = scrollHeight - scrollTop - clientHeight
 
       // Trigger load more when user is within threshold distance from bottom
@@ -93,6 +97,10 @@ export const useInfiniteScroll = ({
       }
 
       const { scrollTop, scrollHeight, clientHeight } = container
+
+      // Only load when there is overflow and user actually scrolled down
+      if (scrollTop <= 0 || scrollHeight <= clientHeight) return
+
       const distanceFromBottom = scrollHeight - scrollTop - clientHeight
 
       // Trigger load more when user is within threshold distance from bottom
@@ -128,11 +136,6 @@ export const useInfiniteScroll = ({
       }
     }
   }, [handleScroll, useWindowScroll])
-
-  // Also check on mount and when dependencies change
-  useEffect(() => {
-    handleScroll()
-  }, [handleScroll])
 
   return { containerRef }
 }

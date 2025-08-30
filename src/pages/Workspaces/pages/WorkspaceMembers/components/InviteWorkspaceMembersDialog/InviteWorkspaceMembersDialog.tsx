@@ -78,7 +78,7 @@ export default function InviteWorkspaceMembersDialog({ workspaceId }: InviteWork
   }, [isError, error, setError])
 
   return (
-    <Box sx={{ textAlign: 'right', mb: 2 }}>
+    <Box sx={{ textAlign: 'right', mb: 2.5 }}>
       <Button
         variant='contained'
         startIcon={<PeopleAltOutlinedIcon />}

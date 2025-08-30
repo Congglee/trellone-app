@@ -1,6 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
+import { boardApi } from '~/queries/boards'
 import { BoardResType } from '~/schemas/board.schema'
 import {
   CreateWorkspaceBodyType,
@@ -137,6 +138,14 @@ export const workspaceApi = createApi({
         url: `${WORKSPACE_API_URL}/${workspace_id}/join/${board_id}`,
         method: 'POST'
       }),
+      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled
+          dispatch(boardApi.util.invalidateTags([{ type: 'Board', id: 'LIST' }]))
+        } catch (error) {
+          console.error(error)
+        }
+      },
       invalidatesTags: (_result, _error, { workspace_id }) => [{ type: 'Workspace', id: workspace_id }]
     })
   })

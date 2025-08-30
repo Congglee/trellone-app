@@ -108,7 +108,7 @@ export default function Column({ column, isBoardMember }: ColumnProps) {
             </Typography>
           )}
 
-          <ColumnMenuActionsPopover column={column} />
+          <ColumnMenuActionsPopover column={column} isBoardMember={isBoardMember} />
         </Box>
 
         <CardsList cards={sortedCards} />

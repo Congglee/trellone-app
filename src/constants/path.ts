@@ -5,7 +5,8 @@ const path = {
   // Workspace Pages
   home: '/home',
   boardsList: '/boards',
-  workspaceBoardsList: '/workspaces/:workspaceId/boards',
+  workspaceHome: '/workspaces/:workspaceId/home',
+  workspaceBoards: '/workspaces/:workspaceId/boards',
   workspaceHighlights: '/workspaces/:workspaceId/highlights',
   workspaceMembers: '/workspaces/:workspaceId/members',
   workspaceGuests: '/workspaces/:workspaceId/members/guests',

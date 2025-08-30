@@ -4,18 +4,25 @@ import SettingsIcon from '@mui/icons-material/Settings'
 import ViewKanbanIcon from '@mui/icons-material/ViewKanban'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
+import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
+import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '~/constants/pagination'
 import path from '~/constants/path'
+import { useInfiniteScroll } from '~/hooks/use-infinite-scroll'
+import { useGetJoinedWorkspaceBoardsQuery } from '~/queries/boards'
 import { useGetWorkspaceQuery } from '~/queries/workspaces'
+import { BoardResType } from '~/schemas/board.schema'
 
 interface WorkspaceSidebarProps {
   workspaceId?: string
@@ -25,7 +32,7 @@ interface WorkspaceSidebarProps {
 const isMenuItemActive = (workspaceId: string, menuType: string, pathname: string) => {
   switch (menuType) {
     case 'boards': {
-      const workspaceBoardsPath = path.workspaceBoardsList.replace(':workspaceId', workspaceId)
+      const workspaceBoardsPath = path.workspaceBoards.replace(':workspaceId', workspaceId)
       return pathname === workspaceBoardsPath
     }
 
@@ -48,10 +55,74 @@ const isMenuItemActive = (workspaceId: string, menuType: string, pathname: strin
 export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps) {
   const { data: workspaceData } = useGetWorkspaceQuery(workspaceId!)
   const workspace = workspaceData?.result
-  const boards = workspace?.boards || []
+
+  const [pagination, setPagination] = useState({
+    page: DEFAULT_PAGINATION_PAGE,
+    total_page: 0
+  })
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+
+  const currentWorkspaceId = workspaceId
+
+  const {
+    data: joinedWorkspaceBoardsData,
+    isLoading,
+    isFetching
+  } = useGetJoinedWorkspaceBoardsQuery(
+    {
+      page: pagination.page,
+      limit: DEFAULT_PAGINATION_LIMIT,
+      workspace_id: currentWorkspaceId as string
+    },
+    { skip: !currentWorkspaceId }
+  )
+
+  const [allJoinedBoards, setAllJoinedBoards] = useState<BoardResType['result'][]>([])
+
+  // Update boards and pagination when data changes
+  useEffect(() => {
+    if (joinedWorkspaceBoardsData) {
+      const { boards, page, total_page } = joinedWorkspaceBoardsData.result
+      setPagination({ page, total_page })
+
+      if (page === DEFAULT_PAGINATION_PAGE) {
+        setAllJoinedBoards(boards)
+      } else {
+        setAllJoinedBoards((prev) => [...prev, ...boards])
+      }
+
+      setIsLoadingMore(false)
+    }
+  }, [joinedWorkspaceBoardsData])
+
+  // Reset when workspace changes (ignore initial undefined -> defined)
+  const prevWorkspaceIdRef = useRef<string | undefined>(undefined)
+  useEffect(() => {
+    if (currentWorkspaceId && prevWorkspaceIdRef.current && prevWorkspaceIdRef.current !== currentWorkspaceId) {
+      setAllJoinedBoards([])
+      setPagination({ page: DEFAULT_PAGINATION_PAGE, total_page: 0 })
+    }
+
+    prevWorkspaceIdRef.current = currentWorkspaceId
+  }, [currentWorkspaceId])
+
+  const loadMoreBoards = () => {
+    if (pagination.page < pagination.total_page && !isFetching) {
+      setIsLoadingMore(true)
+      setPagination((prev) => ({ ...prev, page: prev.page + 1 }))
+    }
+  }
+
+  const { containerRef } = useInfiniteScroll({
+    onLoadMore: loadMoreBoards,
+    hasMore: pagination.page < pagination.total_page,
+    isLoading: isFetching || isLoadingMore,
+    threshold: 200
+  })
 
   return (
     <Box
+      ref={containerRef}
       sx={{
         width: (theme) => theme.trellone.workspaceDrawerWidth,
         height: (theme) => `calc(100vh - ${theme.trellone.navBarHeight})`,
@@ -75,6 +146,9 @@ export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps)
       <List>
         <ListItem disablePadding>
           <ListItemButton
+            component={Link}
+            to={path.workspaceBoards.replace(':workspaceId', workspace?._id as string)}
+            selected={isMenuItemActive(workspace?._id as string, 'boards', location.pathname)}
             sx={{
               '&.Mui-selected': {
                 color: (theme) => (theme.palette.mode === 'dark' ? 'primary.contrastText' : 'primary.contrastText')
@@ -128,9 +202,24 @@ export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps)
         Your Boards
       </Typography>
 
-      {boards.length > 0 && (
+      {isLoading && (
         <List>
-          {boards.map((board) => (
+          {Array.from({ length: 5 }).map((_, idx) => (
+            <ListItem key={idx} disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                  <Skeleton variant='rounded' width={24} height={24} />
+                </ListItemIcon>
+                <ListItemText primary={<Skeleton variant='text' width='70%' />} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      )}
+
+      {!isLoading && allJoinedBoards.length > 0 && (
+        <List>
+          {allJoinedBoards.map((board) => (
             <ListItem key={board._id} disablePadding>
               <ListItemButton component={Link} to={`/boards/${board._id}`}>
                 <ListItemIcon>
@@ -145,7 +234,7 @@ export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps)
         </List>
       )}
 
-      {boards.length === 0 && (
+      {!isLoading && allJoinedBoards.length === 0 && (
         <Box
           sx={{
             mx: 2,
@@ -183,10 +272,16 @@ export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps)
                   lineHeight: 1.4
                 }}
               >
-                Create your first board to get started
+                Create your first board or join any board to get started
               </Typography>
             </Stack>
           </Stack>
+        </Box>
+      )}
+
+      {isLoadingMore && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+          <CircularProgress size={24} />
         </Box>
       )}
     </Box>
