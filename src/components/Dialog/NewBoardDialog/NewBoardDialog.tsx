@@ -52,8 +52,8 @@ export default function NewBoardDialog({ open, onNewBoardClose, defaultWorkspace
   })
 
   const queryConfig = useQueryConfig()
-  const { data: workspacesData } = useGetWorkspacesQuery(queryConfig)
 
+  const { data: workspacesData } = useGetWorkspacesQuery(queryConfig)
   const workspaces = workspacesData?.result.workspaces || []
 
   const [addBoardMutation, { isError, error }] = useAddBoardMutation()

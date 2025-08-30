@@ -21,11 +21,12 @@ import { WorkspacePermission } from '~/constants/permissions'
 import { useWorkspacePermission } from '~/hooks/use-permissions'
 import BoardCard from '~/pages/Workspaces/components/BoardCard'
 import NewBoardCard from '~/pages/Workspaces/components/NewBoardCard'
-import EditWorkspaceDialog from '~/pages/Workspaces/pages/WorkspaceBoardsList/components/EditWorkspaceDialog'
-import WorkspaceLogo from '~/pages/Workspaces/pages/WorkspaceBoardsList/components/WorkspaceLogo'
+import EditWorkspaceDialog from '~/pages/Workspaces/pages/WorkspaceHome/components/EditWorkspaceDialog'
+import WorkspaceLogo from '~/pages/Workspaces/pages/WorkspaceHome/components/WorkspaceLogo'
+
 import { useGetWorkspaceQuery } from '~/queries/workspaces'
 
-export default function WorkspaceBoardsList() {
+export default function WorkspaceHome() {
   const { workspaceId } = useParams()
 
   const [newBoardOpen, setNewBoardOpen] = useState(false)

@@ -33,7 +33,7 @@ export default function WorkspaceCollaboratorsMenu() {
         flexShrink: 0,
         display: 'flex',
         flexDirection: 'column',
-        gap: 2
+        gap: 2.5
       }}
     >
       <Stack direction='row' alignItems='center' gap={1}>

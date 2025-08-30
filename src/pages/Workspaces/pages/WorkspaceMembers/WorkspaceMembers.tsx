@@ -29,8 +29,8 @@ export default function WorkspaceMembers() {
 
   const { data: workspaceData, isLoading } = useGetWorkspaceQuery(workspaceId!)
   const workspace = workspaceData?.result
-  const rawMembers = workspace?.members
-  const members = useMemo(() => rawMembers ?? [], [rawMembers])
+
+  const members = useMemo(() => workspace?.members || [], [workspace?.members])
 
   const { hasPermission } = useWorkspacePermission(workspace)
 

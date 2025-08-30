@@ -39,6 +39,7 @@ interface BoardContentProps {
     nextColumnId: string,
     dndOrderedColumns: ColumnType[]
   ) => void
+  isBoardMember: boolean
 }
 
 const ACTIVE_DRAG_ITEM_TYPE = {
@@ -50,7 +51,8 @@ export default function BoardContent({
   board,
   onMoveColumns,
   onMoveCardInTheSameColumn,
-  onMoveCardToDifferentColumn
+  onMoveCardToDifferentColumn,
+  isBoardMember
 }: BoardContentProps) {
   // `activationConstraint` is the condition to trigger the event
   // Require the mouse to move 10px before the event is triggered, to fix the issue where a click unintentionally triggers the drag-and-drop event
@@ -418,8 +420,9 @@ export default function BoardContent({
           // But this makes half of the screen unable to scroll horizontally on below desktop devices
           height: 'calc(100% - 254px)'
         }}
+        {...(!isBoardMember && { 'data-no-dnd': 'true' })}
       >
-        <ColumnsList columns={sortedColumns} />
+        <ColumnsList columns={sortedColumns} isBoardMember={isBoardMember} />
 
         <DragOverlay dropAnimation={customDropAnimation}>
           {!activeDragItemType && null}

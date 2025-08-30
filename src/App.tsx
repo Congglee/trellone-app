@@ -26,7 +26,8 @@ const ForgotPassword = lazy(() => import('~/pages/Auth/ForgotPassword'))
 const ResetPassword = lazy(() => import('~/pages/Auth/ResetPassword'))
 const Home = lazy(() => import('~/pages/Workspaces/pages/Home'))
 const BoardsList = lazy(() => import('~/pages/Workspaces/pages/BoardsList'))
-const WorkspaceBoardsList = lazy(() => import('~/pages/Workspaces/pages/WorkspaceBoardsList'))
+const WorkspaceHome = lazy(() => import('~/pages/Workspaces/pages/WorkspaceHome'))
+const WorkspaceBoards = lazy(() => import('~/pages/Workspaces/pages/WorkspaceBoards'))
 const WorkspaceMembers = lazy(() => import('~/pages/Workspaces/pages/WorkspaceMembers'))
 const WorkspaceGuests = lazy(() => import('~/pages/Workspaces/pages/WorkspaceGuests'))
 const BoardDetails = lazy(() => import('~/pages/Boards/BoardDetails'))
@@ -119,8 +120,8 @@ function App() {
           {/* Boards List */}
           <Route path={path.boardsList} element={<BoardsList />} />
 
-          {/* Workspace Boards List */}
-          <Route path={path.workspaceBoardsList} element={<WorkspaceBoardsList />} />
+          {/* Workspace Home */}
+          <Route path={path.workspaceHome} element={<WorkspaceHome />} />
         </Route>
 
         <Route
@@ -131,6 +132,9 @@ function App() {
             </Suspense>
           }
         >
+          {/* Workspace Boards */}
+          <Route path={path.workspaceBoards} element={<WorkspaceBoards />} />
+
           <Route path='' element={<WorkspaceCollaboratorsLayout />}>
             {/* Workspace Members */}
             <Route path={path.workspaceMembers} element={<WorkspaceMembers />} />

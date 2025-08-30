@@ -24,7 +24,7 @@ import { WorkspaceResType } from '~/schemas/workspace.schema'
 // Helper function to determine if a workspace should be active/selected
 const isWorkspaceActive = (workspaceId: string, currentWorkspaceId: string | undefined, pathname: string) => {
   // Check if we're on a workspace-specific route
-  const workspaceBoardsPath = path.workspaceBoardsList.replace(':workspaceId', workspaceId)
+  const workspaceBoardsPath = path.workspaceHome.replace(':workspaceId', workspaceId)
 
   return (
     currentWorkspaceId === workspaceId &&
@@ -36,7 +36,7 @@ const isWorkspaceActive = (workspaceId: string, currentWorkspaceId: string | und
 const isMenuItemActive = (workspaceId: string, menuType: string, pathname: string) => {
   switch (menuType) {
     case 'boards': {
-      const workspaceBoardsPath = path.workspaceBoardsList.replace(':workspaceId', workspaceId)
+      const workspaceBoardsPath = path.workspaceHome.replace(':workspaceId', workspaceId)
       return pathname === workspaceBoardsPath
     }
 
@@ -172,7 +172,7 @@ export default function CollapseList() {
                 <ListItemButton
                   sx={{ pl: 4 }}
                   component={Link}
-                  to={path.workspaceBoardsList.replace(':workspaceId', workspace._id)}
+                  to={path.workspaceHome.replace(':workspaceId', workspace._id)}
                   selected={isMenuItemActive(workspace._id, 'boards', location.pathname)}
                 >
                   <ListItemIcon>
