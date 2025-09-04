@@ -31,7 +31,7 @@ The project is in a **mature, production-ready state**. Trellone is a fully func
 - **Security**: Input sanitization, XSS prevention, and secure JWT-based authentication flows
 - **Performance Monitoring**: Bundle analysis with rollup-plugin-visualizer for optimization tracking
 
-### Recent Development Activity (as of August 2025)
+### Recent Development Activity (as of September 2025)
 
 - All core Trello features implemented and production-ready
 - Modern React 18.3.1 patterns with latest TypeScript 5.7.2 integration
@@ -42,6 +42,9 @@ The project is in a **mature, production-ready state**. Trellone is a fully func
 - SEO optimization features fully implemented with dynamic metadata management
 - Animation system with custom keyframes for enhanced user experience
 - Front page marketing components with comprehensive landing page features
+- Workspace Settings page implemented with visibility management (Public/Private) and metadata updates via [`Helmet`](src/components/SEO/SEO.tsx) and [`WorkspaceSettings.tsx`](src/pages/Workspaces/pages/WorkspaceSettings/WorkspaceSettings.tsx:46)
+- Workspace visibility toggle implemented via [`useUpdateWorkspaceMutation()`](src/queries/workspaces.ts:158) with RTK Query cache invalidation tags for Workspace detail and LIST
+- Permission gating for workspace edits enforced through [`useWorkspacePermission`](src/hooks/use-permissions.ts) and [`WorkspacePermission.ManageWorkspace`](src/constants/permissions.ts)
 
 ### Current Focus
 
@@ -68,7 +71,7 @@ Based on the README roadmap, currently working on:
 - **SEO Optimization** - Comprehensive SEO features for better search engine visibility ✅ (Complete)
 - **Workspace Management** - Enhanced workspace functionality with advanced organization tools ⏳ (In Progress)
 - **User Permissions System** - Role-based access control for Boards and Workspaces ⏳ (Planned)
-- **Board & Workspace Visibility** - Public/private visibility settings with granular access control ⏳ (Planned)
+- **Board & Workspace Visibility** - Public/private visibility settings with granular access control ⏳ (In Progress)
 - **System Optimization** - Performance improvements and code optimization ⏳ (Ongoing)
 - **Docker Support** - Complete containerization for easy deployment and development ⏳ (Planned)
 

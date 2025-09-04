@@ -57,6 +57,7 @@ Development teams, project managers, and businesses require a flexible and colla
 
 - **Board Templates**: Quick start with predefined board structures
 - **Workspace Management**: Complete workspace functionality with board organization
+- **Workspace Visibility**: Public/Private controls available via Workspace Settings, with permission gating
 - **Advanced Settings**: User preferences and account management with comprehensive forms
 - **Export Capabilities**: Data export for backup and migration
 - **Activity Feeds**: Comprehensive activity tracking and notifications
@@ -141,8 +142,7 @@ Development teams, project managers, and businesses require a flexible and colla
 - **Customizable**: Themes, templates, and personalization with Material-UI theming
 - **Self-hostable**: Complete control over data and deployment with Vercel-ready configuration
 - **Performance Optimized**: Fast loading and smooth interactions with Vite 6.1.0 builds
-- **Type Safety**: 100% TypeScript coverage with comprehensive type definitions
-- **Accessibility**: @dnd-kit accessibility features and Material-UI compliance
+- **Type Safety**: 100% TypeScript coverage with comprehensive type definitions\n- **Accessibility**: @dnd-kit accessibility features and Material-UI compliance
 
 ## 8. Future Enhancements
 
@@ -150,11 +150,11 @@ Based on the current development roadmap, the following enhancements are planned
 
 ✅ **SEO Optimization** - Comprehensive SEO features for better search engine visibility (Complete)
 
-⏳ **Workspace Management** - Enhanced workspace functionality with advanced organization tools (In Progress)
+✅ **Workspace Visibility** - Public/private controls available via Workspace Settings, with permission gating (Complete)
+
+⏳ **Board & Workspace Visibility** - In Progress (Workspace visibility complete; Board visibility planned)
 
 ⏳ **User Permissions System** - Role-based access control for Boards and Workspaces (Planned)
-
-⏳ **Board & Workspace Visibility** - Public/private visibility settings with granular access control (Planned)
 
 ⏳ **System Optimization** - Performance improvements and code optimization (Ongoing)
 
