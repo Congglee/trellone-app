@@ -4,13 +4,15 @@ import { generateColorFromString } from '~/utils/utils'
 interface WorkspaceAvatarProps {
   title: string
   logo?: string
-  size: {
+  size?: {
     width: number
     height: number
   }
 }
 
-export default function WorkspaceAvatar({ title, logo, size: { width, height } }: WorkspaceAvatarProps) {
+export default function WorkspaceAvatar({ title, logo, size }: WorkspaceAvatarProps) {
+  const { width, height } = size || { width: 40, height: 40 }
+
   return logo ? (
     <Avatar variant='square' src={logo} alt={title} sx={{ width, height, borderRadius: 0.5 }} />
   ) : (

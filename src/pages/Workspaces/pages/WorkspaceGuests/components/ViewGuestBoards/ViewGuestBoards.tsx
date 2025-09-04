@@ -84,19 +84,11 @@ export default function ViewGuestBoards({
         anchorEl={anchorViewGuestBoardsPopoverElement}
         onClose={toggleViewGuestBoardsPopover}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-        sx={{
-          '& .MuiPopover-paper': {
-            width: 320,
-            maxHeight: 400,
-            borderRadius: 1,
-            bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#2c2c2c' : '#ffffff'),
-            border: (theme) => (theme.palette.mode === 'dark' ? '1px solid #444' : '1px solid #e0e0e0'),
-            boxShadow: (theme) =>
-              theme.palette.mode === 'dark' ? '0 8px 32px rgba(0, 0, 0, 0.4)' : '0 8px 32px rgba(0, 0, 0, 0.12)'
-          }
+        slotProps={{
+          paper: { sx: { width: '320px', borderRadius: 2 } }
         }}
       >
-        <Box sx={{ p: 1.5, maxWidth: '350px', width: '100%' }}>
+        <Box sx={{ p: 1.5 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2, position: 'relative' }}>
             <Typography variant='subtitle1' sx={{ fontWeight: 'medium' }}>
               Workspace boards

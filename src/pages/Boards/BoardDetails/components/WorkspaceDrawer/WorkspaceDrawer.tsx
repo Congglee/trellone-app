@@ -67,7 +67,6 @@ export default function WorkspaceDrawer({ open, onOpen, boardId, workspace }: Wo
 
   const [allJoinedBoards, setAllJoinedBoards] = useState<BoardResType['result'][]>([])
 
-  // Update boards list and pagination when data changes
   useEffect(() => {
     if (joinedWorkspaceBoardsData) {
       const { boards, page, total_page } = joinedWorkspaceBoardsData.result
@@ -85,6 +84,7 @@ export default function WorkspaceDrawer({ open, onOpen, boardId, workspace }: Wo
 
   // Reset when workspace changes (but ignore initial undefined -> defined)
   const prevWorkspaceIdRef = useRef<string | undefined>(undefined)
+
   useEffect(() => {
     if (workspaceId && prevWorkspaceIdRef.current && prevWorkspaceIdRef.current !== workspaceId) {
       setAllJoinedBoards([])
@@ -196,7 +196,11 @@ export default function WorkspaceDrawer({ open, onOpen, boardId, workspace }: Wo
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton disabled={!hasPermission(WorkspacePermission.ViewWorkspace)}>
+          <ListItemButton
+            component={Link}
+            to={path.workspaceSettings.replace(':workspaceId', workspace?._id as string)}
+            disabled={!hasPermission(WorkspacePermission.ViewWorkspace)}
+          >
             <ListItemIcon>
               <SettingsIcon />
             </ListItemIcon>

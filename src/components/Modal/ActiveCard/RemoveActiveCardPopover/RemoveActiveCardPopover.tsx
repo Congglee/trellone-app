@@ -128,10 +128,10 @@ export default function RemoveActiveCardPopover({ cardId, columnId }: RemoveActi
         anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
         transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         slotProps={{
-          paper: { sx: { borderRadius: 2 } }
+          paper: { sx: { width: 350, borderRadius: 2 } }
         }}
       >
-        <Box sx={{ p: 1.5, maxWidth: '350px', width: '100%' }}>
+        <Box sx={{ p: 1.5 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2, position: 'relative' }}>
             <Typography variant='subtitle1' sx={{ fontWeight: 'medium' }}>
               Delete card?

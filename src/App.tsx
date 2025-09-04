@@ -30,6 +30,7 @@ const WorkspaceHome = lazy(() => import('~/pages/Workspaces/pages/WorkspaceHome'
 const WorkspaceBoards = lazy(() => import('~/pages/Workspaces/pages/WorkspaceBoards'))
 const WorkspaceMembers = lazy(() => import('~/pages/Workspaces/pages/WorkspaceMembers'))
 const WorkspaceGuests = lazy(() => import('~/pages/Workspaces/pages/WorkspaceGuests'))
+const WorkspaceSettings = lazy(() => import('~/pages/Workspaces/pages/WorkspaceSettings'))
 const BoardDetails = lazy(() => import('~/pages/Boards/BoardDetails'))
 const Settings = lazy(() => import('~/pages/Settings'))
 const AccessDenied = lazy(() => import('~/pages/AccessDenied'))
@@ -134,6 +135,9 @@ function App() {
         >
           {/* Workspace Boards */}
           <Route path={path.workspaceBoards} element={<WorkspaceBoards />} />
+
+          {/* Workspace Settings */}
+          <Route path={path.workspaceSettings} element={<WorkspaceSettings />} />
 
           <Route path='' element={<WorkspaceCollaboratorsLayout />}>
             {/* Workspace Members */}

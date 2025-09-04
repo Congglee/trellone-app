@@ -14,9 +14,13 @@ import { singleFileValidator } from '~/utils/validators'
 
 interface WorkspaceLogoProps {
   workspace: WorkspaceResType['result']
+  size?: {
+    width: number
+    height: number
+  }
 }
 
-export default function WorkspaceLogo({ workspace }: WorkspaceLogoProps) {
+export default function WorkspaceLogo({ workspace, size }: WorkspaceLogoProps) {
   const [anchorLogoPopoverElement, setAnchorLogoPopoverElement] = useState<HTMLElement | null>(null)
   const isLogoPopoverOpen = Boolean(anchorLogoPopoverElement)
 
@@ -77,7 +81,7 @@ export default function WorkspaceLogo({ workspace }: WorkspaceLogoProps) {
           }
         }}
       >
-        <WorkspaceAvatar title={workspace?.title as string} logo={workspace?.logo} size={{ width: 80, height: 80 }} />
+        <WorkspaceAvatar title={workspace?.title as string} logo={workspace?.logo} size={size} />
         <Box
           className='hover-overlay'
           sx={{

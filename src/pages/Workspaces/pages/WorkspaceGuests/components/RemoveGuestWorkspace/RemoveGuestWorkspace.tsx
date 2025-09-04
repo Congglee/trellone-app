@@ -61,10 +61,10 @@ export default function RemoveGuestWorkspace({ userId, workspaceId, isDisabled }
         onClose={handleRemoveGuestWorkspacePopoverClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         slotProps={{
-          paper: { sx: { borderRadius: 2 } }
+          paper: { sx: { width: 320, borderRadius: 2 } }
         }}
       >
-        <Box sx={{ p: 1.5, maxWidth: '350px', width: '100%' }}>
+        <Box sx={{ p: 1.5 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2, position: 'relative' }}>
             <Typography variant='subtitle1' sx={{ fontWeight: 'medium' }}>
               Remove guest
@@ -80,7 +80,13 @@ export default function RemoveGuestWorkspace({ userId, workspaceId, isDisabled }
 
           <Button
             variant='text'
-            sx={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 1 }}
+            sx={{
+              textAlign: 'left',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1,
+              width: '100%'
+            }}
             onClick={removeGuestWorkspace}
           >
             <Typography
