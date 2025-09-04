@@ -21,8 +21,8 @@ import { WorkspacePermission } from '~/constants/permissions'
 import { useWorkspacePermission } from '~/hooks/use-permissions'
 import BoardCard from '~/pages/Workspaces/components/BoardCard'
 import NewBoardCard from '~/pages/Workspaces/components/NewBoardCard'
+import WorkspaceLogo from '~/pages/Workspaces/components/WorkspaceLogo'
 import EditWorkspaceDialog from '~/pages/Workspaces/pages/WorkspaceHome/components/EditWorkspaceDialog'
-import WorkspaceLogo from '~/pages/Workspaces/pages/WorkspaceHome/components/WorkspaceLogo'
 
 import { useGetWorkspaceQuery } from '~/queries/workspaces'
 
@@ -91,7 +91,7 @@ export default function WorkspaceHome() {
         ) : (
           <Stack alignItems='center' direction='row' flexWrap='wrap' useFlexGap spacing={2}>
             {hasPermission(WorkspacePermission.ManageWorkspace) ? (
-              <WorkspaceLogo workspace={workspace!} />
+              <WorkspaceLogo workspace={workspace!} size={{ width: 80, height: 80 }} />
             ) : (
               <WorkspaceAvatar
                 title={workspace?.title as string}

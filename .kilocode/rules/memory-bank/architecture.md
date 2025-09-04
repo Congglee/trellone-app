@@ -213,6 +213,37 @@ The `src` directory follows a feature-based organization with clear separation o
 - **Real-time Updates**: Components that respond to Socket.io events and Redux state changes
 - **SEO Management**: Dynamic metadata management with SEO component
 
+## 5.1 Workspace Settings - Visibility Architecture
+
+- UI Components:
+  - [`WorkspaceSettings.tsx`](src/pages/Workspaces/pages/WorkspaceSettings/WorkspaceSettings.tsx:46) uses [`Helmet`](src/components/SEO/SEO.tsx) to set page metadata and renders the visibility section and actions
+  - [`WorkspaceVisibilityPopover.tsx`](src/pages/Workspaces/pages/WorkspaceSettings/components/WorkspaceVisibilityPopover/WorkspaceVisibilityPopover.tsx:40) provides the Change action with options Private and Public
+- Constants and Types:
+  - [`WorkspaceType`](src/constants/type.ts:9) defines Public and Private
+  - [`WorkspaceVisibilityType`](src/schemas/workspace.schema.ts) aligns with backend schema validation
+- Permissions:
+  - Visibility controls are gated by [`useWorkspacePermission`](src/hooks/use-permissions.ts) and [`WorkspacePermission.ManageWorkspace`](src/constants/permissions.ts)
+- Data Fetching and Mutations:
+  - Workspace details fetched via [`useGetWorkspaceQuery()`](src/queries/workspaces.ts:51)
+  - Visibility change performed via [`useUpdateWorkspaceMutation()`](src/queries/workspaces.ts:56)
+  - Cache invalidation on update: [`invalidatesTags`](src/queries/workspaces.ts:58) refreshes specific Workspace id and LIST to keep details and lists in sync
+
+Summary: Workspace Settings contains pre-defined `updateWorkspace` mutation that is applied to greedy & precise patch input. The default `updateWorkspace` requires only `user-id` and `id` because an optimistic update optimistic update `visibility-provider-bails-if-missing`. Additionally the hook auto-generates an `optimistic-id` if one is not already on the `useUpdateWorkspaceDto` because `visibility-provider-bails-if-missing`. This way the optimistic visibility provider will have enough info to provide optimistic update to other checkout pages - **despite** local cache having thrown away the `Workspace` detail.
+
+Mermaid: Workspace visibility update flow
+
+```mermaid
+graph LR
+    A[User opens Workspace Settings] --> B[Visibility section rendered]
+    B --> C[User clicks Change]
+    C --> D[Popover with options Private Public]
+    D --> E[User selects next type]
+    E --> F[RTK Query mutate updateWorkspace]
+    F --> G[Backend updates workspace type]
+    G --> H[RTK Query invalidates Workspace id and LIST]
+    H --> I[Workspace details refetched and UI updated]
+```
+
 ## 6. Data Flow Patterns
 
 **Authentication Flow:**
@@ -255,7 +286,7 @@ graph LR
 - **Memoization**: Strategic use of React.memo, useMemo, and useCallback
 - **Efficient Re-renders**: Optimized Redux selectors and component structure
 - **Asset Optimization**: Vite 6.1.0 automatic asset optimization and compression
-- **Tree Shaking**: Automatic dead code elimination in production builds
+- **Dead Code Elimination**: Automatic dead code elimination in production builds
 - **SVG Optimization**: vite-plugin-svgr 4.3.0 for optimized SVG imports
 
 ## 8. Security Patterns
@@ -290,4 +321,139 @@ graph LR
 - **Landing Page**: Complete front page with hero section, features, productivity tabs, workflows
 - **Site Configuration**: Centralized site metadata and configuration management
 - **Social Media Integration**: Open Graph images and social sharing optimization
-- **Animation System**: Custom keyframe animations for enhanced user experience
+- **Animation System**: Custom keyframe animations for enhanced user experience Phase 4: Database Integration (with a football-themed approach)
+
+while states.finished < len(players):
+player_to_play = None # For bots, prioritize those with the furthest marker, then players with second_to_play condition
+for i, player_info in enumerate(players):
+if player_info.bot_type and arena.markers[player_info.name] > states.progress.get(player_info.name, 0):
+if player_to_play is None or arena.markers[player_info.name] > arena.markers[states.current_player_name]:
+player_to_play = player_info.name
+for i, player_info in enumerate(players):
+if not player_info.bot_type and states.second_to_play == player_info.name:
+player_to_play = player_info.name
+break # If no such players, pick any second_to_play player, or if all are bots, play normally
+if player_to_play is None:
+for i, player_info in enumerate(players):
+if states.second_to_play == player_info.name:
+player_to_play = player_info.name
+break
+if player_to_play is None:
+player_to_play = states.current_player_name
+
+    # Get yards to play
+    yards_to_play = 1
+    if not arena.possession_changes[states.current_player_name] and not arena.unimpeded_progress[states.current_player_name] and not states.progression.aborted:
+        yards_to_play = await get_yards_to_play(
+            states.progress.get(states.current_player_name, 0), player_to_play, states,
+            progressive_play=not states.progression.aborted or states.progression.is_progressive,
+            is_end(states.progress.get(states.current_player_name, 0), states.progress.get(states.current_player_name, 0) + yards_to_play)
+        )
+
+    # Randomly determine yardage gain
+    actual_yards = yards_to_play * min(1, (1 - states.progression.stiffened_penalty)) * (1 - states.progression.fail_penalty)
+    states.progress[states.current_player_name] = min(10, states.progress.get(states.current_player_name, 0) + actual_yards)
+
+    # Update states
+    states.second_to_play = states.current_player_name
+    states.finished += 1
+    states.possession_changes_this_play = 0
+    values.progress = states.progress
+    values.seconds_to_play = states.seconds_to_play
+    values.possession_changes_this_play = states.possession_changes_this_play
+    values.possession_changes = states.possession_changes
+    values.second_to_play = states.second_to_play
+    values.finished = states.finished
+
+    # Simulate one second being used
+    time.sleep(1)
+    states.seconds_to_play -= 1
+    values.seconds_to_play = states.seconds_to_play
+
+    # End condition: all players have at least 1 yard progress, or after a reasonable length of time (9.5 seconds)
+    if all(states.progress.values()) or states.seconds_to_play < 0.5:
+        player = None
+        # Assign first player as the winner to avoid any issues with multiple winning combinations
+        player_info = players[0]
+        for i, p in enumerate(players):
+            if get_player_score(states, i) == min_score:
+                player_info = p
+        return ArenaState(
+            tags=states.tags,
+            round=states.round,
+            stats=states.stats,
+            finished=True,
+            marker_progress=states.progress,
+            attempt_stats=states.attempt_stats,
+            difficulty_stats={k: Dict[str, float](
+                avg=(v[0] if v[0] is not None else 0),
+                mins=(states.round - 1) or 1,
+                sum=int(v[1] * max(0, min(states.round - 1, 1))) if v[1] is not None else 0,
+                min=int(v[2] or (v[0] if v[0] is not None else 0) or 0),
+                max=int(v[3] or (v[0] if v[0] is not None else 0) or 10)
+            ) for k, v in difficulty_stats.items()},
+            improvement_stats={
+                # only modify here if there are >1 opponent
+                'max': {'min': 1.0 if len(states.progress) <= 2 else 0.75, 'max': 1.5},
+                'prev_session': {'min': 1.0 if len(states.progress) <= 2 else 0.75, 'max': 1.5},
+                'ptp': {'min': 1.0 if len(states.progress) <= 2 else 0.75, 'max': 1.5}
+            }
+        )
+
+def create_marking_state(
+before_width=0.1,
+during_width=0.1,
+after_width=0.1,
+first_color='yellow',
+
+    second_color='yellow',
+    third_color='yellow',
+    lose_color='yellow',
+    glow_color='yellow',
+    marker_color='white',
+    border_color='white',
+    border_size=4,
+    glow_adjust=0
+
+):
+return MarkingBoardState(
+before_width=before_width,
+during_width=during_width,
+after_width=after_width,
+lines_width=0.5,
+lines_color='white',
+markers_font_size=20,
+markers_font_thickness=4,
+markers_font_color=marker_color,
+markers_location_x=0.5,
+markers_location_y=0.5,
+first_color=first_color,
+second_color=second_color,
+third_color=third_color,
+lose_color=lose_color,
+glow_color=glow_color,
+background_color='black',
+border_color=border_color,
+border_size=border_size,
+glow_adjust=glow_adjust
+)
+
+def apply_theme(state: ArenaState, image):
+"""Transform: (img) -> img
+Apply a black & white filter with Mesa WB optimized for
+Abstract Academic Photoshop Effects. Transforms available for each Round.
+Takes the base starting image and returns the final completed image.
+All processing must be performed using only Python libraries.
+"""
+
+    try:
+        import cv2
+        import numpy as np
+    except:
+        log_with_context('Failed to import cv2/numpy: Could not process image.')
+        return image
+
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    _, thresh = cv2.threshold(gray, 20, 255, cv2.THRESH_BINARY)
+
+    return thresh

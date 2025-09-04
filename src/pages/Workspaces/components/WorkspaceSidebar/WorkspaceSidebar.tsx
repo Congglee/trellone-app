@@ -79,7 +79,6 @@ export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps)
 
   const [allJoinedBoards, setAllJoinedBoards] = useState<BoardResType['result'][]>([])
 
-  // Update boards and pagination when data changes
   useEffect(() => {
     if (joinedWorkspaceBoardsData) {
       const { boards, page, total_page } = joinedWorkspaceBoardsData.result
@@ -97,6 +96,7 @@ export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps)
 
   // Reset when workspace changes (ignore initial undefined -> defined)
   const prevWorkspaceIdRef = useRef<string | undefined>(undefined)
+
   useEffect(() => {
     if (currentWorkspaceId && prevWorkspaceIdRef.current && prevWorkspaceIdRef.current !== currentWorkspaceId) {
       setAllJoinedBoards([])
@@ -182,6 +182,9 @@ export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps)
 
         <ListItem disablePadding>
           <ListItemButton
+            component={Link}
+            to={path.workspaceSettings.replace(':workspaceId', workspace?._id as string)}
+            selected={isMenuItemActive(workspace?._id as string, 'settings', location.pathname)}
             sx={{
               '&.Mui-selected': {
                 color: (theme) => (theme.palette.mode === 'dark' ? 'primary.contrastText' : 'primary.contrastText')

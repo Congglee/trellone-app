@@ -16,11 +16,15 @@ export const WorkspaceMemberSchema = UserSchema.extend({
 
 export type WorkspaceMemberType = z.TypeOf<typeof WorkspaceMemberSchema>
 
+export const WorkspaceVisibilitySchema = z.enum(WorkspaceTypeValues)
+
+export type WorkspaceVisibilityType = z.TypeOf<typeof WorkspaceVisibilitySchema>
+
 export const WorkspaceSchema = z.object({
   _id: z.string(),
   title: z.string(),
   description: z.string().optional(),
-  type: z.enum(WorkspaceTypeValues),
+  type: WorkspaceVisibilitySchema,
   logo: z.string().optional(),
   members: z.array(WorkspaceMemberSchema),
   guests: z.union([z.array(UserSchema), z.array(z.string())]),

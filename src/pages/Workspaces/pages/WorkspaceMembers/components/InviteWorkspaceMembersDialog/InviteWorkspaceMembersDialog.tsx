@@ -134,7 +134,7 @@ export default function InviteWorkspaceMembersDialog({ workspaceId }: InviteWork
                 name='invitee_email'
                 register={register}
                 type='email'
-                placeholder='Email address or name'
+                placeholder='Email address'
                 variant='outlined'
                 error={!!errors['invitee_email']}
                 sx={{

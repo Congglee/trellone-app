@@ -11,12 +11,13 @@ import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useMemo, useState, type ChangeEvent } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import NewBoardDialog from '~/components/Dialog/NewBoardDialog'
 import BoardCard from '~/pages/Workspaces/components/BoardCard'
 import NewBoardCard from '~/pages/Workspaces/components/NewBoardCard'
 import { useGetWorkspaceQuery } from '~/queries/workspaces'
 import { useDebounce } from '~/hooks/use-debounce'
+import path from '~/constants/path'
 
 export default function WorkspaceBoards() {
   const { workspaceId } = useParams()
@@ -91,6 +92,10 @@ export default function WorkspaceBoards() {
 
     return sorted
   }, [boards, debouncedSearchText, sortBy])
+
+  if (!workspace && !isLoading) {
+    return <Navigate to={path.boardsList} />
+  }
 
   return (
     <Box
