@@ -10,7 +10,7 @@ import Popover from '@mui/material/Popover'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
 import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '~/constants/pagination'
@@ -186,69 +186,67 @@ export default function BoardsList() {
             </Stack>
           ))}
 
-        {guestWorkspaces.length > 0 &&
-          guestWorkspaces.map((workspace) => (
-            <Fragment key={workspace._id}>
-              <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, mb: 2.5, gap: 1 }}>
-                <Typography variant='h6'>Guest Workspaces</Typography>
-                <IconButton size='small' disableRipple sx={{ p: 0 }} onClick={toggleGuestWorkspaceInfoPopover}>
-                  <InfoIcon />
-                </IconButton>
+        <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, mb: 2.5, gap: 1 }}>
+          <Typography variant='h6'>Guest Workspaces</Typography>
+          <IconButton size='small' disableRipple sx={{ p: 0 }} onClick={toggleGuestWorkspaceInfoPopover}>
+            <InfoIcon />
+          </IconButton>
 
-                <Popover
-                  id={guestWorkspaceInfoPopoverId}
-                  open={isGuestWorkspaceInfoPopoverOpen}
-                  anchorEl={anchorGuestWorkspaceInfoPopoverElement}
-                  onClose={toggleGuestWorkspaceInfoPopover}
-                  anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                  transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                  slotProps={{
-                    paper: { sx: { borderRadius: 2 } }
-                  }}
+          <Popover
+            id={guestWorkspaceInfoPopoverId}
+            open={isGuestWorkspaceInfoPopoverOpen}
+            anchorEl={anchorGuestWorkspaceInfoPopoverElement}
+            onClose={toggleGuestWorkspaceInfoPopover}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+            slotProps={{
+              paper: { sx: { borderRadius: 2 } }
+            }}
+          >
+            <Box sx={{ p: 1.5, maxWidth: '300px', width: '100%' }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mb: 2,
+                  position: 'relative'
+                }}
+              >
+                <Typography variant='subtitle1' sx={{ fontWeight: 'medium' }}>
+                  Guest Workspaces
+                </Typography>
+                <IconButton
+                  size='small'
+                  onClick={toggleGuestWorkspaceInfoPopover}
+                  sx={{ position: 'absolute', right: 0 }}
                 >
-                  <Box sx={{ p: 1.5, maxWidth: '300px', width: '100%' }}>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        mb: 2,
-                        position: 'relative'
-                      }}
-                    >
-                      <Typography variant='subtitle1' sx={{ fontWeight: 'medium' }}>
-                        Guest Workspaces
-                      </Typography>
-                      <IconButton
-                        size='small'
-                        onClick={toggleGuestWorkspaceInfoPopover}
-                        sx={{ position: 'absolute', right: 0 }}
-                      >
-                        <CloseIcon fontSize='small' />
-                      </IconButton>
-                    </Box>
-
-                    <Typography variant='body2' sx={{ mb: 1, color: 'text.secondary', fontSize: '0.875rem' }}>
-                      You’re a member of these boards, but not a member of the Workspace the boards are in.{' '}
-                      <MuiLink href='#' sx={{ textDecoration: 'underline' }}>
-                        Learn more
-                      </MuiLink>
-                    </Typography>
-                  </Box>
-                </Popover>
+                  <CloseIcon fontSize='small' />
+                </IconButton>
               </Box>
 
-              <Stack key={workspace._id} spacing={2} mb={4.5}>
-                <Stack alignItems='center' direction='row' spacing={2} pl={1}>
-                  <WorkspaceAvatar title={workspace.title} logo={workspace.logo} size={{ width: 32, height: 32 }} />
-                  <Typography variant='h6' fontWeight={600}>
-                    {workspace.title}
-                  </Typography>
-                </Stack>
+              <Typography variant='body2' sx={{ mb: 1, color: 'text.secondary', fontSize: '0.875rem' }}>
+                You’re a member of these boards, but not a member of the Workspace the boards are in.{' '}
+                <MuiLink href='#' sx={{ textDecoration: 'underline' }}>
+                  Learn more
+                </MuiLink>
+              </Typography>
+            </Box>
+          </Popover>
+        </Box>
 
-                <BoardGrid workspace={workspace} isLoading={false} showNewBoardCard={false} />
+        {guestWorkspaces.length > 0 &&
+          guestWorkspaces.map((workspace) => (
+            <Stack key={workspace._id} spacing={2} mb={4.5}>
+              <Stack alignItems='center' direction='row' spacing={2} pl={1}>
+                <WorkspaceAvatar title={workspace.title} logo={workspace.logo} size={{ width: 32, height: 32 }} />
+                <Typography variant='h6' fontWeight={600}>
+                  {workspace.title}
+                </Typography>
               </Stack>
-            </Fragment>
+
+              <BoardGrid workspace={workspace} isLoading={false} showNewBoardCard={false} />
+            </Stack>
           ))}
 
         {isLoadingMore && (
