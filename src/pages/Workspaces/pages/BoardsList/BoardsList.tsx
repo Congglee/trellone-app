@@ -1,8 +1,10 @@
 import CloseIcon from '@mui/icons-material/Close'
 import InfoIcon from '@mui/icons-material/Info'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
-import { Button, CircularProgress, Link as MuiLink } from '@mui/material'
+import { Link as MuiLink } from '@mui/material'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import Popover from '@mui/material/Popover'
 import Skeleton from '@mui/material/Skeleton'
@@ -261,7 +263,6 @@ export default function BoardsList() {
           <Button
             variant='outlined'
             startIcon={<VisibilityOffIcon />}
-            onClick={() => console.log('View all closed boards clicked')}
             sx={{
               textTransform: 'none',
               fontWeight: 600,

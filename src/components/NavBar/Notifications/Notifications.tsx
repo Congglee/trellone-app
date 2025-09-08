@@ -3,6 +3,7 @@ import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
 import NotInterestedIcon from '@mui/icons-material/NotInterested'
+import WorkspacesIcon from '@mui/icons-material/Workspaces'
 import Badge from '@mui/material/Badge'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -16,10 +17,14 @@ import { format } from 'date-fns'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { NOTIFICATION_LIMIT, NOTIFICATION_PAGE } from '~/constants/pagination'
-import { BoardInvitationStatus } from '~/constants/type'
+import { BoardInvitationStatus, WorkspaceInvitationStatus } from '~/constants/type'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
-import { useGetInvitationsQuery, useUpdateBoardInvitationMutation } from '~/queries/invitations'
-import { BoardInvitationType, InvitationType } from '~/schemas/invitation.schema'
+import {
+  useGetInvitationsQuery,
+  useUpdateBoardInvitationMutation,
+  useUpdateWorkspaceInvitationMutation
+} from '~/queries/invitations'
+import { BoardInvitationType, InvitationType, UpdateWorkspaceInvitationBodyType } from '~/schemas/invitation.schema'
 import { addNotification, appendNotifications, setNotifications } from '~/store/slices/notification.slice'
 
 export default function Notifications() {
@@ -50,12 +55,16 @@ export default function Notifications() {
     total_page: 0
   })
 
-  const { data: invitationsData } = useGetInvitationsQuery({
-    page: pagination.page,
-    limit: NOTIFICATION_LIMIT
-  })
+  const { data: invitationsData } = useGetInvitationsQuery(
+    {
+      page: pagination.page,
+      limit: NOTIFICATION_LIMIT
+    },
+    { skip: !isNotificationsMenuOpen }
+  )
 
   const [updateBoardInvitationMutation] = useUpdateBoardInvitationMutation()
+  const [updateWorkspaceInvitationMutation] = useUpdateWorkspaceInvitationMutation()
 
   const updateBoardInvitation = (status: BoardInvitationType['status'], invitationId: string) => {
     updateBoardInvitationMutation({ id: invitationId, body: { status } }).then((res) => {
@@ -64,11 +73,29 @@ export default function Notifications() {
 
         if (boardInvitation?.status === BoardInvitationStatus.Accepted) {
           const invitee = res.data.result.invitee
+          const workspaceId = boardInvitation.workspace_id
           const boardId = boardInvitation.board_id
 
+          socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspaceId)
           socket?.emit('CLIENT_USER_ACCEPTED_BOARD_INVITATION', { boardId, invitee })
 
           navigate(`/boards/${boardInvitation.board_id}`)
+        }
+      }
+    })
+  }
+
+  const updateWorkspaceInvitation = (status: UpdateWorkspaceInvitationBodyType['status'], invitationId: string) => {
+    updateWorkspaceInvitationMutation({ id: invitationId, body: { status } }).then((res) => {
+      if (res.data) {
+        const workspaceInvitation = res.data.result.invitation.workspace_invitation
+
+        if (workspaceInvitation?.status === WorkspaceInvitationStatus.Accepted) {
+          const workspaceId = workspaceInvitation.workspace_id
+
+          socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspaceId)
+
+          navigate(`/workspaces/${workspaceInvitation.workspace_id}/boards`)
         }
       }
     })
@@ -110,8 +137,20 @@ export default function Notifications() {
       }
     }
 
-    // Listen for a real-time event named `SERVER_USER_INVITED_TO_BOARD` sent from the server
+    // Listen for real-time events sent from the server
     socket?.on('SERVER_USER_INVITED_TO_BOARD', onReceiveNewInvitation)
+    socket?.on('SERVER_USER_INVITED_TO_WORKSPACE', onReceiveNewInvitation)
+
+    // On reconnect, ensure client-side listeners remain and auth header is fresh
+    const onRefreshAuthOnReconnectAttempt = () => {
+      const latestToken = localStorage.getItem('access_token') || ''
+
+      if (socket) {
+        socket.auth = { Authorization: `Bearer ${latestToken}` }
+      }
+    }
+
+    socket?.io.on('reconnect_attempt', onRefreshAuthOnReconnectAttempt)
     socket?.on('connect', onConnect)
     socket?.on('disconnect', onDisconnect)
 
@@ -120,6 +159,8 @@ export default function Notifications() {
       socket?.off('SERVER_USER_INVITED_TO_BOARD', onReceiveNewInvitation)
       socket?.off('connect', onConnect)
       socket?.off('disconnect', onDisconnect)
+      socket?.off('SERVER_USER_INVITED_TO_WORKSPACE', onReceiveNewInvitation)
+      socket?.io.off('reconnect_attempt', onRefreshAuthOnReconnectAttempt)
     }
   }, [dispatch, profile, socket])
 
@@ -130,6 +171,48 @@ export default function Notifications() {
   }
 
   const showMoreButton = pagination.page < pagination.total_page
+
+  const renderInvitationTitle = (invitationItem: InvitationType) => {
+    const isBoardInvite = Boolean(invitationItem.board_invitation)
+
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box>{isBoardInvite ? <GroupAddIcon fontSize='small' /> : <WorkspacesIcon fontSize='small' />}</Box>
+        <Box>
+          <strong>{invitationItem.inviter?.display_name}</strong>{' '}
+          {isBoardInvite ? (
+            <>
+              invited you to join the board <strong>{invitationItem.board?.title}</strong>
+            </>
+          ) : (
+            <>
+              invited you to join the workspace <strong>{invitationItem.workspace?.title}</strong>
+            </>
+          )}
+        </Box>
+      </Box>
+    )
+  }
+
+  const renderInvitationStatusChips = (invitationItem: InvitationType) => {
+    const boardStatus = invitationItem.board_invitation?.status
+    const workspaceStatus = invitationItem.workspace_invitation?.status
+
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'flex-end' }}>
+        {boardStatus === BoardInvitationStatus.Accepted ? (
+          <Chip icon={<DoneIcon />} label='Accepted' color='success' size='small' />
+        ) : null}
+        {boardStatus === BoardInvitationStatus.Rejected ? (
+          <Chip icon={<NotInterestedIcon />} label='Rejected' size='small' />
+        ) : null}
+        {workspaceStatus === 'ACCEPTED' ? (
+          <Chip icon={<DoneIcon />} label='Accepted' color='success' size='small' />
+        ) : null}
+        {workspaceStatus === 'REJECTED' ? <Chip icon={<NotInterestedIcon />} label='Rejected' size='small' /> : null}
+      </Box>
+    )
+  }
 
   return (
     <Box>
@@ -173,15 +256,7 @@ export default function Notifications() {
                   gap: 1
                 }}
               >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Box>
-                    <GroupAddIcon fontSize='small' />
-                  </Box>
-                  <Box>
-                    <strong>{notification.inviter?.display_name}</strong> had invited you to join the board{' '}
-                    <strong>{notification.board?.title}</strong>
-                  </Box>
-                </Box>
+                {renderInvitationTitle(notification)}
 
                 {notification.board_invitation?.status === BoardInvitationStatus.Pending && (
                   <Box
@@ -215,14 +290,39 @@ export default function Notifications() {
                   </Box>
                 )}
 
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'flex-end' }}>
-                  {notification.board_invitation?.status === BoardInvitationStatus.Accepted && (
-                    <Chip icon={<DoneIcon />} label='Accepted' color='success' size='small' />
-                  )}
-                  {notification.board_invitation?.status === BoardInvitationStatus.Rejected && (
-                    <Chip icon={<NotInterestedIcon />} label='Rejected' size='small' />
-                  )}
-                </Box>
+                {renderInvitationStatusChips(notification)}
+
+                {notification.workspace_invitation?.status === WorkspaceInvitationStatus.Pending && (
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      justifyContent: 'flex-end'
+                    }}
+                  >
+                    <Button
+                      className='interceptor-loading'
+                      type='submit'
+                      variant='contained'
+                      color='success'
+                      size='small'
+                      onClick={() => updateWorkspaceInvitation(WorkspaceInvitationStatus.Accepted, notification._id)}
+                    >
+                      Accept
+                    </Button>
+                    <Button
+                      className='interceptor-loading'
+                      type='submit'
+                      variant='contained'
+                      color='secondary'
+                      size='small'
+                      onClick={() => updateWorkspaceInvitation(WorkspaceInvitationStatus.Rejected, notification._id)}
+                    >
+                      Reject
+                    </Button>
+                  </Box>
+                )}
 
                 <Box sx={{ textAlign: 'right' }}>
                   <Typography component='span' sx={{ fontSize: '13px' }}>

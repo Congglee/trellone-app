@@ -24,7 +24,7 @@ export default function WorkspaceBoards() {
 
   const [newBoardOpen, setNewBoardOpen] = useState(false)
 
-  const { data: workspaceData, isLoading } = useGetWorkspaceQuery(workspaceId!)
+  const { data: workspaceData, isLoading, isError } = useGetWorkspaceQuery(workspaceId!)
   const workspace = workspaceData?.result
 
   const boards = useMemo(() => workspace?.boards || [], [workspace?.boards])
@@ -93,7 +93,7 @@ export default function WorkspaceBoards() {
     return sorted
   }, [boards, debouncedSearchText, sortBy])
 
-  if (!workspace && !isLoading) {
+  if (isError) {
     return <Navigate to={path.boardsList} />
   }
 

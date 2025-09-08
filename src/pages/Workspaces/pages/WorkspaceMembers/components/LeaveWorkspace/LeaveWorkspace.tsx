@@ -9,6 +9,7 @@ import { useLeaveWorkspaceMutation } from '~/queries/workspaces'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import path from '~/constants/path'
+import { useAppSelector } from '~/lib/redux/hooks'
 
 interface LeaveWorkspaceProps {
   buttonText: string
@@ -36,11 +37,17 @@ export default function LeaveWorkspace({ buttonText, workspaceId }: LeaveWorkspa
 
   const navigate = useNavigate()
 
+  const { socket } = useAppSelector((state) => state.app)
+
   const [leaveWorkspaceMutation, { isError, isSuccess }] = useLeaveWorkspaceMutation()
 
-  const leaveWorkspace = async () => {
-    await leaveWorkspaceMutation(workspaceId)
-    handleLeaveWorkspacePopoverClose()
+  const leaveWorkspace = () => {
+    leaveWorkspaceMutation(workspaceId).then((res) => {
+      if (!res.error) {
+        handleLeaveWorkspacePopoverClose()
+        socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspaceId)
+      }
+    })
   }
 
   useEffect(() => {

@@ -14,6 +14,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { CreateNewWorkspaceInvitationBody } from '~/schemas/invitation.schema'
 import { WorkspaceRole } from '~/constants/type'
 import { useAddNewWorkspaceInvitationMutation } from '~/queries/invitations'
+import { useAppSelector } from '~/lib/redux/hooks'
 import { isUnprocessableEntityError } from '~/utils/error-handlers'
 import TextFieldInput from '~/components/Form/TextFieldInput'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
@@ -51,13 +52,14 @@ export default function InviteWorkspaceMembersDialog({ workspaceId }: InviteWork
   }, [inviteWorkspaceMemberOpen, reset])
 
   const [addNewWorkspaceInvitationMutation, { isError, error }] = useAddNewWorkspaceInvitationMutation()
+  const { socket } = useAppSelector((state) => state.app)
 
   const onSubmit = handleSubmit(async (values) => {
     addNewWorkspaceInvitationMutation({ ...values, workspace_id: workspaceId }).then((res) => {
       if (!res.error) {
         reset()
-
-        // TODO: Handle socket realtime event when user is invited to workspace
+        const invitation = res.data?.result
+        socket?.emit('CLIENT_USER_INVITED_TO_WORKSPACE', invitation)
       }
     })
   })

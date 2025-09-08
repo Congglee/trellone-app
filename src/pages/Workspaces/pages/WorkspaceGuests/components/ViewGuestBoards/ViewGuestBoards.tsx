@@ -13,6 +13,7 @@ import { BoardResType } from '~/schemas/board.schema'
 import { UserType } from '~/schemas/user.schema'
 import { useRemoveGuestFromBoardMutation } from '~/queries/workspaces'
 import { toast } from 'react-toastify'
+import { useAppSelector } from '~/lib/redux/hooks'
 
 interface ViewGuestBoardsProps {
   totalGuestBoardCounts: number
@@ -49,15 +50,21 @@ export default function ViewGuestBoards({
     setAnchorViewGuestBoardsPopoverElement(null)
   }
 
+  const { socket } = useAppSelector((socket) => socket.app)
+
   const [removeGuestFromBoardMutation, { isError }] = useRemoveGuestFromBoardMutation()
 
-  const removeGuestFromWorkspaceBoard = async (boardId: string) => {
-    await removeGuestFromBoardMutation({
+  const removeGuestFromWorkspaceBoard = (boardId: string) => {
+    removeGuestFromBoardMutation({
       workspace_id: workspaceId,
       user_id: guest._id,
       body: { board_id: boardId }
+    }).then((res) => {
+      if (!res.error) {
+        handleViewGuestBoardsPopoverClose()
+        socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspaceId, boardId)
+      }
     })
-    handleViewGuestBoardsPopoverClose()
   }
 
   useEffect(() => {

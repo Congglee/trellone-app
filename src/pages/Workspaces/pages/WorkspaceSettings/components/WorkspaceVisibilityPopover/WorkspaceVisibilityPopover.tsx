@@ -11,6 +11,7 @@ import Popover from '@mui/material/Popover'
 import Typography from '@mui/material/Typography'
 import { useState, useMemo } from 'react'
 import { WorkspaceType } from '~/constants/type'
+import { useAppSelector } from '~/lib/redux/hooks'
 import { useUpdateWorkspaceMutation } from '~/queries/workspaces'
 import { WorkspaceVisibilityType } from '~/schemas/workspace.schema'
 
@@ -35,9 +36,14 @@ const VISIBILITY_OPTIONS = [
 interface WorkspaceVisibilityPopoverProps {
   workspaceId: string
   workspaceType: WorkspaceVisibilityType
+  isDisabled: boolean
 }
 
-export default function WorkspaceVisibilityPopover({ workspaceId, workspaceType }: WorkspaceVisibilityPopoverProps) {
+export default function WorkspaceVisibilityPopover({
+  workspaceId,
+  workspaceType,
+  isDisabled
+}: WorkspaceVisibilityPopoverProps) {
   const [anchorWorkspaceVisibilityPopoverElement, setAnchorWorkspaceVisibilityPopoverElement] =
     useState<HTMLElement | null>(null)
 
@@ -53,23 +59,35 @@ export default function WorkspaceVisibilityPopover({ workspaceId, workspaceType 
     }
   }
 
+  const { socket } = useAppSelector((state) => state.app)
+
   const [updateWorkspaceMutation, { isLoading }] = useUpdateWorkspaceMutation()
 
   const selectedVisibility = useMemo(() => workspaceType ?? WorkspaceType.Private, [workspaceType])
 
-  const changeWorkspaceVisibility = async (nextType: WorkspaceVisibilityType) => {
+  const changeWorkspaceVisibility = (nextType: WorkspaceVisibilityType) => {
     if (nextType === selectedVisibility) {
       toggleWorkspaceVisibilityPopover()
       return
     }
 
-    await updateWorkspaceMutation({ id: workspaceId, body: { type: nextType } })
-    toggleWorkspaceVisibilityPopover()
+    updateWorkspaceMutation({ id: workspaceId, body: { type: nextType } }).then((res) => {
+      if (!res.error) {
+        toggleWorkspaceVisibilityPopover()
+        socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspaceId)
+      }
+    })
   }
 
   return (
     <>
-      <Button variant='outlined' size='small' onClick={toggleWorkspaceVisibilityPopover} disabled={isLoading}>
+      <Button
+        variant='outlined'
+        size='small'
+        className='interceptor-loading'
+        onClick={toggleWorkspaceVisibilityPopover}
+        disabled={isDisabled}
+      >
         Change
       </Button>
 

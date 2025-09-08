@@ -32,7 +32,7 @@ export default function WorkspaceHome() {
   const [newBoardOpen, setNewBoardOpen] = useState(false)
   const [editWorkspaceOpen, setEditWorkspaceOpen] = useState(false)
 
-  const { data: workspaceData, isLoading } = useGetWorkspaceQuery(workspaceId!)
+  const { data: workspaceData, isLoading, isError } = useGetWorkspaceQuery(workspaceId!)
   const workspace = workspaceData?.result
   const boards = workspace?.boards || []
 
@@ -40,7 +40,7 @@ export default function WorkspaceHome() {
 
   const { hasPermission } = useWorkspacePermission(workspace)
 
-  if (!workspace && !isLoading) {
+  if (isError) {
     return <Navigate to={path.boardsList} />
   }
 
@@ -175,7 +175,6 @@ export default function WorkspaceHome() {
             <Button
               variant='outlined'
               startIcon={<VisibilityOffIcon />}
-              onClick={() => console.log('View all closed boards clicked')}
               sx={{
                 textTransform: 'none',
                 fontWeight: 600,

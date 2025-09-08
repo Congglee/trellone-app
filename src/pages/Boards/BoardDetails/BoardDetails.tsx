@@ -12,13 +12,14 @@ import ActiveCard from '~/components/Modal/ActiveCard'
 import NavBar from '~/components/NavBar'
 import { BoardRole } from '~/constants/type'
 import { useBoardPermission } from '~/hooks/use-permissions'
+import { useQueryConfig } from '~/hooks/use-query-config'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import BoardBar from '~/pages/Boards/BoardDetails/components/BoardBar'
 import BoardContent from '~/pages/Boards/BoardDetails/components/BoardContent'
 import BoardDrawer from '~/pages/Boards/BoardDetails/components/BoardDrawer'
 import BoardErrorView from '~/pages/Boards/BoardDetails/components/BoardErrorView'
 import WorkspaceDrawer from '~/pages/Boards/BoardDetails/components/WorkspaceDrawer'
-import { useUpdateBoardMutation } from '~/queries/boards'
+import { boardApi, useUpdateBoardMutation } from '~/queries/boards'
 import { useMoveCardToDifferentColumnMutation } from '~/queries/cards'
 import { useUpdateColumnMutation } from '~/queries/columns'
 import { BoardResType } from '~/schemas/board.schema'
@@ -37,6 +38,7 @@ export default function BoardDetails() {
   const [boardDrawerOpen, setBoardDrawerOpen] = useState(false)
 
   const { boardId } = useParams()
+  const queryConfig = useQueryConfig()
 
   const dispatch = useAppDispatch()
   const { activeBoard, loading, error } = useAppSelector((state) => state.board)
@@ -66,6 +68,27 @@ export default function BoardDetails() {
     }
   }, [dispatch, boardId, socket])
 
+  // Rejoin the board room on socket reconnect
+  useEffect(() => {
+    if (!socket || !boardId) return
+
+    const onReconnect = () => {
+      socket.emit('CLIENT_JOIN_BOARD', boardId)
+
+      const workspaceId = activeBoard?.workspace_id
+
+      if (workspaceId) {
+        socket.emit('CLIENT_JOIN_WORKSPACE', workspaceId)
+      }
+    }
+
+    socket.on('reconnect', onReconnect)
+
+    return () => {
+      socket.off('reconnect', onReconnect)
+    }
+  }, [socket, boardId, activeBoard?.workspace_id])
+
   // Listen for board and card updates from other users
   useEffect(() => {
     const onConnect = () => {
@@ -93,6 +116,8 @@ export default function BoardDetails() {
       const newMember = cloneDeep(invitee)
       const newActiveBoard = cloneDeep(activeBoard)
 
+      const workspaceId = newActiveBoard?.workspace_id as string
+
       newActiveBoard?.members?.push({
         ...newMember,
         role: BoardRole.Member,
@@ -101,6 +126,14 @@ export default function BoardDetails() {
       })
 
       dispatch(updateActiveBoard(newActiveBoard))
+
+      dispatch(
+        boardApi.util.prefetch(
+          'getJoinedWorkspaceBoards',
+          { workspace_id: workspaceId, ...queryConfig },
+          { force: true }
+        )
+      )
     }
 
     socket?.on('SERVER_BOARD_UPDATED', onUpdateBoard)
@@ -117,6 +150,32 @@ export default function BoardDetails() {
       socket?.off('disconnect', onDisconnect)
     }
   }, [dispatch, socket, activeBoard])
+
+  // Join the workspace room when the activeBoard is available, listen for workspace updates
+  useEffect(() => {
+    if (!socket || !activeBoard) return
+
+    const workspaceId = activeBoard.workspace_id
+
+    if (!workspaceId) return
+
+    // Join the workspace room to receive workspace-level updates impacting this board
+    socket.emit('CLIENT_JOIN_WORKSPACE', workspaceId)
+
+    const onUpdateWorkspace = (_workspaceId: string, updatedBoardId?: string) => {
+      // If the update targets this board, refetch its details for consistency
+      if (updatedBoardId === activeBoard._id) {
+        dispatch(getBoardDetails(activeBoard._id))
+      }
+    }
+
+    socket.on('SERVER_WORKSPACE_UPDATED', onUpdateWorkspace)
+
+    return () => {
+      socket.emit('CLIENT_LEAVE_WORKSPACE', workspaceId)
+      socket.off('SERVER_WORKSPACE_UPDATED', onUpdateWorkspace)
+    }
+  }, [socket, activeBoard, dispatch])
 
   const onMoveColumns = (dndOrderedColumns: ColumnType[]) => {
     // Get the IDs of the columns in the order they are being moved
@@ -255,7 +314,7 @@ export default function BoardDetails() {
             open={workspaceDrawerOpen}
             onOpen={setWorkspaceDrawerOpen}
             boardId={boardId}
-            workspace={activeBoard.workspace as any}
+            workspace={activeBoard.workspace}
           />
 
           <BoardBar

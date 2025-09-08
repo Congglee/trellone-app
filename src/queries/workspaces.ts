@@ -7,6 +7,7 @@ import {
   CreateWorkspaceBodyType,
   EditWorkspaceMemberRoleBodyType,
   RemoveGuestFromBoardBodyType,
+  RemoveGuestFromWorkspaceResType,
   RemoveWorkspaceMemberFromBoardBodyType,
   UpdateWorkspaceBodyType,
   WorkspaceListResType,
@@ -113,7 +114,10 @@ export const workspaceApi = createApi({
       invalidatesTags: (_result, _error, { workspace_id }) => [{ type: 'Workspace', id: workspace_id }]
     }),
 
-    removeGuestFromWorkspace: build.mutation<WorkspaceResType, { workspace_id: string; user_id: string }>({
+    removeGuestFromWorkspace: build.mutation<
+      RemoveGuestFromWorkspaceResType,
+      { workspace_id: string; user_id: string }
+    >({
       query: ({ workspace_id, user_id }) => ({
         url: `${WORKSPACE_API_URL}/${workspace_id}/guests/${user_id}`,
         method: 'DELETE'

@@ -30,7 +30,9 @@ export default function CoverPopover({ onUpdateCardCoverPhoto }: CoverPopoverPro
 
   const [searchQuery, setSearchQuery] = useState('Wallpapers')
 
-  const { data: searchPhotosData } = useGetUnsplashSearchPhotosQuery(searchQuery || 'Wallpapers')
+  const { data: searchPhotosData } = useGetUnsplashSearchPhotosQuery(searchQuery || 'Wallpapers', {
+    skip: !showCoverPhoto
+  })
   const searchPhotos = searchPhotosData?.result || []
 
   const [uploadImageMutation] = useUploadImageMutation()
