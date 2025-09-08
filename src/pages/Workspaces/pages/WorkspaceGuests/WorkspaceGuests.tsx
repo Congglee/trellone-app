@@ -27,7 +27,7 @@ export default function WorkspaceGuests() {
 
   const { profile } = useAppSelector((state) => state.auth)
 
-  const { data: workspaceData, isLoading } = useGetWorkspaceQuery(workspaceId!)
+  const { data: workspaceData, isLoading, isError } = useGetWorkspaceQuery(workspaceId!)
   const workspace = workspaceData?.result
 
   const guests = useMemo(() => {
@@ -96,15 +96,21 @@ export default function WorkspaceGuests() {
     return { singleBoardGuestCount: singleBoardCount }
   }, [workspace?.boards, guests])
 
+  const { socket } = useAppSelector((state) => state.app)
+
   const [addGuestToWorkspaceMutation] = useAddGuestToWorkspaceMutation()
 
-  const addGuestToWorkspace = async (userId: string) => {
-    await addGuestToWorkspaceMutation({ workspace_id: workspaceId as string, user_id: userId })
+  const addGuestToWorkspace = (userId: string) => {
+    addGuestToWorkspaceMutation({ workspace_id: workspaceId as string, user_id: userId }).then((res) => {
+      if (!res.error) {
+        socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspaceId)
+      }
+    })
   }
 
   const { hasPermission } = useWorkspacePermission(workspace)
 
-  if (!workspace && !isLoading) {
+  if (isError) {
     return <Navigate to={path.boardsList} />
   }
 

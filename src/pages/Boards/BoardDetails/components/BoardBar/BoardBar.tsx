@@ -152,6 +152,7 @@ export default function BoardBar({
 
       // Broadcast to other users for realtime sync
       socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+      socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', newActiveBoard.workspace_id)
     }
   }
 

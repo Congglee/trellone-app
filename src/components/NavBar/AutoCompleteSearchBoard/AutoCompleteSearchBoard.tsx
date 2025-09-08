@@ -21,11 +21,14 @@ export default function AutoCompleteSearchBoard({ styles }: AutoCompleteSearchBo
 
   const navigate = useNavigate()
 
-  const { data: boardsData, isLoading } = useGetBoardsQuery({
-    page: DEFAULT_PAGINATION_PAGE,
-    limit: 50,
-    keyword
-  })
+  const { data: boardsData, isLoading } = useGetBoardsQuery(
+    {
+      page: DEFAULT_PAGINATION_PAGE,
+      limit: 50,
+      keyword
+    },
+    { skip: keyword.length === 0 }
+  )
 
   const boards = boardsData?.result.boards || []
 

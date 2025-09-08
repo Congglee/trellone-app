@@ -8,6 +8,7 @@ import Box from '@mui/material/Box'
 import { WorkspaceMemberRoleType } from '~/schemas/workspace.schema'
 import { useEditWorkspaceMemberRoleMutation } from '~/queries/workspaces'
 import { toast } from 'react-toastify'
+import { useAppSelector } from '~/lib/redux/hooks'
 
 interface RoleSelectProps {
   currentRole: WorkspaceMemberRoleType
@@ -30,18 +31,23 @@ export default function RoleSelect({ currentRole, disabled = false, userId, work
     setAnchorRoleMenuElement(null)
   }
 
+  const { socket } = useAppSelector((state) => state.app)
+
   const [editWorkspaceMemberRoleMutation, { isError }] = useEditWorkspaceMemberRoleMutation()
 
-  const handleRoleSelect = async (role: WorkspaceMemberRoleType) => {
+  const handleRoleSelect = (role: WorkspaceMemberRoleType) => {
     if (role !== currentRole) {
-      await editWorkspaceMemberRoleMutation({
+      editWorkspaceMemberRoleMutation({
         workspace_id: workspaceId,
         user_id: userId,
         body: { role }
+      }).then((res) => {
+        if (!res.error) {
+          handleRoleMenuClose()
+          socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspaceId)
+        }
       })
     }
-
-    handleRoleMenuClose()
   }
 
   useEffect(() => {

@@ -10,6 +10,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
+import { useAppSelector } from '~/lib/redux/hooks'
 import { useRemoveWorkspaceMemberFromBoardMutation } from '~/queries/workspaces'
 import { BoardResType } from '~/schemas/board.schema'
 
@@ -50,15 +51,21 @@ export default function ViewMemberBoards({
     setAnchorViewMemberBoardsPopoverElement(null)
   }
 
+  const { socket } = useAppSelector((socket) => socket.app)
+
   const [removeWorkspaceMemberFromBoardMutation, { isError }] = useRemoveWorkspaceMemberFromBoardMutation()
 
-  const removeMemberFromWorkspaceBoard = async (boardId: string) => {
-    await removeWorkspaceMemberFromBoardMutation({
+  const removeMemberFromWorkspaceBoard = (boardId: string) => {
+    removeWorkspaceMemberFromBoardMutation({
       workspace_id: workspaceId,
       user_id: userId,
       body: { board_id: boardId }
+    }).then((res) => {
+      if (!res.error) {
+        handleViewMemberBoardsPopoverClose()
+        socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspaceId, boardId)
+      }
     })
-    handleViewMemberBoardsPopoverClose()
   }
 
   useEffect(() => {

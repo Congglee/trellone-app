@@ -22,6 +22,7 @@ import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
 import { BoardType } from '~/constants/type'
 import { useQueryConfig } from '~/hooks/use-query-config'
+import { useAppSelector } from '~/lib/redux/hooks'
 import { useAddBoardMutation } from '~/queries/boards'
 import { useGetWorkspacesQuery } from '~/queries/workspaces'
 import { CreateBoardBody, CreateBoardBodyType } from '~/schemas/board.schema'
@@ -53,6 +54,8 @@ export default function NewBoardDialog({ open, onNewBoardClose, defaultWorkspace
 
   const queryConfig = useQueryConfig()
 
+  const { socket } = useAppSelector((state) => state.app)
+
   const { data: workspacesData } = useGetWorkspacesQuery(queryConfig)
   const workspaces = workspacesData?.result.workspaces || []
 
@@ -65,6 +68,8 @@ export default function NewBoardDialog({ open, onNewBoardClose, defaultWorkspace
       if (!res.error) {
         const board = res.data?.result
         navigate(`/boards/${board?._id}`)
+
+        socket?.emit('CLIENT_USER_CREATED_WORKSPACE_BOARD', values.workspace_id)
       }
     })
   })

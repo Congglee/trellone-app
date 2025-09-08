@@ -37,7 +37,7 @@ interface WorkspaceDrawerProps {
   open: boolean
   onOpen: (open: boolean) => void
   boardId?: string
-  workspace?: WorkspaceResType['result']
+  workspace?: WorkspaceResType['result'] | BoardResType['result']['workspace']
 }
 
 export default function WorkspaceDrawer({ open, onOpen, boardId, workspace }: WorkspaceDrawerProps) {

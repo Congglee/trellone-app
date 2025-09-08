@@ -11,7 +11,7 @@ import { WorkspaceResType, WorkspaceMemberRoleType } from '~/schemas/workspace.s
 import { UserType } from '~/schemas/user.schema'
 import { BoardResType, BoardMemberRoleType } from '~/schemas/board.schema'
 
-type WorkspaceItem = WorkspaceResType['result'] | null | undefined
+type WorkspaceItem = WorkspaceResType['result'] | BoardResType['result']['workspace'] | null | undefined
 
 interface UseWorkspacePermissionReturn {
   role: WorkspaceMemberRoleType | null

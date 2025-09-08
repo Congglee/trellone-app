@@ -17,6 +17,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
+import cloneDeep from 'lodash/cloneDeep'
 import DrawerHeader from '~/components/DrawerHeader'
 import ChangeBackgroundDrawer from '~/pages/Boards/BoardDetails/components/ChangeBackgroundDrawer'
 import { BoardRole } from '~/constants/type'
@@ -62,31 +63,37 @@ export default function BoardDrawer({ open, onOpen, boardMembers, isBoardMember,
   }
 
   const leaveBoard = async () => {
-    await leaveBoardMutation(boardId).unwrap()
+    await leaveBoardMutation(boardId)
 
-    if (activeBoard && profile) {
+    if (activeBoard) {
       // Check if current user is a guest in the workspace
-      const isGuestInWorkspace = activeBoard.workspace.guests.some((guest) => guest === profile._id)
-      const isNotInWorkspaceMembers = !activeBoard.workspace.members.some((member) => member.user_id === profile._id)
+      const isGuestInWorkspace = activeBoard.workspace.guests.some((guest) => guest === profile?._id)
+      const isNotInWorkspaceMembers = !activeBoard.workspace.members.some((member) => member.user_id === profile?._id)
 
       if (isGuestInWorkspace && isNotInWorkspaceMembers) {
         // If user is a guest, clear the active board
         dispatch(clearActiveBoard())
       } else {
         // If user is a workspace member, update the board with new members list
-        const updatedBoardMembers = activeBoard.members.filter((member) => member.user_id !== profile._id)
+        const updatedBoardMembers = activeBoard.members.filter((member) => member.user_id !== profile?._id)
 
-        // Create a new activeBoard object with the updated members array
-        // This creates a new reference, triggering useMemo in `useBoardPermission`
-        const newActiveBoard = {
-          ...activeBoard,
-          members: updatedBoardMembers
-        }
+        // Create a deep-cloned activeBoard and also remove user from all card members in every column
+        const newActiveBoard = cloneDeep(activeBoard)
+
+        newActiveBoard.members = updatedBoardMembers
+        newActiveBoard.columns?.forEach((column) => {
+          column.cards?.forEach((card) => {
+            if (Array.isArray(card.members)) {
+              card.members = card.members.filter((memberId) => memberId !== profile?._id)
+            }
+          })
+        })
 
         dispatch(updateActiveBoard(newActiveBoard))
 
         // Broadcast to other users for realtime sync
         socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+        socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', newActiveBoard.workspace_id)
       }
     }
   }

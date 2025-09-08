@@ -57,7 +57,9 @@ export default function ChangeBackgroundDrawer({ open, onOpen }: ChangeBackgroun
   const { activeBoard } = useAppSelector((state) => state.board)
   const { socket } = useAppSelector((state) => state.app)
 
-  const { data: searchPhotosData, isLoading } = useGetUnsplashSearchPhotosQuery(query)
+  const { data: searchPhotosData, isLoading } = useGetUnsplashSearchPhotosQuery(query, {
+    skip: !open
+  })
   const searchPhotos = searchPhotosData?.result || []
 
   const [updateBoardMutation] = useUpdateBoardMutation()

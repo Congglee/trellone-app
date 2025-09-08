@@ -8,6 +8,7 @@ import Popover from '@mui/material/Popover'
 import ClearIcon from '@mui/icons-material/Clear'
 import { useRemoveWorkspaceMemberMutation } from '~/queries/workspaces'
 import { toast } from 'react-toastify'
+import { useAppSelector } from '~/lib/redux/hooks'
 
 interface RemoveMemberWorkspaceProps {
   isDisabled: boolean
@@ -41,11 +42,17 @@ export default function RemoveMemberWorkspace({
     setAnchorRemoveMemberWorkspacePopoverElement(null)
   }
 
+  const { socket } = useAppSelector((state) => state.app)
+
   const [removeWorkspaceMemberMutation, { isError }] = useRemoveWorkspaceMemberMutation()
 
-  const removeMemberFromWorkspace = async () => {
-    await removeWorkspaceMemberMutation({ workspace_id: workspaceId, user_id: userId })
-    handleRemoveMemberWorkspacePopoverClose()
+  const removeMemberFromWorkspace = () => {
+    removeWorkspaceMemberMutation({ workspace_id: workspaceId, user_id: userId }).then((res) => {
+      if (!res.error) {
+        handleRemoveMemberWorkspacePopoverClose()
+        socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspaceId)
+      }
+    })
   }
 
   useEffect(() => {

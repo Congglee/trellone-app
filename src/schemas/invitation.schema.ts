@@ -7,6 +7,7 @@ import {
   WorkspaceRoleValues
 } from '~/constants/type'
 import { BoardSchema } from '~/schemas/board.schema'
+import { WorkspaceSchema } from '~/schemas/workspace.schema'
 import { UserSchema } from '~/schemas/user.schema'
 
 const WorkspaceInvitationSchema = z.object({
@@ -33,7 +34,8 @@ export const InvitationSchema = z.object({
   workspace_invitation: WorkspaceInvitationSchema.optional(),
   inviter: UserSchema,
   invitee: UserSchema,
-  board: BoardSchema,
+  board: BoardSchema.optional(),
+  workspace: WorkspaceSchema.optional(),
   _destroy: z.boolean(),
   created_at: z.date(),
   updated_at: z.date()

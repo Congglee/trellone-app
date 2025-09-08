@@ -6,6 +6,7 @@ import IconButton from '@mui/material/IconButton'
 import Popover from '@mui/material/Popover'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
+import { useAppSelector } from '~/lib/redux/hooks'
 import { useRemoveGuestFromWorkspaceMutation } from '~/queries/workspaces'
 
 interface RemoveGuestWorkspaceProps {
@@ -34,11 +35,23 @@ export default function RemoveGuestWorkspace({ userId, workspaceId, isDisabled }
     setAnchorRemoveGuestWorkspacePopoverElement(null)
   }
 
+  const { socket } = useAppSelector((socket) => socket.app)
+
   const [removeGuestFromWorkspaceMutation] = useRemoveGuestFromWorkspaceMutation()
 
-  const removeGuestWorkspace = async () => {
-    await removeGuestFromWorkspaceMutation({ workspace_id: workspaceId, user_id: userId })
-    handleRemoveGuestWorkspacePopoverClose()
+  const removeGuestWorkspace = () => {
+    removeGuestFromWorkspaceMutation({ workspace_id: workspaceId, user_id: userId }).then((res) => {
+      if (!res.error) {
+        const result = res.data?.result
+        const affectedBoardIds = result?.affectedBoardIds || []
+
+        for (const boardId of affectedBoardIds) {
+          socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspaceId, boardId)
+        }
+
+        handleRemoveGuestWorkspacePopoverClose()
+      }
+    })
   }
 
   return (

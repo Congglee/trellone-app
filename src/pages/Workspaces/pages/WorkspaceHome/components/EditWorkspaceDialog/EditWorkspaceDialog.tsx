@@ -12,6 +12,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
+import { useAppSelector } from '~/lib/redux/hooks'
 import { useUpdateWorkspaceMutation } from '~/queries/workspaces'
 import { UpdateWorkspaceBody, UpdateWorkspaceBodyType, WorkspaceResType } from '~/schemas/workspace.schema'
 import { isUnprocessableEntityError } from '~/utils/error-handlers'
@@ -36,6 +37,8 @@ export default function EditWorkspaceDialog({ open, onEditWorkspaceClose, worksp
 
   const [updateWorkspaceMutation, { isError, error }] = useUpdateWorkspaceMutation()
 
+  const { socket } = useAppSelector((state) => state.app)
+
   useEffect(() => {
     if (workspace && open) {
       const { title, description } = workspace
@@ -48,6 +51,15 @@ export default function EditWorkspaceDialog({ open, onEditWorkspaceClose, worksp
       if (!res.error) {
         onEditWorkspaceClose()
         toast.success(res.data?.message || 'Workspace updated successfully')
+
+        socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspace._id)
+
+        const workspaceId = workspace?._id
+        const affectedBoardIds = workspace?.boards.map((board) => board._id) || []
+
+        for (const boardId of affectedBoardIds) {
+          socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspaceId, boardId)
+        }
       }
     })
   })

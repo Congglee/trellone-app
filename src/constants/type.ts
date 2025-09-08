@@ -55,10 +55,11 @@ export const MediaType = {
 export const MediaTypeValues = [MediaType.Image, MediaType.Document] as const
 
 export const InvitationType = {
-  BoardInvitation: 'BOARD_INVITATION'
-}
+  BoardInvitation: 'BOARD_INVITATION',
+  WorkspaceInvitation: 'WORKSPACE_INVITATION'
+} as const
 
-export const InvitationTypeValues = [InvitationType.BoardInvitation] as const
+export const InvitationTypeValues = [InvitationType.BoardInvitation, InvitationType.WorkspaceInvitation] as const
 
 export const WorkspaceInvitationStatus = {
   Pending: 'PENDING',

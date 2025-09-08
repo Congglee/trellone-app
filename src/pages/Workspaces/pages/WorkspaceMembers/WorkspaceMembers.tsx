@@ -27,7 +27,7 @@ export default function WorkspaceMembers() {
 
   const { profile } = useAppSelector((state) => state.auth)
 
-  const { data: workspaceData, isLoading } = useGetWorkspaceQuery(workspaceId!)
+  const { data: workspaceData, isLoading, isError } = useGetWorkspaceQuery(workspaceId!)
   const workspace = workspaceData?.result
 
   const members = useMemo(() => workspace?.members || [], [workspace?.members])
@@ -62,7 +62,7 @@ export default function WorkspaceMembers() {
     })
   }, [members, debouncedSearchText])
 
-  if (!workspace && !isLoading) {
+  if (isError) {
     return <Navigate to={path.boardsList} />
   }
 

@@ -27,12 +27,12 @@ export default function WorkspaceSettings() {
 
   const [editWorkspaceOpen, setEditWorkspaceOpen] = useState(false)
 
-  const { data: workspaceData, isLoading } = useGetWorkspaceQuery(workspaceId!)
+  const { data: workspaceData, isLoading, isError } = useGetWorkspaceQuery(workspaceId!)
   const workspace = workspaceData?.result
 
   const { hasPermission } = useWorkspacePermission(workspace)
 
-  if (!workspace && !isLoading) {
+  if (isError) {
     return <Navigate to={path.boardsList} />
   }
 
@@ -166,6 +166,7 @@ export default function WorkspaceSettings() {
           </Stack>
 
           <WorkspaceVisibilityPopover
+            isDisabled={!hasPermission(WorkspacePermission.ManageWorkspace)}
             workspaceId={workspaceId as string}
             workspaceType={workspace?.type as WorkspaceVisibilityType}
           />
