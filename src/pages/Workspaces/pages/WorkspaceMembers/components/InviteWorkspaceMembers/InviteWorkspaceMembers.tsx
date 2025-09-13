@@ -19,11 +19,11 @@ import { isUnprocessableEntityError } from '~/utils/error-handlers'
 import TextFieldInput from '~/components/Form/TextFieldInput'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 
-interface InviteWorkspaceMembersDialogProps {
+interface InviteWorkspaceMembersProps {
   workspaceId: string
 }
 
-export default function InviteWorkspaceMembersDialog({ workspaceId }: InviteWorkspaceMembersDialogProps) {
+export default function InviteWorkspaceMembers({ workspaceId }: InviteWorkspaceMembersProps) {
   const [inviteWorkspaceMemberOpen, setInviteWorkspaceMemberOpen] = useState(false)
 
   const handleInviteWorkspaceMemberOpen = () => {

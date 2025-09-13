@@ -28,7 +28,7 @@ import { CreateNewBoardInvitationBody, CreateNewBoardInvitationBodyType } from '
 import { UserType } from '~/schemas/user.schema'
 import { isUnprocessableEntityError } from '~/utils/error-handlers'
 
-interface InviteBoardUserProps {
+interface InviteBoardMembersProps {
   boardId: string
   workspaceId: string
 }
@@ -63,7 +63,7 @@ const getWorkspaceRole = (userId: string, workspace?: WorkspaceItem) => {
   return 'Workspace member'
 }
 
-export default function InviteBoardMembersDialog({ boardId, workspaceId }: InviteBoardUserProps) {
+export default function InviteBoardMembers({ boardId, workspaceId }: InviteBoardMembersProps) {
   const [inviteBoardMemberOpen, setInviteBoardMemberOpen] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
 

@@ -8,7 +8,7 @@ import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import CardsList from '~/pages/Boards/BoardDetails/components/CardsList'
 import AddNewCard from '~/pages/Boards/BoardDetails/components/Column/AddNewCard'
-import ColumnMenuActionsPopover from '~/pages/Boards/BoardDetails/components/Column/ColumnMenuActionsPopover'
+import ColumnMenuActions from '~/pages/Boards/BoardDetails/components/Column/ColumnMenuActionsPopover'
 import { useUpdateColumnMutation } from '~/queries/columns'
 import { ColumnType } from '~/schemas/column.schema'
 import { updateActiveBoard } from '~/store/slices/board.slice'
@@ -109,7 +109,7 @@ export default function Column({ column, canEditColumn, canCreateCard }: ColumnP
             </Typography>
           )}
 
-          {canEditColumn && <ColumnMenuActionsPopover column={column} />}
+          {canEditColumn && <ColumnMenuActions column={column} />}
         </Box>
 
         <CardsList cards={sortedCards} />

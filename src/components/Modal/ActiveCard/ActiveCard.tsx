@@ -20,12 +20,12 @@ import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
 import AttachmentPopover from '~/components/Modal/ActiveCard/AttachmentPopover'
 import CardActivitySection from '~/components/Modal/ActiveCard/CardActivitySection'
 import CardAttachments from '~/components/Modal/ActiveCard/CardAttachments'
+import CardCover from '~/components/Modal/ActiveCard/CardCover'
 import CardDescriptionMdEditor from '~/components/Modal/ActiveCard/CardDescriptionMdEditor'
 import CardDueDate from '~/components/Modal/ActiveCard/CardDueDate'
 import CardUserGroup from '~/components/Modal/ActiveCard/CardUserGroup'
-import CoverPopover from '~/components/Modal/ActiveCard/CoverPopover'
 import DatesMenu from '~/components/Modal/ActiveCard/DatesMenu'
-import RemoveActiveCardPopover from '~/components/Modal/ActiveCard/RemoveActiveCardPopover'
+import RemoveActiveCard from '~/components/Modal/ActiveCard/RemoveActiveCard'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { useAddCardMemberMutation, useRemoveCardMemberMutation, useUpdateCardMutation } from '~/queries/cards'
 import { UpdateCardBodyType } from '~/schemas/card.schema'
@@ -297,7 +297,7 @@ export default function ActiveCard({ canEditCard }: ActiveCardProps) {
                 )}
 
                 <SidebarItem className='active' sx={{ p: 0 }}>
-                  <CoverPopover onUpdateCardCoverPhoto={onUpdateCardCoverPhoto} />
+                  <CardCover onUpdateCardCoverPhoto={onUpdateCardCoverPhoto} />
                 </SidebarItem>
 
                 <SidebarItem className='active' sx={{ p: 0 }}>
@@ -331,7 +331,7 @@ export default function ActiveCard({ canEditCard }: ActiveCardProps) {
                 </SidebarItem>
                 {activeCard?._destroy && (
                   <SidebarItem className='active' sx={{ p: 0 }}>
-                    <RemoveActiveCardPopover cardId={activeCard?._id} columnId={activeCard?.column_id} />
+                    <RemoveActiveCard cardId={activeCard?._id} columnId={activeCard?.column_id} />
                   </SidebarItem>
                 )}
               </Stack>

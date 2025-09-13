@@ -22,11 +22,11 @@ import { useDeleteColumnMutation } from '~/queries/columns'
 import { ColumnType } from '~/schemas/column.schema'
 import { updateActiveBoard } from '~/store/slices/board.slice'
 
-interface ColumnMenuActionsPopoverProps {
+interface ColumnMenuActionsProps {
   column: ColumnType
 }
 
-export default function ColumnMenuActionsPopover({ column }: ColumnMenuActionsPopoverProps) {
+export default function ColumnMenuActions({ column }: ColumnMenuActionsProps) {
   const [anchorMenuActionsPopoverElement, setAnchorMenuActionsPopoverElement] = useState<
     HTMLElement | SVGSVGElement | null
   >(null)

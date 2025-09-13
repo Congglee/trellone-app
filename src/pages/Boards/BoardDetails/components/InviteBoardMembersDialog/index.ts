@@ -1,3 +1,0 @@
-import InviteBoardMembersDialog from '~/pages/Boards/BoardDetails/components/InviteBoardMembersDialog/InviteBoardMembersDialog'
-
-export default InviteBoardMembersDialog

@@ -2,6 +2,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import TextField from '@mui/material/TextField'
@@ -12,13 +13,12 @@ import { useEffect, useState } from 'react'
 import AppBar from '~/components/AppBar'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import BoardUserGroup from '~/pages/Boards/BoardDetails/components/BoardUserGroup'
-import InviteBoardMembersDialog from '~/pages/Boards/BoardDetails/components/InviteBoardMembersDialog'
+import InviteBoardMembers from '~/pages/Boards/BoardDetails/components/InviteBoardMembers'
 import { useUpdateBoardMutation } from '~/queries/boards'
-import { BoardResType } from '~/schemas/board.schema'
-import { updateActiveBoard } from '~/store/slices/board.slice'
-import Button from '@mui/material/Button'
 import { useJoinWorkspaceBoardMutation } from '~/queries/workspaces'
+import { BoardResType } from '~/schemas/board.schema'
 import { UserType } from '~/schemas/user.schema'
+import { updateActiveBoard } from '~/store/slices/board.slice'
 
 interface BoardBarProps {
   workspaceDrawerOpen: boolean
@@ -230,7 +230,7 @@ export default function BoardBar({
           }}
         >
           {isBoardMember ? (
-            <InviteBoardMembersDialog boardId={board._id} workspaceId={board.workspace_id} />
+            <InviteBoardMembers boardId={board._id} workspaceId={board.workspace_id} />
           ) : (
             <Tooltip title='Workspace members can join this board'>
               <Button size='small' color='secondary' variant='contained' onClick={joinWorkspaceBoard}>

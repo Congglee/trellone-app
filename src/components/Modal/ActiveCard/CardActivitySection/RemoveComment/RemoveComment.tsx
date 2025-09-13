@@ -11,17 +11,13 @@ import { useRemoveCardCommentMutation } from '~/queries/cards'
 import { updateActiveCard } from '~/store/slices/card.slice'
 import { updateCardInBoard } from '~/store/slices/board.slice'
 
-interface RemoveCommentPopoverProps {
+interface RemoveCommentProps {
   activeComment: CommentType | null
   onSetActiveComment: (comment: CommentType | null) => void
   comment: CommentType
 }
 
-export default function RemoveCommentPopover({
-  activeComment,
-  onSetActiveComment,
-  comment
-}: RemoveCommentPopoverProps) {
+export default function RemoveComment({ activeComment, onSetActiveComment, comment }: RemoveCommentProps) {
   const dispatch = useAppDispatch()
 
   const { activeCard } = useAppSelector((state) => state.card)

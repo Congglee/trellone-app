@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Popover from '@mui/material/Popover'
 import { useColorScheme } from '@mui/material'
-import EmojiPicker, { EmojiClickData, Theme } from 'emoji-picker-react'
+import ReactEmojiPicker, { EmojiClickData, Theme } from 'emoji-picker-react'
 import { useState } from 'react'
 import { CardCommentReactionAction } from '~/constants/type'
 import { useReactToCardCommentMutation } from '~/queries/cards'
@@ -12,19 +12,14 @@ import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { updateActiveCard } from '~/store/slices/card.slice'
 import { updateCardInBoard } from '~/store/slices/board.slice'
 
-interface EmojiPickerPopoverProps {
+interface EmojiPickerProps {
   activeCard: CardType | null
   activeComment: CommentType | null
   onSetActiveComment: (comment: CommentType | null) => void
   comment: CommentType
 }
 
-export default function EmojiPickerPopover({
-  activeCard,
-  activeComment,
-  onSetActiveComment,
-  comment
-}: EmojiPickerPopoverProps) {
+export default function EmojiPicker({ activeCard, activeComment, onSetActiveComment, comment }: EmojiPickerProps) {
   const { mode } = useColorScheme()
 
   const dispatch = useAppDispatch()
@@ -97,7 +92,7 @@ export default function EmojiPickerPopover({
         }}
       >
         <Box sx={{ p: 1 }}>
-          <EmojiPicker onEmojiClick={handleEmojiSelect} width={400} height={400} theme={emojiPickerTheme} />
+          <ReactEmojiPicker onEmojiClick={handleEmojiSelect} width={400} height={400} theme={emojiPickerTheme} />
         </Box>
       </Popover>
     </>

@@ -11,7 +11,7 @@ import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
 import { formatDistanceToNow } from 'date-fns'
 import { useState } from 'react'
-import FileAttachmentPreviewModal from '~/components/Modal/ActiveCard/CardAttachments/FileAttachmentPreviewModal'
+import FileAttachmentPreview from '~/components/Modal/ActiveCard/CardAttachments/FileAttachmentPreview'
 import { CardAttachmentType } from '~/schemas/card.schema'
 
 interface FileAttachmentsProps {
@@ -153,7 +153,7 @@ export default function FileAttachments({ fileAttachments, onToggleMenuActionsPo
         </List>
       </Box>
 
-      <FileAttachmentPreviewModal
+      <FileAttachmentPreview
         open={showFilePreviewModal}
         onClose={handlePreviewModalClose}
         attachment={filePreviewAttachment}

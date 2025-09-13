@@ -11,15 +11,15 @@ import Grid from '@mui/material/Unstable_Grid2'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
 import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
-import PhotoSearch from '~/components/Modal/ActiveCard/CoverPopover/PhotoSearch'
+import PhotoSearch from '~/components/Modal/ActiveCard/CardCover/PhotoSearch'
 import { useGetUnsplashSearchPhotosQuery, useUploadImageMutation } from '~/queries/medias'
 import { singleFileValidator } from '~/utils/validators'
 
-interface CoverPopoverProps {
+interface CardCoverProps {
   onUpdateCardCoverPhoto: (cover_photo: string) => Promise<void>
 }
 
-export default function CoverPopover({ onUpdateCardCoverPhoto }: CoverPopoverProps) {
+export default function CardCover({ onUpdateCardCoverPhoto }: CardCoverProps) {
   const [anchorCoverPopoverElement, setAnchorCoverPopoverElement] = useState<HTMLElement | null>(null)
   const isCoverPopoverOpen = Boolean(anchorCoverPopoverElement)
 

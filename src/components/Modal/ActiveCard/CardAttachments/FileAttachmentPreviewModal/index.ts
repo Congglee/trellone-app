@@ -1,3 +1,0 @@
-import FileAttachmentPreviewModal from '~/components/Modal/ActiveCard/CardAttachments/FileAttachmentPreviewModal/FileAttachmentPreviewModal'
-
-export default FileAttachmentPreviewModal

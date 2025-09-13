@@ -12,12 +12,12 @@ import { useDeleteCardMutation } from '~/queries/cards'
 import { updateActiveBoard } from '~/store/slices/board.slice'
 import { clearAndHideActiveCardModal } from '~/store/slices/card.slice'
 
-interface RemoveActiveCardPopoverProps {
+interface RemoveActiveCardProps {
   cardId: string
   columnId: string
 }
 
-export default function RemoveActiveCardPopover({ cardId, columnId }: RemoveActiveCardPopoverProps) {
+export default function RemoveActiveCard({ cardId, columnId }: RemoveActiveCardProps) {
   const [anchorRemoveActiveCardPopoverElement, setAnchorRemoveActiveCardPopoverElement] = useState<HTMLElement | null>(
     null
   )

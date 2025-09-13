@@ -33,17 +33,13 @@ const VISIBILITY_OPTIONS = [
   }
 ]
 
-interface WorkspaceVisibilityPopoverProps {
+interface WorkspaceVisibilityProps {
   workspaceId: string
   workspaceType: WorkspaceVisibilityType
   isDisabled: boolean
 }
 
-export default function WorkspaceVisibilityPopover({
-  workspaceId,
-  workspaceType,
-  isDisabled
-}: WorkspaceVisibilityPopoverProps) {
+export default function WorkspaceVisibility({ workspaceId, workspaceType, isDisabled }: WorkspaceVisibilityProps) {
   const [anchorWorkspaceVisibilityPopoverElement, setAnchorWorkspaceVisibilityPopoverElement] =
     useState<HTMLElement | null>(null)
 

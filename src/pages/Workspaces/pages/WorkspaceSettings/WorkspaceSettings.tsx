@@ -18,7 +18,7 @@ import { WorkspaceType } from '~/constants/type'
 import { useWorkspacePermission } from '~/hooks/use-permissions'
 import WorkspaceLogo from '~/pages/Workspaces/components/WorkspaceLogo'
 import EditWorkspaceDialog from '~/pages/Workspaces/pages/WorkspaceHome/components/EditWorkspaceDialog'
-import WorkspaceVisibilityPopover from '~/pages/Workspaces/pages/WorkspaceSettings/components/WorkspaceVisibilityPopover'
+import WorkspaceVisibility from '~/pages/Workspaces/pages/WorkspaceSettings/components/WorkspaceVisibility'
 import { useGetWorkspaceQuery } from '~/queries/workspaces'
 import { WorkspaceVisibilityType } from '~/schemas/workspace.schema'
 
@@ -165,7 +165,7 @@ export default function WorkspaceSettings() {
             )}
           </Stack>
 
-          <WorkspaceVisibilityPopover
+          <WorkspaceVisibility
             isDisabled={!hasPermission(WorkspacePermission.ManageWorkspace)}
             workspaceId={workspaceId as string}
             workspaceType={workspace?.type as WorkspaceVisibilityType}

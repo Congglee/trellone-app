@@ -10,8 +10,8 @@ import { format } from 'date-fns'
 import { useState } from 'react'
 import rehypeSanitize from 'rehype-sanitize'
 import CardCommentReactions from '~/components/Modal/ActiveCard/CardActivitySection/CardCommentReactions'
-import EmojiPickerPopover from '~/components/Modal/ActiveCard/CardActivitySection/EmojiPickerPopover'
-import RemoveCommentPopover from '~/components/Modal/ActiveCard/CardActivitySection/RemoveCommentPopover'
+import EmojiPicker from '~/components/Modal/ActiveCard/CardActivitySection/EmojiPicker'
+import RemoveComment from '~/components/Modal/ActiveCard/CardActivitySection/RemoveComment'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { useAddCardCommentMutation, useUpdateCardCommentMutation } from '~/queries/cards'
 import { CommentType } from '~/schemas/card.schema'
@@ -261,7 +261,7 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
                 >
                   {hasReactions && <CardCommentReactions activeCard={activeCard} comment={comment} />}
 
-                  <EmojiPickerPopover
+                  <EmojiPicker
                     activeCard={activeCard}
                     activeComment={activeComment}
                     onSetActiveComment={setActiveComment}
@@ -291,7 +291,7 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
                       <Typography component='span' sx={{ fontSize: '12px', color: 'text.secondary' }}>
                         •
                       </Typography>
-                      <RemoveCommentPopover
+                      <RemoveComment
                         activeComment={activeComment}
                         onSetActiveComment={setActiveComment}
                         comment={comment}

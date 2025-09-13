@@ -1,3 +1,0 @@
-import WorkspaceVisibilityPopover from '~/pages/Workspaces/pages/WorkspaceSettings/components/WorkspaceVisibilityPopover/WorkspaceVisibilityPopover'
-
-export default WorkspaceVisibilityPopover
