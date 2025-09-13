@@ -16,10 +16,12 @@ import { generatePlaceholderCard } from '~/utils/utils'
 
 interface ColumnsListProps {
   columns: ColumnType[]
-  isBoardMember: boolean
+  canCreateColumn: boolean
+  canEditColumn: boolean
+  canCreateCard: boolean
 }
 
-export default function ColumnsList({ columns, isBoardMember }: ColumnsListProps) {
+export default function ColumnsList({ columns, canCreateColumn, canEditColumn, canCreateCard }: ColumnsListProps) {
   const [newColumnFormOpen, setNewColumnFormOpen] = useState(false)
   const [newColumnTitle, setNewColumnTitle] = useState('')
 
@@ -35,7 +37,7 @@ export default function ColumnsList({ columns, isBoardMember }: ColumnsListProps
   })
 
   const toggleNewColumnForm = () => {
-    if (!isBoardMember) return
+    if (!canCreateColumn) return
     setNewColumnFormOpen(!newColumnFormOpen)
   }
 
@@ -79,7 +81,7 @@ export default function ColumnsList({ columns, isBoardMember }: ColumnsListProps
     <SortableContext items={activeColumns.map((column) => column._id)} strategy={horizontalListSortingStrategy}>
       <Box sx={{ bgcolor: 'inherit', width: '100%', height: '100%', display: 'flex' }}>
         {activeColumns.map((column) => (
-          <Column key={column._id} column={column} isBoardMember={isBoardMember} />
+          <Column key={column._id} column={column} canEditColumn={canEditColumn} canCreateCard={canCreateCard} />
         ))}
 
         {!newColumnFormOpen ? (

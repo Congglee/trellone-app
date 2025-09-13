@@ -10,7 +10,6 @@ import Tooltip from '@mui/material/Tooltip'
 import { useClickAway } from '@uidotdev/usehooks'
 import { useEffect, useState } from 'react'
 import AppBar from '~/components/AppBar'
-import { useBoardPermission } from '~/hooks/use-permissions'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import BoardUserGroup from '~/pages/Boards/BoardDetails/components/BoardUserGroup'
 import InviteBoardMembersDialog from '~/pages/Boards/BoardDetails/components/InviteBoardMembersDialog'
@@ -27,6 +26,8 @@ interface BoardBarProps {
   boardDrawerOpen: boolean
   onBoardDrawerOpen: (open: boolean) => void
   board: BoardResType['result']
+  isBoardMember: boolean
+  canManageBoard: boolean
 }
 
 const MENU_STYLES = {
@@ -49,7 +50,9 @@ export default function BoardBar({
   onWorkspaceDrawerOpen,
   boardDrawerOpen,
   onBoardDrawerOpen,
-  board
+  board,
+  isBoardMember,
+  canManageBoard
 }: BoardBarProps) {
   const [editBoardTitleFormOpen, setEditBoardTitleFormOpen] = useState(false)
   const [boardTitle, setBoardTitle] = useState('')
@@ -64,8 +67,6 @@ export default function BoardBar({
   const { socket } = useAppSelector((state) => state.app)
   const { profile } = useAppSelector((state) => state.auth)
 
-  const { isMember } = useBoardPermission(activeBoard)
-
   // Update local boardTitle state whenever the board title changes
   // This ensures that when another user updates the title via socket, the local state is also updated
   useEffect(() => {
@@ -78,7 +79,7 @@ export default function BoardBar({
   const [joinWorkspaceBoardMutation] = useJoinWorkspaceBoardMutation()
 
   const toggleEditBoardTitleForm = () => {
-    if (!isMember) {
+    if (!canManageBoard) {
       return
     }
 
@@ -228,7 +229,7 @@ export default function BoardBar({
             ml: 'auto'
           }}
         >
-          {isMember ? (
+          {isBoardMember ? (
             <InviteBoardMembersDialog boardId={board._id} workspaceId={board.workspace_id} />
           ) : (
             <Tooltip title='Workspace members can join this board'>

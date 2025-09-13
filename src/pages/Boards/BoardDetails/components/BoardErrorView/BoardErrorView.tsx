@@ -12,13 +12,15 @@ interface BoardErrorProps {
   description?: string
   to?: string
   hrefText?: string
+  children?: React.ReactNode
 }
 
 export default function BoardErrorView({
   title = 'Board Not Found',
   description = "The board you're looking for doesn't exist or you don't have permission to view it.",
   to = path.boardsList,
-  hrefText = 'Back to Boards'
+  hrefText = 'Back to Boards',
+  children
 }: BoardErrorProps) {
   const theme = useTheme()
   const navigate = useNavigate()
@@ -72,14 +74,16 @@ export default function BoardErrorView({
             {description}
           </Typography>
 
-          <Button
-            variant='contained'
-            size='large'
-            onClick={() => navigate(to)}
-            sx={{ minWidth: 150, fontWeight: 'bold' }}
-          >
-            {hrefText}
-          </Button>
+          {children ?? (
+            <Button
+              variant='contained'
+              size='large'
+              onClick={() => navigate(to)}
+              sx={{ minWidth: 150, fontWeight: 'bold' }}
+            >
+              {hrefText}
+            </Button>
+          )}
         </Paper>
       </Box>
     </Container>

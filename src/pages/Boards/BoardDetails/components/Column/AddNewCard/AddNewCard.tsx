@@ -12,18 +12,18 @@ import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { useAddCardMutation } from '~/queries/cards'
 import { ColumnType } from '~/schemas/column.schema'
 import { updateActiveBoard } from '~/store/slices/board.slice'
-import { useBoardPermission } from '~/hooks/use-permissions'
 
 interface AddNewCardProps {
   column: ColumnType
+  canCreateCard: boolean
 }
 
-export default function AddNewCard({ column }: AddNewCardProps) {
+export default function AddNewCard({ column, canCreateCard }: AddNewCardProps) {
   const [newCardFormOpen, setNewCardFormOpen] = useState(false)
   const [newCardTitle, setNewCardTitle] = useState('')
 
   const toggleNewCardForm = () => {
-    if (!isMember) return
+    if (!canCreateCard) return
     setNewCardFormOpen(!newCardFormOpen)
   }
 
@@ -37,8 +37,6 @@ export default function AddNewCard({ column }: AddNewCardProps) {
   const dispatch = useAppDispatch()
 
   const [addCardMutation] = useAddCardMutation()
-
-  const { isMember } = useBoardPermission(activeBoard)
 
   const reset = () => {
     toggleNewCardForm()

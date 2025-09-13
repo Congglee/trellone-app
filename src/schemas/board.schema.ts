@@ -107,7 +107,8 @@ export const UpdateBoardBody = z.object({
     .default(BoardType.Public)
     .optional(),
   column_order_ids: z.array(z.string()).optional(),
-  cover_photo: z.string().url().optional()
+  cover_photo: z.string().url().optional(),
+  _destroy: z.boolean().optional()
 })
 
 export type UpdateBoardBodyType = z.TypeOf<typeof UpdateBoardBody>

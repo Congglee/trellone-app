@@ -15,10 +15,11 @@ import { updateActiveBoard } from '~/store/slices/board.slice'
 
 interface ColumnProps {
   column: ColumnType
-  isBoardMember?: boolean
+  canEditColumn: boolean
+  canCreateCard: boolean
 }
 
-export default function Column({ column, isBoardMember }: ColumnProps) {
+export default function Column({ column, canEditColumn, canCreateCard }: ColumnProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: column._id, // Unique ID to identify the draggable element
     data: { ...column } // Custom data will be passed into the `handleDragEnd` event
@@ -91,7 +92,7 @@ export default function Column({ column, isBoardMember }: ColumnProps) {
             justifyContent: 'space-between'
           }}
         >
-          {isBoardMember ? (
+          {canEditColumn ? (
             <ToggleFocusInput
               value={column?.title}
               onChangeValue={updateColumnTitle}
@@ -108,12 +109,12 @@ export default function Column({ column, isBoardMember }: ColumnProps) {
             </Typography>
           )}
 
-          <ColumnMenuActionsPopover column={column} isBoardMember={isBoardMember} />
+          {canEditColumn && <ColumnMenuActionsPopover column={column} />}
         </Box>
 
         <CardsList cards={sortedCards} />
 
-        <AddNewCard column={column} />
+        <AddNewCard column={column} canCreateCard={canCreateCard} />
       </Box>
     </div>
   )
