@@ -53,10 +53,10 @@ const SidebarItem = styled(Box)(({ theme }) => ({
 }))
 
 interface ActiveCardProps {
-  isBoardMember?: boolean
+  canEditCard?: boolean
 }
 
-export default function ActiveCard({ isBoardMember }: ActiveCardProps) {
+export default function ActiveCard({ canEditCard }: ActiveCardProps) {
   const dispatch = useAppDispatch()
   const { isShowActiveCardModal, activeCard } = useAppSelector((state) => state.card)
   const { profile } = useAppSelector((state) => state.auth)
@@ -159,7 +159,7 @@ export default function ActiveCard({ isBoardMember }: ActiveCardProps) {
           backgroundColor: (theme) => (theme.palette.mode === 'dark' ? '#1A2027' : '#fff')
         }}
       >
-        <Box sx={{ pointerEvents: isBoardMember ? 'auto' : 'none' }}>
+        <Box sx={{ pointerEvents: canEditCard ? 'auto' : 'none' }}>
           <Box
             sx={{
               position: 'absolute',

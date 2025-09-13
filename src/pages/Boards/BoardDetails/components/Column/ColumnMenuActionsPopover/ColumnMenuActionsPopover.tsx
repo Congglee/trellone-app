@@ -24,10 +24,9 @@ import { updateActiveBoard } from '~/store/slices/board.slice'
 
 interface ColumnMenuActionsPopoverProps {
   column: ColumnType
-  isBoardMember?: boolean
 }
 
-export default function ColumnMenuActionsPopover({ column, isBoardMember }: ColumnMenuActionsPopoverProps) {
+export default function ColumnMenuActionsPopover({ column }: ColumnMenuActionsPopoverProps) {
   const [anchorMenuActionsPopoverElement, setAnchorMenuActionsPopoverElement] = useState<
     HTMLElement | SVGSVGElement | null
   >(null)
@@ -46,8 +45,6 @@ export default function ColumnMenuActionsPopover({ column, isBoardMember }: Colu
   const toggleMenuActionsPopover = (
     event: React.MouseEvent<HTMLButtonElement | HTMLDivElement | SVGSVGElement, MouseEvent>
   ) => {
-    if (!isBoardMember) return
-
     if (!anchorMenuActionsPopoverElement) {
       setAnchorMenuActionsPopoverElement(event.currentTarget)
       setShowMenuActions(true)

@@ -15,6 +15,7 @@ import { useBoardPermission } from '~/hooks/use-permissions'
 import { useQueryConfig } from '~/hooks/use-query-config'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import BoardBar from '~/pages/Boards/BoardDetails/components/BoardBar'
+import BoardClosedBanner from '~/pages/Boards/BoardDetails/components/BoardClosedBanner'
 import BoardContent from '~/pages/Boards/BoardDetails/components/BoardContent'
 import BoardDrawer from '~/pages/Boards/BoardDetails/components/BoardDrawer'
 import BoardErrorView from '~/pages/Boards/BoardDetails/components/BoardErrorView'
@@ -48,7 +49,8 @@ export default function BoardDetails() {
   const [updateColumnMutation] = useUpdateColumnMutation()
   const [moveCardToDifferentColumnMutation] = useMoveCardToDifferentColumnMutation()
 
-  const { isMember } = useBoardPermission(activeBoard)
+  const { isAdmin, isMember, isClosed, canManageBoard, canCreateColumn, canEditColumn, canCreateCard, canEditCard } =
+    useBoardPermission(activeBoard)
 
   useEffect(() => {
     if (boardId) {
@@ -149,7 +151,7 @@ export default function BoardDetails() {
       socket?.off('connect', onConnect)
       socket?.off('disconnect', onDisconnect)
     }
-  }, [dispatch, socket, activeBoard])
+  }, [dispatch, socket, activeBoard, queryConfig])
 
   // Join the workspace room when the activeBoard is available, listen for workspace updates
   useEffect(() => {
@@ -178,6 +180,8 @@ export default function BoardDetails() {
   }, [socket, activeBoard, dispatch])
 
   const onMoveColumns = (dndOrderedColumns: ColumnType[]) => {
+    if (isClosed) return
+
     // Get the IDs of the columns in the order they are being moved
     const dndOrderedCardsIds = dndOrderedColumns.map((column) => column._id)
 
@@ -197,6 +201,8 @@ export default function BoardDetails() {
   }
 
   const onMoveCardInTheSameColumn = (dndOrderedCards: CardType[], dndOrderedCardsIds: string[], columnId: string) => {
+    if (isClosed) return
+
     const newActiveBoard = cloneDeep(activeBoard)
     const columnToUpdate = newActiveBoard?.columns?.find((column) => column._id === columnId)
 
@@ -222,6 +228,8 @@ export default function BoardDetails() {
     nextColumnId: string,
     dndOrderedColumns: ColumnType[]
   ) => {
+    if (isClosed) return
+
     /**
      * When moving a card to another Column:
      * Step 1: Update the `card_order_ids` array of the original Column containing it (essentially, remove the Card's _id from the array)
@@ -284,7 +292,7 @@ export default function BoardDetails() {
 
       <NavBar />
 
-      <ActiveCard isBoardMember={isMember} />
+      <ActiveCard canEditCard={canEditCard} />
 
       <Box
         sx={{
@@ -309,12 +317,15 @@ export default function BoardDetails() {
           />
         )}
 
+        {isClosed && <BoardClosedBanner />}
+
         <Box sx={{ display: 'flex' }}>
           <WorkspaceDrawer
             open={workspaceDrawerOpen}
             onOpen={setWorkspaceDrawerOpen}
             boardId={boardId}
             workspace={activeBoard.workspace}
+            isBoardClosed={isClosed}
           />
 
           <BoardBar
@@ -323,6 +334,8 @@ export default function BoardDetails() {
             boardDrawerOpen={boardDrawerOpen}
             onBoardDrawerOpen={setBoardDrawerOpen}
             board={activeBoard}
+            isBoardMember={isMember}
+            canManageBoard={canManageBoard}
           />
 
           <Main
@@ -331,8 +344,12 @@ export default function BoardDetails() {
             sx={{
               overflowX: 'auto',
               overflowY: 'hidden',
-              height: (theme) => theme.trellone.boardMainHeight,
-              '&::-webkit-scrollbar-track': { m: 2 }
+              width: '100%',
+              minWidth: 0,
+              minHeight: 0,
+              display: 'block',
+              height: (theme) =>
+                isClosed ? `calc(${theme.trellone.boardMainHeight} - 48px)` : theme.trellone.boardMainHeight
             }}
           >
             <DrawerHeader />
@@ -344,7 +361,10 @@ export default function BoardDetails() {
               onMoveColumns={onMoveColumns}
               onMoveCardInTheSameColumn={onMoveCardInTheSameColumn}
               onMoveCardToDifferentColumn={onMoveCardToDifferentColumn}
-              isBoardMember={isMember}
+              canDragAndDrop={isMember && !isClosed}
+              canCreateColumn={canCreateColumn}
+              canEditColumn={canEditColumn}
+              canCreateCard={canCreateCard}
             />
           </Main>
 
@@ -352,8 +372,9 @@ export default function BoardDetails() {
             open={boardDrawerOpen}
             onOpen={setBoardDrawerOpen}
             boardMembers={activeBoard.members}
-            isBoardMember={isMember}
             boardId={boardId!}
+            isBoardAdmin={isAdmin}
+            canManageBoard={canManageBoard}
           />
         </Box>
       </Box>
