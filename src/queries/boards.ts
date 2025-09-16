@@ -22,7 +22,12 @@ export const boardApi = createApi({
           const { data } = await queryFulfilled
           const board = data.result
 
-          dispatch(workspaceApi.util.invalidateTags([{ type: 'Workspace', id: board?.workspace_id }]))
+          dispatch(
+            workspaceApi.util.invalidateTags([
+              { type: 'Workspace', id: board?.workspace_id },
+              { type: 'Workspace', id: 'LIST' }
+            ])
+          )
         } catch (error) {
           toast.error('There was an error creating the board')
           console.error(error)
@@ -71,6 +76,14 @@ export const boardApi = createApi({
 
     leaveBoard: build.mutation<BoardResType, string>({
       query: (id) => ({ url: `${BOARD_API_URL}/${id}/members/me/leave`, method: 'POST' }),
+      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled
+          dispatch(workspaceApi.util.invalidateTags([{ type: 'Workspace', id: 'LIST' }]))
+        } catch (error) {
+          console.error(error)
+        }
+      },
       invalidatesTags: (_result, _error, id) => [
         { type: 'Board', id },
         { type: 'Board', id: 'LIST' }
@@ -82,6 +95,7 @@ export const boardApi = createApi({
 export const {
   useAddBoardMutation,
   useGetBoardsQuery,
+  useLazyGetBoardsQuery,
   useUpdateBoardMutation,
   useLeaveBoardMutation,
   useGetJoinedWorkspaceBoardsQuery
