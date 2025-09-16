@@ -15,7 +15,7 @@ import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import BoardUserGroup from '~/pages/Boards/BoardDetails/components/BoardUserGroup'
 import InviteBoardMembers from '~/pages/Boards/BoardDetails/components/InviteBoardMembers'
 import { useUpdateBoardMutation } from '~/queries/boards'
-import { useJoinWorkspaceBoardMutation } from '~/queries/workspaces'
+import { useJoinWorkspaceBoardMutation, workspaceApi } from '~/queries/workspaces'
 import { BoardResType } from '~/schemas/board.schema'
 import { UserType } from '~/schemas/user.schema'
 import { updateActiveBoard } from '~/store/slices/board.slice'
@@ -114,10 +114,19 @@ export default function BoardBar({
     updateBoardMutation({
       id: newActiveBoard._id,
       body: { title: newActiveBoard.title }
-    })
+    }).then((res) => {
+      if (!res.error) {
+        dispatch(
+          workspaceApi.util.invalidateTags([
+            { type: 'Workspace', id: newActiveBoard.workspace_id },
+            { type: 'Workspace', id: 'LIST' }
+          ])
+        )
 
-    // Emit socket event to notify other users about the board title update
-    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+        // Emit socket event to notify other users about the board title update
+        socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+      }
+    })
   }
 
   const joinWorkspaceBoard = async () => {
