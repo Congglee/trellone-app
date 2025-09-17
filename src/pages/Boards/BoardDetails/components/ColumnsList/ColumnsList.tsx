@@ -23,7 +23,7 @@ interface ColumnsListProps {
 
 export default function ColumnsList({ columns, canCreateColumn, canEditColumn, canCreateCard }: ColumnsListProps) {
   const [newColumnFormOpen, setNewColumnFormOpen] = useState(false)
-  const [newColumnTitle, setNewColumnTitle] = useState('')
+  const [columnTitle, setColumnTitle] = useState('')
 
   const activeColumns = columns.filter((column) => !column._destroy)
 
@@ -33,7 +33,7 @@ export default function ColumnsList({ columns, canCreateColumn, canEditColumn, c
 
   const newColumnClickAwayRef = useClickAway(() => {
     setNewColumnFormOpen(false)
-    setNewColumnTitle('')
+    setColumnTitle('')
   })
 
   const toggleNewColumnForm = () => {
@@ -43,38 +43,42 @@ export default function ColumnsList({ columns, canCreateColumn, canEditColumn, c
 
   const reset = () => {
     toggleNewColumnForm()
-    setNewColumnTitle('')
+    setColumnTitle('')
   }
 
   const [addColumnMutation] = useAddColumnMutation()
 
   const addNewColumn = async () => {
-    if (!newColumnTitle || newColumnTitle.trim() === '') {
+    if (!columnTitle || columnTitle.trim() === '') {
       return
     }
 
-    const addNewColumnRes = await addColumnMutation({
-      title: newColumnTitle,
+    addColumnMutation({
+      title: columnTitle,
       board_id: activeBoard?._id as string
-    }).unwrap()
+    }).then((res) => {
+      if (!res.error) {
+        const addedColumn = res.data?.result
 
-    const newColumn = cloneDeep(addNewColumnRes.result)
+        const newColumn = cloneDeep(addedColumn)!
 
-    const placeholderCard = generatePlaceholderCard(newColumn)
-    newColumn.cards = [placeholderCard]
-    newColumn.card_order_ids = [placeholderCard._id]
+        const placeholderCard = generatePlaceholderCard(newColumn)
 
-    const newActiveBoard = cloneDeep(activeBoard)
+        newColumn.cards = [placeholderCard]
+        newColumn.card_order_ids = [placeholderCard._id]
 
-    newActiveBoard?.columns?.push(newColumn)
-    newActiveBoard?.column_order_ids.push(newColumn._id)
+        const newActiveBoard = cloneDeep(activeBoard)!
 
-    dispatch(updateActiveBoard(newActiveBoard))
+        newActiveBoard?.columns?.push(newColumn)
+        newActiveBoard?.column_order_ids.push(newColumn._id)
 
-    reset()
+        dispatch(updateActiveBoard(newActiveBoard))
 
-    // Emit socket event to notify other users about the new column creation
-    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+        reset()
+
+        socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+      }
+    })
   }
 
   return (
@@ -133,8 +137,8 @@ export default function ColumnsList({ columns, canCreateColumn, canEditColumn, c
               variant='outlined'
               autoFocus
               autoComplete='off'
-              value={newColumnTitle}
-              onChange={(e) => setNewColumnTitle(e.target.value)}
+              value={columnTitle}
+              onChange={(e) => setColumnTitle(e.target.value)}
               sx={{
                 bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#22272b' : '#fff')
               }}

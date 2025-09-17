@@ -67,19 +67,21 @@ export default function ChangeBoardBackground({ canManageBoard }: ChangeBoardBac
   const [updateBoardMutation] = useUpdateBoardMutation()
   const [uploadImageMutation] = useUploadImageMutation()
 
-  const updateBoardCoverPhoto = async (cover_photo: string) => {
-    const newActiveBoard = { ...activeBoard! }
-    newActiveBoard.cover_photo = cover_photo
-
-    dispatch(updateActiveBoard(newActiveBoard))
-
+  const updateBoardCoverPhoto = (coverPhoto: string) => {
     updateBoardMutation({
-      id: newActiveBoard._id,
-      body: { cover_photo: newActiveBoard.cover_photo }
-    })
+      id: activeBoard?._id as string,
+      body: { cover_photo: coverPhoto }
+    }).then((res) => {
+      if (!res.error) {
+        const newActiveBoard = { ...activeBoard! }
+        newActiveBoard.cover_photo = coverPhoto
 
-    // Emit socket event to notify other users about the board background update
-    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+        dispatch(updateActiveBoard(newActiveBoard))
+
+        socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+        socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', newActiveBoard.workspace_id)
+      }
+    })
   }
 
   const uploadBoardCoverPhoto = async (event: React.ChangeEvent<HTMLInputElement>) => {

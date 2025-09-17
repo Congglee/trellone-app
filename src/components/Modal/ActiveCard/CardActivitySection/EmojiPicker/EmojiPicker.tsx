@@ -46,7 +46,7 @@ export default function EmojiPicker({ activeCard, activeComment, onSetActiveComm
     onSetActiveComment(null)
   }
 
-  const handleEmojiSelect = async (emojiData: EmojiClickData) => {
+  const handleEmojiSelect = (emojiData: EmojiClickData) => {
     if (activeComment) {
       // Find the current user's existing reaction for this emoji
       const currentUserReaction = activeComment.reactions?.find(
@@ -59,19 +59,20 @@ export default function EmojiPicker({ activeCard, activeComment, onSetActiveComm
         reaction_id: currentUserReaction?.reaction_id
       }
 
-      const updatedCardRes = await reactToCardCommentMutation({
+      reactToCardCommentMutation({
         card_id: activeCard?._id as string,
         comment_id: activeComment.comment_id,
         body: payload
-      }).unwrap()
+      }).then((res) => {
+        if (!res.error) {
+          const updatedCard = res.data?.result as CardType
 
-      const updatedCard = updatedCardRes.result
+          dispatch(updateActiveCard(updatedCard))
+          dispatch(updateCardInBoard(updatedCard))
 
-      dispatch(updateActiveCard(updatedCard))
-      dispatch(updateCardInBoard(updatedCard))
-
-      // Emit socket event to broadcast the card update to other users
-      socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
+          socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
+        }
+      })
     }
   }
 

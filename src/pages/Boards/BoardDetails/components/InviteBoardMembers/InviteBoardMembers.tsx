@@ -107,11 +107,11 @@ export default function InviteBoardMembers({ boardId, workspaceId }: InviteBoard
 
   const [addNewBoardInvitationMutation, { isError, error }] = useAddNewBoardInvitationMutation()
 
-  const onSubmit = handleSubmit(async (values) => {
+  const onSubmit = handleSubmit((values) => {
     addNewBoardInvitationMutation({ ...values, board_id: boardId, workspace_id: workspaceId }).then((res) => {
       if (!res.error) {
-        reset()
         const invitation = res.data?.result
+        reset()
         socket?.emit('CLIENT_USER_INVITED_TO_BOARD', invitation)
       }
     })

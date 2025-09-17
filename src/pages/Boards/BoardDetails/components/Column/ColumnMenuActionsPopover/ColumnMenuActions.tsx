@@ -74,17 +74,18 @@ export default function ColumnMenuActions({ column }: ColumnMenuActionsProps) {
       })
 
       if (confirmed) {
-        const newActiveBoard = { ...activeBoard! }
+        deleteColumnMutation(column._id).then((res) => {
+          if (!res.error) {
+            const newActiveBoard = { ...activeBoard! }
 
-        newActiveBoard.columns = newActiveBoard.columns?.filter((col) => col._id !== column._id)
-        newActiveBoard.column_order_ids = newActiveBoard.column_order_ids?.filter((_id) => _id !== column._id)
+            newActiveBoard.columns = newActiveBoard.columns?.filter((col) => col._id !== column._id)
+            newActiveBoard.column_order_ids = newActiveBoard.column_order_ids?.filter((_id) => _id !== column._id)
 
-        dispatch(updateActiveBoard(newActiveBoard))
+            dispatch(updateActiveBoard(newActiveBoard))
 
-        await deleteColumnMutation(column._id)
-
-        // Emit socket event to notify other users about the column deletion
-        socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+            socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+          }
+        })
       }
     } catch (error: any) {
       // User canceled the operation or there was an error

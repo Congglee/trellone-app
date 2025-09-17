@@ -66,40 +66,43 @@ export default function BoardDrawer({
   const isLastAdmin = isCurrentUserAdmin && totalAdmins === 1
   const canLeaveBoard = currentUserMember && !isLastAdmin
 
-  const leaveBoard = async () => {
-    await leaveBoardMutation(boardId)
+  const leaveBoard = () => {
+    leaveBoardMutation(boardId).then((res) => {
+      if (!res.error) {
+        if (activeBoard) {
+          // Check if current user is a guest in the workspace
+          const isGuestInWorkspace = activeBoard.workspace.guests.some((guest) => guest === profile?._id)
+          const isNotInWorkspaceMembers = !activeBoard.workspace.members.some(
+            (member) => member.user_id === profile?._id
+          )
 
-    if (activeBoard) {
-      // Check if current user is a guest in the workspace
-      const isGuestInWorkspace = activeBoard.workspace.guests.some((guest) => guest === profile?._id)
-      const isNotInWorkspaceMembers = !activeBoard.workspace.members.some((member) => member.user_id === profile?._id)
+          if (isGuestInWorkspace && isNotInWorkspaceMembers) {
+            // If user is a guest, clear the active board
+            dispatch(clearActiveBoard())
+          } else {
+            // If user is a workspace member, update the board with new members list
+            const updatedBoardMembers = activeBoard.members.filter((member) => member.user_id !== profile?._id)
 
-      if (isGuestInWorkspace && isNotInWorkspaceMembers) {
-        // If user is a guest, clear the active board
-        dispatch(clearActiveBoard())
-      } else {
-        // If user is a workspace member, update the board with new members list
-        const updatedBoardMembers = activeBoard.members.filter((member) => member.user_id !== profile?._id)
+            // Create a deep-cloned activeBoard and also remove user from all card members in every column
+            const newActiveBoard = cloneDeep(activeBoard)
 
-        // Create a deep-cloned activeBoard and also remove user from all card members in every column
-        const newActiveBoard = cloneDeep(activeBoard)
+            newActiveBoard.members = updatedBoardMembers
+            newActiveBoard.columns?.forEach((column) => {
+              column.cards?.forEach((card) => {
+                if (Array.isArray(card.members)) {
+                  card.members = card.members.filter((memberId) => memberId !== profile?._id)
+                }
+              })
+            })
 
-        newActiveBoard.members = updatedBoardMembers
-        newActiveBoard.columns?.forEach((column) => {
-          column.cards?.forEach((card) => {
-            if (Array.isArray(card.members)) {
-              card.members = card.members.filter((memberId) => memberId !== profile?._id)
-            }
-          })
-        })
+            dispatch(updateActiveBoard(newActiveBoard))
 
-        dispatch(updateActiveBoard(newActiveBoard))
-
-        // Broadcast to other users for realtime sync
-        socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
-        socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', newActiveBoard.workspace_id)
+            socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+            socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', newActiveBoard.workspace_id)
+          }
+        }
       }
-    }
+    })
   }
 
   const reopenBoard = () => {

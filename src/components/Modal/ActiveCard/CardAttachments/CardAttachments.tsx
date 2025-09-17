@@ -16,7 +16,7 @@ import RemoveCardAttachmentConfirm from '~/components/Modal/ActiveCard/CardAttac
 import { AttachmentType } from '~/constants/type'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { useRemoveCardAttachmentMutation } from '~/queries/cards'
-import { CardAttachmentType } from '~/schemas/card.schema'
+import { CardAttachmentType, CardType } from '~/schemas/card.schema'
 import { updateCardInBoard } from '~/store/slices/board.slice'
 import { updateActiveCard } from '~/store/slices/card.slice'
 
@@ -123,25 +123,24 @@ export default function CardAttachments({ cardAttachments, attachmentPopoverButt
 
   const [removeCardAttachmentMutation] = useRemoveCardAttachmentMutation()
 
-  const onRemoveCardAttachment = async () => {
-    if (!activeAttachment) {
-      return
-    }
+  const onRemoveCardAttachment = () => {
+    if (!activeAttachment) return
 
-    const updatedCardRes = await removeCardAttachmentMutation({
+    removeCardAttachmentMutation({
       card_id: activeCard?._id as string,
       attachment_id: activeAttachment.attachment_id
-    }).unwrap()
+    }).then((res) => {
+      if (!res.error) {
+        const updatedCard = res.data?.result as CardType
 
-    const updatedCard = updatedCardRes.result
+        dispatch(updateActiveCard(updatedCard))
+        dispatch(updateCardInBoard(updatedCard))
 
-    dispatch(updateActiveCard(updatedCard))
-    dispatch(updateCardInBoard(updatedCard))
+        handleMenuActionsPopoverClose()
 
-    // Emit socket event to broadcast the card update to other users
-    socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
-
-    handleMenuActionsPopoverClose()
+        socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
+      }
+    })
   }
 
   return (

@@ -151,7 +151,7 @@ export const workspaceApi = createApi({
         }
       },
       invalidatesTags: (_result, _error, { workspace_id }) => [
-        { type: 'Workspace', workspace_id },
+        { type: 'Workspace', id: workspace_id },
         { type: 'Workspace', id: 'LIST' }
       ]
     })

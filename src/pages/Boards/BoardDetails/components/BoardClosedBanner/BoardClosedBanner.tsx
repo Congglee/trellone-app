@@ -14,12 +14,7 @@ export default function BoardClosedBanner() {
   const { socket } = useAppSelector((state) => state.app)
 
   const reopenBoard = () => {
-    const boardId = activeBoard?._id as string
-
-    updateBoardMutation({
-      id: boardId,
-      body: { _destroy: false }
-    }).then((res) => {
+    updateBoardMutation({ id: activeBoard?._id as string, body: { _destroy: false } }).then((res) => {
       if (!res.error) {
         const newActiveBoard = { ...activeBoard! }
         newActiveBoard._destroy = false
@@ -27,6 +22,9 @@ export default function BoardClosedBanner() {
         dispatch(updateActiveBoard(newActiveBoard))
 
         socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+
+        // NOTE: Although it’s possible to refetch the get board details API so that members in that board can notice the realtime update
+        // But I will let users reload the board details page when they reopen that board
         socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', newActiveBoard.workspace_id)
       }
     })

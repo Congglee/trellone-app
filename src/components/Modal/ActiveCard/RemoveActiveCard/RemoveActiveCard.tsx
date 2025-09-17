@@ -45,23 +45,23 @@ export default function RemoveActiveCard({ cardId, columnId }: RemoveActiveCardP
     setAnchorRemoveActiveCardPopoverElement(null)
   }
 
-  const deleteActiveCard = async () => {
-    const newActiveBoard = cloneDeep(activeBoard)
-    const columnToUpdate = newActiveBoard?.columns?.find((column) => column._id === columnId)
+  const deleteActiveCard = () => {
+    deleteCardMutation(cardId).then((res) => {
+      if (!res.error) {
+        const newActiveBoard = cloneDeep(activeBoard)
+        const columnToUpdate = newActiveBoard?.columns?.find((column) => column._id === columnId)
 
-    if (columnToUpdate) {
-      columnToUpdate.cards = columnToUpdate.cards?.filter((card) => card._id !== cardId)
-      columnToUpdate.card_order_ids = columnToUpdate.card_order_ids?.filter((id) => id !== cardId)
-    }
+        if (columnToUpdate) {
+          columnToUpdate.cards = columnToUpdate.cards?.filter((card) => card._id !== cardId)
+          columnToUpdate.card_order_ids = columnToUpdate.card_order_ids?.filter((id) => id !== cardId)
+        }
 
-    dispatch(updateActiveBoard(newActiveBoard))
+        dispatch(updateActiveBoard(newActiveBoard))
+        dispatch(clearAndHideActiveCardModal())
 
-    await deleteCardMutation(cardId)
-
-    dispatch(clearAndHideActiveCardModal())
-
-    // Emit socket event to notify other users about the card deletion
-    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+        socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+      }
+    })
   }
 
   return (

@@ -54,11 +54,11 @@ export default function InviteWorkspaceMembers({ workspaceId }: InviteWorkspaceM
   const [addNewWorkspaceInvitationMutation, { isError, error }] = useAddNewWorkspaceInvitationMutation()
   const { socket } = useAppSelector((state) => state.app)
 
-  const onSubmit = handleSubmit(async (values) => {
+  const onSubmit = handleSubmit((values) => {
     addNewWorkspaceInvitationMutation({ ...values, workspace_id: workspaceId }).then((res) => {
       if (!res.error) {
-        reset()
         const invitation = res.data?.result
+        reset()
         socket?.emit('CLIENT_USER_INVITED_TO_WORKSPACE', invitation)
       }
     })

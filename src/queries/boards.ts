@@ -68,10 +68,18 @@ export const boardApi = createApi({
           console.error(error)
         }
       },
-      invalidatesTags: (_result, _error, { id }) => [
-        { type: 'Board', id },
-        { type: 'Board', id: 'LIST' }
-      ]
+      invalidatesTags: (_result, _error, { id, body }) => {
+        const ignoreTags = ['column_order_ids']
+
+        if (ignoreTags.some((tag) => tag in body)) {
+          return []
+        }
+
+        return [
+          { type: 'Board', id },
+          { type: 'Board', id: 'LIST' }
+        ]
+      }
     }),
 
     leaveBoard: build.mutation<BoardResType, string>({

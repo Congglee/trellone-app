@@ -1,195 +1,174 @@
 # Technology Stack: Trellone
 
-## 1. Core Frameworks and Libraries
+## 1. Core Frameworks and Tooling
 
-- **React**: 18.3.1 - A JavaScript library for building user interfaces
-- **TypeScript**: 5.7.2 - A typed superset of JavaScript that compiles to plain JavaScript
-- **Vite**: 6.1.0 - A build tool that provides a faster and leaner development experience for modern web projects
-- **Node.js**: JavaScript runtime built on Chrome's V8 JavaScript engine
+- React 18.3.1
+- TypeScript ~5.7.2
+- Vite 6.1.0 with SWC plugin
+- React Router DOM 6.29.0
+
+Authoritative references:
+
+- Project scripts and dependencies: [package.json](package.json)
+- App entry and routing: [src/App.tsx](src/App.tsx)
+- HTML entry: [index.html](index.html)
 
 ## 2. UI and Styling
 
-- **Material-UI (MUI)**: 5.16.14 - A comprehensive library of React components that implement Google's Material Design
-- **@mui/icons-material**: 5.16.14 - Material-UI icons library
-- **@mui/lab**: 5.0.0-alpha.163 - Experimental Material-UI components
-- **@mui/x-date-pickers**: 6.9.2 - Advanced date picker components
-- **Emotion**: 11.14.0 - A library designed for writing CSS styles with JavaScript
-- **Vite-plugin-svgr**: 4.3.0 - A Vite plugin to import SVGs as React components
+- Material‑UI (MUI) 5.16.14
+- @mui/icons-material 5.16.14
+- @mui/lab 5.0.0‑alpha.163
+- @mui/x-date-pickers 6.9.2
+- Emotion 11.14.0
+- Theme defined via [experimental_extendTheme](src/theme.ts:2)
+
+Theme and overrides:
+
+- MUI color schemes (light/dark) and component overrides: [extendTheme()](src/theme.ts:46)
+- CssBaseline, AppBar, Button, OutlinedInput, ListItemButton overrides:
+  - [MuiCssBaseline.styleOverrides](src/theme.ts:84)
+  - [MuiAppBar.styleOverrides](src/theme.ts:101)
+  - [MuiButton.styleOverrides](src/theme.ts:118)
+  - [MuiOutlinedInput.styleOverrides](src/theme.ts:139)
+  - [MuiListItemButton.styleOverrides](src/theme.ts:149)
+
+Layout constants are centralized under `theme.trellone`:
+
+- [trellone config block](src/theme.ts:46)
 
 ## 3. State Management
 
-- **Redux Toolkit**: 2.6.0 - The official, opinionated, batteries-included toolset for efficient Redux development
-- **React-Redux**: 9.2.0 - Official React bindings for Redux
-- **Redux Persist**: 6.0.0 - A library to persist and rehydrate a Redux store
+- Redux Toolkit 2.6.0
+- React‑Redux 9.2.0
+- Redux Persist 6.0.0
+- RTK Query (bundled with Redux Toolkit)
 
-## 4. Routing
+Store configuration:
 
-- **React Router DOM**: 6.29.0 - A standard library for routing in React
+- [configureStore()](src/lib/redux/store.ts:34)
+- Persistence with whitelist auth: [persistReducer](src/lib/redux/store.ts:21)
+- RTK Query middlewares: [apiMiddlewares](src/lib/redux/store.ts:23)
 
-## 5. Real-time Communication
+Root reducer and slices:
 
-- **Socket.io-client**: 4.8.1 - The client-side library for Socket.io, enabling real-time, bidirectional event-based communication
+- [root.reducer.ts](src/store/root.reducer.ts)
+- Slices:
+  - [auth.slice.ts](src/store/slices/auth.slice.ts)
+  - [app.slice.ts](src/store/slices/app.slice.ts)
+  - [board.slice.ts](src/store/slices/board.slice.ts)
+  - [card.slice.ts](src/store/slices/card.slice.ts)
+  - [notification.slice.ts](src/store/slices/notification.slice.ts)
+  - [workspace.slice.ts](src/store/slices/workspace.slice.ts)
 
-## 6. Drag and Drop
+## 4. Data Access Layer (RTK Query + Axios)
 
-- **@dnd-kit/core**: 6.3.1 - A modern, lightweight drag and drop toolkit core
-- **@dnd-kit/sortable**: 7.0.2 - Sortable components for dnd-kit
-- **@dnd-kit/utilities**: 3.2.2 - Utility functions for dnd-kit
+- Axios 1.8.3 (JSON, withCredentials)
+- RTK Query with custom baseQuery wrapping axios
 
-## 7. Form Management and Validation
+Key pieces:
 
-- **React Hook Form**: 7.54.2 - A library for managing forms with a focus on performance and ease of use
-- **Zod**: 3.24.2 - A TypeScript-first schema declaration and validation library
-- **@hookform/resolvers**: 3.10.0 - A resolver to use Zod with React Hook Form
+- Base query wrapper: [axiosBaseQuery()](src/lib/redux/helpers.ts:5)
+- Workspace API with tags and invalidations: [workspaceApi = createApi()](src/queries/workspaces.ts:23)
+  - Queries: [getWorkspaces](src/queries/workspaces.ts:41), [getWorkspace](src/queries/workspaces.ts:52)
+  - Mutations: [addWorkspace](src/queries/workspaces.ts:28), [updateWorkspace](src/queries/workspaces.ts:57), [editWorkspaceMemberRole](src/queries/workspaces.ts:65), [leaveWorkspace](src/queries/workspaces.ts:77), [removeWorkspaceMember](src/queries/workspaces.ts:85), [joinWorkspaceBoard](src/queries/workspaces.ts:140)
 
-## 8. API Communication
+## 5. HTTP Client and Auth
 
-- **Axios**: 1.8.3 - A promise-based HTTP client for the browser and Node.js
-- **RTK Query**: Built into Redux Toolkit - A powerful data fetching and caching tool
+- Token lifecycle maintained in a dedicated Http class
+- Access token attached on requests; refresh token flow on 401
 
-## 9. Utilities and Helpers
+Implementation:
 
-- **Lodash**: 4.17.21 - A modern JavaScript utility library
-- **JWT-decode**: 4.0.0 - A library to decode JWT tokens
-- **@uidotdev/usehooks**: 2.4.1 - A collection of modern React hooks
-- **Date-fns**: 2.30.0 - Modern JavaScript date utility library
-- **randomcolor**: 0.6.2 - A tiny script for generating attractive colors
+- [class Http](src/lib/http.ts:24)
+- Request interceptor (attach token, trigger loading indicator): [interceptors.request.use](src/lib/http.ts:41)
+- Response interceptor (login/logout side effects): [interceptors.response.use](src/lib/http.ts:59)
+- Refresh token logic: [handleRefreshToken](src/lib/http.ts:131)
+- Logout on unauthorized/error paths: [logout dispatch](src/lib/http.ts:123)
 
-## 10. Rich Content and Media
+Utilities referenced:
 
-- **@uiw/react-md-editor**: 4.0.5 - A markdown editor with live preview
-- **rehype-sanitize**: 6.0.0 - HTML sanitization for markdown content
-- **emoji-picker-react**: 4.12.3 - Emoji picker component for React
+- Storage helpers (set/clear tokens, event target): [utils/storage.ts](src/utils/storage.ts)
+- Error guards (e.g., isAxiosUnauthorizedError): [utils/error-handlers.ts](src/utils/error-handlers.ts)
+- Loading indicator utility: [interceptorLoadingElements](src/utils/utils.ts)
 
-## 11. UI Enhancement Libraries
+## 6. Real‑time Communication
 
-- **material-ui-confirm**: 4.0.0 - Confirmation dialogs for Material-UI
-- **mui-color-input**: 1.1.1 - Color input component for Material-UI
-- **react-infinite-scroll-component**: 6.1.0 - Infinite scroll component
-- **react-toastify**: 11.0.5 - Toast notification library
+- Socket.IO client 4.8.1
+- Auth header refreshed on reconnect attempts
 
-## 12. SEO and Meta Management
+Implementation:
 
-- **react-helmet-async**: 2.0.5 - Document head management for React
-- **date-fns**: 2.30.0 - With enGB locale support for internationalization
+- Socket factory: [generateSocketInstace()](src/lib/socket.ts:4)
+- Reconnect auth refresh: [socket.io reconnect handler](src/lib/socket.ts:19)
 
-## 13. Development Tools and Linters
+Integration with app lifecycle:
 
-- **ESLint**: 9.19.0 - A pluggable and configurable linter tool for identifying and reporting on patterns in JavaScript
-- **TypeScript ESLint**: 8.22.0 - ESLint plugin for TypeScript
-- **Prettier**: 3.5.2 - An opinionated code formatter
-- **eslint-config-prettier**: 10.0.1 - ESLint configuration to work with Prettier
-- **eslint-plugin-prettier**: 5.2.3 - ESLint plugin for Prettier integration
-- **eslint-plugin-react-hooks**: 5.0.0 - ESLint plugin for React Hooks rules
-- **eslint-plugin-react-refresh**: 0.4.18 - ESLint plugin for React refresh
-- **rollup-plugin-visualizer**: 5.14.0 - A plugin to visualize the size of your Rollup bundles
+- Socket instance created when authenticated in app shell: [App.tsx](src/App.tsx)
 
-## 14. Build and Development Infrastructure
+## 7. Forms and Validation
 
-- **@vitejs/plugin-react-swc**: 3.5.0 - Vite plugin for React using SWC
-- **globals**: 15.14.0 - Global variables for different environments
-- **@types/**: Type definitions for various libraries (lodash, node, randomcolor, react, react-dom)
+- React Hook Form 7.54.2
+- Zod 3.24.2 with @hookform/resolvers 3.10.0
+- MUI form components, consistent error display components
 
-## 15. Development Environment
+Key usage:
 
-- **Node.js**: Modern JavaScript runtime (version 18.0 or higher required)
-- **npm**: Package manager
-- **Vite Dev Server**: Fast development server with HMR (Hot Module Replacement) on port 3000
-- **TypeScript Compiler**: For type checking and compilation with strict mode
+- Schemas under `src/schemas/*`
+- RHF patterns and custom components (TextFieldInput, FieldErrorAlert) across forms
+- Example pages for account settings, workspace settings (routing in [App.tsx](src/App.tsx))
 
-## 16. Production Build
+## 8. Rich Content and UX Utilities
 
-- **Vite Build**: Optimized production builds with TypeScript compilation
-- **Tree Shaking**: Automatic dead code elimination
-- **Code Splitting**: Automatic code splitting for better performance
-- **Asset Optimization**: Automatic asset optimization and compression
-- **Bundle Analysis**: rollup-plugin-visualizer for bundle size monitoring
+- @uiw/react-md-editor 4.0.5 with rehype-sanitize 6.0.0
+- emoji-picker-react 4.12.3
+- react-toastify 11.0.5
+- date-fns 2.30.0
+- lodash 4.17.21
 
-## 17. Browser Compatibility
+## 9. Build, Lint, and Scripts
 
-- **ES6+ Support**: Modern JavaScript features
-- **CSS Variables**: For theming and styling
-- **WebSocket Support**: For real-time communication
-- **Local Storage**: For data persistence
+NPM scripts:
 
-## 18. Testing and Quality Assurance
+- dev: vite dev server with host: [package.json](package.json)
+- build: typecheck + vite build: [package.json](package.json)
+- preview: vite preview: [package.json](package.json)
+- lint: eslint flat config: [package.json](package.json)
+- lint:fix, prettier, prettier:fix: [package.json](package.json)
 
-- **TypeScript**: Static type checking with strict mode
-- **ESLint**: Code quality and consistency with comprehensive rules
-- **Prettier**: Code formatting with automatic fixes
-- **Error Boundaries**: Runtime error handling in React components
-- **Toast Notifications**: User feedback and error reporting
+Dev dependencies:
 
-## 19. Additional Development Dependencies
+- ESLint 9.19.0, typescript‑eslint 8.22.0
+- Prettier 3.5.2, eslint‑plugin‑prettier 5.2.3
+- @vitejs/plugin-react-swc 3.5.0
+- rollup-plugin-visualizer 5.14.0
+- types: node/react/react-dom/lodash/randomcolor
+- vite-plugin-svgr 4.3.0
 
-- **@types/lodash**: 4.17.16 - Type definitions for lodash
-- **@types/node**: 22.13.5 - Type definitions for Node.js
-- **@types/randomcolor**: 0.5.9 - Type definitions for randomcolor
-- **@types/react**: 18.3.18 - Type definitions for React
-- **@types/react-dom**: 18.3.5 - Type definitions for React DOM
-- **@eslint/js**: 9.19.0 - ESLint JavaScript configuration
+## 10. Environment and Configuration
 
-## 20. Development Scripts
+- Vite environment variables (must be prefixed with VITE\_)
+- Example .env keys in [AGENTS.md](AGENTS.md)
+- Base URL is read from env config (see constants/config, not listed here)
 
-- **dev**: `vite --host` - Start development server with network access
-- **build**: `tsc -b && vite build` - TypeScript compilation and production build
-- **preview**: `vite preview` - Preview production build locally
-- **lint**: `eslint .` - Run ESLint code quality checks
-- **lint:fix**: `eslint . --fix` - Fix automatically fixable ESLint issues
-- **prettier**: `prettier --check "src/**/(*.tsx|*.ts|*.css|*.scss)"` - Check code formatting
-- **prettier:fix**: `prettier --write "src/**/(*.tsx|*.ts|*.css|*.scss)"` - Fix code formatting
+## 11. Browser and Security Considerations
 
-## 21. Version Compatibility Notes
+- Modern browsers with ES6+ and WebSocket support
+- LocalStorage token handling; axios withCredentials enabled
+- Sanitization of markdown content (rehype-sanitize)
+- Protected route and verification guards (see [App.tsx](src/App.tsx))
 
-1. **React 18 + MUI 5**: Fully compatible, leveraging concurrent features
-2. **Redux Toolkit 2.x**: Uses Immer 10.x internally, excellent TypeScript support
-3. **React Hook Form 7.x**: Stable API with excellent performance
-4. **Zod 3.x**: Mature schema validation with excellent TypeScript integration
-5. **DND Kit 6.x**: Modern replacement for react-beautiful-dnd with accessibility focus
-6. **Vite 6.x**: Latest build tool with enhanced performance and TypeScript support
+## 12. Operational Notes and Best Practices
 
-## 22. Performance Considerations
+- Use RTK Query tags for fine‑grained invalidation
+- Prefer optimistic UI combined with socket broadcasts where applicable
+- Keep axios interceptors free of heavy logic; dispatch only on auth changes
+- Maintain theme consistency through theme.trellone metrics and sx patterns
+- Persist only minimal state (auth) to avoid rehydration performance issues
 
-1. **Bundle Splitting**: Dynamic imports for route-based code splitting
-2. **Tree Shaking**: Vite handles this automatically for optimal bundle sizes
-3. **Lazy Loading**: React.lazy for component-level splitting
-4. **Memoization**: Strategic use of React.memo, useMemo, useCallback
-5. **Bundle Analysis**: rollup-plugin-visualizer for monitoring bundle sizes
+## 13. Quick References
 
-## 23. Security Best Practices
-
-1. **JWT Handling**: jwt-decode for token parsing with secure storage
-2. **Validation**: Zod validation on both client and server integration
-3. **Sanitization**: rehype-sanitize for markdown content security
-4. **HTTPS**: Production deployment requires HTTPS for security
-5. **Environment Variables**: Secure configuration management with Vite
-
-## 24. Migration Path for Future Updates
-
-1. **React 19**: Monitor for release and compatibility updates
-2. **MUI 6**: Watch for breaking changes and migration guides
-3. **Redux Toolkit**: Keep updated for performance improvements
-4. **TypeScript**: Regular updates for latest language features
-5. **Vite**: Stay current with build tool optimizations
-
-## 25. Current Dependency Status (August 2025)
-
-All dependencies are up-to-date and actively maintained:
-
-- **Core Framework**: React 18.3.1 with TypeScript 5.7.2 (latest stable versions)
-- **Build Tool**: Vite 6.1.0 with SWC plugin for optimal performance
-- **UI Framework**: Material-UI 5.16.14 with comprehensive component library
-- **State Management**: Redux Toolkit 2.6.0 with RTK Query integration
-- **Real-time**: Socket.io 4.8.1 for WebSocket communication
-- **Form Handling**: React Hook Form 7.54.2 with Zod 3.24.2 validation
-- **Drag & Drop**: @dnd-kit 6.3.1 for accessible interactions
-- **Code Quality**: ESLint 9.19.0 and Prettier 3.5.2 with latest rules
-
-## 26. Development Workflow Integration
-
-- **Hot Reload**: Instant feedback during development with Vite HMR
-- **Type Checking**: Real-time TypeScript validation in IDE and build process
-- **Code Formatting**: Automated formatting with Prettier on save
-- **Linting**: Continuous code quality checks with ESLint
-- **Bundle Optimization**: Automatic optimization for production builds
-- **Environment Management**: Seamless switching between development and production configurations
+- Routing and guards: [export default App](src/App.tsx:230)
+- Store configuration: [configureStore()](src/lib/redux/store.ts:34)
+- Axios base query: [axiosBaseQuery()](src/lib/redux/helpers.ts:5)
+- Token refresh: [handleRefreshToken](src/lib/http.ts:131)
+- Socket factory: [generateSocketInstace()](src/lib/socket.ts:4)

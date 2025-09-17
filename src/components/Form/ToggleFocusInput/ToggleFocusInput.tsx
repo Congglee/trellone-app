@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField'
 
 interface ToggleFocusInputProps extends StandardTextFieldProps {
   value?: string
-  onChangeValue?: (title: string) => Promise<void>
+  onChangeValue?: (title: string) => void
   inputFontSize?: string
   styles?: SxProps
 }

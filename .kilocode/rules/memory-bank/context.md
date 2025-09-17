@@ -2,133 +2,103 @@
 
 ## Current Status
 
-The project is in a **mature, production-ready state**. Trellone is a fully functional, feature-complete Trello clone with comprehensive project management capabilities and real-time collaboration features.
+The project is in a mature, production-ready state. Trellone is a fully functional Trello-like SPA with real-time collaboration.
 
-### Implementation Status
+## Implementation Status
 
-**Core Features - Complete**
+### Core Features - Complete
 
-- **Authentication System**: Complete JWT-based authentication with Google OAuth integration, email verification, password reset, and secure route protection
-- **Board Management**: Full CRUD operations for boards, columns, and cards with advanced customization options including cover photos and custom backgrounds
-- **Real-time Collaboration**: Socket.io integration providing instant updates, user presence, and conflict resolution across multiple users
-- **Rich Content Support**: Markdown editor with live preview, file attachments (images/documents), cover photos, due dates, and comment system with emoji reactions
-- **Advanced UI/UX**: Material-UI v5 implementation with dark/light themes, responsive design, and smooth drag-and-drop using @dnd-kit
-- **Workspace Management**: Complete workspace functionality with board organization and team collaboration features
+- Authentication system with JWT and Google OAuth
+- Board, column, and card management with drag-and-drop
+- Real-time updates via Socket.IO
+- Rich content on cards: markdown, attachments, due dates, covers, comments and reactions
+- Advanced UI/UX with Material-UI themes and responsive design
+- Workspace management with members/guests and settings
 
-**Technical Infrastructure - Complete**
+### Technical Infrastructure - Complete
 
-- **State Management**: Redux Toolkit 2.6.0 with RTK Query for efficient API state management and caching
-- **Type Safety**: 100% TypeScript 5.7.2 coverage with strict mode and comprehensive type definitions
-- **Form Management**: React Hook Form 7.54.2 with Zod 3.24.2 validation for robust form handling
-- **Performance**: Vite 6.1.0 build system with code splitting, lazy loading, and optimized production builds
-- **Code Quality**: ESLint 9.19.0 and Prettier 3.5.2 integration with comprehensive linting rules
+- Redux Toolkit 2.6.0 with RTK Query and cache invalidation
+- TypeScript 5.7.2 strict mode across the codebase
+- React Hook Form 7.54.2 + Zod 3.24.2 validation
+- Vite 6.1.0 build with code splitting and lazy loading
+- ESLint 9.19.0 and Prettier 3.5.2 integration
 
-**Production Features - Complete**
+### Production Features - Complete
 
-- **SEO Optimization**: react-helmet-async 2.0.5 for metadata management and SEO-friendly routing
-- **Error Handling**: Comprehensive error boundaries and graceful error handling with user feedback
-- **Deployment**: Vercel-ready configuration with environment variable management
-- **Security**: Input sanitization, XSS prevention, and secure JWT-based authentication flows
-- **Performance Monitoring**: Bundle analysis with rollup-plugin-visualizer for optimization tracking
+- SEO via react-helmet-async 2.0.5
+- Error boundaries and graceful error handling
+- Vercel-ready deployment with environment variables
+- Input sanitization (rehype-sanitize) and XSS prevention
+- Bundle analysis via rollup-plugin-visualizer
 
-### Recent Development Activity (as of September 2025)
+## Recent Development Activity (as of September 2025)
 
-- All core Trello features implemented and production-ready
-- Modern React 18.3.1 patterns with latest TypeScript 5.7.2 integration
-- Complete Material-UI 5.16.14 implementation with custom theming
-- Comprehensive documentation and README with deployment guides
-- Performance optimizations including code splitting and lazy loading
-- Security features and authentication flows finalized with OAuth support
-- SEO optimization features fully implemented with dynamic metadata management
-- Animation system with custom keyframes for enhanced user experience
-- Front page marketing components with comprehensive landing page features
-- Workspace Settings page implemented with visibility management (Public/Private) and metadata updates via [`Helmet`](src/components/SEO/SEO.tsx) and [`WorkspaceSettings.tsx`](src/pages/Workspaces/pages/WorkspaceSettings/WorkspaceSettings.tsx:46)
-- Workspace visibility toggle implemented via [`useUpdateWorkspaceMutation()`](src/queries/workspaces.ts:158) with RTK Query cache invalidation tags for Workspace detail and LIST
-- Permission gating for workspace edits enforced through [`useWorkspacePermission`](src/hooks/use-permissions.ts) and [`WorkspacePermission.ManageWorkspace`](src/constants/permissions.ts)
+- Route structure, protected/rejected routes, and lazy loading confirmed in [src/App.tsx](src/App.tsx)
+- Workspace API slice with tags and cache invalidation in [src/queries/workspaces.ts](src/queries/workspaces.ts)
+- Axios client with token refresh and interceptors in [src/lib/http.ts](src/lib/http.ts)
+- Socket factory with reconnection strategies in [src/lib/socket.ts](src/lib/socket.ts)
+- Redux store with persisted auth and RTK Query middlewares in [src/lib/redux/store.ts](src/lib/redux/store.ts)
+- MUI theme with colorSchemes and component overrides in [src/theme.ts](src/theme.ts)
 
-### Current Focus
+## Current Focus
 
-The project is in **maintenance and enhancement mode**. Current activities include:
+Maintenance and enhancements:
 
-- **Code Quality**: Maintaining high code standards with modern TypeScript patterns
-- **Performance Monitoring**: Ongoing optimization for better user experience
-- **Feature Enhancement**: Implementing advanced workspace management features
-- **Security Updates**: Regular dependency updates and security patches
-- **Documentation**: Comprehensive technical documentation and user guides
+- Code quality and TypeScript strictness
+- Performance tuning and bundle hygiene
+- Workspace features, permissions, and visibility management
+- Documentation and developer experience
 
-### Project Maturity Indicators
+## Technical Stack Snapshot
 
-- **Feature Completeness**: All core Trello features implemented with advanced enhancements
-- **Code Quality**: Comprehensive TypeScript coverage with strict linting and formatting
-- **Production Readiness**: Optimized Vite builds with deployment configuration
-- **Documentation**: Detailed README with setup guides and feature documentation
-- **Architecture**: Clean, scalable architecture following modern React patterns
+- React 18.3.1, React Router 6.29.0
+- TypeScript ~5.7.2
+- Material-UI 5.16.14 (+ icons, lab, x-date-pickers 6.9.2)
+- Redux Toolkit 2.6.0, React-Redux 9.2.0, Redux Persist 6.0.0
+- RTK Query with custom axios base query
+- Socket.IO client 4.8.1
+- React Hook Form 7.54.2, Zod 3.24.2, @hookform/resolvers 3.10.0
+- Axios 1.8.3, Lodash 4.17.21, date-fns 2.30.0
+- react-toastify 11.0.5, emoji-picker-react 4.12.3, @uiw/react-md-editor 4.0.5
+- Vite 6.1.0, @vitejs/plugin-react-swc 3.5.0, vite-plugin-svgr 4.3.0
 
-### Active Development Areas
+## Environments and Scripts
 
-Based on the README roadmap, currently working on:
+- Dev: npm run dev
+- Build: npm run build
+- Preview: npm run preview
+- Lint/Format: npm run lint, npm run lint:fix, npm run prettier, npm run prettier:fix
 
-- **SEO Optimization** - Comprehensive SEO features for better search engine visibility ✅ (Complete)
-- **Workspace Management** - Enhanced workspace functionality with advanced organization tools ⏳ (In Progress)
-- **User Permissions System** - Role-based access control for Boards and Workspaces ⏳ (Planned)
-- **Board & Workspace Visibility** - Public/private visibility settings with granular access control ⏳ (In Progress)
-- **System Optimization** - Performance improvements and code optimization ⏳ (Ongoing)
-- **Docker Support** - Complete containerization for easy deployment and development ⏳ (Planned)
+## Architecture Highlights
 
-### Future Roadmap
+- SPA with route-based code splitting and Suspense fallbacks
+- Centralized Redux store with persisted auth; RTK Query APIs per domain
+- HTTP via axios with token refresh and LS-backed auth headers
+- Socket.IO instance tied to auth state, with reconnect auth refresh
+- MUI theme configured via experimental_extendTheme with light/dark color schemes
 
-Planned future enhancements include:
+## Active Files and References
 
-- **Premium Subscription System** - Stripe-powered subscriptions with advanced features
-- **Advanced Analytics** - Project insights and reporting capabilities
-- **Third-party Integrations** - Calendar sync and external service integrations
-- **Enterprise Features** - Advanced user management and SSO
-- **Mobile Applications** - Native iOS and Android app development
+- [src/App.tsx](src/App.tsx)
+- [src/queries/workspaces.ts](src/queries/workspaces.ts)
+- [src/lib/http.ts](src/lib/http.ts)
+- [src/lib/socket.ts](src/lib/socket.ts)
+- [src/lib/redux/store.ts](src/lib/redux/store.ts)
+- [src/theme.ts](src/theme.ts)
 
-### Deployment Status
+## Next Steps
 
-The application is **production-ready** with:
+- Add memory bank files: brief.md, product.md, architecture.md, tech.md
+- Keep context.md updated after notable changes, especially dependency upgrades and feature flags
 
-- **Optimized Build**: Vite 6.1.0 configuration with tree shaking and code splitting
-- **Environment Management**: Comprehensive environment variable configuration for dev/prod
-- **Error Handling**: Graceful error boundaries and user feedback systems
-- **SEO**: Complete metadata management and search engine optimization
-- **Security**: Secure JWT authentication, input validation, and XSS prevention
-- **Performance**: Optimized bundle sizes with lazy loading and modern build tools
+## Mermaid: High-level Data Flow
 
-### Project Health
-
-- **Code Quality**: Excellent - Modern TypeScript 5.7.2 patterns with comprehensive typing
-- **Documentation**: Excellent - Detailed README with setup guides and feature documentation
-- **Architecture**: Excellent - Clean, scalable architecture with modern React 18 patterns
-- **User Experience**: Excellent - Polished, responsive Material-UI interface with real-time features
-- **Security**: Excellent - Secure JWT authentication with OAuth and input validation
-- **Performance**: Excellent - Vite-optimized builds with efficient state management and lazy loading
-
-### Technical Stack Currency
-
-All dependencies are current as of August 2025:
-
-- React 18.3.1 (latest stable)
-- TypeScript 5.7.2 (latest stable)
-- Material-UI 5.16.14 (latest stable)
-- Redux Toolkit 2.6.0 (latest stable)
-- Vite 6.1.0 (latest stable)
-- Socket.io 4.8.1 (latest stable)
-
-### Development Environment
-
-- **Node.js**: Version 18.0+ required for optimal performance
-- **Package Manager**: npm with lockfile for consistent dependency resolution
-- **Development Server**: Vite dev server on port 3000 with hot module replacement
-- **Build Process**: TypeScript compilation followed by Vite production build
-- **Code Quality**: Automated ESLint and Prettier checks with fix capabilities
-
-### Key Architectural Decisions
-
-- **Frontend-Only Architecture**: Clean separation between frontend and backend services
-- **Real-time First**: Socket.io integration for collaborative features from the ground up
-- **Type Safety**: 100% TypeScript coverage with strict mode for reliability
-- **Component-Based Design**: Modular, reusable components following Material-UI patterns
-- **Performance Optimization**: Code splitting, lazy loading, and bundle optimization
-- **SEO Ready**: Dynamic metadata management for search engine optimization
+```mermaid
+graph LR
+    UI[React + MUI] --> API[RTK Query via axios]
+    UI --> Store[Redux Store + Persist]
+    UI --> Socket[Socket.IO Client]
+    API --> Backend[REST API]
+    Socket --> Backend
+    Store --> UI
+```

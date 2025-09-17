@@ -43,10 +43,8 @@ export default function CloseBoard() {
   const [updateBoardMutation] = useUpdateBoardMutation()
 
   const closeBoard = () => {
-    const boardId = activeBoard?._id as string
-
     updateBoardMutation({
-      id: boardId,
+      id: activeBoard?._id as string,
       body: { _destroy: true }
     }).then((res) => {
       if (!res.error) {

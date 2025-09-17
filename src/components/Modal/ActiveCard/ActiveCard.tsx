@@ -28,7 +28,7 @@ import DatesMenu from '~/components/Modal/ActiveCard/DatesMenu'
 import RemoveActiveCard from '~/components/Modal/ActiveCard/RemoveActiveCard'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { useAddCardMemberMutation, useRemoveCardMemberMutation, useUpdateCardMutation } from '~/queries/cards'
-import { UpdateCardBodyType } from '~/schemas/card.schema'
+import { CardType, UpdateCardBodyType } from '~/schemas/card.schema'
 import { updateCardInBoard } from '~/store/slices/board.slice'
 import { clearAndHideActiveCardModal, updateActiveCard } from '~/store/slices/card.slice'
 
@@ -87,54 +87,56 @@ export default function ActiveCard({ canEditCard }: ActiveCardProps) {
     return updatedCard
   }
 
-  const onUpdateCardTitle = async (title: string) => {
+  const onUpdateCardTitle = (title: string) => {
     handleUpdateActiveCard({ title })
   }
 
-  const onUpdateCardDescription = async (description: string) => {
+  const onUpdateCardDescription = (description: string) => {
     handleUpdateActiveCard({ description })
   }
 
-  const onUpdateCardCoverPhoto = async (cover_photo: string) => {
-    handleUpdateActiveCard({ cover_photo })
+  const onUpdateCardCoverPhoto = async (coverPhoto: string) => {
+    handleUpdateActiveCard({ cover_photo: coverPhoto })
   }
 
-  const onUpdateCardDueDateAndStatus = async (due_date: Date | null, is_completed: boolean | null) => {
-    handleUpdateActiveCard({ due_date, is_completed })
+  const onUpdateCardDueDateAndStatus = (dueDate: Date | null, isCompleted: boolean | null) => {
+    handleUpdateActiveCard({ due_date: dueDate, is_completed: isCompleted })
   }
 
-  const onUpdateCardArchiveStatus = async (_destroy: boolean) => {
+  const onUpdateCardArchiveStatus = (_destroy: boolean) => {
     handleUpdateActiveCard({ _destroy })
   }
 
-  const onAddCardMember = async (user_id: string) => {
-    const addCardMemberRes = await addCardMemberMutation({
+  const onAddCardMember = (userId: string) => {
+    addCardMemberMutation({
       card_id: activeCard?._id as string,
-      body: { user_id }
-    }).unwrap()
+      body: { user_id: userId }
+    }).then((res) => {
+      if (!res.error) {
+        const updatedCard = res.data?.result as CardType
 
-    const updatedCard = addCardMemberRes.result
+        dispatch(updateActiveCard(updatedCard))
+        dispatch(updateCardInBoard(updatedCard))
 
-    dispatch(updateActiveCard(updatedCard))
-    dispatch(updateCardInBoard(updatedCard))
-
-    // Emit socket event to broadcast the card update to other users
-    socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
+        socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
+      }
+    })
   }
 
-  const onRemoveCardMember = async (user_id: string) => {
-    const removeCardMemberRes = await removeCardMemberMutation({
+  const onRemoveCardMember = (userId: string) => {
+    removeCardMemberMutation({
       card_id: activeCard?._id as string,
-      user_id
-    }).unwrap()
+      user_id: userId
+    }).then((res) => {
+      if (!res.error) {
+        const updatedCard = res.data?.result as CardType
 
-    const updatedCard = removeCardMemberRes.result
+        dispatch(updateActiveCard(updatedCard))
+        dispatch(updateCardInBoard(updatedCard))
 
-    dispatch(updateActiveCard(updatedCard))
-    dispatch(updateCardInBoard(updatedCard))
-
-    // Emit socket event to broadcast the card update to other users
-    socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
+        socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
+      }
+    })
   }
 
   return (

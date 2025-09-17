@@ -13,6 +13,7 @@ import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { useUpdateCardAttachmentMutation } from '~/queries/cards'
 import {
   CardAttachmentType,
+  CardType,
   UpdateCardFileAttachmentBody,
   UpdateCardFileAttachmentBodyType
 } from '~/schemas/card.schema'
@@ -54,31 +55,30 @@ export default function EditCardFileAttachmentForm({
 
   const [updateCardAttachmentMutation] = useUpdateCardAttachmentMutation()
 
-  const onSubmit = handleSubmit(async (values) => {
-    if (!values.display_name || values.display_name.trim() === '') {
-      return
-    }
+  const onSubmit = handleSubmit((values) => {
+    if (!values.display_name || values.display_name.trim() === '') return
 
     const payload = {
       type: attachment.type,
       file: { ...attachment.file, display_name: values.display_name }
     }
 
-    const updatedCardRes = await updateCardAttachmentMutation({
+    updateCardAttachmentMutation({
       card_id: activeCard?._id as string,
       attachment_id: attachment.attachment_id,
       body: payload
-    }).unwrap()
+    }).then((res) => {
+      if (!res.error) {
+        const updatedCard = res.data?.result as CardType
 
-    const updatedCard = updatedCardRes.result
+        dispatch(updateActiveCard(updatedCard))
+        dispatch(updateCardInBoard(updatedCard))
 
-    dispatch(updateActiveCard(updatedCard))
-    dispatch(updateCardInBoard(updatedCard))
+        onClose()
 
-    // Emit socket event to broadcast the card update to other users
-    socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
-
-    onClose()
+        socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
+      }
+    })
   })
 
   return (

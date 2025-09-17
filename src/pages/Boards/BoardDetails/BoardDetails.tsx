@@ -165,9 +165,16 @@ export default function BoardDetails() {
     socket.emit('CLIENT_JOIN_WORKSPACE', workspaceId)
 
     const onUpdateWorkspace = (_workspaceId: string, updatedBoardId?: string) => {
-      // If the update targets this board, refetch its details for consistency
+      // If the update targets this board, refetch its details and the joined workspace boards for consistency
       if (updatedBoardId === activeBoard._id) {
         dispatch(getBoardDetails(activeBoard._id))
+        dispatch(
+          boardApi.util.prefetch(
+            'getJoinedWorkspaceBoards',
+            { workspace_id: workspaceId, ...queryConfig },
+            { force: true }
+          )
+        )
       }
     }
 
@@ -177,7 +184,7 @@ export default function BoardDetails() {
       socket.emit('CLIENT_LEAVE_WORKSPACE', workspaceId)
       socket.off('SERVER_WORKSPACE_UPDATED', onUpdateWorkspace)
     }
-  }, [socket, activeBoard, dispatch])
+  }, [socket, activeBoard, dispatch, queryConfig])
 
   const onMoveColumns = (dndOrderedColumns: ColumnType[]) => {
     if (isClosed) return
@@ -185,41 +192,43 @@ export default function BoardDetails() {
     // Get the IDs of the columns in the order they are being moved
     const dndOrderedCardsIds = dndOrderedColumns.map((column) => column._id)
 
-    const newActiveBoard = { ...activeBoard! }
-    newActiveBoard.columns = dndOrderedColumns
-    newActiveBoard.column_order_ids = dndOrderedCardsIds
-
-    dispatch(updateActiveBoard(newActiveBoard))
-
     updateBoardMutation({
-      id: newActiveBoard._id,
-      body: { column_order_ids: newActiveBoard.column_order_ids }
-    })
+      id: activeBoard?._id as string,
+      body: { column_order_ids: dndOrderedCardsIds }
+    }).then((res) => {
+      if (!res.error) {
+        const newActiveBoard = { ...activeBoard! }
+        newActiveBoard.columns = dndOrderedColumns
+        newActiveBoard.column_order_ids = dndOrderedCardsIds
 
-    // Emit socket event to notify other users about the column order update
-    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+        dispatch(updateActiveBoard(newActiveBoard))
+
+        socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+      }
+    })
   }
 
   const onMoveCardInTheSameColumn = (dndOrderedCards: CardType[], dndOrderedCardsIds: string[], columnId: string) => {
     if (isClosed) return
 
-    const newActiveBoard = cloneDeep(activeBoard)
-    const columnToUpdate = newActiveBoard?.columns?.find((column) => column._id === columnId)
-
-    if (columnToUpdate) {
-      columnToUpdate.cards = dndOrderedCards
-      columnToUpdate.card_order_ids = dndOrderedCardsIds
-    }
-
-    dispatch(updateActiveBoard(newActiveBoard))
-
     updateColumnMutation({
       id: columnId,
       body: { card_order_ids: dndOrderedCardsIds }
-    })
+    }).then((res) => {
+      if (!res.error) {
+        const newActiveBoard = cloneDeep(activeBoard)
+        const columnToUpdate = newActiveBoard?.columns?.find((column) => column._id === columnId)
 
-    // Emit socket event to notify other users about the card order update
-    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+        if (columnToUpdate) {
+          columnToUpdate.cards = dndOrderedCards
+          columnToUpdate.card_order_ids = dndOrderedCardsIds
+        }
+
+        dispatch(updateActiveBoard(newActiveBoard))
+
+        socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+      }
+    })
   }
 
   const onMoveCardToDifferentColumn = (
@@ -241,14 +250,8 @@ export default function BoardDetails() {
     // Get the IDs of the columns in the order they are being moved
     const dndOrderedColumnsIds = dndOrderedColumns.map((column) => column._id)
 
-    const newActiveBoard = { ...activeBoard! }
-
-    newActiveBoard.columns = dndOrderedColumns
-    newActiveBoard.column_order_ids = dndOrderedColumnsIds
-
-    dispatch(updateActiveBoard(newActiveBoard))
-
     let prevCardOrderIds = dndOrderedColumns.find((column) => column._id === prevColumnId)?.card_order_ids as string[]
+    let nextCardOrderIds = dndOrderedColumns.find((column) => column._id === nextColumnId)?.card_order_ids as string[]
 
     // Handle the issue when dragging the last Card out of a Column;
     // If the Column is empty, there will be a placeholder card that needs to be removed before sending data to the backend server.
@@ -261,11 +264,19 @@ export default function BoardDetails() {
       prev_column_id: prevColumnId,
       prev_card_order_ids: prevCardOrderIds,
       next_column_id: nextColumnId,
-      next_card_order_ids: dndOrderedColumns.find((column) => column._id === nextColumnId)?.card_order_ids as string[]
-    })
+      next_card_order_ids: nextCardOrderIds
+    }).then((res) => {
+      if (!res.error) {
+        const newActiveBoard = { ...activeBoard! }
 
-    // Emit socket event to notify other users about the card move to different column
-    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+        newActiveBoard.columns = dndOrderedColumns
+        newActiveBoard.column_order_ids = dndOrderedColumnsIds
+
+        dispatch(updateActiveBoard(newActiveBoard))
+
+        socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+      }
+    })
   }
 
   if (loading === 'pending') {

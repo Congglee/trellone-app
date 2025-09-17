@@ -106,16 +106,12 @@ export default function BoardBar({
       return
     }
 
-    const newActiveBoard = { ...activeBoard! }
-    newActiveBoard.title = boardTitle
-
-    dispatch(updateActiveBoard(newActiveBoard))
-
-    updateBoardMutation({
-      id: newActiveBoard._id,
-      body: { title: newActiveBoard.title }
-    }).then((res) => {
+    updateBoardMutation({ id: board._id, body: { title: boardTitle } }).then((res) => {
       if (!res.error) {
+        const newActiveBoard = { ...activeBoard! }
+        newActiveBoard.title = boardTitle
+
+        dispatch(updateActiveBoard(newActiveBoard))
         dispatch(
           workspaceApi.util.invalidateTags([
             { type: 'Workspace', id: newActiveBoard.workspace_id },
@@ -123,47 +119,45 @@ export default function BoardBar({
           ])
         )
 
-        // Emit socket event to notify other users about the board title update
         socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+        socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', newActiveBoard.workspace_id, newActiveBoard._id)
       }
     })
   }
 
-  const joinWorkspaceBoard = async () => {
-    const joinWorkspaceBoardRes = await joinWorkspaceBoardMutation({
+  const joinWorkspaceBoard = () => {
+    joinWorkspaceBoardMutation({
       workspace_id: board.workspace_id,
       board_id: board._id
-    }).unwrap()
+    }).then((res) => {
+      if (!res.error) {
+        const joinedBoard = res.data?.result
+        const currentUser = profile as UserType
+        const newMember = joinedBoard?.members.find((member) => member.user_id === currentUser._id)
 
-    const joinedBoard = joinWorkspaceBoardRes.result
-    const currentUser = profile as UserType
-    const newMember = joinedBoard.members.find((member) => member.user_id === currentUser._id)
+        if (activeBoard && newMember) {
+          // Create a new members array by copying the old array and adding the new member
+          const updatedBoardMembers = [
+            ...activeBoard.members,
+            {
+              ...currentUser,
+              role: newMember.role,
+              joined_at: new Date(),
+              user_id: newMember.user_id
+            }
+          ]
 
-    if (activeBoard && newMember) {
-      // Create a new members array by copying the old array and adding the new member
-      const updatedBoardMembers = [
-        ...activeBoard.members,
-        {
-          ...currentUser,
-          role: newMember.role,
-          joined_at: new Date(),
-          user_id: newMember.user_id
+          // Create a new activeBoard object with the updated members array
+          // This creates a new reference, triggering useMemo in `useBoardPermission`
+          const newActiveBoard = { ...activeBoard, members: updatedBoardMembers }
+
+          dispatch(updateActiveBoard(newActiveBoard))
+
+          socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+          socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', newActiveBoard.workspace_id)
         }
-      ]
-
-      // Create a new activeBoard object with the updated members array
-      // This creates a new reference, triggering useMemo in `useBoardPermission`
-      const newActiveBoard = {
-        ...activeBoard,
-        members: updatedBoardMembers
       }
-
-      dispatch(updateActiveBoard(newActiveBoard))
-
-      // Broadcast to other users for realtime sync
-      socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
-      socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', newActiveBoard.workspace_id)
-    }
+    })
   }
 
   return (

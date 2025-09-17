@@ -20,7 +20,7 @@ interface AddNewCardProps {
 
 export default function AddNewCard({ column, canCreateCard }: AddNewCardProps) {
   const [newCardFormOpen, setNewCardFormOpen] = useState(false)
-  const [newCardTitle, setNewCardTitle] = useState('')
+  const [cardTitle, setCardTitle] = useState('')
 
   const toggleNewCardForm = () => {
     if (!canCreateCard) return
@@ -29,7 +29,7 @@ export default function AddNewCard({ column, canCreateCard }: AddNewCardProps) {
 
   const newCardClickAwayRef = useClickAway(() => {
     setNewCardFormOpen(false)
-    setNewCardTitle('')
+    setCardTitle('')
   })
 
   const { activeBoard } = useAppSelector((state) => state.board)
@@ -40,43 +40,46 @@ export default function AddNewCard({ column, canCreateCard }: AddNewCardProps) {
 
   const reset = () => {
     toggleNewCardForm()
-    setNewCardTitle('')
+    setCardTitle('')
   }
 
   const addNewCard = async () => {
-    if (!newCardTitle || newCardTitle.trim() === '') {
+    if (!cardTitle || cardTitle.trim() === '') {
       return
     }
 
-    const addNewCardRes = await addCardMutation({
-      title: newCardTitle,
+    addCardMutation({
+      title: cardTitle,
       column_id: column._id,
       board_id: column.board_id
-    }).unwrap()
+    }).then((res) => {
+      if (!res.error) {
+        const addedCard = res.data?.result
 
-    const newCard = cloneDeep(addNewCardRes.result)
+        const newCard = cloneDeep(addedCard)!
+        const newActiveBoard = cloneDeep(activeBoard)!
 
-    const newActiveBoard = cloneDeep(activeBoard)
-    const columnToUpdate = newActiveBoard?.columns?.find((column) => column._id === newCard.column_id)
+        const columnToUpdate = newActiveBoard?.columns?.find((column) => column._id === newCard.column_id)
 
-    if (columnToUpdate) {
-      // If the column is empty: it essentially contains a Placeholder card
-      if (columnToUpdate.cards?.some((card) => card.FE_PlaceholderCard)) {
-        columnToUpdate.cards = [newCard]
-        columnToUpdate.card_order_ids = [newCard._id]
-      } else {
-        // Otherwise, if the column already has data, push it to the end of the array
-        columnToUpdate.cards?.push(newCard)
-        columnToUpdate.card_order_ids?.push(newCard._id)
+        if (columnToUpdate) {
+          // If the column is empty: it essentially contains a Placeholder card
+          if (columnToUpdate.cards?.some((card) => card.FE_PlaceholderCard)) {
+            columnToUpdate.cards = [newCard]
+            columnToUpdate.card_order_ids = [newCard._id]
+          } else {
+            // Otherwise, if the column already has data, push it to the end of the array
+            columnToUpdate.cards?.push(newCard)
+            columnToUpdate.card_order_ids?.push(newCard._id)
+          }
+        }
+
+        dispatch(updateActiveBoard(newActiveBoard))
+
+        reset()
+
+        socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
       }
-    }
-
-    dispatch(updateActiveBoard(newActiveBoard))
-
-    reset()
-
-    // Emit socket event to notify other users about the new card creation
-    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+    })
   }
 
   return (
@@ -119,8 +122,8 @@ export default function AddNewCard({ column, canCreateCard }: AddNewCardProps) {
             variant='outlined'
             autoFocus
             data-no-dnd='true'
-            value={newCardTitle}
-            onChange={(e) => setNewCardTitle(e.target.value)}
+            value={cardTitle}
+            onChange={(e) => setCardTitle(e.target.value)}
             sx={{
               bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#22272b' : '#fff'),
               '& label': { color: 'text.primary' },

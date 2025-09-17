@@ -43,7 +43,7 @@ export default function RemoveGuestWorkspace({ userId, workspaceId, isDisabled }
     removeGuestFromWorkspaceMutation({ workspace_id: workspaceId, user_id: userId }).then((res) => {
       if (!res.error) {
         const result = res.data?.result
-        const affectedBoardIds = result?.affectedBoardIds || []
+        const affectedBoardIds = result?.affected_board_ids || []
 
         for (const boardId of affectedBoardIds) {
           socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspaceId, boardId)

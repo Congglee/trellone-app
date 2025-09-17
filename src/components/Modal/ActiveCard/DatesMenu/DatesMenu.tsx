@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react'
 interface CardDatesMenuProps {
   dueDate?: Date | null
   isCompleted?: boolean | null
-  onUpdateCardDueDate: (due_date: Date | null, is_completed: boolean | null) => Promise<void>
+  onUpdateCardDueDate: (dueDate: Date | null, isCompleted: boolean | null) => void
 }
 
 export default function DatesMenu({ dueDate, onUpdateCardDueDate, isCompleted }: CardDatesMenuProps) {

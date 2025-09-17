@@ -48,23 +48,24 @@ export default function Column({ column, canEditColumn, canCreateCard }: ColumnP
 
   const [updateColumnMutation] = useUpdateColumnMutation()
 
-  const updateColumnTitle = async (title: string) => {
-    const newActiveBoard = cloneDeep(activeBoard)
-    const columnToUpdate = newActiveBoard?.columns?.find((col) => col._id === column._id)
-
-    if (columnToUpdate) {
-      columnToUpdate.title = title.trim()
-    }
-
-    dispatch(updateActiveBoard(newActiveBoard))
-
-    await updateColumnMutation({
+  const updateColumnTitle = (columnTitle: string) => {
+    updateColumnMutation({
       id: column._id,
-      body: { title: title.trim() }
-    })
+      body: { title: columnTitle.trim() }
+    }).then((res) => {
+      if (!res.error) {
+        const newActiveBoard = cloneDeep(activeBoard)!
+        const columnToUpdate = newActiveBoard?.columns?.find((col) => col._id === column._id)
 
-    // Emit socket event to notify other users about the column title update
-    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+        if (columnToUpdate) {
+          columnToUpdate.title = columnTitle.trim()
+        }
+
+        dispatch(updateActiveBoard(newActiveBoard))
+
+        socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+      }
+    })
   }
 
   return (

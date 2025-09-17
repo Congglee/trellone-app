@@ -16,7 +16,7 @@ import { useGetUnsplashSearchPhotosQuery, useUploadImageMutation } from '~/queri
 import { singleFileValidator } from '~/utils/validators'
 
 interface CardCoverProps {
-  onUpdateCardCoverPhoto: (cover_photo: string) => Promise<void>
+  onUpdateCardCoverPhoto: (coverPhoto: string) => Promise<void>
 }
 
 export default function CardCover({ onUpdateCardCoverPhoto }: CardCoverProps) {
