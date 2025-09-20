@@ -18,6 +18,7 @@ import NewBoardCard from '~/pages/Workspaces/components/NewBoardCard'
 import { useGetWorkspaceQuery } from '~/queries/workspaces'
 import { useDebounce } from '~/hooks/use-debounce'
 import path from '~/constants/path'
+import WorkspaceClosedBoards from '~/pages/Workspaces/components/WorkspaceClosedBoards'
 
 export default function WorkspaceBoards() {
   const { workspaceId } = useParams()
@@ -27,7 +28,9 @@ export default function WorkspaceBoards() {
   const { data: workspaceData, isLoading, isError } = useGetWorkspaceQuery(workspaceId!)
   const workspace = workspaceData?.result
 
-  const boards = useMemo(() => workspace?.boards || [], [workspace?.boards])
+  const boards = useMemo(() => (workspace?.boards || []).filter((board) => !board._destroy), [workspace?.boards])
+
+  const hasClosedBoards = (workspace?.boards || []).some((board) => board._destroy)
 
   const [searchText, setSearchText] = useState('')
   const [debouncedSearchText, setDebouncedSearchText] = useState('')
@@ -189,6 +192,8 @@ export default function WorkspaceBoards() {
               {filteredBoards.length > 0 && filteredBoards.map((board) => <BoardCard key={board._id} board={board} />)}
             </>
           )}
+
+          {hasClosedBoards && <WorkspaceClosedBoards workspaceId={workspaceId!} />}
         </Grid>
       </Box>
 

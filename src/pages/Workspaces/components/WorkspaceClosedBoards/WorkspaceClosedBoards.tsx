@@ -10,8 +10,6 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
-import MenuItem from '@mui/material/MenuItem'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
@@ -20,17 +18,16 @@ import { useEffect, useState } from 'react'
 import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '~/constants/pagination'
 import { useInfiniteScroll } from '~/hooks/use-infinite-scroll'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
-import ClosedBoardsListRow from '~/pages/Workspaces/pages/BoardsList/components/ClosedBoardsListRow'
+import WorkspaceClosedBoardsListRow from '~/pages/Workspaces/components/WorkspaceClosedBoardsListRow'
 import { useLazyGetBoardsQuery, useLeaveBoardMutation, useUpdateBoardMutation } from '~/queries/boards'
 import { workspaceApi } from '~/queries/workspaces'
 import { BoardResType } from '~/schemas/board.schema'
-import { WorkspaceResType } from '~/schemas/workspace.schema'
 
-interface ClosedBoardsProps {
-  workspaces: WorkspaceResType['result'][]
+interface WorkspaceClosedBoardsProps {
+  workspaceId: string
 }
 
-export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
+export default function WorkspaceClosedBoards({ workspaceId }: WorkspaceClosedBoardsProps) {
   const [closedBoardsOpen, setClosedBoardsOpen] = useState(false)
   const [pagination, setPagination] = useState({
     page: DEFAULT_PAGINATION_PAGE,
@@ -44,7 +41,6 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
   const [leaveBoardMutation] = useLeaveBoardMutation()
 
   const [allClosedBoards, setAllClosedBoards] = useState<BoardResType['result'][]>([])
-  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string>('')
 
   const dispatch = useAppDispatch()
 
@@ -69,14 +65,14 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
     setAllClosedBoards([])
     setPagination({ page: DEFAULT_PAGINATION_PAGE, total_page: 0 })
     setIsLoadingMore(false)
-    setSelectedWorkspaceId('')
     setClosedBoardsOpen(true)
 
-    // Trigger initial fetch for page 1
+    // Trigger initial fetch for page 1, scoped to current workspace
     triggerGetBoards({
       page: DEFAULT_PAGINATION_PAGE,
       limit: DEFAULT_PAGINATION_LIMIT,
-      state: 'closed'
+      state: 'closed',
+      workspace: workspaceId
     })
   }
 
@@ -88,7 +84,7 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
         page: nextPage,
         limit: DEFAULT_PAGINATION_LIMIT,
         state: 'closed',
-        ...(selectedWorkspaceId ? { workspace: selectedWorkspaceId } : {})
+        workspace: workspaceId
       })
     }
   }
@@ -106,23 +102,7 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
     setClosedBoardsOpen(false)
   }
 
-  const handleWorkspaceChange = (event: SelectChangeEvent<string>) => {
-    const workspaceId = event.target.value as string
-
-    setSelectedWorkspaceId(workspaceId)
-    setAllClosedBoards([])
-    setPagination({ page: DEFAULT_PAGINATION_PAGE, total_page: 0 })
-    setIsLoadingMore(false)
-
-    triggerGetBoards({
-      page: DEFAULT_PAGINATION_PAGE,
-      limit: DEFAULT_PAGINATION_LIMIT,
-      state: 'closed',
-      ...(workspaceId ? { workspace: workspaceId } : {})
-    })
-  }
-
-  const onReopenBoard = (boardId: string, workspaceId: string) => {
+  const onReopenBoard = (boardId: string) => {
     updateBoardMutation({
       id: boardId,
       body: { _destroy: false }
@@ -144,7 +124,7 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
     })
   }
 
-  const onLeaveBoard = (boardId: string, workspaceId: string) => {
+  const onLeaveBoard = (boardId: string) => {
     leaveBoardMutation(boardId).then((res) => {
       if (!res.error) {
         if (boards.length === 1) {
@@ -157,29 +137,31 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
   }
 
   return (
-    <Box sx={{ mt: 6, pl: 1 }}>
-      <Button
-        variant='outlined'
-        startIcon={<VisibilityOffIcon />}
-        onClick={handleClosedBoardsOpen}
-        sx={{
-          textTransform: 'none',
-          fontWeight: 600,
-          px: 3,
-          py: 1,
-          borderRadius: 2,
-          color: (theme) => (theme.palette.mode === 'dark' ? '#90caf9' : '#1976d2'),
-          borderColor: (theme) => (theme.palette.mode === 'dark' ? '#525252' : '#e0e0e0'),
-          bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'transparent' : '#fafafa'),
-          '&:hover': {
-            borderColor: (theme) => theme.palette.primary.main,
-            bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#33485D' : '#e3f2fd'),
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-          }
-        }}
-      >
-        View all closed boards
-      </Button>
+    <>
+      <Box sx={{ mt: 6 }}>
+        <Button
+          variant='outlined'
+          startIcon={<VisibilityOffIcon />}
+          onClick={handleClosedBoardsOpen}
+          sx={{
+            textTransform: 'none',
+            fontWeight: 600,
+            px: 3,
+            py: 1,
+            borderRadius: 2,
+            color: (theme) => (theme.palette.mode === 'dark' ? '#90caf9' : '#1976d2'),
+            borderColor: (theme) => (theme.palette.mode === 'dark' ? '#525252' : '#e0e0e0'),
+            bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'transparent' : '#fafafa'),
+            '&:hover': {
+              borderColor: (theme) => theme.palette.primary.main,
+              bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#33485D' : '#e3f2fd'),
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+            }
+          }}
+        >
+          View closed boards
+        </Button>
+      </Box>
 
       <Dialog keepMounted open={closedBoardsOpen} onClose={handleClosedBoardsClose} fullWidth maxWidth='md'>
         <DialogTitle sx={{ p: 2.5 }}>
@@ -195,20 +177,6 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
               <Typography variant='h6' noWrap sx={{ fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 Closed boards
               </Typography>
-              <Select
-                size='small'
-                sx={{ minWidth: 160, flexShrink: 0 }}
-                value={selectedWorkspaceId}
-                onChange={handleWorkspaceChange}
-                displayEmpty
-              >
-                <MenuItem value=''>All boards</MenuItem>
-                {workspaces.map((workspace) => (
-                  <MenuItem key={workspace._id} value={workspace._id}>
-                    {workspace.title}
-                  </MenuItem>
-                ))}
-              </Select>
             </Stack>
             <IconButton onClick={handleClosedBoardsClose} aria-label='Close' sx={{ ml: 'auto', flexShrink: 0 }}>
               <CloseIcon />
@@ -268,8 +236,7 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
                       No boards have been closed
                     </Typography>
                     <Typography variant='body2' color='text.secondary' sx={{ maxWidth: 520 }}>
-                      Try selecting a different workspace or choose ‘All boards’. Closed boards will appear here when
-                      available.
+                      Closed boards in this workspace will appear here when available.
                     </Typography>
                   </Stack>
                 </Box>
@@ -278,7 +245,7 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
 
             {boards.length > 0 &&
               boards.map((board, index) => (
-                <ClosedBoardsListRow
+                <WorkspaceClosedBoardsListRow
                   key={board._id}
                   board={board}
                   isLast={index === boards.length - 1}
@@ -305,6 +272,6 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </>
   )
 }

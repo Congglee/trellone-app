@@ -59,6 +59,7 @@ export const BOARD_ROLE_PERMISSIONS: Record<BoardMemberRoleType, BoardPermission
   ],
   [BoardRole.Member]: [
     BoardPermission.ViewBoard,
+    BoardPermission.ManageBoard,
     BoardPermission.CreateColumn,
     BoardPermission.EditColumn,
     BoardPermission.CreateCard,

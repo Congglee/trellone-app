@@ -1,98 +1,58 @@
-# Product Definition: Trellone
+# Product Context for Trellone
 
-## 1. Purpose
+## Core Purpose & Vision
 
-Provide a modern, self-hostable Trello-like project management experience with real-time collaboration, intuitive UX, and a production-ready frontend architecture.
+Trellone is a feature-rich, self-hostable project management application designed as a clone of Trello. It aims to provide a visually intuitive and highly collaborative platform for teams to organize tasks, manage workflows, and track progress in real-time. The vision is to offer an open-source, modern alternative to Trello that developers can easily extend and integrate into their own infrastructure.
 
-Anchors in code:
+## Key Problems Addressed
 
-- Routing, authentication guards, lazy loading in [App.tsx](src/App.tsx)
-- Workspace CRUD and membership flows via [workspaceApi = createApi()](src/queries/workspaces.ts:23)
-- HTTP client with token lifecycle [class Http](src/lib/http.ts:24)
-- Real-time socket factory [generateSocketInstace()](src/lib/socket.ts:4)
-- Redux store and middleware [configureStore()](src/lib/redux/store.ts:34)
-- Theme system [extendTheme()](src/theme.ts:46)
+- **Lack of Self-Hosted Trello Alternatives:** Provides a solution for teams that require data privacy and control by allowing them to host their own project management tool.
+- **Real-Time Collaboration Gaps:** Ensures that all team members are on the same page with instant updates to boards, columns, and cards, powered by WebSockets.
+- **Fragmented User Experience:** Delivers a polished, single-page application (SPA) experience with a consistent and responsive UI built on Material-UI, eliminating page reloads and providing a fluid workflow.
+- **Complex UI State Management:** Solves the challenge of managing complex application state by using Redux Toolkit, RTK Query for data fetching, and Redux Persist for preserving user sessions.
 
-## 2. Problem Statement
+## Target Audience & User Personas
 
-Teams need a flexible, collaborative tool for planning and tracking work. Existing tools can be costly or inflexible. Trellone offers an open, modern, and performant alternative focused on core Kanban flows and collaboration.
+- **Development Teams:** For planning sprints, tracking bugs, and managing feature backlogs.
+- **Project Managers:** To oversee project progress, assign tasks, and coordinate work across different team members.
+- **Small to Medium-Sized Businesses (SMBs):** For organizing internal projects, tracking deliverables, and managing team workflows without relying on third-party SaaS providers.
+- **Open Source Projects:** To provide a transparent and accessible way to manage community contributions and development roadmaps.
 
-## 3. Core Features
+## How It Should Work: Core User Workflows
 
-- Boards, Columns, Cards
-  - Create, reorder via drag-and-drop
-  - Rich card content: markdown, attachments, due dates, cover, comments, reactions
-- Workspaces
-  - Board organization, members and guests management, role-sensitive actions
-  - Settings and visibility management
-- Authentication
-  - JWT-based auth; token storage and refresh handled by HTTP client
-  - Google OAuth ready (env-based config)
-- Real-time Collaboration
-  - Socket.IO client with resilient reconnection and up-to-date auth
-- UX and Theming
-  - Material‑UI 5 with light/dark schemes, responsive design
-  - Consistent component overrides and typography
-- State and Data
-  - Redux Toolkit + RTK Query with cache invalidation and tags
-  - Optimistic patterns combined with socket broadcasts
+1.  **Authentication & Onboarding:**
 
-## 4. Target Users
+    - Users can register for a new account, log in with credentials, or use OAuth providers.
+    - Upon first login, users are guided to create or join a workspace.
 
-- Engineering teams planning sprints and tasks
-- Project managers coordinating work across boards
-- SMBs/startups seeking self-hostable workflows
-- Remote teams needing real-time, low-friction collaboration
+2.  **Workspace & Board Management:**
 
-## 5. User Stories
+    - Users can create multiple workspaces to segregate different projects or teams.
+    - Within a workspace, users can create boards, which can be public or private.
+    - Members can be invited to workspaces and boards with specific roles and permissions.
 
-- As a user, I can create workspaces, boards, columns, and cards to organize tasks.
-- As a collaborator, I can move cards between columns and see updates in real-time.
-- As an owner, I can manage workspace members and guests, adjusting roles when needed.
-- As a contributor, I can add descriptions, attachments, and due dates to cards.
-- As a user, I can sign in, stay authenticated, and seamlessly continue after token refresh.
-- As a user, I can benefit from responsive UI and consistent theming across devices.
+3.  **Board Interaction (Trello-like UX):**
 
-Relevant flows:
+    - Boards consist of columns (e.g., "To Do," "In Progress," "Done") that represent stages of a workflow.
+    - Cards, representing individual tasks, can be created within columns.
+    - Users can drag and drop cards between columns to update their status in real-time.
+    - Columns can also be reordered via drag and drop.
 
-- Route access and guards: [export default App](src/App.tsx:230)
-- Workspace APIs: [workspaceApi = createApi()](src/queries/workspaces.ts:23)
-- Token refresh flow: [Http.handleRefreshToken](src/lib/http.ts:131)
+4.  **Card Details & Collaboration:**
 
-## 6. Success Metrics
+    - Clicking a card opens a detailed modal view.
+    - Within the modal, users can add markdown descriptions, set due dates, upload attachments, and add comments.
+    - Team members can react to comments and cards with emojis.
+    - All updates (comments, attachments, etc.) are synchronized in real-time across all connected clients.
 
-- Engagement: daily active users, boards created, real-time session counts
-- Performance: responsive interactions, low navigation latency
-- Reliability: low error rate surfaced to toasts, successful reconnection rate
-- UX: smooth DnD interactions, accessible contrast, theme consistency
-- Code Quality: passing lint and type checks, maintainable TypeScript
+5.  **Real-Time Collaboration:**
+    - Changes made by one user are instantly reflected for all other usersViewing the same board.
+    - The system uses Socket.IO for resilient, real-time communication with the backend.
 
-## 7. Competitive Advantages
+## User Experience (UX) Goals
 
-- Open and modern stack (React 18, MUI 5, Vite 6)
-- Real-time-first experience with resilient socket handling
-- Strong type safety and tooling via TypeScript and RTK Query
-- Production-ready build pipeline and DX
-
-## 8. Future Enhancements (Roadmap)
-
-- Role-based permissions refinement across boards/workspaces
-- Advanced visibility options and public sharing modes
-- Analytics and activity insights
-- Additional integrations (calendar, notifications)
-- Containerization and deployment blueprints
-
-## 9. Configuration and Environments
-
-- Vite-based envs via VITE\_\* variables
-- OAuth envs for Google provider
-- API base URL via env-config in constants
-
-## 10. References
-
-- App routing and guards: [App.tsx](src/App.tsx)
-- Workspaces API: [src/queries/workspaces.ts](src/queries/workspaces.ts)
-- HTTP client: [src/lib/http.ts](src/lib/http.ts)
-- Socket client: [src/lib/socket.ts](src/lib/socket.ts)
-- Store config: [src/lib/redux/store.ts](src/lib/redux/store.ts)
-- Theme: [src/theme.ts](src/theme.ts)
+- **Intuitive & Familiar:** The UI should feel immediately familiar to anyone who has used Trello or similar kanban-style tools.
+- **Responsive & Fast:** The application must be fast and responsive, with sub-second UI updates and smooth animations, leveraging Vite's performance and React's virtual DOM.
+- **Polished & Professional:** The aesthetic, powered by Material-UI, should be clean, modern, and professional, with both light and dark modes to suit user preferences.
+- **Seamless & Uninterrupted:** As a single-page application, all interactions should feel seamless, with no full-page reloads. Modals, dialogs, and optimistic UI updates contribute to this fluid experience.
+- **Accessible:** The application should adhere to accessibility best practices, ensuring it is usable by as many people as possible.
