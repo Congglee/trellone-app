@@ -19,7 +19,12 @@ import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '~/constants/p
 import { useInfiniteScroll } from '~/hooks/use-infinite-scroll'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import WorkspaceClosedBoardsListRow from '~/pages/Workspaces/components/WorkspaceClosedBoardsListRow'
-import { useLazyGetBoardsQuery, useLeaveBoardMutation, useUpdateBoardMutation } from '~/queries/boards'
+import {
+  useDeleteBoardMutation,
+  useLazyGetBoardsQuery,
+  useLeaveBoardMutation,
+  useUpdateBoardMutation
+} from '~/queries/boards'
 import { workspaceApi } from '~/queries/workspaces'
 import { BoardResType } from '~/schemas/board.schema'
 
@@ -39,6 +44,7 @@ export default function WorkspaceClosedBoards({ workspaceId }: WorkspaceClosedBo
 
   const [updateBoardMutation] = useUpdateBoardMutation()
   const [leaveBoardMutation] = useLeaveBoardMutation()
+  const [deleteBoardMutation] = useDeleteBoardMutation()
 
   const [allClosedBoards, setAllClosedBoards] = useState<BoardResType['result'][]>([])
 
@@ -132,6 +138,22 @@ export default function WorkspaceClosedBoards({ workspaceId }: WorkspaceClosedBo
         }
 
         socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspaceId, boardId)
+      }
+    })
+  }
+
+  const onDeleteBoard = (boardId: string) => {
+    deleteBoardMutation(boardId).then((res) => {
+      if (!res.error) {
+        dispatch(
+          workspaceApi.util.invalidateTags([
+            { type: 'Workspace', id: workspaceId },
+            { type: 'Workspace', id: 'LIST' }
+          ])
+        )
+
+        socket?.emit('CLIENT_USER_DELETED_BOARD', boardId)
+        socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspaceId)
       }
     })
   }
@@ -251,6 +273,7 @@ export default function WorkspaceClosedBoards({ workspaceId }: WorkspaceClosedBo
                   isLast={index === boards.length - 1}
                   onReopenBoard={onReopenBoard}
                   onLeaveBoard={onLeaveBoard}
+                  onDeleteBoard={onDeleteBoard}
                 />
               ))}
           </Box>

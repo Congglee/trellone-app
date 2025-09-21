@@ -2,7 +2,13 @@ import { createApi } from '@reduxjs/toolkit/query/react'
 import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
 import { workspaceApi } from '~/queries/workspaces'
-import { BoardListResType, BoardResType, CreateBoardBodyType, UpdateBoardBodyType } from '~/schemas/board.schema'
+import {
+  BoardListResType,
+  BoardResType,
+  CreateBoardBodyType,
+  DeleteBoardResType,
+  UpdateBoardBodyType
+} from '~/schemas/board.schema'
 import { BoardQueryParams, CommonQueryParams } from '~/types/query-params.type'
 
 const BOARD_API_URL = '/boards' as const
@@ -96,6 +102,18 @@ export const boardApi = createApi({
         { type: 'Board', id },
         { type: 'Board', id: 'LIST' }
       ]
+    }),
+
+    deleteBoard: build.mutation<DeleteBoardResType, string>({
+      query: (id) => ({ url: `${BOARD_API_URL}/${id}`, method: 'DELETE' }),
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          await queryFulfilled
+        } catch (error) {
+          console.error(error)
+        }
+      },
+      invalidatesTags: [{ type: 'Board', id: 'LIST' }]
     })
   })
 })
@@ -106,7 +124,8 @@ export const {
   useLazyGetBoardsQuery,
   useUpdateBoardMutation,
   useLeaveBoardMutation,
-  useGetJoinedWorkspaceBoardsQuery
+  useGetJoinedWorkspaceBoardsQuery,
+  useDeleteBoardMutation
 } = boardApi
 
 const boardApiReducer = boardApi.reducer
