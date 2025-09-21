@@ -2,7 +2,13 @@ import { createApi } from '@reduxjs/toolkit/query/react'
 import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
 import { workspaceApi } from '~/queries/workspaces'
-import { BoardListResType, BoardResType, CreateBoardBodyType, UpdateBoardBodyType } from '~/schemas/board.schema'
+import {
+  BoardListResType,
+  BoardResType,
+  CreateBoardBodyType,
+  DeleteBoardResType,
+  UpdateBoardBodyType
+} from '~/schemas/board.schema'
 import { BoardQueryParams, CommonQueryParams } from '~/types/query-params.type'
 
 const BOARD_API_URL = '/boards' as const
@@ -22,7 +28,12 @@ export const boardApi = createApi({
           const { data } = await queryFulfilled
           const board = data.result
 
-          dispatch(workspaceApi.util.invalidateTags([{ type: 'Workspace', id: board?.workspace_id }]))
+          dispatch(
+            workspaceApi.util.invalidateTags([
+              { type: 'Workspace', id: board?.workspace_id },
+              { type: 'Workspace', id: 'LIST' }
+            ])
+          )
         } catch (error) {
           toast.error('There was an error creating the board')
           console.error(error)
@@ -63,18 +74,46 @@ export const boardApi = createApi({
           console.error(error)
         }
       },
-      invalidatesTags: (_result, _error, { id }) => [
+      invalidatesTags: (_result, _error, { id, body }) => {
+        const ignoreTags = ['column_order_ids']
+
+        if (ignoreTags.some((tag) => tag in body)) {
+          return []
+        }
+
+        return [
+          { type: 'Board', id },
+          { type: 'Board', id: 'LIST' }
+        ]
+      }
+    }),
+
+    leaveBoard: build.mutation<BoardResType, string>({
+      query: (id) => ({ url: `${BOARD_API_URL}/${id}/members/me/leave`, method: 'POST' }),
+      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled
+          dispatch(workspaceApi.util.invalidateTags([{ type: 'Workspace', id: 'LIST' }]))
+        } catch (error) {
+          console.error(error)
+        }
+      },
+      invalidatesTags: (_result, _error, id) => [
         { type: 'Board', id },
         { type: 'Board', id: 'LIST' }
       ]
     }),
 
-    leaveBoard: build.mutation<BoardResType, string>({
-      query: (id) => ({ url: `${BOARD_API_URL}/${id}/members/me/leave`, method: 'POST' }),
-      invalidatesTags: (_result, _error, id) => [
-        { type: 'Board', id },
-        { type: 'Board', id: 'LIST' }
-      ]
+    deleteBoard: build.mutation<DeleteBoardResType, string>({
+      query: (id) => ({ url: `${BOARD_API_URL}/${id}`, method: 'DELETE' }),
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          await queryFulfilled
+        } catch (error) {
+          console.error(error)
+        }
+      },
+      invalidatesTags: [{ type: 'Board', id: 'LIST' }]
     })
   })
 })
@@ -82,9 +121,11 @@ export const boardApi = createApi({
 export const {
   useAddBoardMutation,
   useGetBoardsQuery,
+  useLazyGetBoardsQuery,
   useUpdateBoardMutation,
   useLeaveBoardMutation,
-  useGetJoinedWorkspaceBoardsQuery
+  useGetJoinedWorkspaceBoardsQuery,
+  useDeleteBoardMutation
 } = boardApi
 
 const boardApiReducer = boardApi.reducer

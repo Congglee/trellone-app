@@ -1,9 +1,7 @@
 import CloseIcon from '@mui/icons-material/Close'
 import InfoIcon from '@mui/icons-material/Info'
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { Link as MuiLink } from '@mui/material'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import Popover from '@mui/material/Popover'
@@ -18,13 +16,15 @@ import { useCategorizeWorkspaces } from '~/hooks/use-categorize-workspaces'
 import { useInfiniteScroll } from '~/hooks/use-infinite-scroll'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import BoardGrid from '~/pages/Workspaces/pages/BoardsList/components/BoardGrid'
-import { useGetWorkspacesQuery } from '~/queries/workspaces'
+import ClosedBoards from '~/pages/Workspaces/pages/BoardsList/components/ClosedBoards'
+import { useGetWorkspacesQuery, workspaceApi } from '~/queries/workspaces'
 import { WorkspaceResType } from '~/schemas/workspace.schema'
 import { appendWorkspaces, clearWorkspaces, setWorkspaces } from '~/store/slices/workspace.slice'
 
 export default function BoardsList() {
   const dispatch = useAppDispatch()
   const { workspaces } = useAppSelector((state) => state.workspace)
+  const { socket } = useAppSelector((state) => state.app)
 
   const [anchorGuestWorkspaceInfoPopoverElement, setAnchorGuestWorkspaceInfoPopoverElement] =
     useState<HTMLElement | null>(null)
@@ -113,10 +113,47 @@ export default function BoardsList() {
 
   const { memberWorkspaces, guestWorkspaces } = useCategorizeWorkspaces(workspaces)
 
+  const allWorkspaces = useMemo(() => [...memberWorkspaces, ...guestWorkspaces], [memberWorkspaces, guestWorkspaces])
+
   const hasClosedBoards = useMemo(
     () => workspaces.some((workspace) => workspace.boards.some((board) => board._destroy)),
     [workspaces]
   )
+
+  // Realtime: listen to workspace updates and refresh list
+  useEffect(() => {
+    if (!socket) return
+
+    socket.emit('CLIENT_JOIN_WORKSPACES_INDEX')
+
+    let timer: ReturnType<typeof setTimeout> | null = null
+
+    const scheduleRefresh = () => {
+      if (timer) return
+      timer = setTimeout(() => {
+        dispatch(workspaceApi.util.invalidateTags([{ type: 'Workspace', id: 'LIST' }]))
+        timer = null
+      }, 200)
+    }
+
+    const onUpdateWorkspace = () => scheduleRefresh()
+
+    const onReconnect = () => {
+      socket.emit('CLIENT_JOIN_WORKSPACES_INDEX')
+      scheduleRefresh()
+    }
+
+    socket.on('SERVER_WORKSPACE_UPDATED', onUpdateWorkspace)
+    socket.on('reconnect', onReconnect)
+
+    return () => {
+      socket.emit('CLIENT_LEAVE_WORKSPACES_INDEX')
+      socket.off('SERVER_WORKSPACE_UPDATED', onUpdateWorkspace)
+      socket.off('reconnect', onReconnect)
+
+      if (timer) clearTimeout(timer)
+    }
+  }, [socket, dispatch])
 
   return (
     <Box>
@@ -186,68 +223,71 @@ export default function BoardsList() {
             </Stack>
           ))}
 
-        <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, mb: 2.5, gap: 1 }}>
-          <Typography variant='h6'>Guest Workspaces</Typography>
-          <IconButton size='small' disableRipple sx={{ p: 0 }} onClick={toggleGuestWorkspaceInfoPopover}>
-            <InfoIcon />
-          </IconButton>
+        {guestWorkspaces.length > 0 && (
+          <>
+            <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, mb: 2.5, gap: 1 }}>
+              <Typography variant='h6'>Guest Workspaces</Typography>
+              <IconButton size='small' disableRipple sx={{ p: 0 }} onClick={toggleGuestWorkspaceInfoPopover}>
+                <InfoIcon />
+              </IconButton>
 
-          <Popover
-            id={guestWorkspaceInfoPopoverId}
-            open={isGuestWorkspaceInfoPopoverOpen}
-            anchorEl={anchorGuestWorkspaceInfoPopoverElement}
-            onClose={toggleGuestWorkspaceInfoPopover}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-            transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-            slotProps={{
-              paper: { sx: { borderRadius: 2 } }
-            }}
-          >
-            <Box sx={{ p: 1.5, maxWidth: '300px', width: '100%' }}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  mb: 2,
-                  position: 'relative'
+              <Popover
+                id={guestWorkspaceInfoPopoverId}
+                open={isGuestWorkspaceInfoPopoverOpen}
+                anchorEl={anchorGuestWorkspaceInfoPopoverElement}
+                onClose={toggleGuestWorkspaceInfoPopover}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                slotProps={{
+                  paper: { sx: { borderRadius: 2 } }
                 }}
               >
-                <Typography variant='subtitle1' sx={{ fontWeight: 'medium' }}>
-                  Guest Workspaces
-                </Typography>
-                <IconButton
-                  size='small'
-                  onClick={toggleGuestWorkspaceInfoPopover}
-                  sx={{ position: 'absolute', right: 0 }}
-                >
-                  <CloseIcon fontSize='small' />
-                </IconButton>
-              </Box>
+                <Box sx={{ p: 1.5, maxWidth: '300px', width: '100%' }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mb: 2,
+                      position: 'relative'
+                    }}
+                  >
+                    <Typography variant='subtitle1' sx={{ fontWeight: 'medium' }}>
+                      Guest Workspaces
+                    </Typography>
+                    <IconButton
+                      size='small'
+                      onClick={toggleGuestWorkspaceInfoPopover}
+                      sx={{ position: 'absolute', right: 0 }}
+                    >
+                      <CloseIcon fontSize='small' />
+                    </IconButton>
+                  </Box>
 
-              <Typography variant='body2' sx={{ mb: 1, color: 'text.secondary', fontSize: '0.875rem' }}>
-                You’re a member of these boards, but not a member of the Workspace the boards are in.{' '}
-                <MuiLink href='#' sx={{ textDecoration: 'underline' }}>
-                  Learn more
-                </MuiLink>
-              </Typography>
+                  <Typography variant='body2' sx={{ mb: 1, color: 'text.secondary', fontSize: '0.875rem' }}>
+                    You’re a member of these boards, but not a member of the Workspace the boards are in.{' '}
+                    <MuiLink href='#' sx={{ textDecoration: 'underline' }}>
+                      Learn more
+                    </MuiLink>
+                  </Typography>
+                </Box>
+              </Popover>
             </Box>
-          </Popover>
-        </Box>
 
-        {guestWorkspaces.length > 0 &&
-          guestWorkspaces.map((workspace) => (
-            <Stack key={workspace._id} spacing={2} mb={4.5}>
-              <Stack alignItems='center' direction='row' spacing={2} pl={1}>
-                <WorkspaceAvatar title={workspace.title} logo={workspace.logo} size={{ width: 32, height: 32 }} />
-                <Typography variant='h6' fontWeight={600}>
-                  {workspace.title}
-                </Typography>
+            {guestWorkspaces.map((workspace) => (
+              <Stack key={workspace._id} spacing={2} mb={4.5}>
+                <Stack alignItems='center' direction='row' spacing={2} pl={1}>
+                  <WorkspaceAvatar title={workspace.title} logo={workspace.logo} size={{ width: 32, height: 32 }} />
+                  <Typography variant='h6' fontWeight={600}>
+                    {workspace.title}
+                  </Typography>
+                </Stack>
+
+                <BoardGrid workspace={workspace} isLoading={false} showNewBoardCard={false} />
               </Stack>
-
-              <BoardGrid workspace={workspace} isLoading={false} showNewBoardCard={false} />
-            </Stack>
-          ))}
+            ))}
+          </>
+        )}
 
         {isLoadingMore && (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
@@ -256,32 +296,7 @@ export default function BoardsList() {
         )}
       </Box>
 
-      {!hasClosedBoards && workspaces.length > 0 && (
-        <Box sx={{ mt: 6, pl: 1 }}>
-          <Button
-            variant='outlined'
-            startIcon={<VisibilityOffIcon />}
-            sx={{
-              textTransform: 'none',
-              fontWeight: 600,
-              px: 3,
-              py: 1,
-              borderRadius: 2,
-              color: (theme) => (theme.palette.mode === 'dark' ? '#90caf9' : '#1976d2'),
-              borderColor: (theme) => (theme.palette.mode === 'dark' ? '#525252' : '#e0e0e0'),
-              bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'transparent' : '#fafafa'),
-              '&:hover': {
-                borderColor: (theme) => theme.palette.primary.main,
-                bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#33485D' : '#e3f2fd'),
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-              }
-            }}
-            disabled
-          >
-            View all closed boards
-          </Button>
-        </Box>
-      )}
+      {hasClosedBoards && <ClosedBoards workspaces={allWorkspaces} />}
     </Box>
   )
 }

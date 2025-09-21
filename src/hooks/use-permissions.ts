@@ -99,6 +99,7 @@ interface UseBoardPermissionReturn {
   role: BoardMemberRoleType | null
   isMember: boolean
   isGuest: boolean
+  isClosed: boolean
   isAdmin: boolean
   isNormal: boolean
   isObserver: boolean
@@ -115,7 +116,6 @@ interface UseBoardPermissionReturn {
   canDeleteCard: boolean
   canComment: boolean
   canAttach: boolean
-  // Alias derived capability; deleting a board is considered part of managing it
   canDeleteBoard: boolean
 }
 
@@ -164,26 +164,30 @@ export const useBoardPermission = (board?: BoardItem, userIdOverride?: string): 
   const isNormal = role === BoardRole.Member
   const isObserver = role === BoardRole.Observer
 
+  const isClosed = Boolean(board?._destroy)
+
   return {
     role,
     isMember,
     isGuest,
+    isClosed,
     isAdmin,
     isNormal,
     isObserver,
     permissions,
     hasPermission,
+    // View remains allowed according to role even when closed; all interactions below are disabled if closed
     canViewBoard: hasPermission(BoardPermission.ViewBoard),
-    canManageBoard: hasPermission(BoardPermission.ManageBoard),
-    canManageMembers: hasPermission(BoardPermission.ManageMembers),
-    canCreateColumn: hasPermission(BoardPermission.CreateColumn),
-    canEditColumn: hasPermission(BoardPermission.EditColumn),
-    canDeleteColumn: hasPermission(BoardPermission.DeleteColumn),
-    canCreateCard: hasPermission(BoardPermission.CreateCard),
-    canEditCard: hasPermission(BoardPermission.EditCard),
-    canDeleteCard: hasPermission(BoardPermission.DeleteCard),
-    canComment: hasPermission(BoardPermission.Comment),
-    canAttach: hasPermission(BoardPermission.Attach),
-    canDeleteBoard: hasPermission(BoardPermission.ManageBoard)
+    canManageBoard: hasPermission(BoardPermission.ManageBoard) && !isClosed,
+    canManageMembers: hasPermission(BoardPermission.ManageMembers) && !isClosed,
+    canCreateColumn: hasPermission(BoardPermission.CreateColumn) && !isClosed,
+    canEditColumn: hasPermission(BoardPermission.EditColumn) && !isClosed,
+    canDeleteColumn: hasPermission(BoardPermission.DeleteColumn) && !isClosed,
+    canCreateCard: hasPermission(BoardPermission.CreateCard) && !isClosed,
+    canEditCard: hasPermission(BoardPermission.EditCard) && !isClosed,
+    canDeleteCard: hasPermission(BoardPermission.DeleteCard) && !isClosed,
+    canComment: hasPermission(BoardPermission.Comment) && !isClosed,
+    canAttach: hasPermission(BoardPermission.Attach) && !isClosed,
+    canDeleteBoard: hasPermission(BoardPermission.DeleteBoard) && isClosed
   }
 }

@@ -32,5 +32,6 @@ export interface BoardInvitationQueryParams {
 
 export interface BoardQueryParams extends CommonQueryParams {
   keyword?: string
-  workspace_id?: string
+  state?: 'closed' | 'active'
+  workspace?: string
 }

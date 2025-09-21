@@ -116,7 +116,7 @@ export type RemoveGuestFromBoardBodyType = z.TypeOf<typeof RemoveGuestFromBoardB
 export const RemoveGuestFromWorkspaceRes = z.object({
   result: z.object({
     workspace: WorkspaceSchema,
-    affectedBoardIds: z.array(z.string())
+    affected_board_ids: z.array(z.string())
   }),
   message: z.string()
 })

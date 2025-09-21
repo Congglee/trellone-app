@@ -36,7 +36,7 @@ export default function Home() {
       </Helmet>
 
       <List
-        sx={{ mx: { xs: 1, md: 0 }, width: '100%', maxWidth: 500 }}
+        sx={{ mx: { xs: 1, md: 0 }, width: '100%', maxWidth: { xs: '100%', sm: 500 } }}
         aria-labelledby='nested-list-subheader'
         subheader={
           <ListSubheader

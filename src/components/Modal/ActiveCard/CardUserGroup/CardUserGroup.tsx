@@ -11,8 +11,8 @@ import { UserType } from '~/schemas/user.schema'
 
 interface CardUserGroupProps {
   cardMembers: string[]
-  onAddCardMember: (user_id: string) => Promise<void>
-  onRemoveCardMember: (user_id: string) => Promise<void>
+  onAddCardMember: (userId: string) => void
+  onRemoveCardMember: (userId: string) => void
 }
 
 export default function CardUserGroup({ cardMembers, onAddCardMember, onRemoveCardMember }: CardUserGroupProps) {

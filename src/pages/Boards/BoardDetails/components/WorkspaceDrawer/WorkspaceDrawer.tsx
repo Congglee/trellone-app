@@ -38,9 +38,10 @@ interface WorkspaceDrawerProps {
   onOpen: (open: boolean) => void
   boardId?: string
   workspace?: WorkspaceResType['result'] | BoardResType['result']['workspace']
+  isBoardClosed?: boolean
 }
 
-export default function WorkspaceDrawer({ open, onOpen, boardId, workspace }: WorkspaceDrawerProps) {
+export default function WorkspaceDrawer({ open, onOpen, boardId, workspace, isBoardClosed }: WorkspaceDrawerProps) {
   const theme = useTheme()
   const isDarkMode = theme.palette.mode === 'dark'
 
@@ -123,7 +124,9 @@ export default function WorkspaceDrawer({ open, onOpen, boardId, workspace }: Wo
           width: theme.trellone.workspaceDrawerWidth,
           boxSizing: 'border-box',
           top: 'auto',
-          height: `calc(100% - ${theme.trellone.navBarHeight})`
+          height: isBoardClosed
+            ? `calc(100% - ${theme.trellone.navBarHeight} - 48px)`
+            : `calc(100% - ${theme.trellone.navBarHeight})`
         }
       }}
       variant='persistent'

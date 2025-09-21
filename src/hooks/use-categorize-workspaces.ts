@@ -25,17 +25,22 @@ export const useCategorizeWorkspaces = (workspaces: WorkspaceResType['result'][]
     const guestWorkspaces: WorkspaceResType['result'][] = []
 
     workspaces.forEach((workspace) => {
+      // Filter out closed boards (_destroy === true) for each workspace
+      const activeBoards = (workspace.boards || []).filter((board) => !board._destroy)
+
       // Check if user is in members array
       const isMember = workspace.members.some((member) => member.user_id === profile._id)
 
       if (isMember) {
-        memberWorkspaces.push(workspace)
+        memberWorkspaces.push({ ...workspace, boards: activeBoards })
       } else {
         // Check if user is in guests array
-        const isGuest = workspace.guests.some((id) => id === profile._id)
+        const isGuest = workspace.guests.some((guest) =>
+          typeof guest === 'string' ? guest === profile._id : guest._id === profile._id
+        )
 
         if (isGuest) {
-          guestWorkspaces.push(workspace)
+          guestWorkspaces.push({ ...workspace, boards: activeBoards })
         }
       }
     })

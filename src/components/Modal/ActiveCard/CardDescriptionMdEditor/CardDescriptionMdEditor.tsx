@@ -8,7 +8,7 @@ import EditNoteIcon from '@mui/icons-material/EditNote'
 
 interface CardDescriptionMdEditorProps {
   description: string
-  onUpdateCardDescription: (description: string) => Promise<void>
+  onUpdateCardDescription: (description: string) => void
 }
 
 export default function CardDescriptionMdEditor({

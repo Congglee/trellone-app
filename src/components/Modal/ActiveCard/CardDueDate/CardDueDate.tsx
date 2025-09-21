@@ -15,7 +15,7 @@ import Tooltip from '@mui/material/Tooltip'
 interface CardDueDateProps {
   dueDate?: Date | null
   isCompleted?: boolean | null
-  onUpdateCardDueDateAndStatus: (due_date: Date | null, is_completed: boolean | null) => Promise<void>
+  onUpdateCardDueDateAndStatus: (dueDate: Date | null, isCompleted: boolean | null) => void
 }
 
 export default function CardDueDate({ dueDate, isCompleted, onUpdateCardDueDateAndStatus }: CardDueDateProps) {

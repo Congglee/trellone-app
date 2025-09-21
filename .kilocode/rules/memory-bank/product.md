@@ -1,167 +1,58 @@
-# Product Definition: Trellone
+# Product Context for Trellone
 
-## 1. Project Purpose
+## Core Purpose & Vision
 
-Trellone is a feature-rich, open-source Trello clone designed to provide a modern and intuitive project management experience. It is built with React 18.3.1, TypeScript 5.7.2, and Material-UI 5.16.14, offering real-time collaboration, a clean user interface, and comprehensive task management capabilities.
+Trellone is a feature-rich, self-hostable project management application designed as a clone of Trello. It aims to provide a visually intuitive and highly collaborative platform for teams to organize tasks, manage workflows, and track progress in real-time. The vision is to offer an open-source, modern alternative to Trello that developers can easily extend and integrate into their own infrastructure.
 
-## 2. Problem Statement
+## Key Problems Addressed
 
-Development teams, project managers, and businesses require a flexible and collaborative tool to organize workflows, track progress, and manage tasks effectively. Existing solutions can be expensive, bloated with unnecessary features, or lack a modern user experience. Trellone addresses this by providing a self-hostable, open-source alternative that is both powerful and easy to use.
+- **Lack of Self-Hosted Trello Alternatives:** Provides a solution for teams that require data privacy and control by allowing them to host their own project management tool.
+- **Real-Time Collaboration Gaps:** Ensures that all team members are on the same page with instant updates to boards, columns, and cards, powered by WebSockets.
+- **Fragmented User Experience:** Delivers a polished, single-page application (SPA) experience with a consistent and responsive UI built on Material-UI, eliminating page reloads and providing a fluid workflow.
+- **Complex UI State Management:** Solves the challenge of managing complex application state by using Redux Toolkit, RTK Query for data fetching, and Redux Persist for preserving user sessions.
 
-## 3. Core Features
+## Target Audience & User Personas
 
-### Authentication & Security
+- **Development Teams:** For planning sprints, tracking bugs, and managing feature backlogs.
+- **Project Managers:** To oversee project progress, assign tasks, and coordinate work across different team members.
+- **Small to Medium-Sized Businesses (SMBs):** For organizing internal projects, tracking deliverables, and managing team workflows without relying on third-party SaaS providers.
+- **Open Source Projects:** To provide a transparent and accessible way to manage community contributions and development roadmaps.
 
-- **JWT-based Authentication**: Secure token-based login with refresh token support
-- **Google OAuth Integration**: Third-party authentication support with Google OAuth 2.0
-- **Account Management**: Email verification, password reset, and account recovery
-- **Role-based Access**: User roles and permissions system with protected routes
+## How It Should Work: Core User Workflows
 
-### Board Management
+1.  **Authentication & Onboarding:**
 
-- **Board Creation**: Create unlimited boards with customizable titles and descriptions
-- **Board Customization**: Custom background colors, cover photos, and themes
-- **Board Sharing**: Invite team members via email and manage board permissions
-- **Board Templates**: Pre-configured templates for common use cases
-- **Workspace Organization**: Group related boards in workspaces for better organization
+    - Users can register for a new account, log in with credentials, or use OAuth providers.
+    - Upon first login, users are guided to create or join a workspace.
 
-### Column & Card Management
+2.  **Workspace & Board Management:**
 
-- **Drag-and-Drop Interface**: Intuitive card and column reordering using @dnd-kit 6.3.1
-- **Rich Card Content**: Markdown descriptions with live preview using @uiw/react-md-editor
-- **File Attachments**: Support for images, documents, and link previews with validation
-- **Due Dates**: Calendar integration with deadline tracking using @mui/x-date-pickers
-- **Cover Photos**: Visual card identification with custom covers and image uploads
-- **Card Comments**: Threaded discussions with emoji reactions using emoji-picker-react
-- **User Assignments**: Assign team members to specific cards with visual indicators
-- **Activity Tracking**: Complete audit trail of all card changes with timestamps
+    - Users can create multiple workspaces to segregate different projects or teams.
+    - Within a workspace, users can create boards, which can be public or private.
+    - Members can be invited to workspaces and boards with specific roles and permissions.
 
-### Real-time Collaboration
+3.  **Board Interaction (Trello-like UX):**
 
-- **Live Updates**: Instant synchronization across all connected users via Socket.io 4.8.1
-- **Room-based Collaboration**: Board-specific real-time updates with user presence
-- **Conflict Resolution**: Automatic handling of concurrent edits with optimistic updates
-- **User Presence**: Live indicators showing who's online and active on boards
-- **Notification System**: Real-time alerts for board activities with react-toastify
+    - Boards consist of columns (e.g., "To Do," "In Progress," "Done") that represent stages of a workflow.
+    - Cards, representing individual tasks, can be created within columns.
+    - Users can drag and drop cards between columns to update their status in real-time.
+    - Columns can also be reordered via drag and drop.
 
-### User Experience
+4.  **Card Details & Collaboration:**
 
-- **Responsive Design**: Seamless experience across desktop, tablet, and mobile with Material-UI breakpoints
-- **Dark/Light Themes**: System preference detection and manual toggle with smooth transitions
-- **Keyboard Shortcuts**: Power user features for increased productivity
-- **Search Functionality**: Quick board and card search capabilities
-- **Infinite Scroll**: Smooth loading of large datasets with react-infinite-scroll-component
-- **Loading States**: Consistent feedback during operations with skeleton screens
+    - Clicking a card opens a detailed modal view.
+    - Within the modal, users can add markdown descriptions, set due dates, upload attachments, and add comments.
+    - Team members can react to comments and cards with emojis.
+    - All updates (comments, attachments, etc.) are synchronized in real-time across all connected clients.
 
-### Advanced Features
+5.  **Real-Time Collaboration:**
+    - Changes made by one user are instantly reflected for all other usersViewing the same board.
+    - The system uses Socket.IO for resilient, real-time communication with the backend.
 
-- **Board Templates**: Quick start with predefined board structures
-- **Workspace Management**: Complete workspace functionality with board organization
-- **Workspace Visibility**: Public/Private controls available via Workspace Settings, with permission gating
-- **Advanced Settings**: User preferences and account management with comprehensive forms
-- **Export Capabilities**: Data export for backup and migration
-- **Activity Feeds**: Comprehensive activity tracking and notifications
-- **SEO Optimization**: Complete metadata management with react-helmet-async 2.0.5
+## User Experience (UX) Goals
 
-## 4. Target Audience
-
-### Primary Users
-
-- **Development Teams**: For agile project management, sprint planning, and bug tracking with real-time collaboration
-- **Project Managers**: To coordinate team members, assign tasks, and monitor project status with advanced workspace features
-- **Small to Medium Businesses**: To organize internal workflows and manage collaborative projects with secure authentication
-- **Remote Teams**: To facilitate real-time collaboration across different geographical locations with presence indicators
-
-### Secondary Users
-
-- **Students and Educators**: For academic project management and assignment tracking
-- **Freelancers**: For client project organization and task management
-- **Non-profits**: For volunteer coordination and event planning
-- **Personal Use**: For individual task management and goal tracking
-
-## 5. User Stories
-
-### Core User Journeys
-
-**New User Onboarding**
-
-- User can register with email or Google OAuth providers
-- User receives verification email and activates account
-- User is guided through creating their first board with templates
-- User can invite team members to collaborate via email invitations
-
-**Daily Workflow**
-
-- User logs in and sees recent boards and activities in workspace dashboard
-- User can quickly create new cards with rich content and assign due dates
-- User can drag cards between columns to update status with smooth animations
-- User receives real-time notifications of team activities via toast notifications
-
-**Team Collaboration**
-
-- Multiple users can work on the same board simultaneously with Socket.io
-- Changes are instantly synchronized across all connected users with optimistic updates
-- Users can comment on cards and react to discussions with emoji picker
-- Team members receive notifications of relevant updates in real-time
-
-**Project Management**
-
-- Project managers can create boards for different projects within workspaces
-- Cards can be organized into workflow stages (columns) with drag-and-drop
-- Due dates and assignments help track progress with calendar integration
-- Activity feeds provide project oversight with comprehensive audit trails
-
-## 6. Success Metrics
-
-### User Engagement
-
-- Daily active users and session duration with real-time collaboration tracking
-- Board creation and card activity rates with workspace utilization
-- Real-time collaboration instances and Socket.io connection metrics
-- User retention and return rates with feature adoption analytics
-
-### Feature Adoption
-
-- Percentage of users utilizing advanced features (attachments, markdown, etc.)
-- File attachment and rich content usage with upload statistics
-- Comment and reaction engagement with emoji usage metrics
-- Mobile vs desktop usage patterns with responsive design analytics
-
-### Technical Performance
-
-- Page load times and response speeds with Vite build optimization
-- Real-time synchronization latency with Socket.io performance metrics
-- System uptime and reliability with error boundary tracking
-- Error rates and user-reported issues with comprehensive logging
-
-## 7. Competitive Advantages
-
-- **Open Source**: Free to use and modify with comprehensive documentation
-- **Modern Technology**: Built with latest React 18.3.1, TypeScript 5.7.2, and Material-UI 5.16.14
-- **Real-time First**: Seamless collaborative experience with Socket.io 4.8.1
-- **Customizable**: Themes, templates, and personalization with Material-UI theming
-- **Self-hostable**: Complete control over data and deployment with Vercel-ready configuration
-- **Performance Optimized**: Fast loading and smooth interactions with Vite 6.1.0 builds
-- **Type Safety**: 100% TypeScript coverage with comprehensive type definitions\n- **Accessibility**: @dnd-kit accessibility features and Material-UI compliance
-
-## 8. Future Enhancements
-
-Based on the current development roadmap, the following enhancements are planned:
-
-✅ **SEO Optimization** - Comprehensive SEO features for better search engine visibility (Complete)
-
-✅ **Workspace Visibility** - Public/private controls available via Workspace Settings, with permission gating (Complete)
-
-⏳ **Board & Workspace Visibility** - In Progress (Workspace visibility complete; Board visibility planned)
-
-⏳ **User Permissions System** - Role-based access control for Boards and Workspaces (Planned)
-
-⏳ **System Optimization** - Performance improvements and code optimization (Ongoing)
-
-⏳ **Docker Support** - Complete containerization for easy deployment and development (Planned)
-
-- **Premium Subscription System** - Stripe-powered subscriptions with advanced features
-- **Advanced Analytics** - Project insights and reporting capabilities
-- **Third-party Integrations** - Calendar sync and external service integrations
-- **Enterprise Features** - Advanced user management and SSO
-- **Mobile Applications** - Native iOS and Android app development
+- **Intuitive & Familiar:** The UI should feel immediately familiar to anyone who has used Trello or similar kanban-style tools.
+- **Responsive & Fast:** The application must be fast and responsive, with sub-second UI updates and smooth animations, leveraging Vite's performance and React's virtual DOM.
+- **Polished & Professional:** The aesthetic, powered by Material-UI, should be clean, modern, and professional, with both light and dark modes to suit user preferences.
+- **Seamless & Uninterrupted:** As a single-page application, all interactions should feel seamless, with no full-page reloads. Modals, dialogs, and optimistic UI updates contribute to this fluid experience.
+- **Accessible:** The application should adhere to accessibility best practices, ensuring it is usable by as many people as possible.

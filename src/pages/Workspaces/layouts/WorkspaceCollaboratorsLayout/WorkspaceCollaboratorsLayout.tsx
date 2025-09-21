@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import { Outlet, useParams } from 'react-router-dom'
 import WorkspaceCollaboratorsMenu from '~/pages/Workspaces/components/WorkspaceCollaboratorsMenu'
-import InviteWorkspaceMembersDialog from '~/pages/Workspaces/pages/WorkspaceMembers/components/InviteWorkspaceMembersDialog'
+import InviteWorkspaceMembers from '~/pages/Workspaces/pages/WorkspaceMembers/components/InviteWorkspaceMembers'
 
 export default function WorkspaceCollaboratorsLayout() {
   const { workspaceId } = useParams()
@@ -23,7 +23,7 @@ export default function WorkspaceCollaboratorsLayout() {
       <Divider orientation='vertical' flexItem />
 
       <Box sx={{ flex: 1, minWidth: 0 }}>
-        <InviteWorkspaceMembersDialog workspaceId={workspaceId as string} />
+        <InviteWorkspaceMembers workspaceId={workspaceId as string} />
         <Outlet />
       </Box>
     </Box>

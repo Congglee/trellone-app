@@ -111,7 +111,7 @@ export const cardApi = createApi({
       { card_id: string; comment_id: string; body: ReactToCardCommentBodyType }
     >({
       query: ({ card_id, comment_id, body }) => ({
-        url: `${CARD_API_URL}/${card_id}/comment/${comment_id}/reaction`,
+        url: `${CARD_API_URL}/${card_id}/comments/${comment_id}/reaction`,
         method: 'PUT',
         data: body
       }),

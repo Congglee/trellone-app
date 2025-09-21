@@ -67,9 +67,10 @@ export default function NewBoardDialog({ open, onNewBoardClose, defaultWorkspace
     addBoardMutation(values).then((res) => {
       if (!res.error) {
         const board = res.data?.result
-        navigate(`/boards/${board?._id}`)
 
         socket?.emit('CLIENT_USER_CREATED_WORKSPACE_BOARD', values.workspace_id)
+
+        navigate(`/boards/${board?._id}`)
       }
     })
   })

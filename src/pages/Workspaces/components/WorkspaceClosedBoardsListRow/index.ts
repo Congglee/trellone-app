@@ -1,0 +1,3 @@
+import WorkspaceClosedBoardsListRow from '~/pages/Workspaces/components/WorkspaceClosedBoardsListRow/WorkspaceClosedBoardsListRow'
+
+export default WorkspaceClosedBoardsListRow

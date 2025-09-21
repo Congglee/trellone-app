@@ -15,6 +15,7 @@ import { useBoardPermission } from '~/hooks/use-permissions'
 import { useQueryConfig } from '~/hooks/use-query-config'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import BoardBar from '~/pages/Boards/BoardDetails/components/BoardBar'
+import BoardClosedBanner from '~/pages/Boards/BoardDetails/components/BoardClosedBanner'
 import BoardContent from '~/pages/Boards/BoardDetails/components/BoardContent'
 import BoardDrawer from '~/pages/Boards/BoardDetails/components/BoardDrawer'
 import BoardErrorView from '~/pages/Boards/BoardDetails/components/BoardErrorView'
@@ -48,7 +49,17 @@ export default function BoardDetails() {
   const [updateColumnMutation] = useUpdateColumnMutation()
   const [moveCardToDifferentColumnMutation] = useMoveCardToDifferentColumnMutation()
 
-  const { isMember } = useBoardPermission(activeBoard)
+  const {
+    isAdmin,
+    isMember,
+    isClosed,
+    canManageBoard,
+    canCreateColumn,
+    canEditColumn,
+    canCreateCard,
+    canEditCard,
+    canDeleteBoard
+  } = useBoardPermission(activeBoard)
 
   useEffect(() => {
     if (boardId) {
@@ -136,9 +147,14 @@ export default function BoardDetails() {
       )
     }
 
+    const onUserDeletedBoard = () => {
+      dispatch(clearActiveBoard())
+    }
+
     socket?.on('SERVER_BOARD_UPDATED', onUpdateBoard)
     socket?.on('SERVER_CARD_UPDATED', onUpdateCard)
     socket?.on('SERVER_USER_ACCEPTED_BOARD_INVITATION', onUserAcceptedBoardInvitation)
+    socket?.on('SERVER_USER_DELETED_BOARD', onUserDeletedBoard)
     socket?.on('connect', onConnect)
     socket?.on('disconnect', onDisconnect)
 
@@ -146,10 +162,11 @@ export default function BoardDetails() {
       socket?.off('SERVER_BOARD_UPDATED', onUpdateBoard)
       socket?.off('SERVER_CARD_UPDATED', onUpdateCard)
       socket?.off('SERVER_USER_ACCEPTED_BOARD_INVITATION', onUserAcceptedBoardInvitation)
+      socket?.off('SERVER_USER_DELETED_BOARD', onUserDeletedBoard)
       socket?.off('connect', onConnect)
       socket?.off('disconnect', onDisconnect)
     }
-  }, [dispatch, socket, activeBoard])
+  }, [dispatch, socket, activeBoard, queryConfig])
 
   // Join the workspace room when the activeBoard is available, listen for workspace updates
   useEffect(() => {
@@ -163,9 +180,16 @@ export default function BoardDetails() {
     socket.emit('CLIENT_JOIN_WORKSPACE', workspaceId)
 
     const onUpdateWorkspace = (_workspaceId: string, updatedBoardId?: string) => {
-      // If the update targets this board, refetch its details for consistency
+      // If the update targets this board, refetch its details and the joined workspace boards for consistency
       if (updatedBoardId === activeBoard._id) {
         dispatch(getBoardDetails(activeBoard._id))
+        dispatch(
+          boardApi.util.prefetch(
+            'getJoinedWorkspaceBoards',
+            { workspace_id: workspaceId, ...queryConfig },
+            { force: true }
+          )
+        )
       }
     }
 
@@ -175,45 +199,51 @@ export default function BoardDetails() {
       socket.emit('CLIENT_LEAVE_WORKSPACE', workspaceId)
       socket.off('SERVER_WORKSPACE_UPDATED', onUpdateWorkspace)
     }
-  }, [socket, activeBoard, dispatch])
+  }, [socket, activeBoard, dispatch, queryConfig])
 
   const onMoveColumns = (dndOrderedColumns: ColumnType[]) => {
+    if (isClosed) return
+
     // Get the IDs of the columns in the order they are being moved
     const dndOrderedCardsIds = dndOrderedColumns.map((column) => column._id)
 
-    const newActiveBoard = { ...activeBoard! }
-    newActiveBoard.columns = dndOrderedColumns
-    newActiveBoard.column_order_ids = dndOrderedCardsIds
-
-    dispatch(updateActiveBoard(newActiveBoard))
-
     updateBoardMutation({
-      id: newActiveBoard._id,
-      body: { column_order_ids: newActiveBoard.column_order_ids }
-    })
+      id: activeBoard?._id as string,
+      body: { column_order_ids: dndOrderedCardsIds }
+    }).then((res) => {
+      if (!res.error) {
+        const newActiveBoard = { ...activeBoard! }
+        newActiveBoard.columns = dndOrderedColumns
+        newActiveBoard.column_order_ids = dndOrderedCardsIds
 
-    // Emit socket event to notify other users about the column order update
-    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+        dispatch(updateActiveBoard(newActiveBoard))
+
+        socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+      }
+    })
   }
 
   const onMoveCardInTheSameColumn = (dndOrderedCards: CardType[], dndOrderedCardsIds: string[], columnId: string) => {
-    const newActiveBoard = cloneDeep(activeBoard)
-    const columnToUpdate = newActiveBoard?.columns?.find((column) => column._id === columnId)
-
-    if (columnToUpdate) {
-      columnToUpdate.cards = dndOrderedCards
-      columnToUpdate.card_order_ids = dndOrderedCardsIds
-    }
-
-    dispatch(updateActiveBoard(newActiveBoard))
+    if (isClosed) return
 
     updateColumnMutation({
       id: columnId,
       body: { card_order_ids: dndOrderedCardsIds }
-    })
+    }).then((res) => {
+      if (!res.error) {
+        const newActiveBoard = cloneDeep(activeBoard)
+        const columnToUpdate = newActiveBoard?.columns?.find((column) => column._id === columnId)
 
-    // Emit socket event to notify other users about the card order update
-    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+        if (columnToUpdate) {
+          columnToUpdate.cards = dndOrderedCards
+          columnToUpdate.card_order_ids = dndOrderedCardsIds
+        }
+
+        dispatch(updateActiveBoard(newActiveBoard))
+
+        socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+      }
+    })
   }
 
   const onMoveCardToDifferentColumn = (
@@ -222,6 +252,8 @@ export default function BoardDetails() {
     nextColumnId: string,
     dndOrderedColumns: ColumnType[]
   ) => {
+    if (isClosed) return
+
     /**
      * When moving a card to another Column:
      * Step 1: Update the `card_order_ids` array of the original Column containing it (essentially, remove the Card's _id from the array)
@@ -233,14 +265,8 @@ export default function BoardDetails() {
     // Get the IDs of the columns in the order they are being moved
     const dndOrderedColumnsIds = dndOrderedColumns.map((column) => column._id)
 
-    const newActiveBoard = { ...activeBoard! }
-
-    newActiveBoard.columns = dndOrderedColumns
-    newActiveBoard.column_order_ids = dndOrderedColumnsIds
-
-    dispatch(updateActiveBoard(newActiveBoard))
-
     let prevCardOrderIds = dndOrderedColumns.find((column) => column._id === prevColumnId)?.card_order_ids as string[]
+    let nextCardOrderIds = dndOrderedColumns.find((column) => column._id === nextColumnId)?.card_order_ids as string[]
 
     // Handle the issue when dragging the last Card out of a Column;
     // If the Column is empty, there will be a placeholder card that needs to be removed before sending data to the backend server.
@@ -253,11 +279,19 @@ export default function BoardDetails() {
       prev_column_id: prevColumnId,
       prev_card_order_ids: prevCardOrderIds,
       next_column_id: nextColumnId,
-      next_card_order_ids: dndOrderedColumns.find((column) => column._id === nextColumnId)?.card_order_ids as string[]
-    })
+      next_card_order_ids: nextCardOrderIds
+    }).then((res) => {
+      if (!res.error) {
+        const newActiveBoard = { ...activeBoard! }
 
-    // Emit socket event to notify other users about the card move to different column
-    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+        newActiveBoard.columns = dndOrderedColumns
+        newActiveBoard.column_order_ids = dndOrderedColumnsIds
+
+        dispatch(updateActiveBoard(newActiveBoard))
+
+        socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+      }
+    })
   }
 
   if (loading === 'pending') {
@@ -284,7 +318,7 @@ export default function BoardDetails() {
 
       <NavBar />
 
-      <ActiveCard isBoardMember={isMember} />
+      <ActiveCard canEditCard={canEditCard} />
 
       <Box
         sx={{
@@ -309,12 +343,15 @@ export default function BoardDetails() {
           />
         )}
 
+        {isClosed && <BoardClosedBanner />}
+
         <Box sx={{ display: 'flex' }}>
           <WorkspaceDrawer
             open={workspaceDrawerOpen}
             onOpen={setWorkspaceDrawerOpen}
             boardId={boardId}
             workspace={activeBoard.workspace}
+            isBoardClosed={isClosed}
           />
 
           <BoardBar
@@ -323,6 +360,8 @@ export default function BoardDetails() {
             boardDrawerOpen={boardDrawerOpen}
             onBoardDrawerOpen={setBoardDrawerOpen}
             board={activeBoard}
+            isBoardMember={isMember}
+            canManageBoard={canManageBoard}
           />
 
           <Main
@@ -331,8 +370,12 @@ export default function BoardDetails() {
             sx={{
               overflowX: 'auto',
               overflowY: 'hidden',
-              height: (theme) => theme.trellone.boardMainHeight,
-              '&::-webkit-scrollbar-track': { m: 2 }
+              width: '100%',
+              minWidth: 0,
+              minHeight: 0,
+              display: 'block',
+              height: (theme) =>
+                isClosed ? `calc(${theme.trellone.boardMainHeight} - 48px)` : theme.trellone.boardMainHeight
             }}
           >
             <DrawerHeader />
@@ -344,7 +387,10 @@ export default function BoardDetails() {
               onMoveColumns={onMoveColumns}
               onMoveCardInTheSameColumn={onMoveCardInTheSameColumn}
               onMoveCardToDifferentColumn={onMoveCardToDifferentColumn}
-              isBoardMember={isMember}
+              canDragAndDrop={isMember && !isClosed}
+              canCreateColumn={canCreateColumn}
+              canEditColumn={canEditColumn}
+              canCreateCard={canCreateCard}
             />
           </Main>
 
@@ -352,8 +398,10 @@ export default function BoardDetails() {
             open={boardDrawerOpen}
             onOpen={setBoardDrawerOpen}
             boardMembers={activeBoard.members}
-            isBoardMember={isMember}
             boardId={boardId!}
+            isBoardAdmin={isAdmin}
+            canManageBoard={canManageBoard}
+            canDeleteBoard={canDeleteBoard}
           />
         </Box>
       </Box>

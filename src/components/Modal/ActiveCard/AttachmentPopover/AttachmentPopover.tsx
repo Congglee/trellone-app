@@ -22,7 +22,8 @@ import { useUploadDocumentMutation } from '~/queries/medias'
 import {
   AddCardAttachmentBodyType,
   AddCardLinkAttachmentBody,
-  AddCardLinkAttachmentBodyType
+  AddCardLinkAttachmentBodyType,
+  CardType
 } from '~/schemas/card.schema'
 import { updateCardInBoard } from '~/store/slices/board.slice'
 import { updateActiveCard } from '~/store/slices/card.slice'
@@ -65,7 +66,7 @@ const AttachmentPopover = forwardRef<HTMLButtonElement>((_, ref) => {
   const [uploadDocumentMutation] = useUploadDocumentMutation()
   const [addCardAttachmentMutation] = useAddCardAttachmentMutation()
 
-  const addCardLinkAttachment = handleSubmit(async (values) => {
+  const addCardLinkAttachment = handleSubmit((values) => {
     const payload = {
       type: AttachmentType.Link,
       link: {
@@ -76,21 +77,22 @@ const AttachmentPopover = forwardRef<HTMLButtonElement>((_, ref) => {
       file: {}
     } as AddCardAttachmentBodyType
 
-    const updatedCardRes = await addCardAttachmentMutation({
+    addCardAttachmentMutation({
       card_id: activeCard?._id as string,
       body: payload
-    }).unwrap()
+    }).then((res) => {
+      if (!res.error) {
+        const updatedCard = res.data?.result as CardType
 
-    const updatedCard = updatedCardRes.result
+        dispatch(updateActiveCard(updatedCard))
+        dispatch(updateCardInBoard(updatedCard))
 
-    dispatch(updateActiveCard(updatedCard))
-    dispatch(updateCardInBoard(updatedCard))
+        onReset()
+        setAnchorAttachmentPopoverElement(null)
 
-    // Emit socket event to broadcast the card update to other users
-    socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
-
-    onReset()
-    setAnchorAttachmentPopoverElement(null)
+        socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
+      }
+    })
   })
 
   const uploadFileAttachment = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -141,7 +143,6 @@ const AttachmentPopover = forwardRef<HTMLButtonElement>((_, ref) => {
         dispatch(updateActiveCard(updatedCard))
         dispatch(updateCardInBoard(updatedCard))
 
-        // Emit socket event to broadcast the card update to other users
         socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
       })
     ).finally(() => {

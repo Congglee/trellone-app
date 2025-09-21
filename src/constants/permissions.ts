@@ -23,7 +23,8 @@ export enum BoardPermission {
   EditCard = 'BOARD__EDIT_CARD',
   DeleteCard = 'BOARD__DELETE_CARD',
   Comment = 'BOARD__COMMENT',
-  Attach = 'BOARD__ATTACH'
+  Attach = 'BOARD__ATTACH',
+  DeleteBoard = 'BOARD__DELETE'
 }
 
 export const WORKSPACE_ROLE_PERMISSIONS: Record<WorkspaceMemberRoleType, WorkspacePermission[]> = {
@@ -55,7 +56,8 @@ export const BOARD_ROLE_PERMISSIONS: Record<BoardMemberRoleType, BoardPermission
     BoardPermission.EditCard,
     BoardPermission.DeleteCard,
     BoardPermission.Comment,
-    BoardPermission.Attach
+    BoardPermission.Attach,
+    BoardPermission.DeleteBoard
   ],
   [BoardRole.Member]: [
     BoardPermission.ViewBoard,

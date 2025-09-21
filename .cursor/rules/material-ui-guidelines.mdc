@@ -1,0 +1,155 @@
+---
+globs: trellone-app/src/**/*.ts, trellone-app/src/**/*.tsx, trellone-app/src/theme.ts
+description: Material-UI (MUI) usage and styling rules for Trellone App. Aligns with the canonical patterns in material-ui-patterns.md.
+---
+
+# Material‑UI Usage & Styling Rules (Trellone App)
+
+These rules codify the established Material‑UI (MUI) patterns in this project. Follow them for imports, theming, layout, styling, responsiveness, forms, dialogs, icons, animation, performance, and accessibility.
+
+Canonical reference: [trellone-app/.kilocode/rules/material-ui-patterns.md](mdc:trellone-app/.kilocode/rules/material-ui-patterns.md)
+
+## Imports and component usage
+
+- Prefer default, one‑per‑line imports for core components (tree‑shaking friendly):
+  - `import Box from '@mui/material/Box'`
+  - `import Typography from '@mui/material/Typography'`
+  - `import Button from '@mui/material/Button'`
+- Import icons individually: `import GoogleIcon from '@mui/icons-material/Google'`
+- Use aliases to avoid naming conflicts when necessary: `import { Card as MuiCard, Link as MuiLink } from '@mui/material'`
+- Use Grid v2: `import Grid from '@mui/material/Unstable_Grid2'`
+- Theme hooks/utilities when needed: `import { useTheme, useMediaQuery, useColorScheme } from '@mui/material'`
+
+## Theme configuration and customization
+
+- Use `experimental_extendTheme` to define the theme with light/dark color schemes and component overrides.
+- Augment MUI types for any custom theme additions to keep TypeScript strict.
+- Centralize spacing, layout constants, and palettes; do not hardcode values inline when a theme token exists.
+- Define overrides via `components` and prefer `unstable_sx` in `styleOverrides` for theme‑aware styles.
+- Put global CSS in `MuiCssBaseline.styleOverrides` (e.g., scrollbars) instead of ad‑hoc globals.
+- Manage mode with `useColorScheme` and theme palette tokens; avoid manual DOM class toggles.
+
+Example (theme excerpt):
+
+```ts
+// theme.ts (excerpt)
+import { experimental_extendTheme as extendTheme } from '@mui/material/styles'
+
+export const theme = extendTheme({
+  colorSchemes: {
+    light: { palette: { mode: 'light' } },
+    dark: { palette: { mode: 'dark' } }
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          textTransform: 'none',
+          borderRadius: 0.5,
+          transition: theme.transitions.create(['background-color', 'box-shadow'])
+        })
+      }
+    }
+  }
+})
+```
+
+## Styling conventions (`sx`)
+
+- Prefer `sx` over `styled` unless you need advanced composition or shouldForwardProp.
+- Use theme callbacks in `sx` for mode‑aware logic: `sx={{ bgcolor: (t) => t.palette.mode === 'dark' ? 'grey.900' : 'common.white' }}`
+- Use theme spacing units for consistent gaps/padding: `gap: 2`, `px: 2`.
+- Use breakpoints in `sx` for responsive values: `display: { xs: 'none', md: 'flex' }`.
+- Implement hover/focus states with nested selectors: `&:hover`, `&:focus-visible`.
+- Always prefer palette tokens over hex values when available: `color: 'text.primary'`, `bgcolor: 'background.paper'`.
+
+## Responsive design patterns
+
+- Use MUI breakpoints consistently: `{ xs, sm, md, lg, xl }`.
+- Prefer responsive object syntax for size/display: `width: { xs: 'auto', sm: 520 }`.
+- Use `useMediaQuery` for conditional rendering at runtime.
+- Adjust layout directions responsively: `flexDirection: { xs: 'column', md: 'row' }`.
+- Scale gaps and typography responsively: `gap: { xs: 1, md: 2 }`, `fontSize: { xs: '2.5rem', sm: '3rem' }`.
+
+## Layout and composition
+
+- Use `Box` as the primary layout container with `sx`.
+- Use `Stack` for vertical/horizontal spacing between items.
+- Use `Grid` (Unstable_Grid2) for responsive grids; prefer container/item props over manual widths.
+- Prefer `Card` with consistent elevation and radius for content groupings.
+- Use `Tooltip`, `IconButton`, `Chip` appropriately for interactions and status.
+
+## Forms with Material‑UI
+
+- Default `TextField` config: `fullWidth`, `variant='outlined'` unless a design calls for another variant.
+- Drive error states with the boolean `error` prop and helper text for messages.
+- For complex controls (e.g., `Select`), wrap with `FormControl` and `InputLabel`.
+- Use `FormControlLabel` for checkbox/radio groups.
+- With React Hook Form, use `Controller` for components that don’t support `register` directly.
+- Keep consistent spacing using surrounding `Box`/`Stack`; surface validation with `Alert` when needed.
+
+## Modals and dialogs
+
+- Use `Modal` with `disableScrollLock` for complex page layouts to avoid layout shifts.
+- Prefer `Dialog` for structured content: use `DialogTitle`, `DialogContent`, `DialogActions`.
+- Apply responsive sizing and add `Divider` where sections need visual separation.
+- Manage overlay/content z‑index carefully to avoid stacking conflicts.
+- Prefer `Zoom` for entrance animation unless a different motion is specified.
+
+## Icons
+
+- Import icons individually from `@mui/icons-material/*`.
+- Use `fontSize='small'` for inline/action icons unless otherwise specified.
+- Let icons inherit color when placed in colored parents: `sx={{ color: 'inherit' }}`.
+- For custom SVGs, use `SvgIcon` with `inheritViewBox`.
+
+## Animation and transitions
+
+- Use `Zoom`, `Fade`, `Slide` for transitions; avoid custom CSS unless necessary.
+- Use theme transitions for consistency: `theme.transitions.create(['margin', 'width'])`.
+- Keep hover transitions subtle and consistent: `transition: 'all 0.3s ease'`.
+- Use transform for interactive feedback: `&:hover { transform: 'scale(1.1)' }` where appropriate.
+
+## Layout, spacing, overflow
+
+- Standard padding/margin examples: `p: 2`, `px: 2`, `m: 2`.
+- Flex patterns: `display: 'flex'`, `alignItems: 'center'`, `justifyContent: 'space-between'`.
+- Handle overflow explicitly: `overflowX: 'auto'`, `overflow: 'hidden'`.
+- Positioning: `position: 'relative'` by default; use `absolute` sparingly.
+- Border radius: use theme scale consistently, e.g., `borderRadius: 0.5` (4px if base is 8px).
+
+## Color and theming best practices
+
+- Use theme palette tokens: `text.primary`, `text.secondary`, `background.paper`, `primary.main`, etc.
+- For dark/light mode conditionals, branch on `theme.palette.mode` or use `useColorScheme`.
+- For generated colors, use approved utilities (e.g., `generateColorFromString`) rather than ad‑hoc.
+- Consider `@mui/material/colors` when a named hue is needed: `import { blueGrey } from '@mui/material/colors'`.
+- Maintain WCAG contrast; avoid low‑contrast pairings.
+
+## Performance
+
+- Wrap expensive visual components with `React.memo` when props are stable.
+- Use `shouldForwardProp` when using `styled` to avoid invalid DOM attributes.
+- Prefer responsive object syntax over re‑computing styles in render.
+- Provide stable `key` props when rendering lists.
+- Leverage MUI’s `sx` compilation; avoid heavy inline function objects inside deep lists.
+
+## Accessibility and UX
+
+- Provide ARIA attributes for interactive controls: `aria-label`, `aria-describedby`.
+- Manage focus with `autoFocus` or `focused` where appropriate.
+- Use semantic elements via `component` prop: e.g., `component='main'`, `component='nav'`.
+- Ensure keyboard navigation works with default MUI behavior; don’t break tab order.
+- Prefer `Tooltip` for supplemental context; ensure it’s not required for core understanding.
+
+## Do / Don’t checklist
+
+- Do: prefer theme tokens, `sx`, responsive objects, and component composition.
+- Do: keep imports tree‑shakeable and minimal; alias on conflicts.
+- Don’t: hardcode colors/spacings that exist in the theme.
+- Don’t: mix `styled` and `sx` without a reason; prefer `sx` first.
+- Don’t: bypass `Dialog`/`Modal` structure; keep accessible titles and actions.
+
+---
+
+When in doubt, align with the canonical guide above and existing implementations under `src/components` and `src/pages`. Propose an edit to refactor non‑conforming code toward these patterns.

@@ -68,11 +68,11 @@ export default function Notifications() {
 
   const updateBoardInvitation = (status: BoardInvitationType['status'], invitationId: string) => {
     updateBoardInvitationMutation({ id: invitationId, body: { status } }).then((res) => {
-      if (res.data) {
-        const boardInvitation = res.data.result.invitation.board_invitation
+      if (!res.error) {
+        const boardInvitation = res.data?.result.invitation.board_invitation
 
         if (boardInvitation?.status === BoardInvitationStatus.Accepted) {
-          const invitee = res.data.result.invitee
+          const invitee = res.data?.result.invitee
           const workspaceId = boardInvitation.workspace_id
           const boardId = boardInvitation.board_id
 
@@ -87,8 +87,8 @@ export default function Notifications() {
 
   const updateWorkspaceInvitation = (status: UpdateWorkspaceInvitationBodyType['status'], invitationId: string) => {
     updateWorkspaceInvitationMutation({ id: invitationId, body: { status } }).then((res) => {
-      if (res.data) {
-        const workspaceInvitation = res.data.result.invitation.workspace_invitation
+      if (!res.error) {
+        const workspaceInvitation = res.data?.result.invitation.workspace_invitation
 
         if (workspaceInvitation?.status === WorkspaceInvitationStatus.Accepted) {
           const workspaceId = workspaceInvitation.workspace_id

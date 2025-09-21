@@ -8,17 +8,18 @@ import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import CardsList from '~/pages/Boards/BoardDetails/components/CardsList'
 import AddNewCard from '~/pages/Boards/BoardDetails/components/Column/AddNewCard'
-import ColumnMenuActionsPopover from '~/pages/Boards/BoardDetails/components/Column/ColumnMenuActionsPopover'
+import ColumnMenuActions from '~/pages/Boards/BoardDetails/components/Column/ColumnMenuActionsPopover'
 import { useUpdateColumnMutation } from '~/queries/columns'
 import { ColumnType } from '~/schemas/column.schema'
 import { updateActiveBoard } from '~/store/slices/board.slice'
 
 interface ColumnProps {
   column: ColumnType
-  isBoardMember?: boolean
+  canEditColumn: boolean
+  canCreateCard: boolean
 }
 
-export default function Column({ column, isBoardMember }: ColumnProps) {
+export default function Column({ column, canEditColumn, canCreateCard }: ColumnProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: column._id, // Unique ID to identify the draggable element
     data: { ...column } // Custom data will be passed into the `handleDragEnd` event
@@ -47,23 +48,24 @@ export default function Column({ column, isBoardMember }: ColumnProps) {
 
   const [updateColumnMutation] = useUpdateColumnMutation()
 
-  const updateColumnTitle = async (title: string) => {
-    const newActiveBoard = cloneDeep(activeBoard)
-    const columnToUpdate = newActiveBoard?.columns?.find((col) => col._id === column._id)
-
-    if (columnToUpdate) {
-      columnToUpdate.title = title.trim()
-    }
-
-    dispatch(updateActiveBoard(newActiveBoard))
-
-    await updateColumnMutation({
+  const updateColumnTitle = (columnTitle: string) => {
+    updateColumnMutation({
       id: column._id,
-      body: { title: title.trim() }
-    })
+      body: { title: columnTitle.trim() }
+    }).then((res) => {
+      if (!res.error) {
+        const newActiveBoard = cloneDeep(activeBoard)!
+        const columnToUpdate = newActiveBoard?.columns?.find((col) => col._id === column._id)
 
-    // Emit socket event to notify other users about the column title update
-    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+        if (columnToUpdate) {
+          columnToUpdate.title = columnTitle.trim()
+        }
+
+        dispatch(updateActiveBoard(newActiveBoard))
+
+        socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+      }
+    })
   }
 
   return (
@@ -91,7 +93,7 @@ export default function Column({ column, isBoardMember }: ColumnProps) {
             justifyContent: 'space-between'
           }}
         >
-          {isBoardMember ? (
+          {canEditColumn ? (
             <ToggleFocusInput
               value={column?.title}
               onChangeValue={updateColumnTitle}
@@ -108,12 +110,12 @@ export default function Column({ column, isBoardMember }: ColumnProps) {
             </Typography>
           )}
 
-          <ColumnMenuActionsPopover column={column} isBoardMember={isBoardMember} />
+          {canEditColumn && <ColumnMenuActions column={column} />}
         </Box>
 
         <CardsList cards={sortedCards} />
 
-        <AddNewCard column={column} />
+        <AddNewCard column={column} canCreateCard={canCreateCard} />
       </Box>
     </div>
   )

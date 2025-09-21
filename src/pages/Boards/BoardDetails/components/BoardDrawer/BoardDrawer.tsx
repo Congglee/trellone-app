@@ -1,8 +1,7 @@
+import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import DashboardIcon from '@mui/icons-material/Dashboard'
-import DeleteIcon from '@mui/icons-material/Delete'
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import GroupsIcon from '@mui/icons-material/Groups'
 import LogoutIcon from '@mui/icons-material/Logout'
 import { useTheme } from '@mui/material'
@@ -16,28 +15,37 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
-import { useState } from 'react'
 import cloneDeep from 'lodash/cloneDeep'
 import DrawerHeader from '~/components/DrawerHeader'
-import ChangeBackgroundDrawer from '~/pages/Boards/BoardDetails/components/ChangeBackgroundDrawer'
 import { BoardRole } from '~/constants/type'
-import { BoardMemberType } from '~/schemas/board.schema'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
-import { useLeaveBoardMutation } from '~/queries/boards'
-import { updateActiveBoard, clearActiveBoard } from '~/store/slices/board.slice'
+import ChangeBoardBackground from '~/pages/Boards/BoardDetails/components/BoardDrawer/ChangeBoardBackground'
+import CloseBoard from '~/pages/Boards/BoardDetails/components/BoardDrawer/CloseBoard'
+import DeleteBoard from '~/pages/Boards/BoardDetails/components/BoardDrawer/DeleteBoard'
+import { useLeaveBoardMutation, useUpdateBoardMutation } from '~/queries/boards'
+import { BoardMemberType } from '~/schemas/board.schema'
+import { clearActiveBoard, updateActiveBoard } from '~/store/slices/board.slice'
 
 interface BoardDrawerProps {
   open: boolean
   onOpen: (open: boolean) => void
   boardMembers: BoardMemberType[]
-  isBoardMember: boolean
   boardId: string
+  isBoardAdmin: boolean
+  canManageBoard: boolean
+  canDeleteBoard: boolean
 }
 
-export default function BoardDrawer({ open, onOpen, boardMembers, isBoardMember, boardId }: BoardDrawerProps) {
+export default function BoardDrawer({
+  open,
+  onOpen,
+  boardMembers,
+  canManageBoard,
+  isBoardAdmin,
+  boardId,
+  canDeleteBoard
+}: BoardDrawerProps) {
   const theme = useTheme()
-
-  const [changeBackgroundDrawer, setChangeBackgroundDrawer] = useState(false)
 
   const dispatch = useAppDispatch()
 
@@ -46,6 +54,7 @@ export default function BoardDrawer({ open, onOpen, boardMembers, isBoardMember,
   const { socket } = useAppSelector((state) => state.app)
 
   const [leaveBoardMutation] = useLeaveBoardMutation()
+  const [updateBoardMutation] = useUpdateBoardMutation()
 
   const totalBoardMembers = boardMembers?.length
 
@@ -54,48 +63,67 @@ export default function BoardDrawer({ open, onOpen, boardMembers, isBoardMember,
 
   const totalAdmins = boardMembers?.filter((member) => member.role === BoardRole.Admin).length || 0
 
+  const isBoardClosed = activeBoard?._destroy
+
   // Check if current user is the last admin
   const isLastAdmin = isCurrentUserAdmin && totalAdmins === 1
   const canLeaveBoard = currentUserMember && !isLastAdmin
+  const canReopenBoard = isBoardClosed && isBoardAdmin
 
-  const onOpenChangeBackgroundDrawer = (open: boolean) => {
-    setChangeBackgroundDrawer(open)
+  const leaveBoard = () => {
+    leaveBoardMutation(boardId).then((res) => {
+      if (!res.error) {
+        if (activeBoard) {
+          // Check if current user is a guest in the workspace
+          const isGuestInWorkspace = activeBoard.workspace.guests.some((guest) => guest === profile?._id)
+          const isNotInWorkspaceMembers = !activeBoard.workspace.members.some(
+            (member) => member.user_id === profile?._id
+          )
+
+          if (isGuestInWorkspace && isNotInWorkspaceMembers) {
+            // If user is a guest, clear the active board
+            dispatch(clearActiveBoard())
+          } else {
+            // If user is a workspace member, update the board with new members list
+            const updatedBoardMembers = activeBoard.members.filter((member) => member.user_id !== profile?._id)
+
+            // Create a deep-cloned activeBoard and also remove user from all card members in every column
+            const newActiveBoard = cloneDeep(activeBoard)
+
+            newActiveBoard.members = updatedBoardMembers
+            newActiveBoard.columns?.forEach((column) => {
+              column.cards?.forEach((card) => {
+                if (Array.isArray(card.members)) {
+                  card.members = card.members.filter((memberId) => memberId !== profile?._id)
+                }
+              })
+            })
+
+            dispatch(updateActiveBoard(newActiveBoard))
+
+            socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+            socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', newActiveBoard.workspace_id)
+          }
+        }
+      }
+    })
   }
 
-  const leaveBoard = async () => {
-    await leaveBoardMutation(boardId)
-
-    if (activeBoard) {
-      // Check if current user is a guest in the workspace
-      const isGuestInWorkspace = activeBoard.workspace.guests.some((guest) => guest === profile?._id)
-      const isNotInWorkspaceMembers = !activeBoard.workspace.members.some((member) => member.user_id === profile?._id)
-
-      if (isGuestInWorkspace && isNotInWorkspaceMembers) {
-        // If user is a guest, clear the active board
-        dispatch(clearActiveBoard())
-      } else {
-        // If user is a workspace member, update the board with new members list
-        const updatedBoardMembers = activeBoard.members.filter((member) => member.user_id !== profile?._id)
-
-        // Create a deep-cloned activeBoard and also remove user from all card members in every column
-        const newActiveBoard = cloneDeep(activeBoard)
-
-        newActiveBoard.members = updatedBoardMembers
-        newActiveBoard.columns?.forEach((column) => {
-          column.cards?.forEach((card) => {
-            if (Array.isArray(card.members)) {
-              card.members = card.members.filter((memberId) => memberId !== profile?._id)
-            }
-          })
-        })
+  const reopenBoard = () => {
+    updateBoardMutation({
+      id: boardId,
+      body: { _destroy: false }
+    }).then((res) => {
+      if (!res.error) {
+        const newActiveBoard = { ...activeBoard! }
+        newActiveBoard._destroy = false
 
         dispatch(updateActiveBoard(newActiveBoard))
 
-        // Broadcast to other users for realtime sync
         socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
         socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', newActiveBoard.workspace_id)
       }
-    }
+    })
   }
 
   return (
@@ -107,7 +135,9 @@ export default function BoardDrawer({ open, onOpen, boardMembers, isBoardMember,
           width: theme.trellone.boardDrawerWidth,
           boxSizing: 'border-box',
           top: 'auto',
-          height: `calc(100% - ${theme.trellone.navBarHeight})`
+          height: isBoardClosed
+            ? `calc(100% - ${theme.trellone.navBarHeight} - 48px)`
+            : `calc(100% - ${theme.trellone.navBarHeight})`
         }
       }}
       variant='persistent'
@@ -135,16 +165,7 @@ export default function BoardDrawer({ open, onOpen, boardMembers, isBoardMember,
           </ListItemButton>
         </ListItem>
 
-        <ListItem disablePadding>
-          <ListItemButton onClick={() => onOpenChangeBackgroundDrawer(true)} disabled={!isBoardMember}>
-            <ListItemIcon>
-              <FavoriteBorderIcon />
-            </ListItemIcon>
-            <ListItemText secondary='Change background' />
-          </ListItemButton>
-        </ListItem>
-
-        <ChangeBackgroundDrawer open={changeBackgroundDrawer} onOpen={onOpenChangeBackgroundDrawer} />
+        <ChangeBoardBackground canManageBoard={canManageBoard} />
 
         <ListItem disablePadding>
           <ListItemButton disabled>
@@ -155,14 +176,18 @@ export default function BoardDrawer({ open, onOpen, boardMembers, isBoardMember,
           </ListItemButton>
         </ListItem>
 
-        <ListItem disablePadding>
-          <ListItemButton disabled>
-            <ListItemIcon>
-              <DeleteIcon />
-            </ListItemIcon>
-            <ListItemText secondary='Delete this board' />
-          </ListItemButton>
-        </ListItem>
+        {canManageBoard && <CloseBoard />}
+
+        {canReopenBoard && (
+          <ListItem disablePadding>
+            <ListItemButton onClick={reopenBoard}>
+              <ListItemIcon>
+                <ArrowOutwardIcon />
+              </ListItemIcon>
+              <ListItemText secondary='Reopen board' />
+            </ListItemButton>
+          </ListItem>
+        )}
 
         {canLeaveBoard && (
           <ListItem disablePadding>
@@ -174,6 +199,8 @@ export default function BoardDrawer({ open, onOpen, boardMembers, isBoardMember,
             </ListItemButton>
           </ListItem>
         )}
+
+        {canDeleteBoard && <DeleteBoard boardId={boardId} />}
       </List>
     </Drawer>
   )

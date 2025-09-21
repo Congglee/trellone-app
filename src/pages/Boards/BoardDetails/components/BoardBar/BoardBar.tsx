@@ -2,6 +2,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import TextField from '@mui/material/TextField'
@@ -10,16 +11,14 @@ import Tooltip from '@mui/material/Tooltip'
 import { useClickAway } from '@uidotdev/usehooks'
 import { useEffect, useState } from 'react'
 import AppBar from '~/components/AppBar'
-import { useBoardPermission } from '~/hooks/use-permissions'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import BoardUserGroup from '~/pages/Boards/BoardDetails/components/BoardUserGroup'
-import InviteBoardMembersDialog from '~/pages/Boards/BoardDetails/components/InviteBoardMembersDialog'
+import InviteBoardMembers from '~/pages/Boards/BoardDetails/components/InviteBoardMembers'
 import { useUpdateBoardMutation } from '~/queries/boards'
+import { useJoinWorkspaceBoardMutation, workspaceApi } from '~/queries/workspaces'
 import { BoardResType } from '~/schemas/board.schema'
-import { updateActiveBoard } from '~/store/slices/board.slice'
-import Button from '@mui/material/Button'
-import { useJoinWorkspaceBoardMutation } from '~/queries/workspaces'
 import { UserType } from '~/schemas/user.schema'
+import { updateActiveBoard } from '~/store/slices/board.slice'
 
 interface BoardBarProps {
   workspaceDrawerOpen: boolean
@@ -27,6 +26,8 @@ interface BoardBarProps {
   boardDrawerOpen: boolean
   onBoardDrawerOpen: (open: boolean) => void
   board: BoardResType['result']
+  isBoardMember: boolean
+  canManageBoard: boolean
 }
 
 const MENU_STYLES = {
@@ -49,7 +50,9 @@ export default function BoardBar({
   onWorkspaceDrawerOpen,
   boardDrawerOpen,
   onBoardDrawerOpen,
-  board
+  board,
+  isBoardMember,
+  canManageBoard
 }: BoardBarProps) {
   const [editBoardTitleFormOpen, setEditBoardTitleFormOpen] = useState(false)
   const [boardTitle, setBoardTitle] = useState('')
@@ -64,8 +67,6 @@ export default function BoardBar({
   const { socket } = useAppSelector((state) => state.app)
   const { profile } = useAppSelector((state) => state.auth)
 
-  const { isMember } = useBoardPermission(activeBoard)
-
   // Update local boardTitle state whenever the board title changes
   // This ensures that when another user updates the title via socket, the local state is also updated
   useEffect(() => {
@@ -78,7 +79,7 @@ export default function BoardBar({
   const [joinWorkspaceBoardMutation] = useJoinWorkspaceBoardMutation()
 
   const toggleEditBoardTitleForm = () => {
-    if (!isMember) {
+    if (!canManageBoard) {
       return
     }
 
@@ -105,55 +106,58 @@ export default function BoardBar({
       return
     }
 
-    const newActiveBoard = { ...activeBoard! }
-    newActiveBoard.title = boardTitle
+    updateBoardMutation({ id: board._id, body: { title: boardTitle } }).then((res) => {
+      if (!res.error) {
+        const newActiveBoard = { ...activeBoard! }
+        newActiveBoard.title = boardTitle
 
-    dispatch(updateActiveBoard(newActiveBoard))
+        dispatch(updateActiveBoard(newActiveBoard))
+        dispatch(
+          workspaceApi.util.invalidateTags([
+            { type: 'Workspace', id: newActiveBoard.workspace_id },
+            { type: 'Workspace', id: 'LIST' }
+          ])
+        )
 
-    updateBoardMutation({
-      id: newActiveBoard._id,
-      body: { title: newActiveBoard.title }
+        socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+        socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', newActiveBoard.workspace_id, newActiveBoard._id)
+      }
     })
-
-    // Emit socket event to notify other users about the board title update
-    socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
   }
 
-  const joinWorkspaceBoard = async () => {
-    const joinWorkspaceBoardRes = await joinWorkspaceBoardMutation({
+  const joinWorkspaceBoard = () => {
+    joinWorkspaceBoardMutation({
       workspace_id: board.workspace_id,
       board_id: board._id
-    }).unwrap()
+    }).then((res) => {
+      if (!res.error) {
+        const joinedBoard = res.data?.result
+        const currentUser = profile as UserType
+        const newMember = joinedBoard?.members.find((member) => member.user_id === currentUser._id)
 
-    const joinedBoard = joinWorkspaceBoardRes.result
-    const currentUser = profile as UserType
-    const newMember = joinedBoard.members.find((member) => member.user_id === currentUser._id)
+        if (activeBoard && newMember) {
+          // Create a new members array by copying the old array and adding the new member
+          const updatedBoardMembers = [
+            ...activeBoard.members,
+            {
+              ...currentUser,
+              role: newMember.role,
+              joined_at: new Date(),
+              user_id: newMember.user_id
+            }
+          ]
 
-    if (activeBoard && newMember) {
-      // Create a new members array by copying the old array and adding the new member
-      const updatedBoardMembers = [
-        ...activeBoard.members,
-        {
-          ...currentUser,
-          role: newMember.role,
-          joined_at: new Date(),
-          user_id: newMember.user_id
+          // Create a new activeBoard object with the updated members array
+          // This creates a new reference, triggering useMemo in `useBoardPermission`
+          const newActiveBoard = { ...activeBoard, members: updatedBoardMembers }
+
+          dispatch(updateActiveBoard(newActiveBoard))
+
+          socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+          socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', newActiveBoard.workspace_id)
         }
-      ]
-
-      // Create a new activeBoard object with the updated members array
-      // This creates a new reference, triggering useMemo in `useBoardPermission`
-      const newActiveBoard = {
-        ...activeBoard,
-        members: updatedBoardMembers
       }
-
-      dispatch(updateActiveBoard(newActiveBoard))
-
-      // Broadcast to other users for realtime sync
-      socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
-      socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', newActiveBoard.workspace_id)
-    }
+    })
   }
 
   return (
@@ -228,8 +232,8 @@ export default function BoardBar({
             ml: 'auto'
           }}
         >
-          {isMember ? (
-            <InviteBoardMembersDialog boardId={board._id} workspaceId={board.workspace_id} />
+          {isBoardMember ? (
+            <InviteBoardMembers boardId={board._id} workspaceId={board.workspace_id} />
           ) : (
             <Tooltip title='Workspace members can join this board'>
               <Button size='small' color='secondary' variant='contained' onClick={joinWorkspaceBoard}>
