@@ -116,7 +116,6 @@ interface UseBoardPermissionReturn {
   canDeleteCard: boolean
   canComment: boolean
   canAttach: boolean
-  // Alias derived capability; deleting a board is considered part of managing it
   canDeleteBoard: boolean
 }
 
@@ -189,6 +188,6 @@ export const useBoardPermission = (board?: BoardItem, userIdOverride?: string): 
     canDeleteCard: hasPermission(BoardPermission.DeleteCard) && !isClosed,
     canComment: hasPermission(BoardPermission.Comment) && !isClosed,
     canAttach: hasPermission(BoardPermission.Attach) && !isClosed,
-    canDeleteBoard: hasPermission(BoardPermission.ManageBoard) && !isClosed
+    canDeleteBoard: hasPermission(BoardPermission.DeleteBoard) && isClosed
   }
 }

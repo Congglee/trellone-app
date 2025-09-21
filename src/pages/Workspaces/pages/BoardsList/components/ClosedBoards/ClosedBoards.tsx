@@ -21,7 +21,12 @@ import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '~/constants/p
 import { useInfiniteScroll } from '~/hooks/use-infinite-scroll'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import ClosedBoardsListRow from '~/pages/Workspaces/pages/BoardsList/components/ClosedBoardsListRow'
-import { useLazyGetBoardsQuery, useLeaveBoardMutation, useUpdateBoardMutation } from '~/queries/boards'
+import {
+  useDeleteBoardMutation,
+  useLazyGetBoardsQuery,
+  useLeaveBoardMutation,
+  useUpdateBoardMutation
+} from '~/queries/boards'
 import { workspaceApi } from '~/queries/workspaces'
 import { BoardResType } from '~/schemas/board.schema'
 import { WorkspaceResType } from '~/schemas/workspace.schema'
@@ -42,6 +47,7 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
 
   const [updateBoardMutation] = useUpdateBoardMutation()
   const [leaveBoardMutation] = useLeaveBoardMutation()
+  const [deleteBoardMutation] = useDeleteBoardMutation()
 
   const [allClosedBoards, setAllClosedBoards] = useState<BoardResType['result'][]>([])
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string>('')
@@ -152,6 +158,22 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
         }
 
         socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspaceId, boardId)
+      }
+    })
+  }
+
+  const onDeleteBoard = (boardId: string, workspaceId: string) => {
+    deleteBoardMutation(boardId).then((res) => {
+      if (!res.error) {
+        dispatch(
+          workspaceApi.util.invalidateTags([
+            { type: 'Workspace', id: workspaceId },
+            { type: 'Workspace', id: 'LIST' }
+          ])
+        )
+
+        socket?.emit('CLIENT_USER_DELETED_BOARD', boardId)
+        socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspaceId)
       }
     })
   }
@@ -284,6 +306,7 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
                   isLast={index === boards.length - 1}
                   onReopenBoard={onReopenBoard}
                   onLeaveBoard={onLeaveBoard}
+                  onDeleteBoard={onDeleteBoard}
                 />
               ))}
           </Box>

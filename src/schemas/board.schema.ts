@@ -112,3 +112,9 @@ export const UpdateBoardBody = z.object({
 })
 
 export type UpdateBoardBodyType = z.TypeOf<typeof UpdateBoardBody>
+
+export const DeleteBoardRes = z.object({
+  message: z.string()
+})
+
+export type DeleteBoardResType = z.TypeOf<typeof DeleteBoardRes>

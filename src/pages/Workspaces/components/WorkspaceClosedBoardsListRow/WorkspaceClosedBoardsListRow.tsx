@@ -1,29 +1,53 @@
-import { useBoardPermission } from '~/hooks/use-permissions'
-import { BoardResType } from '~/schemas/board.schema'
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
+import CloseIcon from '@mui/icons-material/Close'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import Avatar from '@mui/material/Avatar'
-import Typography from '@mui/material/Typography'
-import Tooltip from '@mui/material/Tooltip'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
-import { alpha } from '@mui/material/styles'
+import IconButton from '@mui/material/IconButton'
 import MuiLink from '@mui/material/Link'
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import Popover from '@mui/material/Popover'
+import Stack from '@mui/material/Stack'
+import { alpha } from '@mui/material/styles'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
+import { useState } from 'react'
+import { useBoardPermission } from '~/hooks/use-permissions'
+import { BoardResType } from '~/schemas/board.schema'
 
 interface WorkspaceClosedBoardsListRowProps {
   board: BoardResType['result']
   isLast: boolean
   onReopenBoard: (boardId: string) => void
   onLeaveBoard: (boardId: string) => void
+  onDeleteBoard: (boardId: string) => void
 }
 
 export default function WorkspaceClosedBoardsListRow({
   board,
   isLast,
   onReopenBoard,
-  onLeaveBoard
+  onLeaveBoard,
+  onDeleteBoard
 }: WorkspaceClosedBoardsListRowProps) {
+  const [anchorDeleteBoardPopoverElement, setAnchorDeleteBoardPopoverElement] = useState<HTMLElement | null>(null)
+
+  const isDeleteBoardPopoverOpen = Boolean(anchorDeleteBoardPopoverElement)
+
+  const deleteBoardPopoverId = isDeleteBoardPopoverOpen ? 'delete-board-popover' : undefined
+
+  const toggleDeleteBoardPopover = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (isDeleteBoardPopoverOpen) {
+      setAnchorDeleteBoardPopoverElement(null)
+    } else {
+      setAnchorDeleteBoardPopoverElement(event.currentTarget)
+    }
+  }
+
+  const handleDeleteBoardPopoverClose = () => {
+    setAnchorDeleteBoardPopoverElement(null)
+  }
+
   const { isAdmin, isNormal, isObserver } = useBoardPermission(board)
 
   return (
@@ -113,17 +137,61 @@ export default function WorkspaceClosedBoardsListRow({
                 </span>
               </Tooltip>
 
-              <Button
-                variant='contained'
-                color='error'
-                size='small'
-                startIcon={<DeleteOutlineIcon />}
-                onClick={() => {}}
-                sx={{ textTransform: 'none', fontWeight: 600, px: 2.25 }}
-                disabled
-              >
-                Delete
-              </Button>
+              <>
+                <Button
+                  variant='contained'
+                  color='error'
+                  size='small'
+                  startIcon={<DeleteOutlineIcon />}
+                  onClick={toggleDeleteBoardPopover}
+                  sx={{ textTransform: 'none', fontWeight: 600, px: 2.25 }}
+                >
+                  Delete
+                </Button>
+
+                <Popover
+                  id={deleteBoardPopoverId}
+                  open={isDeleteBoardPopoverOpen}
+                  anchorEl={anchorDeleteBoardPopoverElement}
+                  onClose={handleDeleteBoardPopoverClose}
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                  slotProps={{
+                    paper: { sx: { width: 320, borderRadius: 2 } }
+                  }}
+                >
+                  <Box sx={{ p: 1.5 }}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        mb: 2,
+                        position: 'relative'
+                      }}
+                    >
+                      <Typography variant='subtitle1' sx={{ fontWeight: 'medium' }}>
+                        Delete board?
+                      </Typography>
+                      <IconButton
+                        size='small'
+                        onClick={handleDeleteBoardPopoverClose}
+                        sx={{ position: 'absolute', right: 0 }}
+                      >
+                        <CloseIcon fontSize='small' />
+                      </IconButton>
+                    </Box>
+
+                    <Typography variant='body2' sx={{ mb: 3, color: 'text.secondary' }}>
+                      All columns, cards and actions will be deleted, and you won’t be able to re-open the board. There
+                      is no undo.
+                    </Typography>
+
+                    <Button variant='contained' color='error' fullWidth onClick={() => onDeleteBoard(board._id)}>
+                      Delete
+                    </Button>
+                  </Box>
+                </Popover>
+              </>
             </>
           ) : isNormal || isObserver ? (
             <Button

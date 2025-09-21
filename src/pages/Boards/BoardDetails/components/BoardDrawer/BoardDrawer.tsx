@@ -21,6 +21,7 @@ import { BoardRole } from '~/constants/type'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import ChangeBoardBackground from '~/pages/Boards/BoardDetails/components/BoardDrawer/ChangeBoardBackground'
 import CloseBoard from '~/pages/Boards/BoardDetails/components/BoardDrawer/CloseBoard'
+import DeleteBoard from '~/pages/Boards/BoardDetails/components/BoardDrawer/DeleteBoard'
 import { useLeaveBoardMutation, useUpdateBoardMutation } from '~/queries/boards'
 import { BoardMemberType } from '~/schemas/board.schema'
 import { clearActiveBoard, updateActiveBoard } from '~/store/slices/board.slice'
@@ -32,6 +33,7 @@ interface BoardDrawerProps {
   boardId: string
   isBoardAdmin: boolean
   canManageBoard: boolean
+  canDeleteBoard: boolean
 }
 
 export default function BoardDrawer({
@@ -40,7 +42,8 @@ export default function BoardDrawer({
   boardMembers,
   canManageBoard,
   isBoardAdmin,
-  boardId
+  boardId,
+  canDeleteBoard
 }: BoardDrawerProps) {
   const theme = useTheme()
 
@@ -65,6 +68,7 @@ export default function BoardDrawer({
   // Check if current user is the last admin
   const isLastAdmin = isCurrentUserAdmin && totalAdmins === 1
   const canLeaveBoard = currentUserMember && !isLastAdmin
+  const canReopenBoard = isBoardClosed && isBoardAdmin
 
   const leaveBoard = () => {
     leaveBoardMutation(boardId).then((res) => {
@@ -174,7 +178,7 @@ export default function BoardDrawer({
 
         {canManageBoard && <CloseBoard />}
 
-        {isBoardClosed && isBoardAdmin && (
+        {canReopenBoard && (
           <ListItem disablePadding>
             <ListItemButton onClick={reopenBoard}>
               <ListItemIcon>
@@ -195,6 +199,8 @@ export default function BoardDrawer({
             </ListItemButton>
           </ListItem>
         )}
+
+        {canDeleteBoard && <DeleteBoard boardId={boardId} />}
       </List>
     </Drawer>
   )

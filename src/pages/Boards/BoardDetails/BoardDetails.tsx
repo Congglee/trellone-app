@@ -49,8 +49,17 @@ export default function BoardDetails() {
   const [updateColumnMutation] = useUpdateColumnMutation()
   const [moveCardToDifferentColumnMutation] = useMoveCardToDifferentColumnMutation()
 
-  const { isAdmin, isMember, isClosed, canManageBoard, canCreateColumn, canEditColumn, canCreateCard, canEditCard } =
-    useBoardPermission(activeBoard)
+  const {
+    isAdmin,
+    isMember,
+    isClosed,
+    canManageBoard,
+    canCreateColumn,
+    canEditColumn,
+    canCreateCard,
+    canEditCard,
+    canDeleteBoard
+  } = useBoardPermission(activeBoard)
 
   useEffect(() => {
     if (boardId) {
@@ -138,9 +147,14 @@ export default function BoardDetails() {
       )
     }
 
+    const onUserDeletedBoard = () => {
+      dispatch(clearActiveBoard())
+    }
+
     socket?.on('SERVER_BOARD_UPDATED', onUpdateBoard)
     socket?.on('SERVER_CARD_UPDATED', onUpdateCard)
     socket?.on('SERVER_USER_ACCEPTED_BOARD_INVITATION', onUserAcceptedBoardInvitation)
+    socket?.on('SERVER_USER_DELETED_BOARD', onUserDeletedBoard)
     socket?.on('connect', onConnect)
     socket?.on('disconnect', onDisconnect)
 
@@ -148,6 +162,7 @@ export default function BoardDetails() {
       socket?.off('SERVER_BOARD_UPDATED', onUpdateBoard)
       socket?.off('SERVER_CARD_UPDATED', onUpdateCard)
       socket?.off('SERVER_USER_ACCEPTED_BOARD_INVITATION', onUserAcceptedBoardInvitation)
+      socket?.off('SERVER_USER_DELETED_BOARD', onUserDeletedBoard)
       socket?.off('connect', onConnect)
       socket?.off('disconnect', onDisconnect)
     }
@@ -386,6 +401,7 @@ export default function BoardDetails() {
             boardId={boardId!}
             isBoardAdmin={isAdmin}
             canManageBoard={canManageBoard}
+            canDeleteBoard={canDeleteBoard}
           />
         </Box>
       </Box>

@@ -192,9 +192,8 @@ export default function WorkspaceBoards() {
               {filteredBoards.length > 0 && filteredBoards.map((board) => <BoardCard key={board._id} board={board} />)}
             </>
           )}
-
-          {hasClosedBoards && <WorkspaceClosedBoards workspaceId={workspaceId!} />}
         </Grid>
+        {hasClosedBoards && <WorkspaceClosedBoards workspaceId={workspaceId!} />}
       </Box>
 
       <NewBoardDialog
