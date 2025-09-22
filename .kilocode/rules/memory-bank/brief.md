@@ -1,14 +1,14 @@
-# Trellone Project Brief
+Trellone is a modern, production‑grade Trello‑style project management SPA that helps teams organize work into workspaces, boards, columns and cards with real‑time collaboration.
 
-## Project Overview
+Key features:
 
-Trellone is a modern Trello-like project management SPA built with React and TypeScript. It provides boards, columns, and cards with real-time collaboration, advanced workspace management, and a polished Material‑UI interface. The app is bundled with Vite and integrates Redux Toolkit with RTK Query for state and data fetching.
+- Drag‑and‑drop boards, columns and cards; workspaces, members/guests, invitations
+- Auth (email/password, OAuth), JWT session persistence; settings and profile
+- Comments, attachments, media uploads; markdown editing; search and SEO‑ready pages
+- Responsive, accessible UI powered by Material‑UI theming
 
-Key implementation anchors:
+Tech stack:
+React 18, TypeScript, Vite, Redux Toolkit + RTK Query, Axios, Socket.IO client, @dnd‑kit, Zod + React Hook Form, React Helmet Async, Redux Persist, MUI.
 
-- Routing, auth guards, and lazy loading in [`src/App.tsx`](src/App.tsx)
-- Theme system in [`src/theme.ts`](src/theme.ts) using `extendTheme()`
-- HTTP client with token lifecycle in [`src/lib/http.ts`](src/lib/http.ts) via `class Http`
-- Socket.IO client factory in [`generateSocketInstace()`](src/lib/socket.ts)
-- Redux store, persistence, and RTK Query middlewares in [`configureStore()`](src/lib/redux/store.ts)
-- Workspace RTK Query slice in `workspaceApi = createApi()`
+Significance:
+A concise, scalable, type‑safe front‑end architecture for collaborative task management with real‑time UX and modern developer tooling.

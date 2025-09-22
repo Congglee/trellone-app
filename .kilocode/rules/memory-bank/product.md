@@ -1,58 +1,95 @@
-# Product Context for Trellone
+# Trellone Product
 
-## Core Purpose & Vision
+## Purpose
 
-Trellone is a feature-rich, self-hostable project management application designed as a clone of Trello. It aims to provide a visually intuitive and highly collaborative platform for teams to organize tasks, manage workflows, and track progress in real-time. The vision is to offer an open-source, modern alternative to Trello that developers can easily extend and integrate into their own infrastructure.
+Trellone is a modern Trello‑style project management SPA that helps teams organize work into workspaces, boards, columns and cards with real‑time collaboration. It focuses on speed, reliability, and an accessible UI powered by Material‑UI.
 
-## Key Problems Addressed
+## Target users
 
-- **Lack of Self-Hosted Trello Alternatives:** Provides a solution for teams that require data privacy and control by allowing them to host their own project management tool.
-- **Real-Time Collaboration Gaps:** Ensures that all team members are on the same page with instant updates to boards, columns, and cards, powered by WebSockets.
-- **Fragmented User Experience:** Delivers a polished, single-page application (SPA) experience with a consistent and responsive UI built on Material-UI, eliminating page reloads and providing a fluid workflow.
-- **Complex UI State Management:** Solves the challenge of managing complex application state by using Redux Toolkit, RTK Query for data fetching, and Redux Persist for preserving user sessions.
+- Teams and small to medium organizations coordinating projects and tasks
+- Individuals needing structured lists, Kanban flows, and simple collaboration
+- Guests and external collaborators via invitations
 
-## Target Audience & User Personas
+## Problems solved
 
-- **Development Teams:** For planning sprints, tracking bugs, and managing feature backlogs.
-- **Project Managers:** To oversee project progress, assign tasks, and coordinate work across different team members.
-- **Small to Medium-Sized Businesses (SMBs):** For organizing internal projects, tracking deliverables, and managing team workflows without relying on third-party SaaS providers.
-- **Open Source Projects:** To provide a transparent and accessible way to manage community contributions and development roadmaps.
+- Fragmented task tracking across tools and spreadsheets
+- Lack of real‑time visibility into team activity
+- Inconsistent UX and slow interfaces for day‑to‑day task operations
+- Complex authentication and session persistence across sessions and tabs
 
-## How It Should Work: Core User Workflows
+## Core domain objects and relationships
 
-1.  **Authentication & Onboarding:**
+- Workspace
+  - Contains many Boards and members with roles
+- Board
+  - Contains many Columns and board members
+- Column
+  - Contains many Cards with orderable positions
+- Card
+  - Fields: title, description (Markdown), assignees, attachments, due dates, comments
+  - Reorderable across columns (drag‑and‑drop)
 
-    - Users can register for a new account, log in with credentials, or use OAuth providers.
-    - Upon first login, users are guided to create or join a workspace.
+## Core capabilities
 
-2.  **Workspace & Board Management:**
+- Drag‑and‑drop columns and cards using @dnd‑kit
+- Authentication: login, register, email verification, forgot/reset password
+- OAuth sign‑in (Google)
+- Invitations workflow for workspaces and boards
+- Real‑time collaboration via Socket.IO (rooms for workspaces and indices)
+- Comments, attachments (links and media), Markdown editing (sanitized)
+- Notifications and toasts for feedback
+- Search and SEO‑ready pages using react‑helmet‑async
+- Responsive, accessible UI (MUI, sx theming)
 
-    - Users can create multiple workspaces to segregate different projects or teams.
-    - Within a workspace, users can create boards, which can be public or private.
-    - Members can be invited to workspaces and boards with specific roles and permissions.
+## High‑level user journeys
 
-3.  **Board Interaction (Trello-like UX):**
+- Account creation and sign‑in
+  - Email/password registration; email verification
+  - Login with JWT session persistence and refresh token handling
+  - OAuth redirect flow (Google)
+- Workspace lifecycle
+  - Create workspace; invite members; manage roles and visibility
+  - Navigate workspace boards; view members and guests
+- Board lifecycle
+  - Create, rename, archive/unarchive boards
+  - Add columns; drag to reorder; manage board membership
+- Card lifecycle
+  - Create, edit, move across columns
+  - Add description (Markdown), attachments, comments, due dates
+  - Assign members; manage checklists (when supported)
+- Collaboration
+  - Join rooms on workspace pages
+  - Receive real‑time updates on changes (members/boards/columns/cards)
+  - Automatic reconnect with updated auth header on token refresh
+- Profile and settings
+  - View and update profile; change password with re‑auth behavior
+  - Logout with cache reset across API slices
 
-    - Boards consist of columns (e.g., "To Do," "In Progress," "Done") that represent stages of a workflow.
-    - Cards, representing individual tasks, can be created within columns.
-    - Users can drag and drop cards between columns to update their status in real-time.
-    - Columns can also be reordered via drag and drop.
+## Real‑time collaboration behavior
 
-4.  **Card Details & Collaboration:**
+- Socket.IO client authenticates with Bearer token; updates auth on reconnect
+- Rooms:
+  - Workspaces index room for global changes to the user’s workspace list
+  - Specific workspace room for updates scoped to a workspace
+- Reconnect handling rejoins needed rooms and schedules data refetches for consistency
 
-    - Clicking a card opens a detailed modal view.
-    - Within the modal, users can add markdown descriptions, set due dates, upload attachments, and add comments.
-    - Team members can react to comments and cards with emojis.
-    - All updates (comments, attachments, etc.) are synchronized in real-time across all connected clients.
+## UX goals
 
-5.  **Real-Time Collaboration:**
-    - Changes made by one user are instantly reflected for all other usersViewing the same board.
-    - The system uses Socket.IO for resilient, real-time communication with the backend.
+- Fast and predictable interactions with optimistic updates where appropriate
+- Accessible components and keyboard navigation (MUI + dnd‑kit patterns)
+- Clear error and success feedback via toasts
+- Mobile‑first responsive layout and adaptive density
+- Minimal cognitive load via consistent component patterns and routing
 
-## User Experience (UX) Goals
+## Non‑functional requirements
 
-- **Intuitive & Familiar:** The UI should feel immediately familiar to anyone who has used Trello or similar kanban-style tools.
-- **Responsive & Fast:** The application must be fast and responsive, with sub-second UI updates and smooth animations, leveraging Vite's performance and React's virtual DOM.
-- **Polished & Professional:** The aesthetic, powered by Material-UI, should be clean, modern, and professional, with both light and dark modes to suit user preferences.
-- **Seamless & Uninterrupted:** As a single-page application, all interactions should feel seamless, with no full-page reloads. Modals, dialogs, and optimistic UI updates contribute to this fluid experience.
-- **Accessible:** The application should adhere to accessibility best practices, ensuring it is usable by as many people as possible.
+- Security: JWT handling with refresh tokens, sanitize user content (Markdown)
+- Performance: client caching (RTK Query), debounced queries for search, code‑splitting for large pages
+- Reliability: automatic token refresh, socket reconnect, guarded error paths
+- Observability: standardized error handling and toast notifications
+
+## What makes Trellone distinct
+
+- Production‑grade front‑end patterns with Redux Toolkit + RTK Query over Axios
+- Clean, extensible domain boundaries (workspaces, boards, columns, cards)
+- Robust token lifecycle and socket auth refresh for real‑time UX
