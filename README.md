@@ -84,8 +84,8 @@ npm run lint:fix  # auto-fix lint issues where possible
 2. Configure OAuth consent screen (External/Internal) with basic info.
 3. Create OAuth Client ID (Application type: Web application).
 4. Settings:
-   - Authorized JavaScript origins: `http://localhost:3000`
-   - Authorized redirect URIs: `http://localhost:3000/login/oauth`
+   - Authorized JavaScript origins: `http://localhost:8000`
+   - Authorized redirect URIs: `http://localhost:8000/auth/oauth/google`
 5. Put values into `.env`:
    - `VITE_GOOGLE_CLIENT_ID`
    - `VITE_GOOGLE_REDIRECT_URI` (point to `/login/oauth` on your domain)
