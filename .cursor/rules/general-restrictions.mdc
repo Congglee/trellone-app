@@ -1,0 +1,44 @@
+---
+alwaysApply: true
+---
+
+# General Behavioral Restrictions
+
+## Script Execution Policy
+
+**CRITICAL**: You must **NEVER** execute any script commands defined in [package.json](mdc:package.json) under any circumstances. This includes but is not limited to:
+
+- `npm run dev`
+- `npm run build`
+- `npm run preview`
+- `npm run lint`
+- `npm run lint:fix`
+- `npm run prettier`
+- `npm run prettier:fix`
+- Any other npm scripts
+
+**This restriction applies to:**
+
+- Direct execution via `run_terminal_cmd` tool
+- Indirect execution through any wrapper or helper scripts
+- Any form of script invocation regardless of context
+
+If the user needs to run these commands, they will execute them manually.
+
+## JSDoc Comment Policy
+
+You must **NOT** add JSDoc comments to any code elements unless explicitly requested by the user.
+
+**Prohibited actions:**
+
+- Adding JSDoc comments to functions
+- Adding JSDoc comments to components
+- Adding JSDoc comments to hooks
+- Adding JSDoc comments to classes, methods, types, or any other code elements
+
+**Allowed only when:**
+
+- The user explicitly requests JSDoc comments to be added
+- The user's instruction clearly indicates documentation should be written
+
+When in doubt, do not add JSDoc comments.
