@@ -12,7 +12,7 @@ Trellone is a Kanban-style project management app inspired by Trello. This repos
 - 🧭 Workspaces, members/guests, invitations, access control
 - 🔐 Email/password auth, account verification, JWT, Google OAuth
 - ⚡ Real-time updates via Socket.IO
-- 📝 Markdown editor, 😀 reactions, 📎 attachments, ⏰ due dates, 📅 date pickers
+- 📝 Rich text editor, 😀 reactions, 📎 attachments, ⏰ due dates, 📅 date pickers
 - 🎨 Polished UI with MUI, light/dark modes, and toast notifications
 
 ### Tech Stack 🧰

@@ -39,7 +39,8 @@ export const useCategorizeWorkspaces = (workspaces: WorkspaceResType['result'][]
           typeof guest === 'string' ? guest === profile._id : guest._id === profile._id
         )
 
-        if (isGuest) {
+        // Only show guest workspace if it has at least one active board
+        if (isGuest && activeBoards.length > 0) {
           guestWorkspaces.push({ ...workspace, boards: activeBoards })
         }
       }
