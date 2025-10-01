@@ -1,10 +1,10 @@
-import { useColorScheme } from '@mui/material'
-import { useEffect, useState } from 'react'
-import Box from '@mui/material/Box'
-import MDEditor from '@uiw/react-md-editor'
-import rehypeSanitize from 'rehype-sanitize'
-import Button from '@mui/material/Button'
 import EditNoteIcon from '@mui/icons-material/EditNote'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import { useEffect, useState } from 'react'
+import RichTextEditor from '~/components/RichTextEditor'
+import { hasHtmlContent, isMarkdownContent } from '~/utils/html-sanitizer'
+import { convertMarkdownToHtml } from '~/utils/markdown-to-html'
 
 interface CardDescriptionMdEditorProps {
   description: string
@@ -15,15 +15,16 @@ export default function CardDescriptionMdEditor({
   description,
   onUpdateCardDescription
 }: CardDescriptionMdEditorProps) {
-  const { mode } = useColorScheme()
-
   const [markdownEditMode, setMarkdownEditMode] = useState(false)
-  const [cardDescription, setCardDescription] = useState<string>(description)
+  const [cardDescription, setCardDescription] = useState<string>('')
 
-  // Update local state when the description prop changes (e.g., from realtime updates)
+  // Convert markdown to HTML on mount and when description changes
   useEffect(() => {
-    if (description !== undefined && description !== cardDescription) {
-      setCardDescription(description)
+    if (description !== undefined) {
+      // Check if content is markdown and convert to HTML
+      const htmlContent = isMarkdownContent(description) ? convertMarkdownToHtml(description) : description
+
+      setCardDescription(htmlContent)
     }
   }, [description])
 
@@ -34,22 +35,23 @@ export default function CardDescriptionMdEditor({
 
   const reset = () => {
     setMarkdownEditMode(false)
-    setCardDescription(description)
+    // Reset to the prepared content
+    const htmlContent = isMarkdownContent(description) ? convertMarkdownToHtml(description) : description
+    setCardDescription(htmlContent)
   }
 
   return (
     <Box sx={{ mt: -4 }}>
       {markdownEditMode ? (
         <Box sx={{ mt: 5, display: 'flex', flexDirection: 'column', gap: 1 }}>
-          <Box data-color-mode={mode}>
-            <MDEditor
-              value={cardDescription}
-              onChange={(value) => setCardDescription(value as string)}
-              previewOptions={{ rehypePlugins: [[rehypeSanitize]] }} // Sanitize the markdown content
-              height={400}
-              preview='edit'
-            />
-          </Box>
+          <RichTextEditor
+            content={cardDescription}
+            onChange={(html) => setCardDescription(html)}
+            placeholder='Add a more detailed description...'
+            height={400}
+            editable={true}
+            autoFocus={true}
+          />
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Button
               onClick={updateCardDescription}
@@ -79,17 +81,19 @@ export default function CardDescriptionMdEditor({
           >
             Edit
           </Button>
-          <Box data-color-mode={mode}>
-            <MDEditor.Markdown
-              source={cardDescription}
-              style={{
-                whiteSpace: 'pre-wrap',
-                padding: cardDescription ? '10px' : '0px',
-                border: cardDescription ? '0.5px solid rgba(0, 0, 0, 0.2)' : 'none',
+          {hasHtmlContent(cardDescription) ? (
+            <Box
+              sx={{
+                padding: '10px',
+                border: '0.5px solid rgba(0, 0, 0, 0.2)',
                 borderRadius: '8px'
               }}
-            />
-          </Box>
+            >
+              <RichTextEditor content={cardDescription} editable={false} />
+            </Box>
+          ) : (
+            <Box sx={{ padding: '10px', color: 'text.disabled', fontStyle: 'italic' }}>No description yet</Box>
+          )}
         </Box>
       )}
     </Box>

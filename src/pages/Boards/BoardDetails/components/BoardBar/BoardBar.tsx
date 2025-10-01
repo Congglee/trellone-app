@@ -28,6 +28,7 @@ interface BoardBarProps {
   board: BoardResType['result']
   isBoardMember: boolean
   canManageBoard: boolean
+  hasWorkspace: boolean
 }
 
 const MENU_STYLES = {
@@ -52,7 +53,8 @@ export default function BoardBar({
   onBoardDrawerOpen,
   board,
   isBoardMember,
-  canManageBoard
+  canManageBoard,
+  hasWorkspace
 }: BoardBarProps) {
   const [editBoardTitleFormOpen, setEditBoardTitleFormOpen] = useState(false)
   const [boardTitle, setBoardTitle] = useState('')
@@ -114,7 +116,7 @@ export default function BoardBar({
         dispatch(updateActiveBoard(newActiveBoard))
         dispatch(
           workspaceApi.util.invalidateTags([
-            { type: 'Workspace', id: newActiveBoard.workspace_id },
+            { type: 'Workspace', id: newActiveBoard.workspace_id as string },
             { type: 'Workspace', id: 'LIST' }
           ])
         )
@@ -127,7 +129,7 @@ export default function BoardBar({
 
   const joinWorkspaceBoard = () => {
     joinWorkspaceBoardMutation({
-      workspace_id: board.workspace_id,
+      workspace_id: board.workspace_id as string,
       board_id: board._id
     }).then((res) => {
       if (!res.error) {
@@ -168,7 +170,7 @@ export default function BoardBar({
         zIndex: 999
       }}
       position='absolute'
-      workspaceDrawerOpen={workspaceDrawerOpen}
+      workspaceDrawerOpen={hasWorkspace && workspaceDrawerOpen}
       boardDrawerOpen={boardDrawerOpen}
     >
       <Toolbar
@@ -185,15 +187,17 @@ export default function BoardBar({
         variant='dense'
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <IconButton
-            color='inherit'
-            aria-label='open workspace drawer'
-            onClick={() => onWorkspaceDrawerOpen(true)}
-            edge='start'
-            sx={{ ...(workspaceDrawerOpen && { display: 'none' }) }}
-          >
-            <MenuIcon />
-          </IconButton>
+          {hasWorkspace && (
+            <IconButton
+              color='inherit'
+              aria-label='open workspace drawer'
+              onClick={() => onWorkspaceDrawerOpen(true)}
+              edge='start'
+              sx={{ ...(workspaceDrawerOpen && { display: 'none' }) }}
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
 
           <Tooltip title={board.description}>
             {editBoardTitleFormOpen ? (
@@ -233,7 +237,7 @@ export default function BoardBar({
           }}
         >
           {isBoardMember ? (
-            <InviteBoardMembers boardId={board._id} workspaceId={board.workspace_id} />
+            <InviteBoardMembers boardId={board._id} workspaceId={board.workspace_id as string} />
           ) : (
             <Tooltip title='Workspace members can join this board'>
               <Button size='small' color='secondary' variant='contained' onClick={joinWorkspaceBoard}>

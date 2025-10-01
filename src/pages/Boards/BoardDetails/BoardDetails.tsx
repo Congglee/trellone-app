@@ -346,13 +346,15 @@ export default function BoardDetails() {
         {isClosed && <BoardClosedBanner />}
 
         <Box sx={{ display: 'flex' }}>
-          <WorkspaceDrawer
-            open={workspaceDrawerOpen}
-            onOpen={setWorkspaceDrawerOpen}
-            boardId={boardId}
-            workspace={activeBoard.workspace}
-            isBoardClosed={isClosed}
-          />
+          {activeBoard.workspace_id && (
+            <WorkspaceDrawer
+              open={workspaceDrawerOpen}
+              onOpen={setWorkspaceDrawerOpen}
+              boardId={boardId}
+              workspace={activeBoard.workspace}
+              isBoardClosed={isClosed}
+            />
+          )}
 
           <BoardBar
             workspaceDrawerOpen={workspaceDrawerOpen}
@@ -362,10 +364,11 @@ export default function BoardDetails() {
             board={activeBoard}
             isBoardMember={isMember}
             canManageBoard={canManageBoard}
+            hasWorkspace={!!activeBoard.workspace_id}
           />
 
           <Main
-            workspaceDrawerOpen={workspaceDrawerOpen}
+            workspaceDrawerOpen={activeBoard.workspace_id ? workspaceDrawerOpen : false}
             boardDrawerOpen={boardDrawerOpen}
             sx={{
               overflowX: 'auto',

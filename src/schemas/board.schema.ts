@@ -22,7 +22,7 @@ export const BoardSchema = z.object({
   description: z.string().optional(),
   type: z.enum(BoardTypeValues),
   cover_photo: z.string().optional(),
-  workspace_id: z.string(),
+  workspace_id: z.string().nullable(),
   column_order_ids: z.array(z.string()),
   members: z.array(BoardMemberSchema),
   columns: z.array(ColumnSchema).optional(),
@@ -108,6 +108,7 @@ export const UpdateBoardBody = z.object({
     .optional(),
   column_order_ids: z.array(z.string()).optional(),
   cover_photo: z.string().url().optional(),
+  workspace_id: z.string().optional(),
   _destroy: z.boolean().optional()
 })
 

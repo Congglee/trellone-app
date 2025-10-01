@@ -2,7 +2,6 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import PublicOutlinedIcon from '@mui/icons-material/PublicOutlined'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import Skeleton from '@mui/material/Skeleton'
@@ -18,6 +17,7 @@ import { WorkspaceType } from '~/constants/type'
 import { useWorkspacePermission } from '~/hooks/use-permissions'
 import WorkspaceLogo from '~/pages/Workspaces/components/WorkspaceLogo'
 import EditWorkspaceDialog from '~/pages/Workspaces/pages/WorkspaceHome/components/EditWorkspaceDialog'
+import DeleteWorkspace from '~/pages/Workspaces/pages/WorkspaceSettings/components/DeleteWorkspace'
 import WorkspaceVisibility from '~/pages/Workspaces/pages/WorkspaceSettings/components/WorkspaceVisibility'
 import { useGetWorkspaceQuery } from '~/queries/workspaces'
 import { WorkspaceVisibilityType } from '~/schemas/workspace.schema'
@@ -30,7 +30,7 @@ export default function WorkspaceSettings() {
   const { data: workspaceData, isLoading, isError } = useGetWorkspaceQuery(workspaceId!)
   const workspace = workspaceData?.result
 
-  const { hasPermission } = useWorkspacePermission(workspace)
+  const { hasPermission, canDeleteWorkspace } = useWorkspacePermission(workspace)
 
   if (isError) {
     return <Navigate to={path.boardsList} />
@@ -176,9 +176,12 @@ export default function WorkspaceSettings() {
       <Divider sx={{ my: 3 }} />
 
       <Box sx={{ display: 'flex', justifyContent: { xs: 'stretch', sm: 'flex-start' } }}>
-        <Button variant='contained' color='error' size='medium' sx={{ px: 2.5, fontWeight: 600 }} disabled>
-          Delete this Workspace?
-        </Button>
+        <DeleteWorkspace
+          workspaceId={workspaceId as string}
+          workspaceTitle={workspace?.title as string}
+          affectedBoardIds={workspace?.boards.map((board) => board._id) || []}
+          canDeleteWorkspace={canDeleteWorkspace}
+        />
       </Box>
 
       {workspace && (

@@ -5,6 +5,7 @@ import { boardApi } from '~/queries/boards'
 import { BoardResType } from '~/schemas/board.schema'
 import {
   CreateWorkspaceBodyType,
+  DeleteWorkspaceResType,
   EditWorkspaceMemberRoleBodyType,
   RemoveGuestFromBoardBodyType,
   RemoveGuestFromWorkspaceResType,
@@ -154,6 +155,18 @@ export const workspaceApi = createApi({
         { type: 'Workspace', id: workspace_id },
         { type: 'Workspace', id: 'LIST' }
       ]
+    }),
+
+    deleteWorkspace: build.mutation<DeleteWorkspaceResType, string>({
+      query: (id) => ({ url: `${WORKSPACE_API_URL}/${id}`, method: 'DELETE' }),
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          await queryFulfilled
+        } catch (error) {
+          console.error(error)
+        }
+      },
+      invalidatesTags: [{ type: 'Workspace', id: 'LIST' }]
     })
   })
 })
@@ -170,7 +183,8 @@ export const {
   useAddGuestToWorkspaceMutation,
   useRemoveGuestFromWorkspaceMutation,
   useRemoveGuestFromBoardMutation,
-  useJoinWorkspaceBoardMutation
+  useJoinWorkspaceBoardMutation,
+  useDeleteWorkspaceMutation
 } = workspaceApi
 
 const workspaceApiReducer = workspaceApi.reducer

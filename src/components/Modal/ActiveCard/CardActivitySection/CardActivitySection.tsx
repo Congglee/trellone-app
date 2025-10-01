@@ -1,22 +1,22 @@
-import { useColorScheme } from '@mui/material'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import MDEditor from '@uiw/react-md-editor'
 import { format } from 'date-fns'
 import { useState } from 'react'
-import rehypeSanitize from 'rehype-sanitize'
 import CardCommentReactions from '~/components/Modal/ActiveCard/CardActivitySection/CardCommentReactions'
 import EmojiPicker from '~/components/Modal/ActiveCard/CardActivitySection/EmojiPicker'
 import RemoveComment from '~/components/Modal/ActiveCard/CardActivitySection/RemoveComment'
+import RichTextEditor from '~/components/RichTextEditor'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { useAddCardCommentMutation, useUpdateCardCommentMutation } from '~/queries/cards'
 import { CardType, CommentType } from '~/schemas/card.schema'
 import { updateCardInBoard } from '~/store/slices/board.slice'
 import { updateActiveCard } from '~/store/slices/card.slice'
+import { hasHtmlContent } from '~/utils/html-sanitizer'
+import { prepareContentForDisplay } from '~/utils/markdown-to-html'
 
 interface CardActivitySectionProps {
   cardComments: CommentType[]
@@ -24,7 +24,6 @@ interface CardActivitySectionProps {
 
 export default function CardActivitySection({ cardComments }: CardActivitySectionProps) {
   const { profile } = useAppSelector((state) => state.auth)
-  const { mode } = useColorScheme()
 
   const [activeComment, setActiveComment] = useState<CommentType | null>(null)
   const [editingCommentIndex, setEditingCommentIndex] = useState<number | null>(null)
@@ -48,7 +47,9 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
 
   const toggleEditingCardComment = (commentIndex: number, content: string, comment: CommentType) => {
     setEditingCommentIndex(commentIndex)
-    setEditingCommentContent(content)
+    // Prepare content for editing (convert markdown if needed)
+    const preparedContent = prepareContentForDisplay(content)
+    setEditingCommentContent(preparedContent)
     setActiveComment(comment)
   }
 
@@ -58,7 +59,7 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
   }
 
   const addCardComment = () => {
-    if (!newCommentContent.trim()) return
+    if (!newCommentContent.trim() || !hasHtmlContent(newCommentContent)) return
 
     const payload = { content: newCommentContent.trim() }
 
@@ -81,7 +82,7 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
   }
 
   const updateCardComment = () => {
-    if (!activeComment || !editingCommentContent.trim()) {
+    if (!activeComment || !editingCommentContent.trim() || !hasHtmlContent(editingCommentContent)) {
       handleEditingCommentClose()
       return
     }
@@ -111,6 +112,11 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
     })
   }
 
+  // Filter out comments with empty or only HTML tags without actual content
+  const validCommentsCount = cardComments.filter((comment) =>
+    hasHtmlContent(prepareContentForDisplay(comment.content))
+  ).length
+
   return (
     <Box sx={{ mt: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 2 }}>
@@ -122,13 +128,14 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
         <Box sx={{ flexGrow: 1 }}>
           {isMarkdownEditorOpen ? (
             <>
-              <Box data-color-mode={mode} sx={{ mb: 1 }}>
-                <MDEditor
-                  value={newCommentContent}
-                  onChange={(value) => setNewCommentContent(value as string)}
-                  previewOptions={{ rehypePlugins: [[rehypeSanitize]] }}
-                  height={120}
-                  preview='edit'
+              <Box sx={{ mb: 1 }}>
+                <RichTextEditor
+                  content={newCommentContent}
+                  onChange={(html) => setNewCommentContent(html)}
+                  placeholder='Write a comment...'
+                  height={150}
+                  editable={true}
+                  autoFocus={true}
                 />
               </Box>
               <Box sx={{ display: 'flex', gap: 1 }}>
@@ -139,7 +146,7 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
                   variant='contained'
                   size='small'
                   color='info'
-                  disabled={!newCommentContent.trim()}
+                  disabled={!newCommentContent.trim() || !hasHtmlContent(newCommentContent)}
                 >
                   Save
                 </Button>
@@ -161,7 +168,7 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
         </Box>
       </Box>
 
-      {cardComments?.length === 0 && (
+      {validCommentsCount === 0 && (
         <Typography
           sx={{
             pl: '45px',
@@ -175,6 +182,13 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
       )}
 
       {cardComments.map((comment, index) => {
+        // Skip rendering comments with no actual content
+        const preparedContent = prepareContentForDisplay(comment.content)
+
+        if (!hasHtmlContent(preparedContent) && editingCommentIndex !== index) {
+          return null
+        }
+
         const isCommentOwner = comment.user_email === profile?.email
         const isEditingThisComment = editingCommentIndex === index
         const hasReactions = comment.reactions && comment.reactions.length > 0
@@ -200,18 +214,26 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
 
               {isEditingThisComment ? (
                 <Box sx={{ mt: 1 }}>
-                  <Box data-color-mode={mode} sx={{ mb: 1 }}>
-                    <MDEditor
-                      value={editingCommentContent}
-                      onChange={(value) => setEditingCommentContent(value as string)}
-                      previewOptions={{ rehypePlugins: [[rehypeSanitize]] }}
-                      height={120}
-                      preview='edit'
+                  <Box sx={{ mb: 1 }}>
+                    <RichTextEditor
+                      content={editingCommentContent}
+                      onChange={(html) => setEditingCommentContent(html)}
+                      placeholder='Edit comment...'
+                      height={150}
+                      editable={true}
+                      autoFocus={true}
                     />
                   </Box>
 
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Button type='submit' variant='contained' color='info' size='small' onClick={updateCardComment}>
+                    <Button
+                      type='submit'
+                      variant='contained'
+                      color='info'
+                      size='small'
+                      onClick={updateCardComment}
+                      disabled={!editingCommentContent.trim() || !hasHtmlContent(editingCommentContent)}
+                    >
                       Save
                     </Button>
                     <Button
@@ -237,18 +259,7 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
                     boxShadow: '0 0 1px rgba(0, 0, 0, 0.2)'
                   }}
                 >
-                  <Box data-color-mode={mode}>
-                    <MDEditor.Markdown
-                      source={comment.content}
-                      style={{
-                        whiteSpace: 'pre-wrap',
-                        padding: '0px',
-                        border: 'none',
-                        borderRadius: '0px',
-                        backgroundColor: 'transparent'
-                      }}
-                    />
-                  </Box>
+                  <RichTextEditor content={preparedContent} editable={false} />
                 </Box>
               )}
 

@@ -1,11 +1,13 @@
 import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import CloseIcon from '@mui/icons-material/Close'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import GroupsIcon from '@mui/icons-material/Groups'
 import LogoutIcon from '@mui/icons-material/Logout'
 import { useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
@@ -14,15 +16,21 @@ import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
+import MenuItem from '@mui/material/MenuItem'
+import Popover from '@mui/material/Popover'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Typography from '@mui/material/Typography'
 import cloneDeep from 'lodash/cloneDeep'
+import { useMemo, useState } from 'react'
 import DrawerHeader from '~/components/DrawerHeader'
 import { BoardRole } from '~/constants/type'
+import { useCategorizeWorkspaces } from '~/hooks/use-categorize-workspaces'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import ChangeBoardBackground from '~/pages/Boards/BoardDetails/components/BoardDrawer/ChangeBoardBackground'
 import CloseBoard from '~/pages/Boards/BoardDetails/components/BoardDrawer/CloseBoard'
 import DeleteBoard from '~/pages/Boards/BoardDetails/components/BoardDrawer/DeleteBoard'
 import { useLeaveBoardMutation, useUpdateBoardMutation } from '~/queries/boards'
+import { useGetWorkspacesQuery } from '~/queries/workspaces'
 import { BoardMemberType } from '~/schemas/board.schema'
 import { clearActiveBoard, updateActiveBoard } from '~/store/slices/board.slice'
 
@@ -47,6 +55,14 @@ export default function BoardDrawer({
 }: BoardDrawerProps) {
   const theme = useTheme()
 
+  const [anchorSelectWorkspacePopoverElement, setAnchorSelectWorkspacePopoverElement] = useState<HTMLElement | null>(
+    null
+  )
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string>('')
+
+  const isSelectWorkspacePopoverOpen = Boolean(anchorSelectWorkspacePopoverElement)
+  const selectWorkspacePopoverId = isSelectWorkspacePopoverOpen ? 'select-workspace-popover' : undefined
+
   const dispatch = useAppDispatch()
 
   const { profile } = useAppSelector((state) => state.auth)
@@ -55,6 +71,12 @@ export default function BoardDrawer({
 
   const [leaveBoardMutation] = useLeaveBoardMutation()
   const [updateBoardMutation] = useUpdateBoardMutation()
+
+  const { data: workspacesData } = useGetWorkspacesQuery({ page: 1, limit: 100 })
+
+  const workspacesList = useMemo(() => workspacesData?.result.workspaces || [], [workspacesData])
+
+  const { memberWorkspaces } = useCategorizeWorkspaces(workspacesList)
 
   const totalBoardMembers = boardMembers?.length
 
@@ -69,6 +91,25 @@ export default function BoardDrawer({
   const isLastAdmin = isCurrentUserAdmin && totalAdmins === 1
   const canLeaveBoard = currentUserMember && !isLastAdmin
   const canReopenBoard = isBoardClosed && isBoardAdmin
+
+  const handleSelectWorkspacePopoverClose = () => {
+    setAnchorSelectWorkspacePopoverElement(null)
+    setSelectedWorkspaceId('')
+  }
+
+  const handleWorkspaceChange = (event: SelectChangeEvent<string>) => {
+    setSelectedWorkspaceId(event.target.value)
+  }
+
+  const handleReopenClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    // If board has no workspace (workspace was deleted), show workspace selector
+    if (activeBoard?.workspace_id === null) {
+      setAnchorSelectWorkspacePopoverElement(event.currentTarget)
+    } else {
+      // Otherwise, reopen normally
+      reopenBoard()
+    }
+  }
 
   const leaveBoard = () => {
     leaveBoardMutation(boardId).then((res) => {
@@ -109,21 +150,60 @@ export default function BoardDrawer({
     })
   }
 
-  const reopenBoard = () => {
+  const reopenBoard = (newWorkspaceId?: string) => {
+    const body: { _destroy: boolean; workspace_id?: string } = { _destroy: false }
+
+    // If newWorkspaceId is provided (for boards with deleted workspace), update workspace_id
+    if (newWorkspaceId !== undefined) {
+      body.workspace_id = newWorkspaceId
+    }
+
     updateBoardMutation({
       id: boardId,
-      body: { _destroy: false }
+      body
     }).then((res) => {
       if (!res.error) {
         const newActiveBoard = { ...activeBoard! }
         newActiveBoard._destroy = false
 
+        if (newWorkspaceId !== undefined) {
+          newActiveBoard.workspace_id = newWorkspaceId
+
+          const newWorkspace = workspacesList.find((workspace) => workspace._id === newWorkspaceId)
+
+          if (newWorkspace) {
+            newActiveBoard.workspace = {
+              _id: newWorkspace._id,
+              title: newWorkspace.title,
+              logo: newWorkspace.logo,
+              boards: newWorkspace.boards || [],
+              members: newWorkspace.members || [],
+              guests: Array.isArray(newWorkspace.guests)
+                ? newWorkspace.guests.map((guest) => (typeof guest === 'string' ? guest : guest._id))
+                : []
+            }
+          }
+        }
+
         dispatch(updateActiveBoard(newActiveBoard))
 
         socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
-        socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', newActiveBoard.workspace_id)
+
+        const targetWorkspaceId = newWorkspaceId !== undefined ? newWorkspaceId : activeBoard?.workspace_id
+
+        if (targetWorkspaceId) {
+          socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', targetWorkspaceId)
+        }
+
+        handleSelectWorkspacePopoverClose()
       }
     })
+  }
+
+  const reopenBoardWithWorkspace = () => {
+    if (selectedWorkspaceId) {
+      reopenBoard(selectedWorkspaceId)
+    }
   }
 
   return (
@@ -180,7 +260,7 @@ export default function BoardDrawer({
 
         {canReopenBoard && (
           <ListItem disablePadding>
-            <ListItemButton onClick={reopenBoard}>
+            <ListItemButton onClick={handleReopenClick}>
               <ListItemIcon>
                 <ArrowOutwardIcon />
               </ListItemIcon>
@@ -202,6 +282,66 @@ export default function BoardDrawer({
 
         {canDeleteBoard && <DeleteBoard boardId={boardId} />}
       </List>
+
+      <Popover
+        id={selectWorkspacePopoverId}
+        open={isSelectWorkspacePopoverOpen}
+        anchorEl={anchorSelectWorkspacePopoverElement}
+        onClose={handleSelectWorkspacePopoverClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        slotProps={{
+          paper: { sx: { width: 320, borderRadius: 2 } }
+        }}
+      >
+        <Box sx={{ p: 2 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              mb: 2,
+              position: 'relative'
+            }}
+          >
+            <Typography variant='subtitle1' sx={{ fontWeight: 'medium' }}>
+              Select a Workspace
+            </Typography>
+            <IconButton
+              size='small'
+              onClick={handleSelectWorkspacePopoverClose}
+              sx={{ position: 'absolute', right: 0 }}
+            >
+              <CloseIcon fontSize='small' />
+            </IconButton>
+          </Box>
+
+          <Typography variant='body2' sx={{ mb: 2, color: 'text.secondary' }}>
+            Your Workspaces
+          </Typography>
+
+          <Select
+            size='small'
+            fullWidth
+            value={selectedWorkspaceId}
+            onChange={handleWorkspaceChange}
+            displayEmpty
+            sx={{ mb: 2 }}
+          >
+            <MenuItem value='' disabled>
+              Choose...
+            </MenuItem>
+            {memberWorkspaces.map((workspace) => (
+              <MenuItem key={workspace._id} value={workspace._id}>
+                {workspace.title}
+              </MenuItem>
+            ))}
+          </Select>
+
+          <Button variant='contained' fullWidth disabled={!selectedWorkspaceId} onClick={reopenBoardWithWorkspace}>
+            Reopen board
+          </Button>
+        </Box>
+      </Popover>
     </Drawer>
   )
 }
