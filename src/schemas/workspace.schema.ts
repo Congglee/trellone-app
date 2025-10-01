@@ -122,3 +122,9 @@ export const RemoveGuestFromWorkspaceRes = z.object({
 })
 
 export type RemoveGuestFromWorkspaceResType = z.TypeOf<typeof RemoveGuestFromWorkspaceRes>
+
+export const DeleteWorkspaceRes = z.object({
+  message: z.string()
+})
+
+export type DeleteWorkspaceResType = z.TypeOf<typeof DeleteWorkspaceRes>

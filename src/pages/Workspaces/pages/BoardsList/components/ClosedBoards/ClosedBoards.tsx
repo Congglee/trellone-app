@@ -18,6 +18,7 @@ import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useEffect, useState } from 'react'
 import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '~/constants/pagination'
+import { BoardRole } from '~/constants/type'
 import { useInfiniteScroll } from '~/hooks/use-infinite-scroll'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import ClosedBoardsListRow from '~/pages/Workspaces/pages/BoardsList/components/ClosedBoardsListRow'
@@ -51,10 +52,12 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
 
   const [allClosedBoards, setAllClosedBoards] = useState<BoardResType['result'][]>([])
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string>('')
+  const [hasAdminClosedBoards, setHasAdminClosedBoards] = useState(false)
 
   const dispatch = useAppDispatch()
 
   const { socket } = useAppSelector((state) => state.app)
+  const { profile } = useAppSelector((state) => state.auth)
 
   useEffect(() => {
     if (!closedBoardsOpen || !boardsData) return
@@ -70,6 +73,24 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
 
     setIsLoadingMore(false)
   }, [boardsData, closedBoardsOpen])
+
+  useEffect(() => {
+    if (!profile?._id) return
+
+    // Check if user has any closed boards where they are admin
+    triggerGetBoards({
+      page: 1,
+      limit: 1,
+      state: 'closed'
+    }).then((res) => {
+      if (res.data?.result?.boards) {
+        const hasAdmin = res.data.result.boards.some((board) =>
+          board.members.some((member) => member.user_id === profile?._id && member.role === BoardRole.Admin)
+        )
+        setHasAdminClosedBoards(hasAdmin)
+      }
+    })
+  }, [profile?._id, triggerGetBoards])
 
   const handleClosedBoardsOpen = () => {
     setAllClosedBoards([])
@@ -128,24 +149,35 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
     })
   }
 
-  const onReopenBoard = (boardId: string, workspaceId: string) => {
+  const onReopenBoard = (boardId: string, workspaceId: string, newWorkspaceId?: string) => {
+    const body: { _destroy: boolean; workspace_id?: string } = { _destroy: false }
+
+    // If newWorkspaceId is provided (for boards with deleted workspace), update workspace_id
+    if (newWorkspaceId !== undefined) {
+      body.workspace_id = newWorkspaceId
+    }
+
     updateBoardMutation({
       id: boardId,
-      body: { _destroy: false }
+      body
     }).then((res) => {
       if (!res.error) {
         if (boards.length === 1) {
           handleClosedBoardsClose()
         }
 
+        const targetWorkspaceId = newWorkspaceId !== undefined ? newWorkspaceId : workspaceId
+
         dispatch(
           workspaceApi.util.invalidateTags([
-            { type: 'Workspace', id: workspaceId },
+            { type: 'Workspace', id: targetWorkspaceId },
             { type: 'Workspace', id: 'LIST' }
           ])
         )
 
-        socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspaceId)
+        if (targetWorkspaceId) {
+          socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', targetWorkspaceId)
+        }
       }
     })
   }
@@ -177,6 +209,8 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
       }
     })
   }
+
+  if (!hasAdminClosedBoards) return null
 
   return (
     <Box sx={{ mt: 6, pl: 1 }}>
@@ -225,6 +259,7 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
                 displayEmpty
               >
                 <MenuItem value=''>All boards</MenuItem>
+                <MenuItem value='null'>Personal</MenuItem>
                 {workspaces.map((workspace) => (
                   <MenuItem key={workspace._id} value={workspace._id}>
                     {workspace.title}
@@ -304,6 +339,7 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
                   key={board._id}
                   board={board}
                   isLast={index === boards.length - 1}
+                  workspaces={workspaces}
                   onReopenBoard={onReopenBoard}
                   onLeaveBoard={onLeaveBoard}
                   onDeleteBoard={onDeleteBoard}

@@ -115,11 +115,6 @@ export default function BoardsList() {
 
   const allWorkspaces = useMemo(() => [...memberWorkspaces, ...guestWorkspaces], [memberWorkspaces, guestWorkspaces])
 
-  const hasClosedBoards = useMemo(
-    () => workspaces.some((workspace) => workspace.boards.some((board) => board._destroy)),
-    [workspaces]
-  )
-
   // Realtime: listen to workspace updates and refresh list
   useEffect(() => {
     if (!socket) return
@@ -296,7 +291,7 @@ export default function BoardsList() {
         )}
       </Box>
 
-      {hasClosedBoards && <ClosedBoards workspaces={allWorkspaces} />}
+      <ClosedBoards workspaces={allWorkspaces} />
     </Box>
   )
 }

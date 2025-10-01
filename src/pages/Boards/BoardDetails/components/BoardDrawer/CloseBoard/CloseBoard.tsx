@@ -15,6 +15,7 @@ import path from '~/constants/path'
 import { useUpdateBoardMutation } from '~/queries/boards'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { updateActiveBoard } from '~/store/slices/board.slice'
+import { workspaceApi } from '~/queries/workspaces'
 
 export default function CloseBoard() {
   const [anchorCloseBoardPopoverElement, setAnchorCloseBoardPopoverElement] = useState<HTMLElement | null>(null)
@@ -52,6 +53,7 @@ export default function CloseBoard() {
         newActiveBoard._destroy = true
 
         dispatch(updateActiveBoard(newActiveBoard))
+        dispatch(workspaceApi.util.invalidateTags([{ type: 'Workspace', id: 'LIST' }]))
 
         socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
         socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', newActiveBoard.workspace_id, newActiveBoard._id)

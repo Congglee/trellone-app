@@ -30,7 +30,7 @@ export const boardApi = createApi({
 
           dispatch(
             workspaceApi.util.invalidateTags([
-              { type: 'Workspace', id: board?.workspace_id },
+              { type: 'Workspace', id: board?.workspace_id as string },
               { type: 'Workspace', id: 'LIST' }
             ])
           )
