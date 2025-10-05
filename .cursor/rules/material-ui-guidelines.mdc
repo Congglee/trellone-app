@@ -7,8 +7,6 @@ description: Material-UI (MUI) usage and styling rules for Trellone App. Aligns 
 
 These rules codify the established Material‑UI (MUI) patterns in this project. Follow them for imports, theming, layout, styling, responsiveness, forms, dialogs, icons, animation, performance, and accessibility.
 
-Canonical reference: [trellone-app/.kilocode/rules/material-ui-patterns.md](mdc:trellone-app/.kilocode/rules/material-ui-patterns.md)
-
 ## Imports and component usage
 
 - Prefer default, one‑per‑line imports for core components (tree‑shaking friendly):
