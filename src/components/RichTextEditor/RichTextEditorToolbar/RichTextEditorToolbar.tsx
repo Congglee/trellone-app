@@ -19,7 +19,7 @@ import Select from '@mui/material/Select'
 import type { SxProps, Theme } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
 import type { Editor } from '@tiptap/react'
-import { Fragment, useMemo } from 'react'
+import { Fragment } from 'react'
 
 interface RichTextEditorToolbarProps {
   editor: Editor
@@ -85,117 +85,115 @@ export default function RichTextEditorToolbar({ editor }: RichTextEditorToolbarP
     }
   }
 
-  const buttons = useMemo<ToolbarButton[]>(() => {
-    const setLink = () => {
-      const previousUrl = editor.getAttributes('link').href
-      const url = window.prompt('Enter URL:', previousUrl)
+  const setLink = () => {
+    const previousUrl = editor.getAttributes('link').href
+    const url = window.prompt('Enter URL:', previousUrl)
 
-      if (url === null) {
-        return
-      }
-
-      if (url === '') {
-        editor.chain().focus().extendMarkRange('link').unsetLink().run()
-        return
-      }
-
-      editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
+    if (url === null) {
+      return
     }
 
-    return [
-      {
-        icon: <FormatBoldIcon fontSize='small' />,
-        title: 'Bold (Ctrl+B)',
-        action: () => editor.chain().focus().toggleBold().run(),
-        isActive: editor.isActive('bold'),
-        disabled: !editor.can().chain().focus().toggleBold().run()
-      },
-      {
-        icon: <FormatItalicIcon fontSize='small' />,
-        title: 'Italic (Ctrl+I)',
-        action: () => editor.chain().focus().toggleItalic().run(),
-        isActive: editor.isActive('italic'),
-        disabled: !editor.can().chain().focus().toggleItalic().run()
-      },
-      {
-        icon: <FormatUnderlinedIcon fontSize='small' />,
-        title: 'Underline (Ctrl+U)',
-        action: () => editor.chain().focus().toggleUnderline().run(),
-        isActive: editor.isActive('underline'),
-        disabled: !editor.can().chain().focus().toggleUnderline().run()
-      },
-      {
-        icon: <StrikethroughSIcon fontSize='small' />,
-        title: 'Strike',
-        action: () => editor.chain().focus().toggleStrike().run(),
-        isActive: editor.isActive('strike'),
-        disabled: !editor.can().chain().focus().toggleStrike().run()
-      },
-      {
-        icon: <CodeIcon fontSize='small' />,
-        title: 'Code',
-        action: () => editor.chain().focus().toggleCode().run(),
-        isActive: editor.isActive('code'),
-        disabled: !editor.can().chain().focus().toggleCode().run()
-      },
-      {
-        icon: <FormatListBulletedIcon fontSize='small' />,
-        title: 'Bullet List',
-        action: () => editor.chain().focus().toggleBulletList().run(),
-        isActive: editor.isActive('bulletList'),
-        disabled: !editor.can().chain().focus().toggleBulletList().run()
-      },
-      {
-        icon: <FormatListNumberedIcon fontSize='small' />,
-        title: 'Ordered List',
-        action: () => editor.chain().focus().toggleOrderedList().run(),
-        isActive: editor.isActive('orderedList'),
-        disabled: !editor.can().chain().focus().toggleOrderedList().run()
-      },
-      {
-        icon: <FormatQuoteIcon fontSize='small' />,
-        title: 'Blockquote',
-        action: () => editor.chain().focus().toggleBlockquote().run(),
-        isActive: editor.isActive('blockquote'),
-        disabled: !editor.can().chain().focus().toggleBlockquote().run()
-      },
-      {
-        icon: <LinkIcon fontSize='small' />,
-        title: 'Add Link',
-        action: setLink,
-        isActive: editor.isActive('link'),
-        disabled: false
-      },
-      {
-        icon: <LinkOffIcon fontSize='small' />,
-        title: 'Remove Link',
-        action: () => editor.chain().focus().unsetLink().run(),
-        isActive: false,
-        disabled: !editor.isActive('link')
-      },
-      {
-        icon: <FormatClearIcon fontSize='small' />,
-        title: 'Clear Format',
-        action: () => editor.chain().focus().clearNodes().unsetAllMarks().run(),
-        isActive: false,
-        disabled: false
-      },
-      {
-        icon: <UndoIcon fontSize='small' />,
-        title: 'Undo (Ctrl+Z)',
-        action: () => editor.chain().focus().undo().run(),
-        isActive: false,
-        disabled: !editor.can().chain().focus().undo().run()
-      },
-      {
-        icon: <RedoIcon fontSize='small' />,
-        title: 'Redo (Ctrl+Shift+Z)',
-        action: () => editor.chain().focus().redo().run(),
-        isActive: false,
-        disabled: !editor.can().chain().focus().redo().run()
-      }
-    ]
-  }, [editor])
+    if (url === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run()
+      return
+    }
+
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
+  }
+
+  const buttons: ToolbarButton[] = [
+    {
+      icon: <FormatBoldIcon fontSize='small' />,
+      title: 'Bold (Ctrl+B)',
+      action: () => editor.chain().focus().toggleBold().run(),
+      isActive: editor.isActive('bold'),
+      disabled: !editor.can().chain().focus().toggleBold().run()
+    },
+    {
+      icon: <FormatItalicIcon fontSize='small' />,
+      title: 'Italic (Ctrl+I)',
+      action: () => editor.chain().focus().toggleItalic().run(),
+      isActive: editor.isActive('italic'),
+      disabled: !editor.can().chain().focus().toggleItalic().run()
+    },
+    {
+      icon: <FormatUnderlinedIcon fontSize='small' />,
+      title: 'Underline (Ctrl+U)',
+      action: () => editor.chain().focus().toggleUnderline().run(),
+      isActive: editor.isActive('underline'),
+      disabled: !editor.can().chain().focus().toggleUnderline().run()
+    },
+    {
+      icon: <StrikethroughSIcon fontSize='small' />,
+      title: 'Strike',
+      action: () => editor.chain().focus().toggleStrike().run(),
+      isActive: editor.isActive('strike'),
+      disabled: !editor.can().chain().focus().toggleStrike().run()
+    },
+    {
+      icon: <CodeIcon fontSize='small' />,
+      title: 'Code',
+      action: () => editor.chain().focus().toggleCode().run(),
+      isActive: editor.isActive('code'),
+      disabled: !editor.can().chain().focus().toggleCode().run()
+    },
+    {
+      icon: <FormatListBulletedIcon fontSize='small' />,
+      title: 'Bullet List',
+      action: () => editor.chain().focus().toggleBulletList().run(),
+      isActive: editor.isActive('bulletList'),
+      disabled: !editor.can().chain().focus().toggleBulletList().run()
+    },
+    {
+      icon: <FormatListNumberedIcon fontSize='small' />,
+      title: 'Ordered List',
+      action: () => editor.chain().focus().toggleOrderedList().run(),
+      isActive: editor.isActive('orderedList'),
+      disabled: !editor.can().chain().focus().toggleOrderedList().run()
+    },
+    {
+      icon: <FormatQuoteIcon fontSize='small' />,
+      title: 'Blockquote',
+      action: () => editor.chain().focus().toggleBlockquote().run(),
+      isActive: editor.isActive('blockquote'),
+      disabled: !editor.can().chain().focus().toggleBlockquote().run()
+    },
+    {
+      icon: <LinkIcon fontSize='small' />,
+      title: 'Add Link',
+      action: setLink,
+      isActive: editor.isActive('link'),
+      disabled: false
+    },
+    {
+      icon: <LinkOffIcon fontSize='small' />,
+      title: 'Remove Link',
+      action: () => editor.chain().focus().unsetLink().run(),
+      isActive: false,
+      disabled: !editor.isActive('link')
+    },
+    {
+      icon: <FormatClearIcon fontSize='small' />,
+      title: 'Clear Format',
+      action: () => editor.chain().focus().clearNodes().unsetAllMarks().run(),
+      isActive: false,
+      disabled: false
+    },
+    {
+      icon: <UndoIcon fontSize='small' />,
+      title: 'Undo (Ctrl+Z)',
+      action: () => editor.chain().focus().undo().run(),
+      isActive: false,
+      disabled: !editor.can().chain().focus().undo().run()
+    },
+    {
+      icon: <RedoIcon fontSize='small' />,
+      title: 'Redo (Ctrl+Shift+Z)',
+      action: () => editor.chain().focus().redo().run(),
+      isActive: false,
+      disabled: !editor.can().chain().focus().redo().run()
+    }
+  ]
 
   return (
     <Box sx={toolbarStyles}>

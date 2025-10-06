@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { format } from 'date-fns'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import CardCommentReactions from '~/components/Modal/ActiveCard/CardActivitySection/CardCommentReactions'
 import EmojiPicker from '~/components/Modal/ActiveCard/CardActivitySection/EmojiPicker'
 import RemoveComment from '~/components/Modal/ActiveCard/CardActivitySection/RemoveComment'
@@ -31,6 +31,8 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
   const [newCommentContent, setNewCommentContent] = useState<string>('')
   const [isMarkdownEditorOpen, setIsMarkdownEditorOpen] = useState<boolean>(false)
 
+  const newCommentEditorRef = useRef<HTMLDivElement>(null)
+
   const dispatch = useAppDispatch()
 
   const { activeCard } = useAppSelector((state) => state.card)
@@ -46,7 +48,12 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
   }
 
   const toggleEditingCardComment = (commentIndex: number, content: string, comment: CommentType) => {
+    // Close other editors
+    setIsMarkdownEditorOpen(false)
+    setNewCommentContent('')
+
     setEditingCommentIndex(commentIndex)
+
     // Prepare content for editing (convert markdown if needed)
     const preparedContent = prepareContentForDisplay(content)
     setEditingCommentContent(preparedContent)
@@ -56,6 +63,24 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
   const handleCancelNewComment = () => {
     setIsMarkdownEditorOpen(false)
     setNewCommentContent('')
+  }
+
+  const handleReplyToComment = (comment: CommentType) => {
+    // Close edit mode if open
+    setEditingCommentIndex(null)
+    setEditingCommentContent('')
+
+    // Open the new comment editor
+    setIsMarkdownEditorOpen(true)
+
+    // Auto-mention the user being replied to (bold) with a space and zero-width space to ensure cursor is outside bold
+    const mentionHtml = `<p><strong>@${comment.user_display_name}</strong> \u200B</p>`
+    setNewCommentContent(mentionHtml)
+
+    // Scroll to the new comment editor
+    setTimeout(() => {
+      newCommentEditorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, 100)
   }
 
   const addCardComment = () => {
@@ -119,7 +144,7 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
 
   return (
     <Box sx={{ mt: 2 }}>
-      <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 2 }}>
+      <Box ref={newCommentEditorRef} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 2 }}>
         <Avatar
           sx={{ width: 36, height: 36, cursor: 'pointer', mt: 1 }}
           alt={profile?.display_name}
@@ -136,6 +161,7 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
                   height={150}
                   editable={true}
                   autoFocus={true}
+                  clearFormattingOnFocus={true}
                 />
               </Box>
               <Box sx={{ display: 'flex', gap: 1 }}>
@@ -161,7 +187,12 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
               placeholder='Write a comment...'
               type='text'
               variant='outlined'
-              onClick={() => setIsMarkdownEditorOpen(true)}
+              onClick={() => {
+                // Close edit mode if open
+                setEditingCommentIndex(null)
+                setEditingCommentContent('')
+                setIsMarkdownEditorOpen(true)
+              }}
               sx={{ cursor: 'pointer' }}
             />
           )}
@@ -322,6 +353,7 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
                           textDecoration: 'underline'
                         }
                       }}
+                      onClick={() => handleReplyToComment(comment)}
                     >
                       Reply
                     </Typography>

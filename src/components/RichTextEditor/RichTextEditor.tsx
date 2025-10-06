@@ -2,7 +2,7 @@ import { useColorScheme } from '@mui/material'
 import Box from '@mui/material/Box'
 import type { SxProps, Theme } from '@mui/material/styles'
 import { EditorContent, useEditor } from '@tiptap/react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import RichTextEditorToolbar from '~/components/RichTextEditor/RichTextEditorToolbar'
 import { getTiptapExtensions } from '~/lib/tiptap'
 import { sanitizeHtml } from '~/utils/html-sanitizer'
@@ -17,6 +17,7 @@ export interface RichTextEditorProps {
   onBlur?: () => void
   onFocus?: () => void
   autoFocus?: boolean
+  clearFormattingOnFocus?: boolean
 }
 
 export default function RichTextEditor({
@@ -28,41 +29,52 @@ export default function RichTextEditor({
   minHeight,
   onBlur,
   onFocus,
-  autoFocus
+  autoFocus,
+  clearFormattingOnFocus
 }: RichTextEditorProps) {
   const { mode } = useColorScheme()
   const previousContentRef = useRef<string>('')
   const isInitialMount = useRef(true)
+  const [, forceUpdate] = useState({})
 
-  const editor = useEditor({
-    extensions: getTiptapExtensions(placeholder),
-    content: sanitizeHtml(content),
-    editable,
-    autofocus: autoFocus ? 'end' : false,
-    onUpdate: ({ editor }) => {
-      if (onChange) {
-        const html = editor.getHTML()
-        previousContentRef.current = html
-        onChange(html)
+  const editor = useEditor(
+    {
+      extensions: getTiptapExtensions(placeholder),
+      content: sanitizeHtml(content),
+      editable,
+      autofocus: autoFocus ? 'end' : false,
+      onUpdate: ({ editor }) => {
+        if (onChange) {
+          const html = editor.getHTML()
+          previousContentRef.current = html
+          onChange(html)
+        }
+      },
+      onSelectionUpdate: () => {
+        forceUpdate({})
+      },
+      onTransaction: () => {
+        forceUpdate({})
+      },
+      onBlur: () => {
+        if (onBlur) {
+          onBlur()
+        }
+      },
+      onFocus: () => {
+        if (onFocus) {
+          onFocus()
+        }
+      },
+      editorProps: {
+        attributes: {
+          class: 'tiptap-editor',
+          'data-placeholder': placeholder || ''
+        }
       }
     },
-    onBlur: () => {
-      if (onBlur) {
-        onBlur()
-      }
-    },
-    onFocus: () => {
-      if (onFocus) {
-        onFocus()
-      }
-    },
-    editorProps: {
-      attributes: {
-        class: 'tiptap-editor',
-        'data-placeholder': placeholder || ''
-      }
-    }
-  })
+    [placeholder, editable, autoFocus]
+  )
 
   // Initialize previousContentRef after editor is created
   useEffect(() => {
@@ -95,6 +107,20 @@ export default function RichTextEditor({
       editor.setEditable(editable)
     }
   }, [editable, editor])
+
+  // Clear formatting marks when autofocus is enabled and clearFormattingOnFocus is true
+  useEffect(() => {
+    if (editor && autoFocus && clearFormattingOnFocus) {
+      // Wait for content to be set and editor to be focused
+      setTimeout(() => {
+        if (editor.isFocused) {
+          // Move cursor to end and unset all marks to prevent inheriting formatting
+          editor.commands.focus('end')
+          editor.commands.unsetAllMarks()
+        }
+      }, 50)
+    }
+  }, [editor, autoFocus, clearFormattingOnFocus])
 
   if (!editor) {
     return null

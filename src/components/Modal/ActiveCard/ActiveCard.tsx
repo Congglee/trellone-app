@@ -21,7 +21,7 @@ import AttachmentPopover from '~/components/Modal/ActiveCard/AttachmentPopover'
 import CardActivitySection from '~/components/Modal/ActiveCard/CardActivitySection'
 import CardAttachments from '~/components/Modal/ActiveCard/CardAttachments'
 import CardCover from '~/components/Modal/ActiveCard/CardCover'
-import CardDescriptionMdEditor from '~/components/Modal/ActiveCard/CardDescriptionMdEditor'
+import CardDescriptionEditor from '~/components/Modal/ActiveCard/CardDescriptionEditor'
 import CardDueDate from '~/components/Modal/ActiveCard/CardDueDate'
 import CardUserGroup from '~/components/Modal/ActiveCard/CardUserGroup'
 import DatesMenu from '~/components/Modal/ActiveCard/DatesMenu'
@@ -229,7 +229,7 @@ export default function ActiveCard({ canEditCard }: ActiveCardProps) {
                   </Typography>
                 </Box>
 
-                <CardDescriptionMdEditor
+                <CardDescriptionEditor
                   description={activeCard?.description as string}
                   onUpdateCardDescription={onUpdateCardDescription}
                 />
