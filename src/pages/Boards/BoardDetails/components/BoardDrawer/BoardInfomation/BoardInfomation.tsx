@@ -110,6 +110,13 @@ export default function BoardInfomation({
     }
   }
 
+  const handleBoardInformationDrawerClose = () => {
+    setBoardInformationDrawerOpen(false)
+    if (descriptionEditMode) {
+      resetDescription()
+    }
+  }
+
   return (
     <>
       <ListItem disablePadding>
@@ -142,7 +149,7 @@ export default function BoardInfomation({
             px: 1
           }}
         >
-          <IconButton color='inherit' onClick={() => setBoardInformationDrawerOpen(false)} aria-label='Go back'>
+          <IconButton color='inherit' onClick={handleBoardInformationDrawerClose} aria-label='Go back'>
             {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
 
@@ -152,7 +159,7 @@ export default function BoardInfomation({
 
           <IconButton
             color='inherit'
-            onClick={() => setBoardInformationDrawerOpen(false)}
+            onClick={handleBoardInformationDrawerClose}
             aria-label='Close drawer'
             sx={{ opacity: 0.7 }}
           >
