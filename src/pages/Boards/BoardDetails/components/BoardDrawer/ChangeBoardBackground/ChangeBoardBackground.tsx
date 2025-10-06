@@ -133,11 +133,13 @@ export default function ChangeBoardBackground({ canManageBoard }: ChangeBoardBac
         open={changeBackgroundDrawerOpen}
       >
         <DrawerHeader sx={{ justifyContent: 'space-between', minHeight: `${theme.trellone.navBarHeight}px!important` }}>
-          <IconButton color='inherit' onClick={() => setChangeBackgroundDrawerOpen(false)}>
-            {theme.direction === 'rtl' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          <IconButton color='inherit' onClick={() => setChangeBackgroundDrawerOpen(false)} aria-label='Go back'>
+            {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
 
-          <Typography variant='subtitle1'>Background Cover</Typography>
+          <Typography variant='subtitle1' sx={{ fontWeight: 500 }}>
+            Background Cover
+          </Typography>
 
           <Box sx={{ width: 40, height: 40 }} />
         </DrawerHeader>
