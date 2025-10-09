@@ -12,6 +12,7 @@ export const sanitizeHtml = (html: string): string => {
       'u',
       's',
       'a',
+      'img',
       'h1',
       'h2',
       'h3',
@@ -25,7 +26,7 @@ export const sanitizeHtml = (html: string): string => {
       'span',
       'div'
     ],
-    ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],
+    ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'src', 'alt', 'title'],
     ALLOW_DATA_ATTR: false
   })
 }
@@ -61,6 +62,11 @@ export const hasHtmlContent = (html: string): boolean => {
   // Get text content and trim whitespace
   const textContent = tempDiv.textContent || tempDiv.innerText || ''
 
-  // Check if there's any actual text content after trimming
-  return textContent.trim().length > 0
+  // If there's text, it's non-empty
+  if (textContent.trim().length > 0) return true
+
+  // Treat non-textual media elements as meaningful content (e.g., images)
+  const hasMedia = Boolean(tempDiv.querySelector('img[src], hr'))
+
+  return hasMedia
 }

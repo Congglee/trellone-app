@@ -1,4 +1,5 @@
 import { styled } from '@mui/material/styles'
+import { forwardRef } from 'react'
 
 const HiddenInputStyles = styled('input')({
   display: 'none'
@@ -15,6 +16,8 @@ const HiddenInputStyles = styled('input')({
   */
 })
 
-export default function VisuallyHiddenInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
-  return <HiddenInputStyles {...props} />
-}
+const VisuallyHiddenInput = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>((props, ref) => {
+  return <HiddenInputStyles ref={ref} {...props} />
+})
+
+export default VisuallyHiddenInput

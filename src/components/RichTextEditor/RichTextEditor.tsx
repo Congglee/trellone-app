@@ -3,9 +3,14 @@ import Box from '@mui/material/Box'
 import type { SxProps, Theme } from '@mui/material/styles'
 import { EditorContent, useEditor } from '@tiptap/react'
 import { useEffect, useRef, useState } from 'react'
+import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
 import RichTextEditorToolbar from '~/components/RichTextEditor/RichTextEditorToolbar'
+import { config } from '~/constants/config'
 import { getTiptapExtensions } from '~/lib/tiptap'
+import { useUploadImageMutation } from '~/queries/medias'
 import { sanitizeHtml } from '~/utils/html-sanitizer'
+import { singleFileValidator } from '~/utils/validators'
+import { toast } from 'react-toastify'
 
 export interface RichTextEditorProps {
   content: string
@@ -36,6 +41,8 @@ export default function RichTextEditor({
   const previousContentRef = useRef<string>('')
   const isInitialMount = useRef(true)
   const [, forceUpdate] = useState({})
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [uploadImageMutation] = useUploadImageMutation()
 
   const editor = useEditor(
     {
@@ -70,6 +77,58 @@ export default function RichTextEditor({
         attributes: {
           class: 'tiptap-editor',
           'data-placeholder': placeholder || ''
+        },
+        handlePaste: (_view, event) => {
+          if (!editable) return false
+
+          const clipboardEvent = event as ClipboardEvent
+          const files: File[] = []
+
+          if (clipboardEvent.clipboardData) {
+            for (const item of Array.from(clipboardEvent.clipboardData.items)) {
+              if (item.kind === 'file') {
+                const file = item.getAsFile()
+                if (file && config.allowedImageMimeTypes.includes(file.type)) {
+                  files.push(file)
+                }
+              }
+            }
+
+            for (const file of Array.from(clipboardEvent.clipboardData.files)) {
+              if (config.allowedImageMimeTypes.includes(file.type)) {
+                files.push(file)
+              }
+            }
+          }
+
+          if (files.length > 0) {
+            event.preventDefault()
+            void uploadAndInsertImages(files)
+            return true
+          }
+
+          return false
+        },
+        handleDrop: (_view, event) => {
+          if (!editable) return false
+
+          const dragEvent = event as DragEvent
+          const files: File[] = []
+
+          if (dragEvent.dataTransfer) {
+            for (const file of Array.from(dragEvent.dataTransfer.files)) {
+              if (config.allowedImageMimeTypes.includes(file.type)) {
+                files.push(file)
+              }
+            }
+          }
+
+          if (files.length > 0) {
+            event.preventDefault()
+            void uploadAndInsertImages(files)
+            return true
+          }
+          return false
         }
       }
     },
@@ -124,6 +183,55 @@ export default function RichTextEditor({
 
   if (!editor) {
     return null
+  }
+
+  const triggerImagePicker = () => {
+    if (!editable) return
+    fileInputRef.current?.click()
+  }
+
+  const uploadAndInsertImages = async (files: File[] | FileList) => {
+    const fileArray = Array.from(files)
+
+    for (const file of fileArray) {
+      const errorMessage = singleFileValidator(file)
+
+      if (errorMessage) {
+        // Skip invalid files silently
+        continue
+      }
+
+      const formData = new FormData()
+
+      formData.append('image', file)
+
+      try {
+        const uploadImageRes = await toast.promise(uploadImageMutation(formData).unwrap(), {
+          pending: 'Uploading...',
+          success: 'Upload successfully!',
+          error: 'Upload failed!'
+        })
+
+        const imageUrl = uploadImageRes.result[0]?.url
+
+        if (imageUrl) {
+          editor.chain().focus().setImage({ src: imageUrl, alt: file.name }).run()
+        }
+      } catch {
+        // Ignore upload failures silently
+      }
+    }
+  }
+
+  const onFileInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files
+
+    if (!files || files.length === 0) return
+
+    await uploadAndInsertImages(files)
+
+    // Reset input so the same file can be selected again if needed
+    event.target.value = ''
   }
 
   const editorContainerStyles: SxProps<Theme> = {
@@ -290,6 +398,17 @@ export default function RichTextEditor({
         }
       },
 
+      // Images
+      '& img, & .tiptap-image': {
+        maxWidth: '100%',
+        height: 'auto',
+        display: 'block',
+        marginTop: '0.5em',
+        marginBottom: '0.5em',
+        borderRadius: '4px',
+        objectFit: 'contain'
+      },
+
       // Blockquotes
       '& blockquote': {
         borderLeft: '3px solid',
@@ -335,8 +454,16 @@ export default function RichTextEditor({
 
   return (
     <Box sx={editorContainerStyles} data-color-mode={mode}>
-      {editable && <RichTextEditorToolbar editor={editor} />}
+      {editable && <RichTextEditorToolbar editor={editor} onInsertImage={triggerImagePicker} />}
       <Box sx={editorContentStyles}>
+        {editable && (
+          <VisuallyHiddenInput
+            ref={fileInputRef}
+            type='file'
+            accept={config.allowedImageMimeTypes.join(',')}
+            onChange={onFileInputChange}
+          />
+        )}
         <EditorContent editor={editor} />
       </Box>
     </Box>

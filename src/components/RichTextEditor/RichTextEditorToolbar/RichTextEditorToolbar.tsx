@@ -1,4 +1,5 @@
 import CodeIcon from '@mui/icons-material/Code'
+import ImageIcon from '@mui/icons-material/Image'
 import FormatBoldIcon from '@mui/icons-material/FormatBold'
 import FormatClearIcon from '@mui/icons-material/FormatClear'
 import FormatItalicIcon from '@mui/icons-material/FormatItalic'
@@ -23,6 +24,7 @@ import { Fragment } from 'react'
 
 interface RichTextEditorToolbarProps {
   editor: Editor
+  onInsertImage?: () => void
 }
 
 interface ToolbarButton {
@@ -33,7 +35,7 @@ interface ToolbarButton {
   disabled?: boolean
 }
 
-export default function RichTextEditorToolbar({ editor }: RichTextEditorToolbarProps) {
+export default function RichTextEditorToolbar({ editor, onInsertImage }: RichTextEditorToolbarProps) {
   const toolbarStyles: SxProps<Theme> = {
     display: 'flex',
     flexWrap: 'wrap',
@@ -157,6 +159,15 @@ export default function RichTextEditorToolbar({ editor }: RichTextEditorToolbarP
       action: () => editor.chain().focus().toggleBlockquote().run(),
       isActive: editor.isActive('blockquote'),
       disabled: !editor.can().chain().focus().toggleBlockquote().run()
+    },
+    {
+      icon: <ImageIcon fontSize='small' />,
+      title: 'Insert Image',
+      action: () => {
+        if (onInsertImage) onInsertImage()
+      },
+      isActive: false,
+      disabled: !editor.isEditable
     },
     {
       icon: <LinkIcon fontSize='small' />,
