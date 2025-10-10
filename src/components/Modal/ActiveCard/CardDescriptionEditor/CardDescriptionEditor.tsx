@@ -6,15 +6,12 @@ import RichTextEditor from '~/components/RichTextEditor'
 import { hasHtmlContent, isMarkdownContent } from '~/utils/html-sanitizer'
 import { convertMarkdownToHtml } from '~/utils/markdown-to-html'
 
-interface CardDescriptionMdEditorProps {
+interface CardDescriptionEditorProps {
   description: string
   onUpdateCardDescription: (description: string) => void
 }
 
-export default function CardDescriptionMdEditor({
-  description,
-  onUpdateCardDescription
-}: CardDescriptionMdEditorProps) {
+export default function CardDescriptionEditor({ description, onUpdateCardDescription }: CardDescriptionEditorProps) {
   const [markdownEditMode, setMarkdownEditMode] = useState(false)
   const [cardDescription, setCardDescription] = useState<string>('')
 

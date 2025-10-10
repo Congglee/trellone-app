@@ -199,33 +199,31 @@ export default function BoardBar({
             </IconButton>
           )}
 
-          <Tooltip title={board.description}>
-            {editBoardTitleFormOpen ? (
-              <Box ref={editBoardTitleClickAwayRef}>
-                <TextField
-                  sx={{
-                    bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#22272b' : '#feff0026'),
-                    width: '230px'
-                  }}
-                  variant='outlined'
-                  size='small'
-                  autoFocus
-                  focused
-                  inputProps={{ style: { fontWeight: 500, fontSize: '1rem' } }}
-                  value={boardTitle}
-                  onChange={(e) => setBoardTitle(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                />
-              </Box>
-            ) : (
-              <Chip
-                sx={{ ...MENU_STYLES }}
-                icon={<SpaceDashboardIcon />}
-                label={board.title}
-                onClick={toggleEditBoardTitleForm}
+          {editBoardTitleFormOpen ? (
+            <Box ref={editBoardTitleClickAwayRef}>
+              <TextField
+                sx={{
+                  bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#22272b' : '#feff0026'),
+                  width: '230px'
+                }}
+                variant='outlined'
+                size='small'
+                autoFocus
+                focused
+                inputProps={{ style: { fontWeight: 500, fontSize: '1rem' } }}
+                value={boardTitle}
+                onChange={(e) => setBoardTitle(e.target.value)}
+                onKeyDown={handleKeyDown}
               />
-            )}
-          </Tooltip>
+            </Box>
+          ) : (
+            <Chip
+              sx={{ ...MENU_STYLES }}
+              icon={<SpaceDashboardIcon />}
+              label={board.title}
+              onClick={toggleEditBoardTitleForm}
+            />
+          )}
         </Box>
 
         <Box

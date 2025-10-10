@@ -2,7 +2,6 @@ import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import CloseIcon from '@mui/icons-material/Close'
-import DashboardIcon from '@mui/icons-material/Dashboard'
 import GroupsIcon from '@mui/icons-material/Groups'
 import LogoutIcon from '@mui/icons-material/Logout'
 import { useTheme } from '@mui/material'
@@ -26,6 +25,7 @@ import DrawerHeader from '~/components/DrawerHeader'
 import { BoardRole } from '~/constants/type'
 import { useCategorizeWorkspaces } from '~/hooks/use-categorize-workspaces'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
+import BoardInfomation from '~/pages/Boards/BoardDetails/components/BoardDrawer/BoardInfomation'
 import ChangeBoardBackground from '~/pages/Boards/BoardDetails/components/BoardDrawer/ChangeBoardBackground'
 import CloseBoard from '~/pages/Boards/BoardDetails/components/BoardDrawer/CloseBoard'
 import DeleteBoard from '~/pages/Boards/BoardDetails/components/BoardDrawer/DeleteBoard'
@@ -229,21 +229,21 @@ export default function BoardDrawer({
           {theme.direction === 'rtl' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
 
-        <Typography variant='subtitle1'>Menu</Typography>
+        <Typography variant='subtitle1' sx={{ fontWeight: 500 }}>
+          Menu
+        </Typography>
         <Box sx={{ width: 40, height: 40 }} />
       </DrawerHeader>
 
       <Divider />
 
       <List>
-        <ListItem disablePadding>
-          <ListItemButton>
-            <ListItemIcon>
-              <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText secondary='About this board' />
-          </ListItemButton>
-        </ListItem>
+        <BoardInfomation
+          boardMembers={boardMembers}
+          isCurrentUserAdmin={isCurrentUserAdmin}
+          boardDescription={activeBoard?.description}
+          canManageBoard={canManageBoard}
+        />
 
         <ChangeBoardBackground canManageBoard={canManageBoard} />
 

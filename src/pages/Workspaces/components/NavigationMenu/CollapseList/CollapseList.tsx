@@ -145,7 +145,7 @@ export default function CollapseList() {
     >
       {isInitialLoading && (
         <>
-          {[...Array(3)].map((_, i) => (
+          {[...Array(5)].map((_, i) => (
             <div key={`skeleton-${i}`}>
               <ListItemButton sx={{ gap: 0.5 }}>
                 <ListItemIcon>
@@ -163,19 +163,6 @@ export default function CollapseList() {
                 />
                 <Skeleton variant='rounded' width={24} height={24} />
               </ListItemButton>
-
-              <Collapse in timeout='auto' unmountOnExit>
-                <List component='div' disablePadding sx={{ fontSize: '15px' }}>
-                  {[...Array(4)].map((__, j) => (
-                    <ListItemButton key={`skeleton-sub-${i}-${j}`} sx={{ pl: 4 }}>
-                      <ListItemIcon>
-                        <Skeleton variant='rounded' width={24} height={24} />
-                      </ListItemIcon>
-                      <ListItemText disableTypography primary={<Skeleton variant='text' width='40%' height={18} />} />
-                    </ListItemButton>
-                  ))}
-                </List>
-              </Collapse>
             </div>
           ))}
         </>

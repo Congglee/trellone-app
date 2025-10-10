@@ -118,7 +118,7 @@ export default function ColumnMenuActions({ column }: ColumnMenuActionsProps) {
         {showMenuActions && (
           <List disablePadding sx={{ width: '100%', minWidth: 250, maxWidth: 300, py: 1 }}>
             <ListItem disablePadding>
-              <ListItemButton sx={{ py: 0.5 }}>
+              <ListItemButton sx={{ py: 0.5 }} disabled>
                 <ListItemIcon>
                   <AddCardIcon fontSize='small' />
                 </ListItemIcon>
@@ -127,7 +127,7 @@ export default function ColumnMenuActions({ column }: ColumnMenuActionsProps) {
             </ListItem>
 
             <ListItem disablePadding>
-              <ListItemButton sx={{ py: 0.5 }}>
+              <ListItemButton sx={{ py: 0.5 }} disabled>
                 <ListItemIcon>
                   <ContentCut fontSize='small' />
                 </ListItemIcon>
@@ -136,7 +136,7 @@ export default function ColumnMenuActions({ column }: ColumnMenuActionsProps) {
             </ListItem>
 
             <ListItem disablePadding>
-              <ListItemButton sx={{ py: 0.5 }}>
+              <ListItemButton sx={{ py: 0.5 }} disabled>
                 <ListItemIcon>
                   <ContentCopy fontSize='small' />
                 </ListItemIcon>
@@ -145,7 +145,7 @@ export default function ColumnMenuActions({ column }: ColumnMenuActionsProps) {
             </ListItem>
 
             <ListItem disablePadding>
-              <ListItemButton sx={{ py: 0.5 }}>
+              <ListItemButton sx={{ py: 0.5 }} disabled>
                 <ListItemIcon>
                   <ContentPaste fontSize='small' />
                 </ListItemIcon>
@@ -165,7 +165,7 @@ export default function ColumnMenuActions({ column }: ColumnMenuActionsProps) {
             </ListItem>
 
             <ListItem disablePadding>
-              <ListItemButton sx={{ py: 0.5 }}>
+              <ListItemButton sx={{ py: 0.5 }} disabled>
                 <ListItemIcon>
                   <Cloud fontSize='small' />
                 </ListItemIcon>
