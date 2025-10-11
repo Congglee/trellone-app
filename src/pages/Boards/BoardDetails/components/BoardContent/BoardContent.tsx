@@ -363,9 +363,19 @@ export default function BoardContent({
   // We will customize the strategy/algorithm for collision detection optimized for dragging cards between multiple columns
   const collisionDetectionStrategy = useCallback(
     (args: any) => {
-      // In the case of dragging a column, the `closestCorners` algorithm is the most accurate to use
+      // Columns: only allow dropping when the pointer is actually over a column.
+      // If the pointer is outside all columns (e.g., over the left WorkspaceDrawer),
+      // return an empty collision list so no reordering occurs.
       if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN) {
-        return closestCorners({ ...args })
+        // return closestCorners({ ...args })
+
+        const pointerIntersections = pointerWithin(args)
+
+        if (!pointerIntersections?.length) {
+          return []
+        }
+
+        return pointerIntersections
       }
 
       // Find intersection points, collisions, and return an array of collisions (intersections) with the pointer
@@ -435,7 +445,7 @@ export default function BoardContent({
           canCreateCard={canCreateCard}
         />
 
-        <DragOverlay dropAnimation={customDropAnimation}>
+        <DragOverlay dropAnimation={customDropAnimation} zIndex={2000}>
           {!activeDragItemType && null}
 
           {activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN && (
