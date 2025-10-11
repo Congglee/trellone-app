@@ -211,7 +211,7 @@ export default function ChangeBoardBackground({ canManageBoard }: ChangeBoardBac
                 })}
 
                 {isLoading &&
-                  Array.from({ length: 8 }).map((_, index) => (
+                  Array.from({ length: 12 }).map((_, index) => (
                     <ImageListItem sx={{ p: 0 }} key={index}>
                       <Skeleton animation='wave' variant='rectangular' width='100%' height='60px' />
                     </ImageListItem>
