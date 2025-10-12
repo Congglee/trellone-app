@@ -12,13 +12,15 @@ interface BoardSliceState {
   loading: string
   currentRequestId: string | undefined
   error: string | null
+  boardDrawerOpen: boolean
 }
 
 const initialState: BoardSliceState = {
   activeBoard: null,
   loading: 'idle',
   currentRequestId: undefined,
-  error: null
+  error: null,
+  boardDrawerOpen: false
 }
 
 export const getBoardDetails = createAsyncThunk('board/getBoardDetails', async (boardId: string, thunkAPI) => {
@@ -37,6 +39,10 @@ export const boardSlice = createSlice({
     updateActiveBoard: (state, action: PayloadAction<BoardResType['result'] | null>) => {
       const board = action.payload
       state.activeBoard = board
+    },
+
+    setBoardDrawerOpen: (state, action: PayloadAction<boolean>) => {
+      state.boardDrawerOpen = action.payload
     },
 
     clearActiveBoard: (state) => {
@@ -106,7 +112,7 @@ export const boardSlice = createSlice({
   }
 })
 
-export const { updateActiveBoard, updateCardInBoard, clearActiveBoard } = boardSlice.actions
+export const { updateActiveBoard, updateCardInBoard, clearActiveBoard, setBoardDrawerOpen } = boardSlice.actions
 
 const boardReducer = boardSlice.reducer
 

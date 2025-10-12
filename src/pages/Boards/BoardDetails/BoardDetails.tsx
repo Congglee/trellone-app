@@ -2,7 +2,7 @@ import { useMediaQuery, useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import cloneDeep from 'lodash/cloneDeep'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useParams } from 'react-router-dom'
 import DrawerHeader from '~/components/DrawerHeader'
@@ -27,16 +27,23 @@ import { BoardResType } from '~/schemas/board.schema'
 import { CardType } from '~/schemas/card.schema'
 import { ColumnType } from '~/schemas/column.schema'
 import { UserType } from '~/schemas/user.schema'
-import { clearActiveBoard, getBoardDetails, updateActiveBoard, updateCardInBoard } from '~/store/slices/board.slice'
+import {
+  clearActiveBoard,
+  getBoardDetails,
+  updateActiveBoard,
+  updateCardInBoard,
+  setBoardDrawerOpen
+} from '~/store/slices/board.slice'
 import { updateActiveCard } from '~/store/slices/card.slice'
+import { setWorkspaceDrawerOpen } from '~/store/slices/workspace.slice'
 
 export default function BoardDetails() {
   const theme = useTheme()
   const isDarkMode = theme.palette.mode === 'dark'
   const isScreenBelowMedium = useMediaQuery(theme.breakpoints.down('md'))
 
-  const [workspaceDrawerOpen, setWorkspaceDrawerOpen] = useState(true)
-  const [boardDrawerOpen, setBoardDrawerOpen] = useState(false)
+  const { workspaceDrawerOpen } = useAppSelector((state) => state.workspace)
+  const { boardDrawerOpen } = useAppSelector((state) => state.board)
 
   const { boardId } = useParams()
   const queryConfig = useQueryConfig()
@@ -44,6 +51,14 @@ export default function BoardDetails() {
   const dispatch = useAppDispatch()
   const { activeBoard, loading, error } = useAppSelector((state) => state.board)
   const { socket } = useAppSelector((state) => state.app)
+
+  const handleWorkspaceDrawerOpen = (open: boolean) => {
+    dispatch(setWorkspaceDrawerOpen(open))
+  }
+
+  const handleBoardDrawerOpen = (open: boolean) => {
+    dispatch(setBoardDrawerOpen(open))
+  }
 
   const [updateBoardMutation] = useUpdateBoardMutation()
   const [updateColumnMutation] = useUpdateColumnMutation()
@@ -349,7 +364,7 @@ export default function BoardDetails() {
           {activeBoard.workspace_id && (
             <WorkspaceDrawer
               open={workspaceDrawerOpen}
-              onOpen={setWorkspaceDrawerOpen}
+              onOpen={handleWorkspaceDrawerOpen}
               boardId={boardId}
               workspace={activeBoard.workspace}
               isBoardClosed={isClosed}
@@ -358,9 +373,9 @@ export default function BoardDetails() {
 
           <BoardBar
             workspaceDrawerOpen={workspaceDrawerOpen}
-            onWorkspaceDrawerOpen={setWorkspaceDrawerOpen}
+            onWorkspaceDrawerOpen={handleWorkspaceDrawerOpen}
             boardDrawerOpen={boardDrawerOpen}
-            onBoardDrawerOpen={setBoardDrawerOpen}
+            onBoardDrawerOpen={handleBoardDrawerOpen}
             board={activeBoard}
             isBoardMember={isMember}
             canManageBoard={canManageBoard}
@@ -399,7 +414,7 @@ export default function BoardDetails() {
 
           <BoardDrawer
             open={boardDrawerOpen}
-            onOpen={setBoardDrawerOpen}
+            onOpen={handleBoardDrawerOpen}
             boardMembers={activeBoard.members}
             boardId={boardId!}
             isBoardAdmin={isAdmin}
