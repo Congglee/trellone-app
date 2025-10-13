@@ -71,7 +71,10 @@ export const useWorkspacePermission = (
     return WORKSPACE_ROLE_PERMISSIONS[role]
   }, [role])
 
-  const hasPermission = (permission: WorkspacePermission) => permissions.includes(permission)
+  const hasPermission = (permission: WorkspacePermission | WorkspacePermission[]) => {
+    const requested = Array.isArray(permission) ? permission : [permission]
+    return requested.some((perm) => permissions.includes(perm))
+  }
 
   const isAdmin = role === WorkspaceRole.Admin
   const isNormal = role === WorkspaceRole.Normal
@@ -105,8 +108,12 @@ interface UseBoardPermissionReturn {
   isObserver: boolean
   permissions: BoardPermission[]
   hasPermission: (permission: BoardPermission) => boolean
+  canDragAndDrop: boolean
   canViewBoard: boolean
   canManageBoard: boolean
+  canEditBoardInfo: boolean
+  canChangeCoverPhoto: boolean
+  canReorderColumn: boolean
   canManageMembers: boolean
   canCreateColumn: boolean
   canEditColumn: boolean
@@ -158,13 +165,22 @@ export const useBoardPermission = (board?: BoardItem, userIdOverride?: string): 
     return BOARD_ROLE_PERMISSIONS[role]
   }, [role])
 
-  const hasPermission = (permission: BoardPermission) => permissions.includes(permission)
+  const hasPermission = (permission: BoardPermission | BoardPermission[]) => {
+    const requested = Array.isArray(permission) ? permission : [permission]
+    return requested.some((perm) => permissions.includes(perm))
+  }
 
   const isAdmin = role === BoardRole.Admin
   const isNormal = role === BoardRole.Member
   const isObserver = role === BoardRole.Observer
 
   const isClosed = Boolean(board?._destroy)
+
+  const canDragAndDrop =
+    hasPermission(BoardPermission.MoveCardToDifferentColumn) &&
+    hasPermission(BoardPermission.ReorderCardInTheSameColumn) &&
+    hasPermission(BoardPermission.ReorderColumn) &&
+    !isClosed
 
   return {
     role,
@@ -176,9 +192,14 @@ export const useBoardPermission = (board?: BoardItem, userIdOverride?: string): 
     isObserver,
     permissions,
     hasPermission,
+    canDragAndDrop,
+
     // View remains allowed according to role even when closed; all interactions below are disabled if closed
     canViewBoard: hasPermission(BoardPermission.ViewBoard),
     canManageBoard: hasPermission(BoardPermission.ManageBoard) && !isClosed,
+    canEditBoardInfo: hasPermission(BoardPermission.EditBoardInfo) && !isClosed,
+    canChangeCoverPhoto: hasPermission(BoardPermission.ChangeCoverPhoto) && !isClosed,
+    canReorderColumn: hasPermission(BoardPermission.ReorderColumn) && !isClosed,
     canManageMembers: hasPermission(BoardPermission.ManageMembers) && !isClosed,
     canCreateColumn: hasPermission(BoardPermission.CreateColumn) && !isClosed,
     canEditColumn: hasPermission(BoardPermission.EditColumn) && !isClosed,

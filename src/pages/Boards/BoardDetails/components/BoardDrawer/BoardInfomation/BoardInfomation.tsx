@@ -35,14 +35,14 @@ interface BoardInfomationProps {
   boardMembers: BoardMemberType[]
   isCurrentUserAdmin: boolean
   boardDescription?: string
-  canManageBoard: boolean
+  canEditBoardInfo: boolean
 }
 
 export default function BoardInfomation({
   boardMembers,
   isCurrentUserAdmin,
   boardDescription: initialDescription,
-  canManageBoard
+  canEditBoardInfo
 }: BoardInfomationProps) {
   const theme = useTheme()
   const [boardInformationDrawerOpen, setBoardInformationDrawerOpen] = useState(false)
@@ -253,7 +253,7 @@ export default function BoardInfomation({
                     Description
                   </Typography>
                 </Box>
-                {canManageBoard && hasHtmlContent(boardDescription) && !descriptionEditMode && (
+                {canEditBoardInfo && hasHtmlContent(boardDescription) && !descriptionEditMode && (
                   <IconButton
                     size='small'
                     onClick={() => setDescriptionEditMode(true)}
@@ -304,15 +304,15 @@ export default function BoardInfomation({
                         padding: '10px',
                         border: '0.5px solid rgba(0, 0, 0, 0.2)',
                         borderRadius: '8px',
-                        cursor: canManageBoard ? 'pointer' : 'default',
+                        cursor: canEditBoardInfo ? 'pointer' : 'default',
                         transition: 'all 0.2s ease',
                         '&:hover': {
-                          borderColor: canManageBoard ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)',
-                          boxShadow: canManageBoard ? '0 2px 4px rgba(0, 0, 0, 0.1)' : 'none'
+                          borderColor: canEditBoardInfo ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)',
+                          boxShadow: canEditBoardInfo ? '0 2px 4px rgba(0, 0, 0, 0.1)' : 'none'
                         }
                       }}
                       onClick={() => {
-                        if (canManageBoard) {
+                        if (canEditBoardInfo) {
                           setDescriptionEditMode(true)
                         }
                       }}
@@ -325,11 +325,11 @@ export default function BoardInfomation({
                         p: 1.5,
                         bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'grey.100'),
                         borderRadius: 1,
-                        cursor: canManageBoard ? 'pointer' : 'default',
+                        cursor: canEditBoardInfo ? 'pointer' : 'default',
                         transition: 'all 0.2s ease',
                         '&:hover': {
                           bgcolor: (theme) =>
-                            canManageBoard
+                            canEditBoardInfo
                               ? theme.palette.mode === 'dark'
                                 ? 'rgba(255, 255, 255, 0.08)'
                                 : 'grey.200'
@@ -339,7 +339,7 @@ export default function BoardInfomation({
                         }
                       }}
                       onClick={() => {
-                        if (canManageBoard) {
+                        if (canEditBoardInfo) {
                           setDescriptionEditMode(true)
                         }
                       }}

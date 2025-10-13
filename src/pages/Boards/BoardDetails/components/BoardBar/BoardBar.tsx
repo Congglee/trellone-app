@@ -20,17 +20,6 @@ import { BoardResType } from '~/schemas/board.schema'
 import { UserType } from '~/schemas/user.schema'
 import { updateActiveBoard } from '~/store/slices/board.slice'
 
-interface BoardBarProps {
-  workspaceDrawerOpen: boolean
-  onWorkspaceDrawerOpen: (open: boolean) => void
-  boardDrawerOpen: boolean
-  onBoardDrawerOpen: (open: boolean) => void
-  board: BoardResType['result']
-  isBoardMember: boolean
-  canManageBoard: boolean
-  hasWorkspace: boolean
-}
-
 const MENU_STYLES = {
   bgcolor: 'transparent',
   border: 'none',
@@ -46,6 +35,18 @@ const MENU_STYLES = {
   fontWeight: 500
 }
 
+interface BoardBarProps {
+  workspaceDrawerOpen: boolean
+  onWorkspaceDrawerOpen: (open: boolean) => void
+  boardDrawerOpen: boolean
+  onBoardDrawerOpen: (open: boolean) => void
+  board: BoardResType['result']
+  isBoardMember: boolean
+  canEditBoardInfo: boolean
+  canManageMembers: boolean
+  hasWorkspace: boolean
+}
+
 export default function BoardBar({
   workspaceDrawerOpen,
   onWorkspaceDrawerOpen,
@@ -53,7 +54,8 @@ export default function BoardBar({
   onBoardDrawerOpen,
   board,
   isBoardMember,
-  canManageBoard,
+  canEditBoardInfo,
+  canManageMembers,
   hasWorkspace
 }: BoardBarProps) {
   const [editBoardTitleFormOpen, setEditBoardTitleFormOpen] = useState(false)
@@ -81,7 +83,7 @@ export default function BoardBar({
   const [joinWorkspaceBoardMutation] = useJoinWorkspaceBoardMutation()
 
   const toggleEditBoardTitleForm = () => {
-    if (!canManageBoard) {
+    if (!canEditBoardInfo) {
       return
     }
 
@@ -235,7 +237,11 @@ export default function BoardBar({
           }}
         >
           {isBoardMember ? (
-            <InviteBoardMembers boardId={board._id} workspaceId={board.workspace_id as string} />
+            <InviteBoardMembers
+              boardId={board._id}
+              workspaceId={board.workspace_id as string}
+              canManageMembers={canManageMembers}
+            />
           ) : (
             <Tooltip title='Workspace members can join this board'>
               <Button size='small' color='secondary' variant='contained' onClick={joinWorkspaceBoard}>

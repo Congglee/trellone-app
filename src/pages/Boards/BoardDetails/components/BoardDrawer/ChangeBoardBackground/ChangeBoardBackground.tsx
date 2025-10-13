@@ -33,10 +33,10 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import ListItemText from '@mui/material/ListItemText'
 
 interface ChangeBoardBackgroundProps {
-  canManageBoard: boolean
+  canChangeCoverPhoto: boolean
 }
 
-export default function ChangeBoardBackground({ canManageBoard }: ChangeBoardBackgroundProps) {
+export default function ChangeBoardBackground({ canChangeCoverPhoto }: ChangeBoardBackgroundProps) {
   const theme = useTheme()
 
   const [query, setQuery] = useState('Wallpapers')
@@ -112,7 +112,7 @@ export default function ChangeBoardBackground({ canManageBoard }: ChangeBoardBac
   return (
     <>
       <ListItem disablePadding>
-        <ListItemButton onClick={() => setChangeBackgroundDrawerOpen(true)} disabled={!canManageBoard}>
+        <ListItemButton onClick={() => setChangeBackgroundDrawerOpen(true)} disabled={!canChangeCoverPhoto}>
           <ListItemIcon>
             <FavoriteBorderIcon />
           </ListItemIcon>

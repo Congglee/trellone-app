@@ -28,11 +28,6 @@ import { CreateNewBoardInvitationBody, CreateNewBoardInvitationBodyType } from '
 import { UserType } from '~/schemas/user.schema'
 import { isUnprocessableEntityError } from '~/utils/error-handlers'
 
-interface InviteBoardMembersProps {
-  boardId: string
-  workspaceId: string
-}
-
 type WorkspaceItem = BoardResType['result']['workspace']
 
 const getWorkspaceRole = (userId: string, workspace?: WorkspaceItem) => {
@@ -63,7 +58,13 @@ const getWorkspaceRole = (userId: string, workspace?: WorkspaceItem) => {
   return 'Workspace member'
 }
 
-export default function InviteBoardMembers({ boardId, workspaceId }: InviteBoardMembersProps) {
+interface InviteBoardMembersProps {
+  boardId: string
+  workspaceId: string
+  canManageMembers: boolean
+}
+
+export default function InviteBoardMembers({ boardId, workspaceId, canManageMembers }: InviteBoardMembersProps) {
   const [inviteBoardMemberOpen, setInviteBoardMemberOpen] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
 
@@ -299,7 +300,7 @@ export default function InviteBoardMembers({ boardId, workspaceId }: InviteBoard
                         </Box>
                       </Box>
                       <FormControl size='small' sx={{ width: { xs: '60px', sm: '100px' }, flexShrink: 0 }}>
-                        <Select value={member.role} disabled>
+                        <Select value={member.role} disabled={isCurrentUser || !canManageMembers}>
                           {BoardRoleValues.map((role) => (
                             <MenuItem key={role} value={role}>
                               <Typography
