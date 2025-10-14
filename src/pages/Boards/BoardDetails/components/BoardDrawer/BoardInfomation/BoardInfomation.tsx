@@ -1,8 +1,8 @@
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import CloseIcon from '@mui/icons-material/Close'
-import DashboardIcon from '@mui/icons-material/Dashboard'
 import EditIcon from '@mui/icons-material/Edit'
+import InfoIcon from '@mui/icons-material/Info'
 import PersonIcon from '@mui/icons-material/Person'
 import SubjectIcon from '@mui/icons-material/Subject'
 import { Link as MuiLink, useTheme } from '@mui/material'
@@ -122,7 +122,7 @@ export default function BoardInfomation({
       <ListItem disablePadding>
         <ListItemButton onClick={() => setBoardInformationDrawerOpen(true)}>
           <ListItemIcon>
-            <DashboardIcon />
+            <InfoIcon />
           </ListItemIcon>
           <ListItemText secondary='About this board' />
         </ListItemButton>
