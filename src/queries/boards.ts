@@ -7,6 +7,7 @@ import {
   BoardResType,
   CreateBoardBodyType,
   DeleteBoardResType,
+  EditBoardMemberRoleBodyType,
   UpdateBoardBodyType
 } from '~/schemas/board.schema'
 import { BoardQueryParams, CommonQueryParams } from '~/types/query-params.type'
@@ -114,6 +115,18 @@ export const boardApi = createApi({
         }
       },
       invalidatesTags: [{ type: 'Board', id: 'LIST' }]
+    }),
+
+    editBoardMemberRole: build.mutation<
+      BoardResType,
+      { board_id: string; user_id: string; body: EditBoardMemberRoleBodyType }
+    >({
+      query: ({ board_id, user_id, body }) => ({
+        url: `${BOARD_API_URL}/${board_id}/members/${user_id}/role`,
+        method: 'PUT',
+        data: body
+      }),
+      invalidatesTags: (_result, _error, { board_id }) => [{ type: 'Board', id: board_id }]
     })
   })
 })
@@ -125,7 +138,8 @@ export const {
   useUpdateBoardMutation,
   useLeaveBoardMutation,
   useGetJoinedWorkspaceBoardsQuery,
-  useDeleteBoardMutation
+  useDeleteBoardMutation,
+  useEditBoardMemberRoleMutation
 } = boardApi
 
 const boardApiReducer = boardApi.reducer

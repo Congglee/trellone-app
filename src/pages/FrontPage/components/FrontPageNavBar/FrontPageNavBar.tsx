@@ -1,30 +1,40 @@
 import Brightness4Icon from '@mui/icons-material/Brightness4'
 import Brightness7Icon from '@mui/icons-material/Brightness7'
+import BrightnessAutoIcon from '@mui/icons-material/BrightnessAuto'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import CloseIcon from '@mui/icons-material/Close'
 import MenuIcon from '@mui/icons-material/Menu'
 import { Link as MuiLink, useColorScheme } from '@mui/material'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import ClickAwayListener from '@mui/material/ClickAwayListener'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
+import Grow from '@mui/material/Grow'
 import IconButton from '@mui/material/IconButton'
+import ListItemIcon from '@mui/material/ListItemIcon'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
+import MenuItem from '@mui/material/MenuItem'
+import MenuList from '@mui/material/MenuList'
+import Paper from '@mui/material/Paper'
+import Popper from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
 import SvgIcon from '@mui/material/SvgIcon'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import { useState } from 'react'
+import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import TrelloneIcon from '~/assets/trello.svg?react'
 import AppBar from '~/components/AppBar'
 import path from '~/constants/path'
 import { siteConfig } from '~/constants/site'
 import { useAppSelector } from '~/lib/redux/hooks'
+import { Mode } from '~/types/utils.type'
 
 const menuItems = [
   { title: 'Features', href: '#' },
@@ -36,19 +46,79 @@ const menuItems = [
 
 export default function FrontPageNavBar() {
   const { mode, setMode } = useColorScheme()
+
   const [menuDrawerOpen, setMenuDrawerOpen] = useState(false)
+  const [modeMenuAnchorEl, setModeMenuAnchorEl] = useState<null | HTMLElement>(null)
+
+  const modeMenuButtonRef = useRef<HTMLButtonElement | null>(null)
+  const prevModeMenuOpen = useRef(false)
 
   const { isAuthenticated, profile } = useAppSelector((state) => state.auth)
 
   const isLoggedIn = Boolean(isAuthenticated && profile)
 
+  const currentMode = mode ?? 'system'
+  const modeMenuOpen = Boolean(modeMenuAnchorEl)
+
+  const colorModeOptions = [
+    {
+      value: 'light' as const,
+      label: 'Light',
+      icon: <Brightness7Icon fontSize='small' />
+    },
+    {
+      value: 'dark' as const,
+      label: 'Dark',
+      icon: <Brightness4Icon fontSize='small' />
+    },
+    {
+      value: 'system' as const,
+      label: 'System',
+      icon: <BrightnessAutoIcon fontSize='small' />
+    }
+  ]
+
   const toggleMenuDrawer = () => {
     setMenuDrawerOpen(!menuDrawerOpen)
   }
 
-  const handleModeChange = () => {
-    setMode(mode === 'dark' ? 'light' : 'dark')
+  const handleToggleModeMenu = (event: MouseEvent<HTMLButtonElement>) => {
+    setModeMenuAnchorEl((prev) => (prev ? null : event.currentTarget))
   }
+
+  const handleCloseModeMenu = () => {
+    setModeMenuAnchorEl(null)
+  }
+
+  const handleModeMenuClickAway = (event: Event | React.SyntheticEvent) => {
+    if (modeMenuButtonRef.current && event.target instanceof Node && modeMenuButtonRef.current.contains(event.target)) {
+      return
+    }
+
+    handleCloseModeMenu()
+  }
+
+  const handleModeMenuListKeyDown = (event: ReactKeyboardEvent<HTMLUListElement>) => {
+    if (event.key === 'Tab') {
+      event.preventDefault()
+      handleCloseModeMenu()
+    } else if (event.key === 'Escape') {
+      handleCloseModeMenu()
+    }
+  }
+
+  const handleSelectMode = (selectedMode: Mode) => () => {
+    setMode(selectedMode)
+    handleCloseModeMenu()
+  }
+
+  useEffect(() => {
+    if (prevModeMenuOpen.current === true && !modeMenuOpen) {
+      modeMenuButtonRef.current?.focus()
+    }
+
+    prevModeMenuOpen.current = modeMenuOpen
+  }, [modeMenuOpen])
 
   return (
     <>
@@ -240,7 +310,7 @@ export default function FrontPageNavBar() {
 
             <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', ml: 'auto' }}>
               <IconButton
-                onClick={handleModeChange}
+                onClick={handleToggleModeMenu}
                 size='large'
                 sx={{
                   color: 'text.primary',
@@ -248,9 +318,67 @@ export default function FrontPageNavBar() {
                     backgroundColor: 'rgba(255,255,255,0.1)'
                   }
                 }}
+                ref={modeMenuButtonRef}
+                id='frontpage-mode-menu-button'
+                aria-haspopup='true'
+                aria-controls={modeMenuOpen ? 'frontpage-mode-menu' : undefined}
+                aria-expanded={modeMenuOpen ? 'true' : undefined}
               >
-                {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+                {currentMode === 'dark' ? (
+                  <Brightness4Icon />
+                ) : currentMode === 'light' ? (
+                  <Brightness7Icon />
+                ) : (
+                  <BrightnessAutoIcon />
+                )}
               </IconButton>
+              <Popper
+                open={modeMenuOpen}
+                anchorEl={modeMenuAnchorEl}
+                role={undefined}
+                placement='bottom-end'
+                transition
+                disablePortal
+                modifiers={[
+                  {
+                    name: 'offset',
+                    options: {
+                      offset: [0, 3]
+                    }
+                  }
+                ]}
+              >
+                {({ TransitionProps, placement }) => (
+                  <Grow
+                    {...TransitionProps}
+                    style={{
+                      transformOrigin: placement === 'bottom-start' ? 'left top' : 'right top'
+                    }}
+                  >
+                    <Paper sx={{ minWidth: 150 }}>
+                      <ClickAwayListener onClickAway={handleModeMenuClickAway}>
+                        <MenuList
+                          id='frontpage-mode-menu'
+                          autoFocusItem={modeMenuOpen}
+                          onKeyDown={handleModeMenuListKeyDown}
+                          aria-labelledby='frontpage-mode-menu-button'
+                        >
+                          {colorModeOptions.map((option) => (
+                            <MenuItem
+                              key={option.value}
+                              selected={currentMode === option.value}
+                              onClick={handleSelectMode(option.value)}
+                            >
+                              <ListItemIcon sx={{ minWidth: 32 }}>{option.icon}</ListItemIcon>
+                              <ListItemText>{option.label}</ListItemText>
+                            </MenuItem>
+                          ))}
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Grow>
+                )}
+              </Popper>
               <IconButton
                 size='large'
                 onClick={toggleMenuDrawer}

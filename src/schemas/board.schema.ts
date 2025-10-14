@@ -119,3 +119,9 @@ export const DeleteBoardRes = z.object({
 })
 
 export type DeleteBoardResType = z.TypeOf<typeof DeleteBoardRes>
+
+export const EditBoardMemberRoleBody = z.object({
+  role: z.enum(BoardRoleValues)
+})
+
+export type EditBoardMemberRoleBodyType = z.TypeOf<typeof EditBoardMemberRoleBody>

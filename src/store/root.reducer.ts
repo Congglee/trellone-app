@@ -1,4 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit'
+import { persistReducer } from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
 import authApiReducer, { authApi } from '~/queries/auth'
 import boardApiReducer, { boardApi } from '~/queries/boards'
 import cardApiReducer, { cardApi } from '~/queries/cards'
@@ -14,13 +16,26 @@ import cardReducer from '~/store/slices/card.slice'
 import notificationReducer from '~/store/slices/notification.slice'
 import workspaceReducer from '~/store/slices/workspace.slice'
 
+// Persist only specific UI flags per slice
+const boardPersistConfig = {
+  key: 'board',
+  storage,
+  whitelist: ['boardDrawerOpen']
+}
+
+const workspacePersistConfig = {
+  key: 'workspace',
+  storage,
+  whitelist: ['workspaceDrawerOpen']
+}
+
 const rootReducer = combineReducers({
   app: appReducer,
   auth: authReducer,
-  board: boardReducer,
+  board: persistReducer(boardPersistConfig, boardReducer),
   card: cardReducer,
   notification: notificationReducer,
-  workspace: workspaceReducer,
+  workspace: persistReducer(workspacePersistConfig, workspaceReducer),
 
   [authApi.reducerPath]: authApiReducer,
   [userApi.reducerPath]: userApiReducer,

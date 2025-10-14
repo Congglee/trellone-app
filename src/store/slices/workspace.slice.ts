@@ -5,10 +5,12 @@ type WorkspaceType = WorkspaceResType['result']
 
 interface WorkspaceSliceState {
   workspaces: WorkspaceType[]
+  workspaceDrawerOpen: boolean
 }
 
 const initialState: WorkspaceSliceState = {
-  workspaces: []
+  workspaces: [],
+  workspaceDrawerOpen: true
 }
 
 export const workspaceSlice = createSlice({
@@ -17,6 +19,10 @@ export const workspaceSlice = createSlice({
   reducers: {
     setWorkspaces: (state, action: PayloadAction<WorkspaceType[]>) => {
       state.workspaces = action.payload
+    },
+
+    setWorkspaceDrawerOpen: (state, action: PayloadAction<boolean>) => {
+      state.workspaceDrawerOpen = action.payload
     },
 
     appendWorkspaces: (state, action: PayloadAction<WorkspaceType[]>) => {
@@ -52,8 +58,15 @@ export const workspaceSlice = createSlice({
   }
 })
 
-export const { setWorkspaces, appendWorkspaces, addWorkspace, updateWorkspace, removeWorkspace, clearWorkspaces } =
-  workspaceSlice.actions
+export const {
+  setWorkspaces,
+  appendWorkspaces,
+  addWorkspace,
+  updateWorkspace,
+  removeWorkspace,
+  clearWorkspaces,
+  setWorkspaceDrawerOpen
+} = workspaceSlice.actions
 
 const workspaceReducer = workspaceSlice.reducer
 
