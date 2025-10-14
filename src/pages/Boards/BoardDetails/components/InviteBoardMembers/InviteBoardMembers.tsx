@@ -12,6 +12,7 @@ import FormControl from '@mui/material/FormControl'
 import IconButton from '@mui/material/IconButton'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
+import type { SelectChangeEvent } from '@mui/material/Select'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Tooltip from '@mui/material/Tooltip'
@@ -21,17 +22,15 @@ import { Controller, useForm } from 'react-hook-form'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
 import { BoardRole, BoardRoleValues, WorkspaceRole } from '~/constants/type'
-import { useAppSelector } from '~/lib/redux/hooks'
+import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
+import { useEditBoardMemberRoleMutation } from '~/queries/boards'
 import { useAddNewBoardInvitationMutation } from '~/queries/invitations'
-import { BoardResType } from '~/schemas/board.schema'
+import { BoardResType, BoardMemberRoleType } from '~/schemas/board.schema'
 import { CreateNewBoardInvitationBody, CreateNewBoardInvitationBodyType } from '~/schemas/invitation.schema'
 import { UserType } from '~/schemas/user.schema'
 import { isUnprocessableEntityError } from '~/utils/error-handlers'
-
-interface InviteBoardMembersProps {
-  boardId: string
-  workspaceId: string
-}
+import { updateActiveBoard } from '~/store/slices/board.slice'
+import cloneDeep from 'lodash/cloneDeep'
 
 type WorkspaceItem = BoardResType['result']['workspace']
 
@@ -63,9 +62,17 @@ const getWorkspaceRole = (userId: string, workspace?: WorkspaceItem) => {
   return 'Workspace member'
 }
 
-export default function InviteBoardMembers({ boardId, workspaceId }: InviteBoardMembersProps) {
+interface InviteBoardMembersProps {
+  boardId: string
+  workspaceId: string
+  canManageMembers: boolean
+}
+
+export default function InviteBoardMembers({ boardId, workspaceId, canManageMembers }: InviteBoardMembersProps) {
   const [inviteBoardMemberOpen, setInviteBoardMemberOpen] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
+
+  const dispatch = useAppDispatch()
 
   const { activeBoard } = useAppSelector((state) => state.board)
   const { profile } = useAppSelector((state) => state.auth)
@@ -106,6 +113,7 @@ export default function InviteBoardMembers({ boardId, workspaceId }: InviteBoard
   const { socket } = useAppSelector((state) => state.app)
 
   const [addNewBoardInvitationMutation, { isError, error }] = useAddNewBoardInvitationMutation()
+  const [editBoardMemberRoleMutation] = useEditBoardMemberRoleMutation()
 
   const onSubmit = handleSubmit((values) => {
     addNewBoardInvitationMutation({ ...values, board_id: boardId, workspace_id: workspaceId }).then((res) => {
@@ -116,6 +124,34 @@ export default function InviteBoardMembers({ boardId, workspaceId }: InviteBoard
       }
     })
   })
+
+  const handleBoardMemberRoleChange = (event: SelectChangeEvent<string>, memberId: string) => {
+    const isCurrentUser = memberId === profile?._id
+
+    if (isCurrentUser || !canManageMembers) return
+
+    const nextRole = event.target.value as BoardMemberRoleType
+
+    editBoardMemberRoleMutation({
+      board_id: boardId,
+      user_id: memberId,
+      body: { role: nextRole }
+    }).then((res) => {
+      if (!res.error) {
+        const newActiveBoard = cloneDeep(activeBoard)
+
+        newActiveBoard?.members?.forEach((member) => {
+          if (member.user_id === memberId) {
+            member.role = nextRole
+          }
+        })
+
+        dispatch(updateActiveBoard(newActiveBoard))
+
+        socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
+      }
+    })
+  }
 
   useEffect(() => {
     if (isError && isUnprocessableEntityError<CreateNewBoardInvitationBodyType>(error)) {
@@ -298,16 +334,47 @@ export default function InviteBoardMembers({ boardId, workspaceId }: InviteBoard
                           </Typography>
                         </Box>
                       </Box>
-                      <FormControl size='small' sx={{ width: { xs: '60px', sm: '100px' }, flexShrink: 0 }}>
-                        <Select value={member.role} disabled>
+                      <FormControl size='small' sx={{ minWidth: { xs: 100, sm: 120 }, flexShrink: 0 }}>
+                        <Select
+                          value={member.role}
+                          disabled={isCurrentUser || !canManageMembers}
+                          onChange={(event: SelectChangeEvent<string>) =>
+                            handleBoardMemberRoleChange(event, member.user_id)
+                          }
+                          sx={{
+                            '& .MuiSelect-select': {
+                              paddingRight: '32px !important',
+                              overflow: 'visible',
+                              textOverflow: 'clip'
+                            }
+                          }}
+                          MenuProps={{
+                            PaperProps: {
+                              sx: {
+                                minWidth: 'fit-content'
+                              }
+                            },
+                            anchorOrigin: {
+                              vertical: 'bottom',
+                              horizontal: 'right'
+                            },
+                            transformOrigin: {
+                              vertical: 'top',
+                              horizontal: 'right'
+                            }
+                          }}
+                        >
                           {BoardRoleValues.map((role) => (
-                            <MenuItem key={role} value={role}>
-                              <Typography
-                                variant='body2'
-                                sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
-                              >
-                                {role}
-                              </Typography>
+                            <MenuItem
+                              key={role}
+                              value={role}
+                              sx={{
+                                whiteSpace: 'nowrap',
+                                minWidth: 'fit-content',
+                                fontSize: '14px'
+                              }}
+                            >
+                              {role}
                             </MenuItem>
                           ))}
                         </Select>

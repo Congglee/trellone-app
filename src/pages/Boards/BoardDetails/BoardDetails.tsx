@@ -69,11 +69,15 @@ export default function BoardDetails() {
     isMember,
     isClosed,
     canManageBoard,
+    canEditBoardInfo,
+    canChangeCoverPhoto,
     canCreateColumn,
     canEditColumn,
     canCreateCard,
     canEditCard,
-    canDeleteBoard
+    canDeleteBoard,
+    canManageMembers,
+    canDragAndDrop
   } = useBoardPermission(activeBoard)
 
   useEffect(() => {
@@ -378,7 +382,8 @@ export default function BoardDetails() {
             onBoardDrawerOpen={handleBoardDrawerOpen}
             board={activeBoard}
             isBoardMember={isMember}
-            canManageBoard={canManageBoard}
+            canEditBoardInfo={canEditBoardInfo}
+            canManageMembers={canManageMembers}
             hasWorkspace={!!activeBoard.workspace_id}
           />
 
@@ -405,7 +410,7 @@ export default function BoardDetails() {
               onMoveColumns={onMoveColumns}
               onMoveCardInTheSameColumn={onMoveCardInTheSameColumn}
               onMoveCardToDifferentColumn={onMoveCardToDifferentColumn}
-              canDragAndDrop={isMember && !isClosed}
+              canDragAndDrop={canDragAndDrop}
               canCreateColumn={canCreateColumn}
               canEditColumn={canEditColumn}
               canCreateCard={canCreateCard}
@@ -419,6 +424,8 @@ export default function BoardDetails() {
             boardId={boardId!}
             isBoardAdmin={isAdmin}
             canManageBoard={canManageBoard}
+            canEditBoardInfo={canEditBoardInfo}
+            canChangeCoverPhoto={canChangeCoverPhoto}
             canDeleteBoard={canDeleteBoard}
           />
         </Box>
