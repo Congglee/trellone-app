@@ -1,9 +1,12 @@
+import ArchiveIcon from '@mui/icons-material/Archive'
 import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import CloseIcon from '@mui/icons-material/Close'
-import GroupsIcon from '@mui/icons-material/Groups'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import LockIcon from '@mui/icons-material/Lock'
 import LogoutIcon from '@mui/icons-material/Logout'
+import SettingsIcon from '@mui/icons-material/Settings'
 import { useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -33,6 +36,7 @@ import { useLeaveBoardMutation, useUpdateBoardMutation } from '~/queries/boards'
 import { useGetWorkspacesQuery } from '~/queries/workspaces'
 import { BoardMemberType } from '~/schemas/board.schema'
 import { clearActiveBoard, updateActiveBoard } from '~/store/slices/board.slice'
+import PublicIcon from '@mui/icons-material/Public'
 
 interface BoardDrawerProps {
   open: boolean
@@ -76,13 +80,11 @@ export default function BoardDrawer({
   const [leaveBoardMutation] = useLeaveBoardMutation()
   const [updateBoardMutation] = useUpdateBoardMutation()
 
-  const { data: workspacesData } = useGetWorkspacesQuery({ page: 1, limit: 100 })
+  const { data: workspacesData } = useGetWorkspacesQuery({ page: 1, limit: 100 }, { skip: !open })
 
   const workspacesList = useMemo(() => workspacesData?.result.workspaces || [], [workspacesData])
 
   const { memberWorkspaces } = useCategorizeWorkspaces(workspacesList)
-
-  const totalBoardMembers = boardMembers?.length
 
   const currentUserMember = boardMembers?.find((member) => member.user_id === profile?._id)
   const isCurrentUserAdmin = currentUserMember?.role === BoardRole.Admin
@@ -249,14 +251,43 @@ export default function BoardDrawer({
           canEditBoardInfo={canEditBoardInfo}
         />
 
+        <ListItem disablePadding>
+          <ListItemButton>
+            <ListItemIcon>{activeBoard?.type === 'Public' ? <PublicIcon /> : <LockIcon />}</ListItemIcon>
+            <ListItemText secondary={`Visibility: ${activeBoard?.type}`} />
+          </ListItemButton>
+        </ListItem>
+
+        <Divider sx={{ my: 1 }} />
+
+        <ListItem disablePadding>
+          <ListItemButton disabled>
+            <ListItemIcon>
+              <SettingsIcon />
+            </ListItemIcon>
+            <ListItemText secondary='Settings' />
+          </ListItemButton>
+        </ListItem>
+
         <ChangeBoardBackground canChangeCoverPhoto={canChangeCoverPhoto} />
 
         <ListItem disablePadding>
           <ListItemButton disabled>
             <ListItemIcon>
-              <GroupsIcon />
+              <ArchiveIcon />
             </ListItemIcon>
-            <ListItemText secondary={`Members (${totalBoardMembers})`} />
+            <ListItemText secondary='Archived items' />
+          </ListItemButton>
+        </ListItem>
+
+        <Divider sx={{ my: 1 }} />
+
+        <ListItem disablePadding>
+          <ListItemButton disabled>
+            <ListItemIcon>
+              <ContentCopyIcon />
+            </ListItemIcon>
+            <ListItemText secondary='Copy board' />
           </ListItemButton>
         </ListItem>
 

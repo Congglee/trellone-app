@@ -1,8 +1,10 @@
 import AddIcon from '@mui/icons-material/Add'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import ImageIcon from '@mui/icons-material/Image'
 import SearchIcon from '@mui/icons-material/Search'
 import { useTheme } from '@mui/material'
+import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
@@ -15,6 +17,7 @@ import InputAdornment from '@mui/material/InputAdornment'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -29,8 +32,6 @@ import { useUpdateBoardMutation } from '~/queries/boards'
 import { useGetUnsplashSearchPhotosQuery, useUploadImageMutation } from '~/queries/medias'
 import { updateActiveBoard } from '~/store/slices/board.slice'
 import { singleFileValidator } from '~/utils/validators'
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
-import ListItemText from '@mui/material/ListItemText'
 
 interface ChangeBoardBackgroundProps {
   canChangeCoverPhoto: boolean
@@ -114,7 +115,37 @@ export default function ChangeBoardBackground({ canChangeCoverPhoto }: ChangeBoa
       <ListItem disablePadding>
         <ListItemButton onClick={() => setChangeBackgroundDrawerOpen(true)} disabled={!canChangeCoverPhoto}>
           <ListItemIcon>
-            <FavoriteBorderIcon />
+            {activeBoard?.cover_photo && activeBoard.cover_photo.trim() !== '' ? (
+              <Avatar
+                src={activeBoard.cover_photo}
+                alt='Board cover'
+                variant='rounded'
+                sx={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: 1,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  boxShadow: 1,
+                  objectFit: 'cover'
+                }}
+              />
+            ) : (
+              <Avatar
+                variant='rounded'
+                sx={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: 1,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  bgcolor: 'action.hover',
+                  boxShadow: 1
+                }}
+              >
+                <ImageIcon sx={{ color: 'text.disabled', fontSize: '1rem' }} />
+              </Avatar>
+            )}
           </ListItemIcon>
           <ListItemText secondary='Change background' />
         </ListItemButton>
