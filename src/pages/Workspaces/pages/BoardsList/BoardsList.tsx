@@ -172,7 +172,7 @@ export default function BoardsList() {
                 <Stack alignItems='center' direction='row' spacing={2} pl={1}>
                   <Skeleton
                     animation='wave'
-                    variant='circular'
+                    variant='rounded'
                     width={32}
                     height={32}
                     sx={{

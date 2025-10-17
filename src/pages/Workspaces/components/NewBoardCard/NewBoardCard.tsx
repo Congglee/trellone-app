@@ -14,7 +14,7 @@ export default function NewBoardCard({ onNewBoardOpen }: NewBoardCardProps) {
       <Card
         variant='outlined'
         sx={{
-          height: 100,
+          height: 120,
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',

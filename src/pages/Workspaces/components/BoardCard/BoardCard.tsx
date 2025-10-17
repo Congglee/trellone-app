@@ -1,10 +1,8 @@
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
 import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
-import randomColor from 'randomcolor'
 import { NavLink } from 'react-router-dom'
 import { BoardResType } from '~/schemas/board.schema'
 
@@ -13,60 +11,98 @@ interface BoardCardProps {
 }
 
 export default function BoardCard({ board }: BoardCardProps) {
+  const hasImage = Boolean(board.cover_photo)
+
+  const isGradient = (color?: string) => {
+    if (!color) return false
+    return color.includes('gradient')
+  }
+
+  const getBackgroundStyles = () => {
+    if (hasImage) {
+      return {
+        backgroundImage: `url(${board.cover_photo})`,
+        backgroundColor: 'transparent'
+      }
+    }
+
+    const bgColor = board.background_color || 'transparent'
+
+    if (isGradient(bgColor)) {
+      return {
+        backgroundImage: bgColor,
+        backgroundColor: 'transparent'
+      }
+    }
+
+    return { backgroundImage: 'none', backgroundColor: bgColor }
+  }
+
   return (
     <Grid xs={12} sm={6} md={4} lg={3}>
       <Link
         sx={{
           display: 'block',
-          transition: 'opacity 0.2s ease',
+          transition: 'all 0.2s ease',
+          textDecoration: 'none',
           '&:hover': {
-            opacity: 0.8,
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
-          },
-          borderRadius: '8px'
+            '& .board-card': {
+              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.15)'
+            }
+          }
         }}
         component={NavLink}
         to={`/boards/${board._id}`}
       >
         <Card
+          className='board-card'
           variant='outlined'
           sx={{
-            height: 100,
-            backgroundImage: board.cover_photo ? `url(${board.cover_photo})` : 'none',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            borderRadius: '8px',
-            position: 'relative',
-            overflow: 'hidden'
+            height: 120,
+            borderRadius: 2,
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            transition: 'box-shadow 0.2s ease',
+            border: (theme) => `1px solid ${theme.palette.divider}`
           }}
         >
-          {!board.cover_photo && (
-            <Box
-              sx={{
-                width: '100%',
-                height: '30px',
-                backgroundColor: randomColor(),
-                opacity: 0.7
-              }}
-            />
-          )}
-          <CardContent sx={{ position: 'relative', zIndex: 1 }}>
+          <Box
+            sx={{
+              flex: 1,
+              ...getBackgroundStyles(),
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              position: 'relative'
+            }}
+          />
+
+          <Box
+            sx={{
+              backgroundColor: (theme) =>
+                theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'background.paper',
+              borderTop: (theme) => `1px solid ${theme.palette.divider}`,
+              px: 1.5,
+              py: 1.25,
+              minHeight: 44
+            }}
+          >
             <Typography
-              variant='body1'
-              fontWeight={700}
+              variant='body2'
+              fontWeight={600}
               sx={{
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 display: '-webkit-box',
                 WebkitLineClamp: '2',
                 WebkitBoxOrient: 'vertical',
-                color: board.cover_photo ? 'white' : 'inherit',
-                textShadow: board.cover_photo ? '0 1px 2px rgba(0,0,0,0.7)' : 'none'
+                lineHeight: 1.4,
+                color: 'text.primary'
               }}
             >
               {board?.title}
             </Typography>
-          </CardContent>
+          </Box>
         </Card>
       </Link>
     </Grid>

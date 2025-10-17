@@ -20,6 +20,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
+import { BOARD_DEFAULT_COVER_PHOTO } from '~/constants/mock-data'
 import { BoardType } from '~/constants/type'
 import { useQueryConfig } from '~/hooks/use-query-config'
 import { useAppSelector } from '~/lib/redux/hooks'
@@ -64,7 +65,9 @@ export default function NewBoardDialog({ open, onNewBoardClose, defaultWorkspace
   const navigate = useNavigate()
 
   const onSubmit = handleSubmit((values) => {
-    addBoardMutation(values).then((res) => {
+    const payload = { ...values, cover_photo: BOARD_DEFAULT_COVER_PHOTO }
+
+    addBoardMutation(payload).then((res) => {
       if (!res.error) {
         const board = res.data?.result
 

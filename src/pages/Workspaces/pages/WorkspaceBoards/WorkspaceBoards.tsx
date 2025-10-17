@@ -172,7 +172,7 @@ export default function WorkspaceBoards() {
               <NewBoardCard onNewBoardOpen={() => setNewBoardOpen(true)} />
               {Array.from({ length: 3 }).map((_, index) => (
                 <Grid xs={12} sm={6} md={4} lg={3} key={index}>
-                  <Card variant='outlined' sx={{ height: 100 }}>
+                  <Card variant='outlined' sx={{ height: 120 }}>
                     <Skeleton
                       animation='wave'
                       variant='rectangular'

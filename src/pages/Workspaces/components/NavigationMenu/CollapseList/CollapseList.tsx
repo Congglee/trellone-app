@@ -178,7 +178,18 @@ export default function CollapseList() {
               <ListItemButton
                 selected={isActive && !isExpanded}
                 onClick={() => handleWorkspaceClick(index)}
-                sx={{ gap: 0.5 }}
+                sx={{
+                  gap: 0.5,
+                  '&.Mui-selected, &.Mui-selected:hover': {
+                    color: (theme) => theme.palette.primary.contrastText,
+                    '& .MuiListItemIcon-root': {
+                      color: 'inherit'
+                    },
+                    '& .MuiListItemText-primary': {
+                      color: 'inherit'
+                    }
+                  }
+                }}
               >
                 <ListItemIcon>
                   <WorkspaceAvatar title={workspace.title} logo={workspace.logo} size={{ width: 25, height: 25 }} />
@@ -199,7 +210,18 @@ export default function CollapseList() {
               <Collapse in={isExpanded} timeout='auto' unmountOnExit>
                 <List component='div' disablePadding sx={{ fontSize: '15px' }}>
                   <ListItemButton
-                    sx={{ pl: 4 }}
+                    sx={{
+                      pl: 4,
+                      '&.Mui-selected, &.Mui-selected:hover': {
+                        color: (theme) => theme.palette.primary.contrastText,
+                        '& .MuiListItemIcon-root': {
+                          color: 'inherit'
+                        },
+                        '& .MuiListItemText-primary': {
+                          color: 'inherit'
+                        }
+                      }
+                    }}
                     component={Link}
                     to={path.workspaceHome.replace(':workspaceId', workspace._id)}
                     selected={isMenuItemActive(workspace._id, 'boards', location.pathname)}
@@ -211,7 +233,18 @@ export default function CollapseList() {
                   </ListItemButton>
 
                   <ListItemButton
-                    sx={{ pl: 4 }}
+                    sx={{
+                      pl: 4,
+                      '&.Mui-selected, &.Mui-selected:hover': {
+                        color: (theme) => theme.palette.primary.contrastText,
+                        '& .MuiListItemIcon-root': {
+                          color: 'inherit'
+                        },
+                        '& .MuiListItemText-primary': {
+                          color: 'inherit'
+                        }
+                      }
+                    }}
                     selected={isMenuItemActive(workspace._id, 'highlights', location.pathname)}
                   >
                     <ListItemIcon>

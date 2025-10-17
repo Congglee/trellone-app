@@ -46,7 +46,7 @@ interface BoardDrawerProps {
   isBoardAdmin: boolean
   canManageBoard: boolean
   canEditBoardInfo: boolean
-  canChangeCoverPhoto: boolean
+  canChangeBoardBackground: boolean
   canDeleteBoard: boolean
 }
 
@@ -58,7 +58,7 @@ export default function BoardDrawer({
   canEditBoardInfo,
   isBoardAdmin,
   boardId,
-  canChangeCoverPhoto,
+  canChangeBoardBackground,
   canDeleteBoard
 }: BoardDrawerProps) {
   const theme = useTheme()
@@ -269,7 +269,7 @@ export default function BoardDrawer({
           </ListItemButton>
         </ListItem>
 
-        <ChangeBoardBackground canChangeCoverPhoto={canChangeCoverPhoto} />
+        <ChangeBoardBackground canChangeBoardBackground={canChangeBoardBackground} />
 
         <ListItem disablePadding>
           <ListItemButton disabled>

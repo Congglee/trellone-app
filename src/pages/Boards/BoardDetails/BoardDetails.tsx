@@ -70,7 +70,7 @@ export default function BoardDetails() {
     isClosed,
     canManageBoard,
     canEditBoardInfo,
-    canChangeCoverPhoto,
+    canChangeBoardBackground,
     canCreateColumn,
     canEditColumn,
     canCreateCard,
@@ -325,6 +325,26 @@ export default function BoardDetails() {
     return <BoardErrorView />
   }
 
+  const getBoardBackgroundImage = (board: BoardResType['result']) => {
+    if (board.cover_photo && board.cover_photo.trim() !== '') {
+      return `url(${board.cover_photo})`
+    }
+
+    if (board.background_color && board.background_color.startsWith('linear-gradient')) {
+      return board.background_color
+    }
+
+    return 'none'
+  }
+
+  const getBoardBgcolor = (board: BoardResType['result'], isDarkMode: boolean) => {
+    if (!board.cover_photo && board.background_color && !board.background_color.startsWith('linear-gradient')) {
+      return board.background_color
+    }
+
+    return isDarkMode ? 'grey.900' : 'primary.main'
+  }
+
   return (
     <Container disableGutters maxWidth={false} sx={{ height: '100vh' }}>
       <Helmet>
@@ -342,10 +362,10 @@ export default function BoardDetails() {
       <Box
         sx={{
           position: 'relative',
-          backgroundImage: activeBoard.cover_photo ? `url(${activeBoard.cover_photo})` : 'none',
+          backgroundImage: getBoardBackgroundImage(activeBoard),
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          bgcolor: isDarkMode ? 'grey.900' : 'primary.main'
+          bgcolor: getBoardBgcolor(activeBoard, isDarkMode)
         }}
       >
         {isDarkMode && (
@@ -425,7 +445,7 @@ export default function BoardDetails() {
             isBoardAdmin={isAdmin}
             canManageBoard={canManageBoard}
             canEditBoardInfo={canEditBoardInfo}
-            canChangeCoverPhoto={canChangeCoverPhoto}
+            canChangeBoardBackground={canChangeBoardBackground}
             canDeleteBoard={canDeleteBoard}
           />
         </Box>
