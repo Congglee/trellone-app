@@ -1,6 +1,5 @@
 ---
-globs: trellone-app/src/**/*.ts, trellone-app/src/**/*.tsx, trellone-app/src/theme.ts
-description: Material-UI (MUI) usage and styling rules for Trellone App. Aligns with the canonical patterns in material-ui-patterns.md.
+alwaysApply: true
 ---
 
 # Material‑UI Usage & Styling Rules (Trellone App)

@@ -112,7 +112,7 @@ interface UseBoardPermissionReturn {
   canViewBoard: boolean
   canManageBoard: boolean
   canEditBoardInfo: boolean
-  canChangeCoverPhoto: boolean
+  canChangeBoardBackground: boolean
   canReorderColumn: boolean
   canManageMembers: boolean
   canCreateColumn: boolean
@@ -198,7 +198,7 @@ export const useBoardPermission = (board?: BoardItem, userIdOverride?: string): 
     canViewBoard: hasPermission(BoardPermission.ViewBoard),
     canManageBoard: hasPermission(BoardPermission.ManageBoard) && !isClosed,
     canEditBoardInfo: hasPermission(BoardPermission.EditBoardInfo) && !isClosed,
-    canChangeCoverPhoto: hasPermission(BoardPermission.ChangeCoverPhoto) && !isClosed,
+    canChangeBoardBackground: hasPermission(BoardPermission.ChangeBoardBackground) && !isClosed,
     canReorderColumn: hasPermission(BoardPermission.ReorderColumn) && !isClosed,
     canManageMembers: hasPermission(BoardPermission.ManageMembers) && !isClosed,
     canCreateColumn: hasPermission(BoardPermission.CreateColumn) && !isClosed,

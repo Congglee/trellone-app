@@ -46,14 +46,42 @@ export default function NavigationMenu() {
       component='nav'
       aria-labelledby='nested-list-subheader'
     >
-      <ListItemButton selected={activeMenu === 'Home'} onClick={() => handleListItemClick(path.home)}>
+      <ListItemButton
+        selected={activeMenu === 'Home'}
+        onClick={() => handleListItemClick(path.home)}
+        sx={{
+          '&.Mui-selected, &.Mui-selected:hover': {
+            color: (theme) => theme.palette.primary.contrastText,
+            '& .MuiListItemIcon-root': {
+              color: 'inherit'
+            },
+            '& .MuiListItemText-primary': {
+              color: 'inherit'
+            }
+          }
+        }}
+      >
         <ListItemIcon>
           <HomeIcon />
         </ListItemIcon>
         <ListItemText primary='Home' />
       </ListItemButton>
 
-      <ListItemButton selected={activeMenu === 'Boards'} onClick={() => handleListItemClick(path.boardsList)}>
+      <ListItemButton
+        selected={activeMenu === 'Boards'}
+        onClick={() => handleListItemClick(path.boardsList)}
+        sx={{
+          '&.Mui-selected, &.Mui-selected:hover': {
+            color: (theme) => theme.palette.primary.contrastText,
+            '& .MuiListItemIcon-root': {
+              color: 'inherit'
+            },
+            '& .MuiListItemText-primary': {
+              color: 'inherit'
+            }
+          }
+        }}
+      >
         <ListItemIcon>
           <DashboardIcon />
         </ListItemIcon>

@@ -6,8 +6,6 @@ import SearchIcon from '@mui/icons-material/Search'
 import { useTheme } from '@mui/material'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
@@ -28,16 +26,17 @@ import DrawerHeader from '~/components/DrawerHeader'
 import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
 import { useDebounce } from '~/hooks/use-debounce'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
+import ColorPicker from '~/pages/Boards/BoardDetails/components/BoardDrawer/ChangeBoardBackground/ColorPicker'
 import { useUpdateBoardMutation } from '~/queries/boards'
 import { useGetUnsplashSearchPhotosQuery, useUploadImageMutation } from '~/queries/medias'
 import { updateActiveBoard } from '~/store/slices/board.slice'
 import { singleFileValidator } from '~/utils/validators'
 
 interface ChangeBoardBackgroundProps {
-  canChangeCoverPhoto: boolean
+  canChangeBoardBackground: boolean
 }
 
-export default function ChangeBoardBackground({ canChangeCoverPhoto }: ChangeBoardBackgroundProps) {
+export default function ChangeBoardBackground({ canChangeBoardBackground }: ChangeBoardBackgroundProps) {
   const theme = useTheme()
 
   const [query, setQuery] = useState('Wallpapers')
@@ -60,6 +59,9 @@ export default function ChangeBoardBackground({ canChangeCoverPhoto }: ChangeBoa
   const { activeBoard } = useAppSelector((state) => state.board)
   const { socket } = useAppSelector((state) => state.app)
 
+  const hasCoverPhoto = activeBoard?.cover_photo && activeBoard.cover_photo.trim() !== ''
+  const hasBackgroundColor = activeBoard?.background_color && activeBoard.background_color.trim() !== ''
+
   const { data: searchPhotosData, isLoading } = useGetUnsplashSearchPhotosQuery(query, {
     skip: !changeBackgroundDrawerOpen
   })
@@ -71,11 +73,13 @@ export default function ChangeBoardBackground({ canChangeCoverPhoto }: ChangeBoa
   const updateBoardCoverPhoto = (coverPhoto: string) => {
     updateBoardMutation({
       id: activeBoard?._id as string,
-      body: { cover_photo: coverPhoto }
+      body: { cover_photo: coverPhoto, background_color: '' }
     }).then((res) => {
       if (!res.error) {
         const newActiveBoard = { ...activeBoard! }
+
         newActiveBoard.cover_photo = coverPhoto
+        newActiveBoard.background_color = ''
 
         dispatch(updateActiveBoard(newActiveBoard))
 
@@ -113,9 +117,9 @@ export default function ChangeBoardBackground({ canChangeCoverPhoto }: ChangeBoa
   return (
     <>
       <ListItem disablePadding>
-        <ListItemButton onClick={() => setChangeBackgroundDrawerOpen(true)} disabled={!canChangeCoverPhoto}>
+        <ListItemButton onClick={() => setChangeBackgroundDrawerOpen(true)} disabled={!canChangeBoardBackground}>
           <ListItemIcon>
-            {activeBoard?.cover_photo && activeBoard.cover_photo.trim() !== '' ? (
+            {hasCoverPhoto ? (
               <Avatar
                 src={activeBoard.cover_photo}
                 alt='Board cover'
@@ -128,6 +132,20 @@ export default function ChangeBoardBackground({ canChangeCoverPhoto }: ChangeBoa
                   borderColor: 'divider',
                   boxShadow: 1,
                   objectFit: 'cover'
+                }}
+              />
+            ) : hasBackgroundColor ? (
+              <Box
+                sx={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: 1,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  boxShadow: 1,
+                  bgcolor: activeBoard.background_color,
+                  background: activeBoard.background_color,
+                  backgroundSize: 'cover'
                 }}
               />
             ) : (
@@ -169,7 +187,7 @@ export default function ChangeBoardBackground({ canChangeCoverPhoto }: ChangeBoa
           </IconButton>
 
           <Typography variant='subtitle1' sx={{ fontWeight: 500 }}>
-            Background Cover
+            Change background
           </Typography>
 
           <Box sx={{ width: 40, height: 40 }} />
@@ -177,17 +195,9 @@ export default function ChangeBoardBackground({ canChangeCoverPhoto }: ChangeBoa
 
         <Divider />
 
-        <Container fixed sx={{ py: 1 }}>
+        <Box sx={{ p: 2 }}>
           <Stack gap={1.5}>
-            <Button
-              variant='contained'
-              size='small'
-              color='secondary'
-              fullWidth
-              onClick={() => updateBoardCoverPhoto('')}
-            >
-              Remove Cover
-            </Button>
+            <ColorPicker />
 
             <Box>
               <Typography variant='caption' fontWeight={500}>
@@ -250,7 +260,7 @@ export default function ChangeBoardBackground({ canChangeCoverPhoto }: ChangeBoa
               </ImageList>
             </Box>
           </Stack>
-        </Container>
+        </Box>
       </Drawer>
     </>
   )

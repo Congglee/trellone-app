@@ -222,18 +222,41 @@ export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps)
 
       {!isLoading && allJoinedBoards.length > 0 && (
         <List>
-          {allJoinedBoards.map((board) => (
-            <ListItem key={board._id} disablePadding>
-              <ListItemButton component={Link} to={`/boards/${board._id}`}>
-                <ListItemIcon>
-                  <Avatar sx={{ width: 24, height: 24 }} variant='rounded' src={board?.cover_photo}>
-                    {board?.title.charAt(0)}
-                  </Avatar>
-                </ListItemIcon>
-                <ListItemText secondary={board?.title} />
-              </ListItemButton>
-            </ListItem>
-          ))}
+          {allJoinedBoards.map((board) => {
+            const hasCoverPhoto = board?.cover_photo && board.cover_photo.trim() !== ''
+            const hasBackgroundColor = board?.background_color && board.background_color.trim() !== ''
+            const isGradient = hasBackgroundColor && board.background_color!.includes('gradient')
+
+            return (
+              <ListItem key={board._id} disablePadding>
+                <ListItemButton component={Link} to={`/boards/${board._id}`}>
+                  <ListItemIcon>
+                    {hasCoverPhoto ? (
+                      <Avatar sx={{ width: 24, height: 24 }} variant='rounded' src={board.cover_photo}>
+                        {board?.title.charAt(0)}
+                      </Avatar>
+                    ) : hasBackgroundColor ? (
+                      <Box
+                        sx={{
+                          width: 24,
+                          height: 24,
+                          borderRadius: 1,
+                          ...(isGradient
+                            ? { background: board.background_color!, backgroundSize: 'cover' }
+                            : { bgcolor: board.background_color! })
+                        }}
+                      />
+                    ) : (
+                      <Avatar sx={{ width: 24, height: 24 }} variant='rounded'>
+                        {board?.title.charAt(0)}
+                      </Avatar>
+                    )}
+                  </ListItemIcon>
+                  <ListItemText secondary={board?.title} />
+                </ListItemButton>
+              </ListItem>
+            )
+          })}
         </List>
       )}
 

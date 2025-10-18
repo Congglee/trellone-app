@@ -33,18 +33,17 @@ import { convertMarkdownToHtml } from '~/utils/markdown-to-html'
 
 interface BoardInfomationProps {
   boardMembers: BoardMemberType[]
-  isCurrentUserAdmin: boolean
   boardDescription?: string
   canEditBoardInfo: boolean
 }
 
 export default function BoardInfomation({
   boardMembers,
-  isCurrentUserAdmin,
   boardDescription: initialDescription,
   canEditBoardInfo
 }: BoardInfomationProps) {
   const theme = useTheme()
+
   const [boardInformationDrawerOpen, setBoardInformationDrawerOpen] = useState(false)
   const [descriptionEditMode, setDescriptionEditMode] = useState(false)
   const [boardDescription, setBoardDescription] = useState<string>('')
@@ -75,6 +74,7 @@ export default function BoardInfomation({
 
   const { activeBoard } = useAppSelector((state) => state.board)
   const { socket } = useAppSelector((state) => state.app)
+  const { profile } = useAppSelector((state) => state.auth)
 
   const [updateBoardMutation] = useUpdateBoardMutation()
 
@@ -180,68 +180,72 @@ export default function BoardInfomation({
               </Box>
 
               <Stack spacing={2}>
-                {boardAdmins.map((admin) => (
-                  <Box key={admin.user_id} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
-                    <Avatar
-                      src={admin.avatar}
-                      alt={admin.display_name}
-                      sx={{
-                        width: 40,
-                        height: 40,
-                        bgcolor: 'primary.main'
-                      }}
-                    >
-                      {admin.display_name.charAt(0)}
-                    </Avatar>
+                {boardAdmins.map((admin) => {
+                  const isCurrentUserBoardAdmin = admin.user_id === profile?._id && admin.role === BoardRole.Admin
 
-                    <Box sx={{ flex: 1 }}>
-                      <Typography
-                        variant='body2'
+                  return (
+                    <Box key={admin.user_id} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
+                      <Avatar
+                        src={admin.avatar}
+                        alt={admin.display_name}
                         sx={{
-                          fontWeight: 600,
-                          color: 'text.primary',
-                          mb: 0.25,
-                          textDecoration: 'underline',
-                          cursor: 'pointer',
-                          '&:hover': {
-                            color: 'primary.main'
-                          }
+                          width: 40,
+                          height: 40,
+                          bgcolor: 'primary.main'
                         }}
                       >
-                        {admin.display_name}
-                      </Typography>
+                        {admin.display_name.charAt(0)}
+                      </Avatar>
 
-                      <Typography
-                        variant='body2'
-                        sx={{
-                          color: 'text.secondary',
-                          fontSize: '0.8125rem',
-                          mb: 1
-                        }}
-                      >
-                        @{admin.username}
-                      </Typography>
-
-                      {isCurrentUserAdmin && (
-                        <MuiLink
-                          component={Link}
-                          to={path.accountSettings}
-                          underline='hover'
+                      <Box sx={{ flex: 1 }}>
+                        <Typography
+                          variant='body2'
                           sx={{
-                            fontSize: '0.8125rem',
-                            color: 'text.secondary',
+                            fontWeight: 600,
+                            color: 'text.primary',
+                            mb: 0.25,
+                            textDecoration: 'underline',
                             cursor: 'pointer',
                             '&:hover': {
-                              color: 'text.primary'
+                              color: 'primary.main'
                             }
                           }}
                         >
-                          Edit profile info
-                        </MuiLink>
-                      )}
+                          {admin.display_name}
+                        </Typography>
+
+                        <Typography
+                          variant='body2'
+                          sx={{
+                            color: 'text.secondary',
+                            fontSize: '0.8125rem',
+                            mb: 1
+                          }}
+                        >
+                          @{admin.username}
+                        </Typography>
+
+                        {isCurrentUserBoardAdmin && (
+                          <MuiLink
+                            component={Link}
+                            to={path.accountSettings}
+                            underline='hover'
+                            sx={{
+                              fontSize: '0.8125rem',
+                              color: 'text.secondary',
+                              cursor: 'pointer',
+                              '&:hover': {
+                                color: 'text.primary'
+                              }
+                            }}
+                          >
+                            Edit profile info
+                          </MuiLink>
+                        )}
+                      </Box>
                     </Box>
-                  </Box>
-                ))}
+                  )
+                })}
               </Stack>
             </Box>
 

@@ -331,3 +331,5 @@ export const mockBoardDetails = {
   created_at: new Date('2023-10-01T00:00:00.000Z'),
   updated_at: new Date('2023-10-01T00:00:00.000Z')
 }
+
+export const BOARD_DEFAULT_COVER_PHOTO = 'https://35z23d3vth.ufs.sh/f/S5pa1AZTQ5KAylNqZWL7cSDweR1k8p4jOfn7W6IsK5rUNGuZ'
