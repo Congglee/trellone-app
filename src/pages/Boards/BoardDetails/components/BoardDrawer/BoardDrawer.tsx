@@ -246,7 +246,6 @@ export default function BoardDrawer({
       <List>
         <BoardInfomation
           boardMembers={boardMembers}
-          isCurrentUserAdmin={isCurrentUserAdmin}
           boardDescription={activeBoard?.description}
           canEditBoardInfo={canEditBoardInfo}
         />
