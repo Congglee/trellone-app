@@ -22,12 +22,11 @@ You can add production domains later, for example:
 
 ### 3) Configure Vite environment
 
-Create `.env` or `.env.local` at the project root:
+Create `.env` at the project root:
 
 ```env
 # API URL
-VITE_APP_DEV_API_URL='http://localhost:8000'
-VITE_APP_PROD_API_URL='https://api.yourdomain.com'
+VITE_APP_API_URL='http://localhost:8000'
 
 # Google OAuth
 VITE_GOOGLE_CLIENT_ID='YOUR_CLIENT_ID.apps.googleusercontent.com'
