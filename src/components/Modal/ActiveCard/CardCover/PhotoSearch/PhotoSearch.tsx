@@ -3,7 +3,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
-import Link from '@mui/material/Link'
+import MuiLink from '@mui/material/Link'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useDebounce } from '~/hooks/use-debounce'
@@ -219,7 +219,7 @@ export default function PhotoSearch({
           }}
         >
           Photos from{' '}
-          <Link
+          <MuiLink
             href='https://unsplash.com'
             target='_blank'
             rel='noopener noreferrer'
@@ -232,7 +232,7 @@ export default function PhotoSearch({
             }}
           >
             Unsplash
-          </Link>
+          </MuiLink>
         </Typography>
       </Box>
     </Box>

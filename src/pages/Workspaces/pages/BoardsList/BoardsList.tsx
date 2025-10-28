@@ -1,6 +1,6 @@
 import CloseIcon from '@mui/icons-material/Close'
 import InfoIcon from '@mui/icons-material/Info'
-import { Link as MuiLink } from '@mui/material'
+import MuiLink from '@mui/material/Link'
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
