@@ -2,6 +2,7 @@ import AppsIcon from '@mui/icons-material/Apps'
 import CloseIcon from '@mui/icons-material/Close'
 import { IconButton } from '@mui/material'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -17,12 +18,16 @@ import AutoCompleteSearchBoard from '~/components/NavBar/AutoCompleteSearchBoard
 import Create from '~/components/NavBar/Create'
 import ModeSelect from '~/components/NavBar/ModeSelect'
 import path from '~/constants/path'
+import { useAppSelector } from '~/lib/redux/hooks'
 
 interface MenuDrawerProps {
   onToggleDrawer: (open: boolean) => void
 }
 
 export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
+  const { isAuthenticated, profile } = useAppSelector((state) => state.auth)
+  const isLoggedIn = Boolean(isAuthenticated && profile)
+
   return (
     <Box sx={{ width: { xs: 250, sm: 350 }, height: '100%' }} role='presentation'>
       <List
@@ -65,24 +70,61 @@ export default function MenuDrawer({ onToggleDrawer }: MenuDrawerProps) {
       >
         <Divider sx={{ my: 0.25 }} />
 
-        <ListItemButton component={Link} to={path.boardsList}>
-          <ListItemIcon>
-            <AppsIcon />
-          </ListItemIcon>
-          <ListItemText primary='All Boards' />
-        </ListItemButton>
+        {isLoggedIn && (
+          <ListItemButton component={Link} to={path.boardsList}>
+            <ListItemIcon>
+              <AppsIcon />
+            </ListItemIcon>
+            <ListItemText primary='All Boards' />
+          </ListItemButton>
+        )}
 
-        <ListItem>
-          <Create styles={{ minWidth: '100%' }} />
-        </ListItem>
+        {isLoggedIn && (
+          <ListItem>
+            <Create styles={{ minWidth: '100%' }} />
+          </ListItem>
+        )}
 
         <ListItem>
           <ModeSelect styles={{ minWidth: '100%' }} />
         </ListItem>
 
-        <ListItem>
-          <AutoCompleteSearchBoard styles={{ minWidth: '100%' }} />
-        </ListItem>
+        {isLoggedIn && (
+          <ListItem>
+            <AutoCompleteSearchBoard styles={{ minWidth: '100%' }} />
+          </ListItem>
+        )}
+
+        {!isLoggedIn && (
+          <>
+            <Divider sx={{ my: 1 }} />
+            <ListItem sx={{ px: 2 }}>
+              <Button
+                component={Link}
+                to={path.register}
+                variant='contained'
+                color='primary'
+                fullWidth
+                sx={{ mb: 1 }}
+                onClick={() => onToggleDrawer(false)}
+              >
+                Sign up
+              </Button>
+            </ListItem>
+            <ListItem sx={{ px: 2 }}>
+              <Button
+                component={Link}
+                to={path.login}
+                variant='outlined'
+                color='primary'
+                fullWidth
+                onClick={() => onToggleDrawer(false)}
+              >
+                Sign in
+              </Button>
+            </ListItem>
+          </>
+        )}
       </List>
     </Box>
   )
