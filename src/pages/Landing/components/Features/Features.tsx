@@ -1,6 +1,6 @@
-import DevicesRoundedIcon from '@mui/icons-material/DevicesRounded'
-import EdgesensorHighRoundedIcon from '@mui/icons-material/EdgesensorHighRounded'
-import ViewQuiltRoundedIcon from '@mui/icons-material/ViewQuiltRounded'
+import DashboardCustomizeOutlinedIcon from '@mui/icons-material/DashboardCustomizeOutlined'
+import StyleOutlinedIcon from '@mui/icons-material/StyleOutlined'
+import ViewWeekOutlinedIcon from '@mui/icons-material/ViewWeekOutlined'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
@@ -16,21 +16,21 @@ import CardsFeature from '~/assets/landing/cards-feature.png'
 
 const features = [
   {
-    icon: <ViewQuiltRoundedIcon />,
+    icon: <DashboardCustomizeOutlinedIcon />,
     title: 'Boards',
     description:
       'Tackle any project with a single view. Trellone boards are the canvas where you can organize tasks, track progress, and see the big picture at a glance.',
     image: `url(${BoardsFeature})`
   },
   {
-    icon: <EdgesensorHighRoundedIcon />,
+    icon: <ViewWeekOutlinedIcon />,
     title: 'Columns',
     description:
       'Build a workflow that fits your team. Create custom stages and move cards from "To Do" to "Done" to track progress visually.',
     image: `url(${ColumnsFeature})`
   },
   {
-    icon: <DevicesRoundedIcon />,
+    icon: <StyleOutlinedIcon />,
     title: 'Cards',
     description:
       'Cards hold all the details to get work done. Add descriptions, checklists, due dates, and attachments to keep tasks clear and actionable.',
