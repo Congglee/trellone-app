@@ -19,7 +19,7 @@ import { disconnectSocket, setSocket } from '~/store/slices/app.slice'
 import { reset } from '~/store/slices/auth.slice'
 import { getAccessTokenFromLS, LocalStorageEventTarget } from '~/utils/storage'
 
-const FrontPage = lazy(() => import('~/pages/FrontPage'))
+const Landing = lazy(() => import('~/pages/Landing'))
 const Login = lazy(() => import('~/pages/Auth/Login'))
 const Register = lazy(() => import('~/pages/Auth/Register'))
 const ForgotPassword = lazy(() => import('~/pages/Auth/ForgotPassword'))
@@ -97,10 +97,10 @@ function App() {
     <Routes>
       {/* Front Landing Page */}
       <Route
-        path={path.frontPage}
+        path={path.landing}
         element={
           <Suspense fallback={<PageLoadingSpinner />}>
-            <FrontPage />
+            <Landing />
           </Suspense>
         }
       />

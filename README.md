@@ -49,8 +49,7 @@ Create a `.env` at the project root:
 
 ```env
 # API URL
-VITE_APP_DEV_API_URL='http://localhost:8000'
-VITE_APP_PROD_API_URL='https://api.yourdomain.com'
+VITE_APP_API_URL='http://localhost:8000'
 
 # Google OAuth
 VITE_GOOGLE_CLIENT_ID='your-google-client-id'

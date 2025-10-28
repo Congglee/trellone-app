@@ -10,7 +10,7 @@ interface BoardUserGroupProps {
   limit?: number
 }
 
-export default function BoardUserGroup({ boardUsers = [], limit = 4 }: BoardUserGroupProps) {
+export default function BoardUserGroup({ boardUsers = [], limit = 5 }: BoardUserGroupProps) {
   const [anchorBoardUserGroupPopoverElement, setAnchorBoardUserGroupPopoverElement] = useState<HTMLElement | null>(null)
   const isBoardUserGroupPopoverOpen = Boolean(anchorBoardUserGroupPopoverElement)
 

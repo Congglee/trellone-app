@@ -1,6 +1,6 @@
 const path = {
   // Front Landing Page
-  frontPage: '/',
+  landing: '/',
 
   // Workspace Pages
   home: '/home',

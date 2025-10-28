@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import Link from '@mui/material/Link'
+import MuiLink from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { NavLink } from 'react-router-dom'
@@ -40,7 +40,7 @@ export default function BoardCard({ board }: BoardCardProps) {
 
   return (
     <Grid xs={12} sm={6} md={4} lg={3}>
-      <Link
+      <MuiLink
         sx={{
           display: 'block',
           transition: 'all 0.2s ease',
@@ -104,7 +104,7 @@ export default function BoardCard({ board }: BoardCardProps) {
             </Typography>
           </Box>
         </Card>
-      </Link>
+      </MuiLink>
     </Grid>
   )
 }
