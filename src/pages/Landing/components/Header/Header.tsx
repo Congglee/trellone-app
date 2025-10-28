@@ -388,7 +388,6 @@ export default function Header() {
                   color='primary' 
                   variant='contained' 
                   fullWidth
-                  onClick={handleMobileMenuClose}
                 >
                   Sign up
                 </Button>
@@ -400,7 +399,6 @@ export default function Header() {
                   color='primary' 
                   variant='outlined' 
                   fullWidth
-                  onClick={handleMobileMenuClose}
                 >
                   Sign in
                 </Button>
