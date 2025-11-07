@@ -10,7 +10,7 @@ Constants are imported directly. No separate build step needed.
 
 ```typescript
 import { API_URL, SITE_CONFIG } from '~/constants/config'
-import { BoardType } from '~/constants/type'
+import { BoardVisibility } from '~/constants/type'
 import { PATH } from '~/constants/path'
 ```
 
@@ -38,16 +38,16 @@ import { PATH } from '~/constants/path'
 ✅ **DO**: Use const objects for enums
 
 ```typescript
-export const BoardType = {
-  Public: 'public',
-  Private: 'private'
+export const BoardVisibility = {
+  Public: 'Public',
+  Private: 'Private'
 } as const
 ```
 
 ✅ **DO**: Export type from constants
 
 ```typescript
-export type BoardTypeValue = (typeof BoardType)[keyof typeof BoardType]
+export type BoardVisibilityValue = (typeof BoardVisibility)[keyof typeof BoardVisibility]
 ```
 
 ✅ **DO**: Use descriptive constant names
@@ -83,7 +83,7 @@ export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:4
 ## Touch Points / Key Files
 
 - **Config**: `src/constants/config.ts` - API URLs, environment config
-- **Types**: `src/constants/type.ts` - BoardType, UserType, etc.
+- **Types**: `src/constants/type.ts` - BoardVisibility, UserType, etc.
 - **Paths**: `src/constants/path.ts` - Route path constants
 - **Pagination**: `src/constants/pagination.ts` - Default page size, limits
 - **HTTP Status**: `src/constants/http-status-code.ts` - HTTP status code enum
@@ -121,5 +121,5 @@ rg -n "export type.*typeof" src/constants
 npm run build
 
 # Verify constants are used (not hardcoded values)
-rg -n "BoardType\.|PATH\." src
+rg -n "BoardVisibility\.|PATH\." src
 ```

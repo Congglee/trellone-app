@@ -46,7 +46,7 @@ export default function BoardsList() {
     _id: `skeleton-${index}`,
     title: '',
     description: '',
-    type: 'Public',
+    visibility: 'Public',
     logo: '',
     members: [],
     guests: [],

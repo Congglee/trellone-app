@@ -185,7 +185,7 @@ export default function WorkspaceHome() {
                   variant='body2'
                   sx={{ color: (theme) => (theme.palette.mode === 'dark' ? '#90caf9' : '#1976d2') }}
                 >
-                  {workspace?.type}
+                  {workspace?.visibility}
                 </Typography>
               </Stack>
             </Stack>

@@ -13,7 +13,7 @@ import { Navigate, useParams } from 'react-router-dom'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
 import path from '~/constants/path'
 import { WorkspacePermission } from '~/constants/permissions'
-import { WorkspaceType } from '~/constants/type'
+import { WorkspaceVisibility as WorkspaceVisibilityEnum } from '~/constants/type'
 import { useWorkspacePermission } from '~/hooks/use-permissions'
 import WorkspaceLogo from '~/pages/Workspaces/components/WorkspaceLogo'
 import EditWorkspaceDialog from '~/pages/Workspaces/pages/WorkspaceHome/components/EditWorkspaceDialog'
@@ -102,20 +102,20 @@ export default function WorkspaceSettings() {
               </Stack>
 
               <Stack direction='row' alignItems='center' spacing={0.5}>
-                {workspace?.type === WorkspaceType.Private && (
+                {workspace?.visibility === WorkspaceVisibilityEnum.Private && (
                   <>
                     <LockOutlinedIcon sx={{ fontSize: 14 }} />
                     <Typography variant='caption' sx={{ color: 'text.secondary', fontSize: 14 }}>
-                      {workspace.type}
+                      {workspace.visibility}
                     </Typography>
                   </>
                 )}
 
-                {workspace?.type === WorkspaceType.Public && (
+                {workspace?.visibility === WorkspaceVisibilityEnum.Public && (
                   <>
                     <PublicOutlinedIcon sx={{ fontSize: 14 }} />
                     <Typography variant='caption' sx={{ color: 'text.secondary', fontSize: 14 }}>
-                      {workspace.type}
+                      {workspace.visibility}
                     </Typography>
                   </>
                 )}
@@ -145,7 +145,7 @@ export default function WorkspaceSettings() {
           }}
         >
           <Stack direction='row' spacing={1.25} sx={{ flex: 1 }}>
-            {workspace?.type === WorkspaceType.Private && (
+            {workspace?.visibility === WorkspaceVisibilityEnum.Private && (
               <>
                 <LockOutlinedIcon color='error' sx={{ fontSize: 18 }} />
                 <Typography variant='body2' sx={{ color: 'text.secondary' }}>
@@ -154,7 +154,7 @@ export default function WorkspaceSettings() {
               </>
             )}
 
-            {workspace?.type === WorkspaceType.Public && (
+            {workspace?.visibility === WorkspaceVisibilityEnum.Public && (
               <>
                 <PublicOutlinedIcon color='success' sx={{ fontSize: 18 }} />
                 <Typography variant='body2' sx={{ color: 'text.secondary' }}>
@@ -168,7 +168,7 @@ export default function WorkspaceSettings() {
           <WorkspaceVisibility
             isDisabled={!hasPermission(WorkspacePermission.ManageWorkspace)}
             workspaceId={workspaceId as string}
-            workspaceType={workspace?.type as WorkspaceVisibilityType}
+            workspaceVisibility={workspace?.visibility as WorkspaceVisibilityType}
           />
         </Stack>
       </Box>

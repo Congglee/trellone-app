@@ -252,8 +252,8 @@ export default function BoardDrawer({
 
         <ListItem disablePadding>
           <ListItemButton>
-            <ListItemIcon>{activeBoard?.type === 'Public' ? <PublicIcon /> : <LockIcon />}</ListItemIcon>
-            <ListItemText secondary={`Visibility: ${activeBoard?.type}`} />
+            <ListItemIcon>{activeBoard?.visibility === 'Public' ? <PublicIcon /> : <LockIcon />}</ListItemIcon>
+            <ListItemText secondary={`Visibility: ${activeBoard?.visibility}`} />
           </ListItemButton>
         </ListItem>
 

@@ -34,7 +34,7 @@ import { z } from 'zod'
 export const CreateBoardBody = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
-  type: z.enum([BoardType.Public, BoardType.Private])
+  visibility: z.enum([BoardVisibility.Public, BoardVisibility.Private])
 })
 ```
 
@@ -45,9 +45,9 @@ export type CreateBoardBodyType = z.infer<typeof CreateBoardBody>
 
 ✅ **DO**: Use enums from constants
 ```typescript
-import { BoardType } from '~/constants/type'
+import { BoardVisibility } from '~/constants/type'
 
-z.enum([BoardType.Public, BoardType.Private])
+z.enum([BoardVisibility.Public, BoardVisibility.Private])
 ```
 
 ### Form Integration
@@ -59,7 +59,7 @@ import { CreateBoardBody, CreateBoardBodyType } from '~/schemas/board.schema'
 
 const { register, handleSubmit } = useForm<CreateBoardBodyType>({
   resolver: zodResolver(CreateBoardBody),
-  defaultValues: { title: '', description: '', type: BoardType.Public }
+  defaultValues: { title: '', description: '', visibility: BoardVisibility.Public }
 })
 ```
 

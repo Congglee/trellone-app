@@ -10,7 +10,7 @@ import ListItemButton from '@mui/material/ListItemButton'
 import Popover from '@mui/material/Popover'
 import Typography from '@mui/material/Typography'
 import { useState, useMemo } from 'react'
-import { WorkspaceType } from '~/constants/type'
+import { WorkspaceVisibility as WorkspaceVisibilityEnum } from '~/constants/type'
 import { useAppSelector } from '~/lib/redux/hooks'
 import { useUpdateWorkspaceMutation } from '~/queries/workspaces'
 import { WorkspaceVisibilityType } from '~/schemas/workspace.schema'
@@ -35,11 +35,15 @@ const VISIBILITY_OPTIONS = [
 
 interface WorkspaceVisibilityProps {
   workspaceId: string
-  workspaceType: WorkspaceVisibilityType
+  workspaceVisibility: WorkspaceVisibilityType
   isDisabled: boolean
 }
 
-export default function WorkspaceVisibility({ workspaceId, workspaceType, isDisabled }: WorkspaceVisibilityProps) {
+export default function WorkspaceVisibility({
+  workspaceId,
+  workspaceVisibility,
+  isDisabled
+}: WorkspaceVisibilityProps) {
   const [anchorWorkspaceVisibilityPopoverElement, setAnchorWorkspaceVisibilityPopoverElement] =
     useState<HTMLElement | null>(null)
 
@@ -59,7 +63,10 @@ export default function WorkspaceVisibility({ workspaceId, workspaceType, isDisa
 
   const [updateWorkspaceMutation, { isLoading }] = useUpdateWorkspaceMutation()
 
-  const selectedVisibility = useMemo(() => workspaceType ?? WorkspaceType.Private, [workspaceType])
+  const selectedVisibility = useMemo(
+    () => workspaceVisibility ?? WorkspaceVisibilityEnum.Private,
+    [workspaceVisibility]
+  )
 
   const changeWorkspaceVisibility = (nextType: WorkspaceVisibilityType) => {
     if (nextType === selectedVisibility) {
@@ -67,7 +74,7 @@ export default function WorkspaceVisibility({ workspaceId, workspaceType, isDisa
       return
     }
 
-    updateWorkspaceMutation({ id: workspaceId, body: { type: nextType } }).then((res) => {
+    updateWorkspaceMutation({ id: workspaceId, body: { visibility: nextType } }).then((res) => {
       if (!res.error) {
         toggleWorkspaceVisibilityPopover()
         socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspaceId)
