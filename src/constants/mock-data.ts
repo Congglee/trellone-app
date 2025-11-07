@@ -1,7 +1,7 @@
 import { BoardVisibility } from '~/constants/type'
-import type { BoardResType } from '~/schemas/board.schema'
+import type { BoardType } from '~/schemas/board.schema'
 
-export const MOCK_BOARD_DATA: BoardResType['result'] = {
+export const MOCK_BOARD_DATA: BoardType = {
   _id: 'mock-board-id',
   title: 'Product Launch 2024',
   description: 'Plan and execute our Q1 product launch with cross-functional collaboration.',

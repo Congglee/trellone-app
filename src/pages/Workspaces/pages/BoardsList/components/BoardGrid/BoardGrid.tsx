@@ -6,10 +6,10 @@ import { useState } from 'react'
 import NewBoardDialog from '~/components/Dialog/NewBoardDialog'
 import BoardCard from '~/pages/Workspaces/components/BoardCard'
 import NewBoardCard from '~/pages/Workspaces/components/NewBoardCard'
-import { WorkspaceResType } from '~/schemas/workspace.schema'
+import { WorkspaceType } from '~/schemas/workspace.schema'
 
 interface BoardGridProps {
-  workspace: WorkspaceResType['result']
+  workspace: WorkspaceType
   isLoading: boolean
   showNewBoardCard?: boolean
 }

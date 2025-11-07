@@ -14,13 +14,13 @@ import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
 import { useAppSelector } from '~/lib/redux/hooks'
 import { useUpdateWorkspaceMutation } from '~/queries/workspaces'
-import { UpdateWorkspaceBody, UpdateWorkspaceBodyType, WorkspaceResType } from '~/schemas/workspace.schema'
+import { UpdateWorkspaceBody, UpdateWorkspaceBodyType, WorkspaceType } from '~/schemas/workspace.schema'
 import { isUnprocessableEntityError } from '~/utils/error-handlers'
 
 interface EditWorkspaceDialogProps {
   open: boolean
   onEditWorkspaceClose: () => void
-  workspace: WorkspaceResType['result']
+  workspace: WorkspaceType
 }
 
 export default function EditWorkspaceDialog({ open, onEditWorkspaceClose, workspace }: EditWorkspaceDialogProps) {

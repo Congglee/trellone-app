@@ -53,6 +53,8 @@ export const BoardSchema = z.object({
   updated_at: z.date()
 })
 
+export type BoardType = z.TypeOf<typeof BoardSchema>
+
 export const BoardRes = z.object({
   result: BoardSchema,
   message: z.string()
@@ -86,7 +88,9 @@ export const CreateBoardBody = z.object({
       message: 'Description must be at most 256 characters long'
     })
     .optional(),
-  visibility: z.enum(BoardVisibilityValues, { message: 'Visibility must be either Public or Private' }).default(BoardVisibility.Public),
+  visibility: z
+    .enum(BoardVisibilityValues, { message: 'Visibility must be either Public or Private' })
+    .default(BoardVisibility.Public),
   workspace_id: z.string().min(1, { message: 'Please select a workspace' })
 })
 

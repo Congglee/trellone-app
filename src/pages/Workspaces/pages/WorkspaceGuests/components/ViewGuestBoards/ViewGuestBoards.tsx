@@ -9,7 +9,7 @@ import ListItem from '@mui/material/ListItem'
 import Popover from '@mui/material/Popover'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { BoardResType } from '~/schemas/board.schema'
+import type { BoardType } from '~/schemas/board.schema'
 import { UserType } from '~/schemas/user.schema'
 import { useRemoveGuestFromBoardMutation } from '~/queries/workspaces'
 import { toast } from 'react-toastify'
@@ -17,7 +17,7 @@ import { useAppSelector } from '~/lib/redux/hooks'
 
 interface ViewGuestBoardsProps {
   totalGuestBoardCounts: number
-  guestBoards: BoardResType['result'][]
+  guestBoards: BoardType[]
   guest: UserType
   showRemoveButton: boolean
   workspaceId: string

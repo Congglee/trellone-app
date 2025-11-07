@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import { DEFAULT_PAGINATION_PAGE } from '~/constants/pagination'
 import { useDebounce } from '~/hooks/use-debounce'
 import { useGetBoardsQuery } from '~/queries/boards'
-import { BoardResType } from '~/schemas/board.schema'
+import type { BoardType } from '~/schemas/board.schema'
 
 interface AutoCompleteSearchBoardProps {
   styles?: SxProps
@@ -42,10 +42,7 @@ export default function AutoCompleteSearchBoard({ styles }: AutoCompleteSearchBo
   // Wrap the `handleBoardSelection` function above with useDebounceFn and set a delay of about 2 seconds after typing stops before executing the function
   const debounceSearchBoard = useDebounce(handleInputSearchChange, 2000)
 
-  const handleBoardSelection = (
-    _event: React.SyntheticEvent<Element, Event>,
-    selectedBoard: BoardResType['result'] | null
-  ) => {
+  const handleBoardSelection = (_event: React.SyntheticEvent<Element, Event>, selectedBoard: BoardType | null) => {
     if (selectedBoard) {
       navigate(`/boards/${selectedBoard._id}`)
     }

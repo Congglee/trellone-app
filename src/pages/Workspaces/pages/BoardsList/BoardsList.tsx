@@ -18,7 +18,7 @@ import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import BoardGrid from '~/pages/Workspaces/pages/BoardsList/components/BoardGrid'
 import ClosedBoards from '~/pages/Workspaces/pages/BoardsList/components/ClosedBoards'
 import { useGetWorkspacesQuery, workspaceApi } from '~/queries/workspaces'
-import { WorkspaceResType } from '~/schemas/workspace.schema'
+import { WorkspaceType } from '~/schemas/workspace.schema'
 import { appendWorkspaces, clearWorkspaces, setWorkspaces } from '~/store/slices/workspace.slice'
 
 export default function BoardsList() {
@@ -42,7 +42,7 @@ export default function BoardsList() {
   }
 
   // Create skeleton workspace for loading state
-  const generateSkeletonWorkspace = (index: number): WorkspaceResType['result'] => ({
+  const generateSkeletonWorkspace = (index: number): WorkspaceType => ({
     _id: `skeleton-${index}`,
     title: '',
     description: '',

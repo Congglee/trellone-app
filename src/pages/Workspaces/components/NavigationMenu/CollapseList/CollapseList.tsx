@@ -20,7 +20,7 @@ import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '~/constants/p
 import { useCategorizeWorkspaces } from '~/hooks/use-categorize-workspaces'
 import path from '~/constants/path'
 import { useGetWorkspacesQuery } from '~/queries/workspaces'
-import { WorkspaceResType } from '~/schemas/workspace.schema'
+import { WorkspaceType } from '~/schemas/workspace.schema'
 
 // Helper function to determine if a workspace should be active/selected
 const isWorkspaceActive = (workspaceId: string, currentWorkspaceId: string | undefined, pathname: string) => {
@@ -61,7 +61,7 @@ const shouldAutoExpandWorkspace = (
   return isWorkspaceActive(workspaceId, currentWorkspaceId, pathname)
 }
 
-type WorkspaceItem = WorkspaceResType['result']
+type WorkspaceItem = WorkspaceType
 
 export default function CollapseList() {
   const [visibleItems, setVisibleItems] = useState<boolean[]>([])

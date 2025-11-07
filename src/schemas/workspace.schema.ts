@@ -34,6 +34,8 @@ export const WorkspaceSchema = z.object({
   updated_at: z.date()
 })
 
+export type WorkspaceType = z.TypeOf<typeof WorkspaceSchema>
+
 export const WorkspaceRes = z.object({
   result: WorkspaceSchema,
   message: z.string()

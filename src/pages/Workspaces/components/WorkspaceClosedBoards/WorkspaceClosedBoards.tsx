@@ -26,7 +26,7 @@ import {
   useUpdateBoardMutation
 } from '~/queries/boards'
 import { workspaceApi } from '~/queries/workspaces'
-import { BoardResType } from '~/schemas/board.schema'
+import type { BoardType } from '~/schemas/board.schema'
 
 interface WorkspaceClosedBoardsProps {
   workspaceId: string
@@ -46,7 +46,7 @@ export default function WorkspaceClosedBoards({ workspaceId }: WorkspaceClosedBo
   const [leaveBoardMutation] = useLeaveBoardMutation()
   const [deleteBoardMutation] = useDeleteBoardMutation()
 
-  const [allClosedBoards, setAllClosedBoards] = useState<BoardResType['result'][]>([])
+  const [allClosedBoards, setAllClosedBoards] = useState<BoardType[]>([])
 
   const dispatch = useAppDispatch()
 

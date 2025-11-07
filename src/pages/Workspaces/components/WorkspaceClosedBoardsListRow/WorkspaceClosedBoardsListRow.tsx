@@ -13,10 +13,10 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import { useBoardPermission } from '~/hooks/use-permissions'
-import { BoardResType } from '~/schemas/board.schema'
+import type { BoardType } from '~/schemas/board.schema'
 
 interface WorkspaceClosedBoardsListRowProps {
-  board: BoardResType['result']
+  board: BoardType
   isLast: boolean
   onReopenBoard: (boardId: string) => void
   onLeaveBoard: (boardId: string) => void

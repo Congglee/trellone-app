@@ -25,14 +25,14 @@ import { BoardRole, BoardRoleValues, WorkspaceRole } from '~/constants/type'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { useEditBoardMemberRoleMutation } from '~/queries/boards'
 import { useAddNewBoardInvitationMutation } from '~/queries/invitations'
-import { BoardResType, BoardMemberRoleType } from '~/schemas/board.schema'
+import { BoardType, BoardMemberRoleType } from '~/schemas/board.schema'
 import { CreateNewBoardInvitationBody, CreateNewBoardInvitationBodyType } from '~/schemas/invitation.schema'
 import { UserType } from '~/schemas/user.schema'
 import { isUnprocessableEntityError } from '~/utils/error-handlers'
 import { updateActiveBoard } from '~/store/slices/board.slice'
 import cloneDeep from 'lodash/cloneDeep'
 
-type WorkspaceItem = BoardResType['result']['workspace']
+type WorkspaceItem = BoardType['workspace']
 
 const getWorkspaceRole = (userId: string, workspace?: WorkspaceItem) => {
   if (!workspace) return 'Workspace member'

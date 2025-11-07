@@ -24,13 +24,13 @@ import { MouseSensor, TouchSensor } from '~/lib/sensors'
 import Card from '~/pages/Boards/BoardDetails/components/Card'
 import Column from '~/pages/Boards/BoardDetails/components/Column'
 import ColumnsList from '~/pages/Boards/BoardDetails/components/ColumnsList'
-import { BoardResType } from '~/schemas/board.schema'
+import type { BoardType } from '~/schemas/board.schema'
 import { CardType } from '~/schemas/card.schema'
 import { ColumnType } from '~/schemas/column.schema'
 import { generatePlaceholderCard } from '~/utils/utils'
 
 interface BoardContentProps {
-  board: BoardResType['result']
+  board: BoardType
   onMoveColumns: (dndOrderedColumns: ColumnType[]) => void
   onMoveCardInTheSameColumn: (dndOrderedCards: CardType[], dndOrderedCardsIds: string[], columnId: string) => void
   onMoveCardToDifferentColumn: (

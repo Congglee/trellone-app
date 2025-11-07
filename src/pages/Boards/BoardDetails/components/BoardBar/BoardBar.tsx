@@ -16,7 +16,7 @@ import BoardUserGroup from '~/pages/Boards/BoardDetails/components/BoardUserGrou
 import InviteBoardMembers from '~/pages/Boards/BoardDetails/components/InviteBoardMembers'
 import { useUpdateBoardMutation } from '~/queries/boards'
 import { useJoinWorkspaceBoardMutation, workspaceApi } from '~/queries/workspaces'
-import { BoardResType } from '~/schemas/board.schema'
+import type { BoardType } from '~/schemas/board.schema'
 import { UserType } from '~/schemas/user.schema'
 import { updateActiveBoard } from '~/store/slices/board.slice'
 
@@ -40,7 +40,7 @@ interface BoardBarProps {
   onWorkspaceDrawerOpen: (open: boolean) => void
   boardDrawerOpen: boolean
   onBoardDrawerOpen: (open: boolean) => void
-  board: BoardResType['result']
+  board: BoardType
   isBoardMember: boolean
   canEditBoardInfo: boolean
   canManageMembers: boolean

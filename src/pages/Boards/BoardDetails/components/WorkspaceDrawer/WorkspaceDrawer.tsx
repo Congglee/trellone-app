@@ -27,8 +27,8 @@ import { WorkspacePermission } from '~/constants/permissions'
 import { useWorkspacePermission } from '~/hooks/use-permissions'
 import { useInfiniteScroll } from '~/hooks/use-infinite-scroll'
 import { useGetJoinedWorkspaceBoardsQuery } from '~/queries/boards'
-import { WorkspaceResType } from '~/schemas/workspace.schema'
-import { BoardResType } from '~/schemas/board.schema'
+import { WorkspaceType } from '~/schemas/workspace.schema'
+import type { BoardType } from '~/schemas/board.schema'
 import { useEffect, useRef, useState } from 'react'
 import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '~/constants/pagination'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -37,7 +37,7 @@ interface WorkspaceDrawerProps {
   open: boolean
   onOpen: (open: boolean) => void
   boardId?: string
-  workspace?: WorkspaceResType['result'] | BoardResType['result']['workspace']
+  workspace?: WorkspaceType | BoardType['workspace']
   isBoardClosed?: boolean
 }
 
@@ -66,7 +66,7 @@ export default function WorkspaceDrawer({ open, onOpen, boardId, workspace, isBo
     { skip: !workspaceId }
   )
 
-  const [allJoinedBoards, setAllJoinedBoards] = useState<BoardResType['result'][]>([])
+  const [allJoinedBoards, setAllJoinedBoards] = useState<BoardType[]>([])
 
   useEffect(() => {
     if (joinedWorkspaceBoardsData) {
