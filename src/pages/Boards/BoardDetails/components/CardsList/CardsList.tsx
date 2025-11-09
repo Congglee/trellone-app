@@ -9,14 +9,16 @@ interface CardsListProps {
 }
 
 export default function CardsList({ cards }: CardsListProps) {
-  const activeCards = cards.filter((card) => !card._destroy)
+  const activeCards = cards.filter((card) => !card._destroy && !card.FE_PlaceholderCard)
+  const placeholderCards = cards.filter((card) => card.FE_PlaceholderCard)
+  const sortableCards = activeCards.length > 0 ? activeCards : placeholderCards
 
   const { activeBoard } = useAppSelector((state) => state.board)
 
   const isBoardClosed = activeBoard?._destroy
 
   return (
-    <SortableContext items={activeCards.map((card) => card._id)} strategy={verticalListSortingStrategy}>
+    <SortableContext items={sortableCards.map((card) => card._id)} strategy={verticalListSortingStrategy}>
       <Box
         sx={{
           p: '0 5px 5px 5px',
@@ -36,7 +38,7 @@ export default function CardsList({ cards }: CardsListProps) {
           '&::-webkit-scrollbar-thumb:hover': { backgroundColor: '#bfc2cf' }
         }}
       >
-        {activeCards.map((card) => (
+        {sortableCards.map((card) => (
           <Card key={card._id} card={card} />
         ))}
       </Box>

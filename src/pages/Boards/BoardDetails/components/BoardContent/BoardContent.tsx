@@ -1,3 +1,4 @@
+import type { CollisionDetection } from '@dnd-kit/core'
 import {
   Active,
   closestCorners,
@@ -19,7 +20,7 @@ import { arrayMove } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
 import cloneDeep from 'lodash/cloneDeep'
 import isEmpty from 'lodash/isEmpty'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MouseSensor, TouchSensor } from '~/lib/sensors'
 import Card from '~/pages/Boards/BoardDetails/components/Card'
 import Column from '~/pages/Boards/BoardDetails/components/Column'
@@ -48,7 +49,31 @@ interface BoardContentProps {
 const ACTIVE_DRAG_ITEM_TYPE = {
   COLUMN: 'ACTIVE_DRAG_ITEM_TYPE_COLUMN',
   CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
+} as const
+
+type ActiveDragItemType = (typeof ACTIVE_DRAG_ITEM_TYPE)[keyof typeof ACTIVE_DRAG_ITEM_TYPE]
+type CollisionArgs = Parameters<CollisionDetection>[0]
+
+const sanitizeColumnCards = (column: ColumnType) => {
+  const nextColumn = cloneDeep(column)
+  const cards = nextColumn.cards ?? []
+
+  const placeholderCard = cards.find((card) => card.FE_PlaceholderCard)
+  const activeCards = cards.filter((card) => !card._destroy && !card.FE_PlaceholderCard)
+
+  if (activeCards.length === 0) {
+    const fallbackPlaceholder = placeholderCard ?? generatePlaceholderCard(nextColumn)
+    nextColumn.cards = [fallbackPlaceholder]
+    nextColumn.card_order_ids = [fallbackPlaceholder._id]
+  } else {
+    nextColumn.cards = activeCards
+    nextColumn.card_order_ids = activeCards.map((card) => card._id)
+  }
+
+  return nextColumn
 }
+
+const sanitizeColumns = (columns: ColumnType[]) => columns.map(sanitizeColumnCards)
 
 export default function BoardContent({
   board,
@@ -78,16 +103,18 @@ export default function BoardContent({
 
   // Only one item (column or card) can be dragged at a time
   const [activeDragItemId, setActiveDragItemId] = useState<UniqueIdentifier | null>(null)
-  const [activeDragItemType, setActiveDragItemType] = useState<string | null>(null)
-  const [activeDragItemData, setActiveDragItemData] = useState<any | null>(null)
+  const [activeDragItemType, setActiveDragItemType] = useState<ActiveDragItemType | null>(null)
+  const [activeDragItemData, setActiveDragItemData] = useState<CardType | ColumnType | null>(null)
   const [oldColumnWhenDraggingCard, setOldColumnWhenDraggingCard] = useState<ColumnType | null>(null)
 
   // The previous last collision point (used for collision detection algorithm processing)
   const lastOverId = useRef<UniqueIdentifier | null>(null)
 
+  const sanitizedBoardColumns = useMemo(() => (board.columns ? sanitizeColumns(board.columns) : []), [board.columns])
+
   useEffect(() => {
-    setSortedColumns(board.columns!)
-  }, [board])
+    setSortedColumns(sanitizedBoardColumns)
+  }, [sanitizedBoardColumns])
 
   const findColumnByCardId = (cardId: UniqueIdentifier) => {
     // Note this section: you should use `column.cards` instead of `column.card_order_ids` because in the `handleDragOver` step, we first complete the `cards` data before generating the new `card_order_ids`.
@@ -110,7 +137,7 @@ export default function BoardContent({
     over: Over
     activeColumn: ColumnType
     activeDraggingCardId: UniqueIdentifier
-    activeDraggingCardData: any
+    activeDraggingCardData: CardType
     triggerFrom?: 'handleDragEnd' | 'handleDragOver'
   }) => {
     setSortedColumns((prevColumns) => {
@@ -165,30 +192,35 @@ export default function BoardContent({
       }
 
       // If this function is called from handleDragEnd, it means the drag-and-drop has finished; at this point, call the API once here.
-      if (triggerFrom === 'handleDragEnd') {
+      const sanitizedColumns = sanitizeColumns(nextColumns)
+      const sanitizedNextOverColumn = sanitizedColumns.find((column) => column._id === nextOverColumn?._id)
+
+      if (triggerFrom === 'handleDragEnd' && sanitizedNextOverColumn) {
         // You must use activeDragItemData.columnId or, preferably, oldColumnWhenDraggingCard._id (set in state from the handleDragStart step), not activeData in the handleDragEnd scope, because after passing through onDragOver and reaching this point, the card's state has already been updated once.
         onMoveCardToDifferentColumn(
           activeDraggingCardId as string,
           oldColumnWhenDraggingCard?._id as string,
-          nextOverColumn?._id as string,
-          nextColumns
+          sanitizedNextOverColumn._id,
+          sanitizedColumns
         )
       }
 
-      return nextColumns
+      return sanitizedColumns
     })
   }
 
   // Trigger when starting to drag an element
   const handleDragStart = (event: DragStartEvent) => {
+    const currentData = event?.active?.data?.current as CardType | ColumnType | undefined
+
     setActiveDragItemId(event?.active?.id as string)
     setActiveDragItemType(
-      event?.active?.data?.current?.column_id ? ACTIVE_DRAG_ITEM_TYPE.CARD : ACTIVE_DRAG_ITEM_TYPE.COLUMN
+      currentData && 'column_id' in currentData ? ACTIVE_DRAG_ITEM_TYPE.CARD : ACTIVE_DRAG_ITEM_TYPE.COLUMN
     )
-    setActiveDragItemData(event?.active?.data?.current)
+    setActiveDragItemData(currentData ?? null)
 
     // Only perform actions to set the oldColumn value if dragging a card
-    if (event?.active?.data?.current?.column_id) {
+    if (currentData && 'column_id' in currentData) {
       const column = findColumnByCardId(event?.active?.id)!
       setOldColumnWhenDraggingCard(column)
     }
@@ -213,8 +245,14 @@ export default function BoardContent({
     // activeDraggingCard: The card currently being dragged
     const {
       id: activeDraggingCardId, // The ID of the card currently being dragged
-      data: { current: activeDraggingCardData } // The data of the card currently being dragged
+      data: { current: activeDraggingCardData }
     } = active
+
+    if (!activeDraggingCardData) {
+      return
+    }
+
+    const currentCardData = activeDraggingCardData as CardType
 
     // overCard: the card that is being interacted with above or below the dragged card
     // Id of the column that the card is being dragged over
@@ -239,7 +277,7 @@ export default function BoardContent({
         over,
         activeColumn,
         activeDraggingCardId,
-        activeDraggingCardData,
+        activeDraggingCardData: currentCardData,
         triggerFrom: 'handleDragOver'
       })
     }
@@ -259,8 +297,14 @@ export default function BoardContent({
       // activeDraggingCard: The card currently being dragged
       const {
         id: activeDraggingCardId, // The ID of the card currently being dragged
-        data: { current: activeDraggingCardData } // The data of the card currently being dragged
+        data: { current: activeDraggingCardData }
       } = active
+
+      if (!activeDraggingCardData) {
+        return
+      }
+
+      const currentCardData = activeDraggingCardData as CardType
 
       // overCard: the card that is being interacted with above or below the dragged card
       // Id of the column that the card is being dragged over
@@ -285,7 +329,7 @@ export default function BoardContent({
           over,
           activeColumn,
           activeDraggingCardId,
-          activeDraggingCardData,
+          activeDraggingCardData: currentCardData,
           triggerFrom: 'handleDragEnd'
         })
       } else {
@@ -318,7 +362,7 @@ export default function BoardContent({
           targetColumn.card_order_ids = dndOrderedCardsIds
 
           // Return the new state value (with correct positions)
-          return nextColumns
+          return sanitizeColumns(nextColumns)
         })
 
         onMoveCardInTheSameColumn(dndOrderedCards, dndOrderedCardsIds, (oldColumnWhenDraggingCard as ColumnType)._id)
@@ -338,9 +382,10 @@ export default function BoardContent({
         const dndOrderedColumns = arrayMove(sortedColumns, oldColumnIndex, newColumnIndex)
 
         // Still update the state here to avoid delay or interface flickering during drag-and-drop while waiting for the API call (small trick)
-        setSortedColumns(dndOrderedColumns)
+        const sanitizedColumns = sanitizeColumns(dndOrderedColumns)
+        setSortedColumns(sanitizedColumns)
 
-        onMoveColumns(dndOrderedColumns)
+        onMoveColumns(sanitizedColumns)
       }
     }
 
@@ -361,8 +406,8 @@ export default function BoardContent({
   }
 
   // We will customize the strategy/algorithm for collision detection optimized for dragging cards between multiple columns
-  const collisionDetectionStrategy = useCallback(
-    (args: any) => {
+  const collisionDetectionStrategy = useCallback<CollisionDetection>(
+    (args: CollisionArgs) => {
       // Columns: only allow dropping when the pointer is actually over a column.
       // If the pointer is outside all columns (e.g., over the left WorkspaceDrawer),
       // return an empty collision list so no reordering occurs.
@@ -448,11 +493,17 @@ export default function BoardContent({
         <DragOverlay dropAnimation={customDropAnimation} zIndex={2000}>
           {!activeDragItemType && null}
 
-          {activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN && (
-            <Column column={activeDragItemData} canEditColumn={canEditColumn} canCreateCard={canCreateCard} />
+          {activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN && activeDragItemData && (
+            <Column
+              column={activeDragItemData as ColumnType}
+              canEditColumn={canEditColumn}
+              canCreateCard={canCreateCard}
+            />
           )}
 
-          {activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.CARD && <Card card={activeDragItemData} />}
+          {activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.CARD && activeDragItemData && (
+            <Card card={activeDragItemData as CardType} />
+          )}
         </DragOverlay>
       </Box>
     </DndContext>

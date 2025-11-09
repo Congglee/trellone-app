@@ -43,6 +43,7 @@ export default function Card({ card }: CardProps) {
   const dispatch = useAppDispatch()
 
   const handleSetActiveCard = () => {
+    if (card.FE_PlaceholderCard) return
     dispatch(updateActiveCard(card))
     dispatch(showActiveCardModal())
   }
