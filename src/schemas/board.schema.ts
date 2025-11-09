@@ -114,11 +114,16 @@ export const UpdateBoardBody = z.object({
   column_order_ids: z.array(z.string()).optional(),
   cover_photo: z.string().url().optional(),
   background_color: z.string().optional(),
-  workspace_id: z.string().optional(),
-  _destroy: z.boolean().optional()
+  workspace_id: z.string().optional()
 })
 
 export type UpdateBoardBodyType = z.TypeOf<typeof UpdateBoardBody>
+
+export const ReopenBoardBody = z.object({
+  workspace_id: z.string().optional()
+})
+
+export type ReopenBoardBodyType = z.TypeOf<typeof ReopenBoardBody>
 
 export const DeleteBoardRes = z.object({
   message: z.string()

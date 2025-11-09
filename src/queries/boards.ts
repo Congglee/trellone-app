@@ -8,7 +8,8 @@ import {
   CreateBoardBodyType,
   DeleteBoardResType,
   EditBoardMemberRoleBodyType,
-  UpdateBoardBodyType
+  UpdateBoardBodyType,
+  ReopenBoardBodyType
 } from '~/schemas/board.schema'
 import { BoardQueryParams, CommonQueryParams } from '~/types/query-params.type'
 
@@ -89,6 +90,42 @@ export const boardApi = createApi({
       }
     }),
 
+    archiveBoard: build.mutation<BoardResType, string>({
+      query: (id) => ({ url: `${BOARD_API_URL}/${id}/archive`, method: 'PATCH' }),
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          await queryFulfilled
+        } catch (error) {
+          toast.error('There was an error archiving the board')
+          console.error(error)
+        }
+      },
+      invalidatesTags: (_result, _error, id) => [
+        { type: 'Board', id },
+        { type: 'Board', id: 'LIST' }
+      ]
+    }),
+
+    reopenBoard: build.mutation<BoardResType, { id: string; body?: ReopenBoardBodyType }>({
+      query: ({ id, body }) => ({
+        url: `${BOARD_API_URL}/${id}/reopen`,
+        method: 'PATCH',
+        data: body
+      }),
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          await queryFulfilled
+        } catch (error) {
+          toast.error('There was an error reopening the board')
+          console.error(error)
+        }
+      },
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Board', id },
+        { type: 'Board', id: 'LIST' }
+      ]
+    }),
+
     leaveBoard: build.mutation<BoardResType, string>({
       query: (id) => ({ url: `${BOARD_API_URL}/${id}/members/me/leave`, method: 'POST' }),
       async onQueryStarted(_args, { dispatch, queryFulfilled }) {
@@ -136,6 +173,8 @@ export const {
   useGetBoardsQuery,
   useLazyGetBoardsQuery,
   useUpdateBoardMutation,
+  useArchiveBoardMutation,
+  useReopenBoardMutation,
   useLeaveBoardMutation,
   useGetJoinedWorkspaceBoardsQuery,
   useDeleteBoardMutation,

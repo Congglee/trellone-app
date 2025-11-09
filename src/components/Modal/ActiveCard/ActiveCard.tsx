@@ -27,7 +27,13 @@ import CardUserGroup from '~/components/Modal/ActiveCard/CardUserGroup'
 import DatesMenu from '~/components/Modal/ActiveCard/DatesMenu'
 import RemoveActiveCard from '~/components/Modal/ActiveCard/RemoveActiveCard'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
-import { useAddCardMemberMutation, useRemoveCardMemberMutation, useUpdateCardMutation } from '~/queries/cards'
+import {
+  useAddCardMemberMutation,
+  useArchiveCardMutation,
+  useReopenCardMutation,
+  useRemoveCardMemberMutation,
+  useUpdateCardMutation
+} from '~/queries/cards'
 import { CardType, UpdateCardBodyType } from '~/schemas/card.schema'
 import { updateCardInBoard } from '~/store/slices/board.slice'
 import { clearAndHideActiveCardModal, updateActiveCard } from '~/store/slices/card.slice'
@@ -63,6 +69,8 @@ export default function ActiveCard({ canEditCard }: ActiveCardProps) {
   const { socket } = useAppSelector((state) => state.app)
 
   const [updateCardMutation] = useUpdateCardMutation()
+  const [archiveCardMutation] = useArchiveCardMutation()
+  const [reopenCardMutation] = useReopenCardMutation()
   const [addCardMemberMutation] = useAddCardMemberMutation()
   const [removeCardMemberMutation] = useRemoveCardMemberMutation()
 
@@ -87,6 +95,32 @@ export default function ActiveCard({ canEditCard }: ActiveCardProps) {
     return updatedCard
   }
 
+  const archiveCard = () => {
+    archiveCardMutation({ card_id: activeCard?._id as string }).then((res) => {
+      if (!res.error) {
+        const updatedCard = res.data?.result as CardType
+
+        dispatch(updateActiveCard(updatedCard))
+        dispatch(updateCardInBoard(updatedCard))
+
+        socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
+      }
+    })
+  }
+
+  const reopenCard = () => {
+    reopenCardMutation({ card_id: activeCard?._id as string }).then((res) => {
+      if (!res.error) {
+        const updatedCard = res.data?.result as CardType
+
+        dispatch(updateActiveCard(updatedCard))
+        dispatch(updateCardInBoard(updatedCard))
+
+        socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
+      }
+    })
+  }
+
   const onUpdateCardTitle = (title: string) => {
     handleUpdateActiveCard({ title })
   }
@@ -101,10 +135,6 @@ export default function ActiveCard({ canEditCard }: ActiveCardProps) {
 
   const onUpdateCardDueDateAndStatus = (dueDate: Date | null, isCompleted: boolean | null) => {
     handleUpdateActiveCard({ due_date: dueDate, is_completed: isCompleted })
-  }
-
-  const onUpdateCardArchiveStatus = (_destroy: boolean) => {
-    handleUpdateActiveCard({ _destroy })
   }
 
   const onAddCardMember = (userId: string) => {
@@ -318,7 +348,7 @@ export default function ActiveCard({ canEditCard }: ActiveCardProps) {
 
               <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Actions</Typography>
               <Stack direction='column' spacing={1}>
-                <SidebarItem className='active' onClick={() => onUpdateCardArchiveStatus(!activeCard?._destroy)}>
+                <SidebarItem className='active' onClick={activeCard?._destroy ? reopenCard : archiveCard}>
                   {activeCard?._destroy ? (
                     <>
                       <RestartAltIcon fontSize='small' />

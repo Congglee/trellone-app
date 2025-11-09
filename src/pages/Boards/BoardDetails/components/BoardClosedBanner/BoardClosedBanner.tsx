@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography'
 import { useMemo, useState } from 'react'
 import { useCategorizeWorkspaces } from '~/hooks/use-categorize-workspaces'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
-import { useUpdateBoardMutation } from '~/queries/boards'
+import { useReopenBoardMutation } from '~/queries/boards'
 import { useGetWorkspacesQuery } from '~/queries/workspaces'
 import { updateActiveBoard } from '~/store/slices/board.slice'
 
@@ -23,7 +23,7 @@ export default function BoardClosedBanner() {
   const isSelectWorkspacePopoverOpen = Boolean(anchorSelectWorkspacePopoverElement)
   const selectWorkspacePopoverId = isSelectWorkspacePopoverOpen ? 'select-workspace-popover' : undefined
 
-  const [updateBoardMutation] = useUpdateBoardMutation()
+  const [reopenBoardMutation] = useReopenBoardMutation()
 
   const dispatch = useAppDispatch()
 
@@ -56,14 +56,9 @@ export default function BoardClosedBanner() {
   }
 
   const reopenBoard = (newWorkspaceId?: string) => {
-    const body: { _destroy: boolean; workspace_id?: string } = { _destroy: false }
+    const payload = newWorkspaceId ? { workspace_id: newWorkspaceId } : undefined
 
-    // If newWorkspaceId is provided (for boards with deleted workspace), update workspace_id
-    if (newWorkspaceId !== undefined) {
-      body.workspace_id = newWorkspaceId
-    }
-
-    updateBoardMutation({ id: activeBoard?._id as string, body }).then((res) => {
+    reopenBoardMutation({ id: activeBoard?._id as string, body: payload }).then((res) => {
       if (!res.error) {
         const newActiveBoard = { ...activeBoard! }
         newActiveBoard._destroy = false

@@ -32,7 +32,7 @@ import BoardInfomation from '~/pages/Boards/BoardDetails/components/BoardDrawer/
 import ChangeBoardBackground from '~/pages/Boards/BoardDetails/components/BoardDrawer/ChangeBoardBackground'
 import CloseBoard from '~/pages/Boards/BoardDetails/components/BoardDrawer/CloseBoard'
 import DeleteBoard from '~/pages/Boards/BoardDetails/components/BoardDrawer/DeleteBoard'
-import { useLeaveBoardMutation, useUpdateBoardMutation } from '~/queries/boards'
+import { useLeaveBoardMutation, useReopenBoardMutation } from '~/queries/boards'
 import { useGetWorkspacesQuery } from '~/queries/workspaces'
 import { BoardMemberType } from '~/schemas/board.schema'
 import { clearActiveBoard, updateActiveBoard } from '~/store/slices/board.slice'
@@ -78,7 +78,7 @@ export default function BoardDrawer({
   const { socket } = useAppSelector((state) => state.app)
 
   const [leaveBoardMutation] = useLeaveBoardMutation()
-  const [updateBoardMutation] = useUpdateBoardMutation()
+  const [reopenBoardMutation] = useReopenBoardMutation()
 
   const { data: workspacesData } = useGetWorkspacesQuery({ page: 1, limit: 100 }, { skip: !open })
 
@@ -157,17 +157,9 @@ export default function BoardDrawer({
   }
 
   const reopenBoard = (newWorkspaceId?: string) => {
-    const body: { _destroy: boolean; workspace_id?: string } = { _destroy: false }
+    const payload = newWorkspaceId ? { workspace_id: newWorkspaceId } : undefined
 
-    // If newWorkspaceId is provided (for boards with deleted workspace), update workspace_id
-    if (newWorkspaceId !== undefined) {
-      body.workspace_id = newWorkspaceId
-    }
-
-    updateBoardMutation({
-      id: boardId,
-      body
-    }).then((res) => {
+    reopenBoardMutation({ id: boardId, body: payload }).then((res) => {
       if (!res.error) {
         const newActiveBoard = { ...activeBoard! }
         newActiveBoard._destroy = false
