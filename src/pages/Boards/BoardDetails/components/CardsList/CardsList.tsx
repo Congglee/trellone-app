@@ -1,5 +1,6 @@
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
+import { useAppSelector } from '~/lib/redux/hooks'
 import Card from '~/pages/Boards/BoardDetails/components/Card/Card'
 import { CardType } from '~/schemas/card.schema'
 
@@ -9,6 +10,10 @@ interface CardsListProps {
 
 export default function CardsList({ cards }: CardsListProps) {
   const activeCards = cards.filter((card) => !card._destroy)
+
+  const { activeBoard } = useAppSelector((state) => state.board)
+
+  const isBoardClosed = activeBoard?._destroy
 
   return (
     <SortableContext items={activeCards.map((card) => card._id)} strategy={verticalListSortingStrategy}>
@@ -23,8 +28,8 @@ export default function CardsList({ cards }: CardsListProps) {
           overflowY: 'auto',
 
           maxHeight: (theme) => ({
-            xs: `calc(${theme.trellone.boardContentHeight} - ${theme.trellone.boardBarHeight} - ${theme.spacing(5)} - ${theme.trellone.columnHeaderHeight} - ${theme.trellone.columnFooterHeight})`,
-            md: `calc(${theme.trellone.boardContentHeight} - ${theme.spacing(5)} - ${theme.trellone.columnHeaderHeight} - ${theme.trellone.columnFooterHeight})`
+            xs: `calc(${theme.trellone.boardContentHeight} - ${theme.trellone.boardBarHeight} - ${theme.spacing(5)} - ${theme.trellone.columnHeaderHeight} - ${theme.trellone.columnFooterHeight} - ${isBoardClosed ? '48px' : '0px'})`,
+            md: `calc(${theme.trellone.boardContentHeight} - ${theme.spacing(5)} - ${theme.trellone.columnHeaderHeight} - ${theme.trellone.columnFooterHeight} - ${isBoardClosed ? '48px' : '0px'})`
           }),
 
           '&::-webkit-scrollbar-thumb': { backgroundColor: '#ced0da' },
