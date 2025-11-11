@@ -1,29 +1,20 @@
 import AccessTimeIcon from '@mui/icons-material/AccessTime'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
-import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import List from '@mui/material/List'
 import ListSubheader from '@mui/material/ListSubheader'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useMemo } from 'react'
 import { Helmet } from 'react-helmet-async'
+import { INSPIRATIONAL_QUOTES } from '~/constants/mock-data'
 import RecentlyViewed from '~/pages/Workspaces/pages/Home/components/RecentlyViewed'
 
 export default function Home() {
-  const bulletPoint = (
-    <Box
-      component='span'
-      sx={{
-        display: 'inline-block',
-        mx: '2px',
-        transform: 'scale(0.8)'
-      }}
-    >
-      •
-    </Box>
-  )
+  const randomQuote = useMemo(() => {
+    const randomIndex = Math.floor(Math.random() * INSPIRATIONAL_QUOTES.length)
+    return INSPIRATIONAL_QUOTES[randomIndex]
+  }, [])
 
   return (
     <Stack direction='row' gap={2}>
@@ -52,27 +43,17 @@ export default function Home() {
         <Card>
           <CardContent>
             <Typography sx={{ fontSize: 14 }} color='text.secondary' gutterBottom>
-              Word of the Day
+              Quote of the Day
             </Typography>
 
-            <Typography variant='h5' component='div'>
-              be{bulletPoint}nev{bulletPoint}o{bulletPoint}lent
+            <Typography variant='body1' sx={{ fontStyle: 'italic', mb: 2, mt: 1 }}>
+              "{randomQuote.quote}"
             </Typography>
 
-            <Typography sx={{ mb: 1.5 }} color='text.secondary'>
-              adjective
-            </Typography>
-
-            <Typography variant='body2'>
-              well meaning and kindly.
-              <br />
-              {'"a benevolent smile"'}
+            <Typography variant='body2' color='text.secondary' sx={{ textAlign: 'right' }}>
+              — {randomQuote.author}
             </Typography>
           </CardContent>
-
-          <CardActions>
-            <Button size='small'>Learn More</Button>
-          </CardActions>
         </Card>
       </List>
 
