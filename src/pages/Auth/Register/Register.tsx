@@ -97,6 +97,7 @@ export default function Register() {
                 type='email'
                 label='Enter Email...'
                 error={!!errors['email']}
+                autoFocus
               />
               <FieldErrorAlert errorMessage={errors.email?.message} />
             </Box>

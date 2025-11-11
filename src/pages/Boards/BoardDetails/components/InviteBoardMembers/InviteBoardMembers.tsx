@@ -231,6 +231,7 @@ export default function InviteBoardMembers({ boardId, workspaceId, canManageMemb
                   placeholder='Email address'
                   variant='outlined'
                   error={!!errors['invitee_email']}
+                  autoFocus
                 />
                 <FormControl sx={{ minWidth: 120 }}>
                   <Controller

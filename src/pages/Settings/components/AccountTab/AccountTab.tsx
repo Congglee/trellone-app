@@ -227,6 +227,7 @@ export default function AccountTab() {
                 label='Your Display Name'
                 error={!!errors['display_name']}
                 variant='outlined'
+                autoFocus
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position='start'>

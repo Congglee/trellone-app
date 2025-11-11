@@ -108,6 +108,7 @@ export default function ResetPassword() {
                 type='password'
                 label='Enter Password...'
                 error={!!errors['password']}
+                autoFocus
               />
               <FieldErrorAlert errorMessage={errors.password?.message} />
             </Box>

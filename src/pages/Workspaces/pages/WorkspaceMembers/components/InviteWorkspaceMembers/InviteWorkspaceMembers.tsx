@@ -139,6 +139,7 @@ export default function InviteWorkspaceMembers({ workspaceId }: InviteWorkspaceM
                 placeholder='Email address'
                 variant='outlined'
                 error={!!errors['invitee_email']}
+                autoFocus
                 sx={{
                   flex: 1,
                   '& .MuiOutlinedInput-root': {

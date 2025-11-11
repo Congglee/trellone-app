@@ -108,7 +108,7 @@ export default function EditWorkspaceDialog({ open, onEditWorkspaceClose, worksp
           </DialogContentText>
 
           <Box sx={{ marginTop: '1em' }}>
-            <TextFieldInput name='title' register={register} label='Name' error={!!errors['title']} required />
+            <TextFieldInput name='title' register={register} label='Name' error={!!errors['title']} required autoFocus />
             <FieldErrorAlert errorMessage={errors.title?.message} />
           </Box>
 

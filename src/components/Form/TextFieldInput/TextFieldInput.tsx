@@ -15,5 +15,5 @@ export default function TextFieldInput<TFieldValues extends FieldValues = FieldV
 }: TextFieldInputProps<TFieldValues>) {
   const registerResult = register && name ? register(name, rules) : null
 
-  return <TextField autoFocus fullWidth variant='outlined' {...registerResult} {...rest} />
+  return <TextField fullWidth variant='outlined' {...registerResult} {...rest} />
 }

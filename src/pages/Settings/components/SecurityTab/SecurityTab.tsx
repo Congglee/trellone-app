@@ -52,7 +52,7 @@ export default function SecurityTab() {
       if (confirmed) {
         await changePasswordMutation(values)
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log('Change password canceled or failed', error)
     }
   })
@@ -113,6 +113,7 @@ export default function SecurityTab() {
                 label='Current Password'
                 error={!!errors['old_password']}
                 variant='outlined'
+                autoFocus
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position='start'>
