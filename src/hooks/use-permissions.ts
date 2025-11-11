@@ -7,11 +7,11 @@ import {
   BOARD_ROLE_PERMISSIONS
 } from '~/constants/permissions'
 import { WorkspaceRole, BoardRole } from '~/constants/type'
-import { WorkspaceResType, WorkspaceMemberRoleType } from '~/schemas/workspace.schema'
+import { WorkspaceType, WorkspaceMemberRoleType } from '~/schemas/workspace.schema'
 import { UserType } from '~/schemas/user.schema'
-import { BoardResType, BoardMemberRoleType } from '~/schemas/board.schema'
+import { BoardType, BoardMemberRoleType } from '~/schemas/board.schema'
 
-type WorkspaceItem = WorkspaceResType['result'] | BoardResType['result']['workspace'] | null | undefined
+type WorkspaceItem = WorkspaceType | BoardType['workspace'] | null | undefined
 
 interface UseWorkspacePermissionReturn {
   role: WorkspaceMemberRoleType | null
@@ -96,7 +96,7 @@ export const useWorkspacePermission = (
   }
 }
 
-type BoardItem = BoardResType['result'] | null | undefined
+type BoardItem = BoardType | null | undefined
 
 interface UseBoardPermissionReturn {
   role: BoardMemberRoleType | null

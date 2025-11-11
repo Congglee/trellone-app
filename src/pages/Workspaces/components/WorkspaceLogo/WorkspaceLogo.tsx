@@ -9,11 +9,11 @@ import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
 import { useUploadImageMutation } from '~/queries/medias'
 import { useUpdateWorkspaceMutation } from '~/queries/workspaces'
-import { WorkspaceResType } from '~/schemas/workspace.schema'
+import { WorkspaceType } from '~/schemas/workspace.schema'
 import { singleFileValidator } from '~/utils/validators'
 
 interface WorkspaceLogoProps {
-  workspace: WorkspaceResType['result']
+  workspace: WorkspaceType
   size?: {
     width: number
     height: number

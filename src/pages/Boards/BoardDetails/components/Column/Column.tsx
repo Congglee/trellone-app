@@ -39,7 +39,7 @@ export default function Column({ column, canEditColumn, canCreateCard }: ColumnP
     opacity: isDragging ? 0.5 : undefined
   }
 
-  const sortedCards = column.cards!
+  const sortedCards = (column.cards ?? []).filter((card) => !card._destroy || card.FE_PlaceholderCard)
 
   const dispatch = useAppDispatch()
 

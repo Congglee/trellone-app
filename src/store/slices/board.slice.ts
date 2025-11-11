@@ -2,13 +2,13 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import isEmpty from 'lodash/isEmpty'
 import { envConfig } from '~/constants/config'
 import http from '~/lib/http'
-import { BoardResType } from '~/schemas/board.schema'
+import { BoardResType, BoardType } from '~/schemas/board.schema'
 import { CardType } from '~/schemas/card.schema'
 import { mapOrder } from '~/utils/sorts'
 import { generatePlaceholderCard } from '~/utils/utils'
 
 interface BoardSliceState {
-  activeBoard: BoardResType['result'] | null
+  activeBoard: BoardType | null
   loading: string
   currentRequestId: string | undefined
   error: string | null
@@ -36,7 +36,7 @@ export const boardSlice = createSlice({
   name: 'board',
   initialState,
   reducers: {
-    updateActiveBoard: (state, action: PayloadAction<BoardResType['result'] | null>) => {
+    updateActiveBoard: (state, action: PayloadAction<BoardType | null>) => {
       const board = action.payload
       state.activeBoard = board
     },

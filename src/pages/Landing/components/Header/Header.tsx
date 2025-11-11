@@ -382,24 +382,12 @@ export default function Header() {
           {!isLoggedIn && (
             <>
               <MenuItem sx={{ '&:hover': { backgroundColor: 'transparent' } }}>
-                <Button 
-                  component={Link} 
-                  to={path.register} 
-                  color='primary' 
-                  variant='contained' 
-                  fullWidth
-                >
+                <Button component={Link} to={path.register} color='primary' variant='contained' fullWidth>
                   Sign up
                 </Button>
               </MenuItem>
               <MenuItem sx={{ '&:hover': { backgroundColor: 'transparent' } }}>
-                <Button 
-                  component={Link} 
-                  to={path.login} 
-                  color='primary' 
-                  variant='outlined' 
-                  fullWidth
-                >
+                <Button component={Link} to={path.login} color='primary' variant='outlined' fullWidth>
                   Sign in
                 </Button>
               </MenuItem>

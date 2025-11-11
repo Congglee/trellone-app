@@ -1,7 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { WorkspaceResType } from '~/schemas/workspace.schema'
-
-type WorkspaceType = WorkspaceResType['result']
+import { WorkspaceType } from '~/schemas/workspace.schema'
 
 interface WorkspaceSliceState {
   workspaces: WorkspaceType[]

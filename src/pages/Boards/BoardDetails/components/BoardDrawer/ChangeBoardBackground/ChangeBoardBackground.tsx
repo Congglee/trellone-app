@@ -53,7 +53,7 @@ export default function ChangeBoardBackground({ canChangeBoardBackground }: Chan
     setQuery(value)
   }
 
-  const debounceSearchPhotos = useDebounce(handleInputSearchPhotosChange, 1500)
+  const debounceSearchPhotos = useDebounce(handleInputSearchPhotosChange, 1000)
 
   const dispatch = useAppDispatch()
   const { activeBoard } = useAppSelector((state) => state.board)

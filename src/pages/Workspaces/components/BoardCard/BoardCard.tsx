@@ -4,10 +4,10 @@ import MuiLink from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { NavLink } from 'react-router-dom'
-import { BoardResType } from '~/schemas/board.schema'
+import type { BoardType } from '~/schemas/board.schema'
 
 interface BoardCardProps {
-  board: BoardResType['result']
+  board: BoardType
 }
 
 export default function BoardCard({ board }: BoardCardProps) {

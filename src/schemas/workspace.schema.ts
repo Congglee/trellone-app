@@ -1,5 +1,5 @@
 import z from 'zod'
-import { WorkspaceRoleValues, WorkspaceType, WorkspaceTypeValues } from '~/constants/type'
+import { WorkspaceRoleValues, WorkspaceVisibility, WorkspaceVisibilityValues } from '~/constants/type'
 import { BoardSchema } from '~/schemas/board.schema'
 import { UserSchema } from '~/schemas/user.schema'
 
@@ -16,7 +16,7 @@ export const WorkspaceMemberSchema = UserSchema.extend({
 
 export type WorkspaceMemberType = z.TypeOf<typeof WorkspaceMemberSchema>
 
-export const WorkspaceVisibilitySchema = z.enum(WorkspaceTypeValues)
+export const WorkspaceVisibilitySchema = z.enum(WorkspaceVisibilityValues)
 
 export type WorkspaceVisibilityType = z.TypeOf<typeof WorkspaceVisibilitySchema>
 
@@ -24,7 +24,7 @@ export const WorkspaceSchema = z.object({
   _id: z.string(),
   title: z.string(),
   description: z.string().optional(),
-  type: WorkspaceVisibilitySchema,
+  visibility: WorkspaceVisibilitySchema,
   logo: z.string().optional(),
   members: z.array(WorkspaceMemberSchema),
   guests: z.union([z.array(UserSchema), z.array(z.string())]),
@@ -33,6 +33,8 @@ export const WorkspaceSchema = z.object({
   created_at: z.date(),
   updated_at: z.date()
 })
+
+export type WorkspaceType = z.TypeOf<typeof WorkspaceSchema>
 
 export const WorkspaceRes = z.object({
   result: WorkspaceSchema,
@@ -86,9 +88,9 @@ export const UpdateWorkspaceBody = z.object({
       message: 'Description must be at most 256 characters long'
     })
     .optional(),
-  type: z
-    .enum(WorkspaceTypeValues, { message: 'Type must be either public or private' })
-    .default(WorkspaceType.Public)
+  visibility: z
+    .enum(WorkspaceVisibilityValues, { message: 'Visibility must be either public or private' })
+    .default(WorkspaceVisibility.Public)
     .optional(),
   logo: z.string().url().optional()
 })

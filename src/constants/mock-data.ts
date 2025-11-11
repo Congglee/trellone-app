@@ -1,11 +1,11 @@
-import { BoardType } from '~/constants/type'
-import type { BoardResType } from '~/schemas/board.schema'
+import { BoardVisibility } from '~/constants/type'
+import type { BoardType } from '~/schemas/board.schema'
 
-export const MOCK_BOARD_DATA: BoardResType['result'] = {
+export const MOCK_BOARD_DATA: BoardType = {
   _id: 'mock-board-id',
   title: 'Product Launch 2024',
   description: 'Plan and execute our Q1 product launch with cross-functional collaboration.',
-  type: BoardType.Public,
+  visibility: BoardVisibility.Public,
   cover_photo: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=1200',
   background_color: '',
   workspace_id: 'mock-workspace-id',
@@ -416,3 +416,66 @@ export const MOCK_BOARD_DATA: BoardResType['result'] = {
 }
 
 export const BOARD_DEFAULT_COVER_PHOTO = 'https://35z23d3vth.ufs.sh/f/S5pa1AZTQ5KAylNqZWL7cSDweR1k8p4jOfn7W6IsK5rUNGuZ'
+
+export const INSPIRATIONAL_QUOTES = [
+  {
+    quote: 'The only way to do great work is to love what you do.',
+    author: 'Steve Jobs'
+  },
+  {
+    quote: 'Success is not final, failure is not fatal: it is the courage to continue that counts.',
+    author: 'Winston Churchill'
+  },
+  {
+    quote: "Believe you can and you're halfway there.",
+    author: 'Theodore Roosevelt'
+  },
+  {
+    quote: 'The future belongs to those who believe in the beauty of their dreams.',
+    author: 'Eleanor Roosevelt'
+  },
+  {
+    quote: 'It does not matter how slowly you go as long as you do not stop.',
+    author: 'Confucius'
+  },
+  {
+    quote: "Everything you've ever wanted is on the other side of fear.",
+    author: 'George Addair'
+  },
+  {
+    quote: 'Success is not how high you have climbed, but how you make a positive difference to the world.',
+    author: 'Roy T. Bennett'
+  },
+  {
+    quote: "Don't watch the clock; do what it does. Keep going.",
+    author: 'Sam Levenson'
+  },
+  {
+    quote: 'The only impossible journey is the one you never begin.',
+    author: 'Tony Robbins'
+  },
+  {
+    quote: "Your limitation—it's only your imagination.",
+    author: 'Unknown'
+  },
+  {
+    quote: 'Great things never come from comfort zones.',
+    author: 'Unknown'
+  },
+  {
+    quote: 'Dream it. Wish it. Do it.',
+    author: 'Unknown'
+  },
+  {
+    quote: "Success doesn't just find you. You have to go out and get it.",
+    author: 'Unknown'
+  },
+  {
+    quote: "The harder you work for something, the greater you'll feel when you achieve it.",
+    author: 'Unknown'
+  },
+  {
+    quote: 'Dream bigger. Do bigger.',
+    author: 'Unknown'
+  }
+]

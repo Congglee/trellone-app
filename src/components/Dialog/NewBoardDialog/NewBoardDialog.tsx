@@ -21,7 +21,7 @@ import { useNavigate } from 'react-router-dom'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import TextFieldInput from '~/components/Form/TextFieldInput'
 import { BOARD_DEFAULT_COVER_PHOTO } from '~/constants/mock-data'
-import { BoardType } from '~/constants/type'
+import { BoardVisibility } from '~/constants/type'
 import { useQueryConfig } from '~/hooks/use-query-config'
 import { useAppSelector } from '~/lib/redux/hooks'
 import { useAddBoardMutation } from '~/queries/boards'
@@ -48,7 +48,7 @@ export default function NewBoardDialog({ open, onNewBoardClose, defaultWorkspace
     defaultValues: {
       title: '',
       description: '',
-      type: BoardType.Public,
+      visibility: BoardVisibility.Public,
       workspace_id: defaultWorkspaceId || ''
     }
   })
@@ -83,7 +83,7 @@ export default function NewBoardDialog({ open, onNewBoardClose, defaultWorkspace
       reset({
         title: '',
         description: '',
-        type: BoardType.Public,
+        visibility: BoardVisibility.Public,
         workspace_id: defaultWorkspaceId || ''
       })
     }
@@ -150,29 +150,29 @@ export default function NewBoardDialog({ open, onNewBoardClose, defaultWorkspace
 
           <Box sx={{ marginTop: '1em' }}>
             <FormControl fullWidth>
-              <FormLabel id='board-type-radio-buttons-group' sx={{ fontSize: '0.875rem' }}>
-                Board Type
+              <FormLabel id='board-visibility-radio-buttons-group' sx={{ fontSize: '0.875rem' }}>
+                Board Visibility
               </FormLabel>
               <Controller
-                name='type'
+                name='visibility'
                 control={control}
                 render={({ field }) => (
                   <RadioGroup
                     {...field}
                     row
-                    aria-labelledby='board-type-radio-buttons-group'
+                    aria-labelledby='board-visibility-radio-buttons-group'
                     onChange={(_, value) => field.onChange(value)}
                     value={field.value}
                   >
                     <FormControlLabel
-                      value={BoardType.Public}
+                      value={BoardVisibility.Public}
                       control={<Radio size='small' />}
                       label='Public'
                       labelPlacement='start'
                       sx={{ ml: 0 }}
                     />
                     <FormControlLabel
-                      value={BoardType.Private}
+                      value={BoardVisibility.Private}
                       control={<Radio size='small' />}
                       label='Private'
                       labelPlacement='start'

@@ -1,4 +1,3 @@
-import ArchiveIcon from '@mui/icons-material/Archive'
 import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
@@ -6,6 +5,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import LockIcon from '@mui/icons-material/Lock'
 import LogoutIcon from '@mui/icons-material/Logout'
+import PublicIcon from '@mui/icons-material/Public'
 import SettingsIcon from '@mui/icons-material/Settings'
 import { useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
@@ -28,15 +28,15 @@ import DrawerHeader from '~/components/DrawerHeader'
 import { BoardRole } from '~/constants/type'
 import { useCategorizeWorkspaces } from '~/hooks/use-categorize-workspaces'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
+import ArchivedCards from '~/pages/Boards/BoardDetails/components/BoardDrawer/ArchivedCards'
 import BoardInfomation from '~/pages/Boards/BoardDetails/components/BoardDrawer/BoardInfomation'
 import ChangeBoardBackground from '~/pages/Boards/BoardDetails/components/BoardDrawer/ChangeBoardBackground'
 import CloseBoard from '~/pages/Boards/BoardDetails/components/BoardDrawer/CloseBoard'
 import DeleteBoard from '~/pages/Boards/BoardDetails/components/BoardDrawer/DeleteBoard'
-import { useLeaveBoardMutation, useUpdateBoardMutation } from '~/queries/boards'
+import { useLeaveBoardMutation, useReopenBoardMutation } from '~/queries/boards'
 import { useGetWorkspacesQuery } from '~/queries/workspaces'
 import { BoardMemberType } from '~/schemas/board.schema'
 import { clearActiveBoard, updateActiveBoard } from '~/store/slices/board.slice'
-import PublicIcon from '@mui/icons-material/Public'
 
 interface BoardDrawerProps {
   open: boolean
@@ -78,7 +78,7 @@ export default function BoardDrawer({
   const { socket } = useAppSelector((state) => state.app)
 
   const [leaveBoardMutation] = useLeaveBoardMutation()
-  const [updateBoardMutation] = useUpdateBoardMutation()
+  const [reopenBoardMutation] = useReopenBoardMutation()
 
   const { data: workspacesData } = useGetWorkspacesQuery({ page: 1, limit: 100 }, { skip: !open })
 
@@ -157,17 +157,9 @@ export default function BoardDrawer({
   }
 
   const reopenBoard = (newWorkspaceId?: string) => {
-    const body: { _destroy: boolean; workspace_id?: string } = { _destroy: false }
+    const payload = newWorkspaceId ? { workspace_id: newWorkspaceId } : undefined
 
-    // If newWorkspaceId is provided (for boards with deleted workspace), update workspace_id
-    if (newWorkspaceId !== undefined) {
-      body.workspace_id = newWorkspaceId
-    }
-
-    updateBoardMutation({
-      id: boardId,
-      body
-    }).then((res) => {
+    reopenBoardMutation({ id: boardId, body: payload }).then((res) => {
       if (!res.error) {
         const newActiveBoard = { ...activeBoard! }
         newActiveBoard._destroy = false
@@ -252,8 +244,8 @@ export default function BoardDrawer({
 
         <ListItem disablePadding>
           <ListItemButton>
-            <ListItemIcon>{activeBoard?.type === 'Public' ? <PublicIcon /> : <LockIcon />}</ListItemIcon>
-            <ListItemText secondary={`Visibility: ${activeBoard?.type}`} />
+            <ListItemIcon>{activeBoard?.visibility === 'Public' ? <PublicIcon /> : <LockIcon />}</ListItemIcon>
+            <ListItemText secondary={`Visibility: ${activeBoard?.visibility}`} />
           </ListItemButton>
         </ListItem>
 
@@ -270,14 +262,7 @@ export default function BoardDrawer({
 
         <ChangeBoardBackground canChangeBoardBackground={canChangeBoardBackground} />
 
-        <ListItem disablePadding>
-          <ListItemButton disabled>
-            <ListItemIcon>
-              <ArchiveIcon />
-            </ListItemIcon>
-            <ListItemText secondary='Archived items' />
-          </ListItemButton>
-        </ListItem>
+        <ArchivedCards />
 
         <Divider sx={{ my: 1 }} />
 

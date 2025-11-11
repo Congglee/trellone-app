@@ -12,7 +12,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import Button from '@mui/material/Button'
 import MuiLink from '@mui/material/Link'
 import path from '~/constants/path'
-import { useUpdateBoardMutation } from '~/queries/boards'
+import { useArchiveBoardMutation } from '~/queries/boards'
 import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import { updateActiveBoard } from '~/store/slices/board.slice'
 import { workspaceApi } from '~/queries/workspaces'
@@ -41,13 +41,10 @@ export default function CloseBoard() {
   const { activeBoard } = useAppSelector((state) => state.board)
   const { socket } = useAppSelector((state) => state.app)
 
-  const [updateBoardMutation] = useUpdateBoardMutation()
+  const [archiveBoardMutation] = useArchiveBoardMutation()
 
   const closeBoard = () => {
-    updateBoardMutation({
-      id: activeBoard?._id as string,
-      body: { _destroy: true }
-    }).then((res) => {
+    archiveBoardMutation(activeBoard?._id as string).then((res) => {
       if (!res.error) {
         const newActiveBoard = { ...activeBoard! }
         newActiveBoard._destroy = true

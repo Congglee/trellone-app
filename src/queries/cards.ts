@@ -51,6 +51,30 @@ export const cardApi = createApi({
       }
     }),
 
+    archiveCard: build.mutation<CardResType, { card_id: string }>({
+      query: ({ card_id }) => ({ url: `${CARD_API_URL}/${card_id}/archive`, method: 'PATCH' }),
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          await queryFulfilled
+        } catch (error) {
+          toast.error('There was an error archiving the card')
+          console.error(error)
+        }
+      }
+    }),
+
+    reopenCard: build.mutation<CardResType, { card_id: string }>({
+      query: ({ card_id }) => ({ url: `${CARD_API_URL}/${card_id}/reopen`, method: 'PATCH' }),
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          await queryFulfilled
+        } catch (error) {
+          toast.error('There was an error reopening the card')
+          console.error(error)
+        }
+      }
+    }),
+
     addCardComment: build.mutation<CardResType, { card_id: string; body: AddCardCommentBodyType }>({
       query: ({ card_id, body }) => ({ url: `${CARD_API_URL}/${card_id}/comments`, method: 'POST', data: body })
     }),
@@ -155,6 +179,8 @@ export const cardApi = createApi({
 export const {
   useAddCardMutation,
   useUpdateCardMutation,
+  useArchiveCardMutation,
+  useReopenCardMutation,
   useAddCardCommentMutation,
   useUpdateCardCommentMutation,
   useRemoveCardCommentMutation,

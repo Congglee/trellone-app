@@ -12,11 +12,11 @@ import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useAppSelector } from '~/lib/redux/hooks'
 import { useRemoveWorkspaceMemberFromBoardMutation } from '~/queries/workspaces'
-import { BoardResType } from '~/schemas/board.schema'
+import type { BoardType } from '~/schemas/board.schema'
 
 interface ViewMemberBoardsProps {
   totalMemberBoardCounts: number
-  memberBoards: BoardResType['result'][]
+  memberBoards: BoardType[]
   showRemoveButton: boolean
   workspaceId: string
   userId: string

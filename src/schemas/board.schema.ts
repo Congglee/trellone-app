@@ -1,5 +1,5 @@
 import z from 'zod'
-import { BoardRoleValues, BoardType, BoardTypeValues, WorkspaceRoleValues } from '~/constants/type'
+import { BoardRoleValues, BoardVisibility, BoardVisibilityValues, WorkspaceRoleValues } from '~/constants/type'
 import { ColumnSchema } from '~/schemas/column.schema'
 import { UserSchema } from '~/schemas/user.schema'
 
@@ -20,7 +20,7 @@ export const BoardSchema = z.object({
   _id: z.string(),
   title: z.string(),
   description: z.string().optional(),
-  type: z.enum(BoardTypeValues),
+  visibility: z.enum(BoardVisibilityValues),
   cover_photo: z.string().optional(),
   background_color: z.string().optional(),
   workspace_id: z.string().nullable(),
@@ -52,6 +52,8 @@ export const BoardSchema = z.object({
   created_at: z.date(),
   updated_at: z.date()
 })
+
+export type BoardType = z.TypeOf<typeof BoardSchema>
 
 export const BoardRes = z.object({
   result: BoardSchema,
@@ -86,7 +88,9 @@ export const CreateBoardBody = z.object({
       message: 'Description must be at most 256 characters long'
     })
     .optional(),
-  type: z.enum(BoardTypeValues, { message: 'Type must be either public or private' }).default(BoardType.Public),
+  visibility: z
+    .enum(BoardVisibilityValues, { message: 'Visibility must be either Public or Private' })
+    .default(BoardVisibility.Public),
   workspace_id: z.string().min(1, { message: 'Please select a workspace' })
 })
 
@@ -103,18 +107,23 @@ export const UpdateBoardBody = z.object({
     .min(1, { message: 'Description must be at least 1 characters long' })
     .max(256, { message: 'Description must be at most 256 characters long' })
     .optional(),
-  type: z
-    .enum(BoardTypeValues, { message: 'Type must be either public or private' })
-    .default(BoardType.Public)
+  visibility: z
+    .enum(BoardVisibilityValues, { message: 'Visibility must be either Public or Private' })
+    .default(BoardVisibility.Public)
     .optional(),
   column_order_ids: z.array(z.string()).optional(),
   cover_photo: z.string().url().optional(),
   background_color: z.string().optional(),
-  workspace_id: z.string().optional(),
-  _destroy: z.boolean().optional()
+  workspace_id: z.string().optional()
 })
 
 export type UpdateBoardBodyType = z.TypeOf<typeof UpdateBoardBody>
+
+export const ReopenBoardBody = z.object({
+  workspace_id: z.string().optional()
+})
+
+export type ReopenBoardBodyType = z.TypeOf<typeof ReopenBoardBody>
 
 export const DeleteBoardRes = z.object({
   message: z.string()

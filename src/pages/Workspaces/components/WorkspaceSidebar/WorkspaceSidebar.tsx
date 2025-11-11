@@ -22,7 +22,7 @@ import path from '~/constants/path'
 import { useInfiniteScroll } from '~/hooks/use-infinite-scroll'
 import { useGetJoinedWorkspaceBoardsQuery } from '~/queries/boards'
 import { useGetWorkspaceQuery } from '~/queries/workspaces'
-import { BoardResType } from '~/schemas/board.schema'
+import type { BoardType } from '~/schemas/board.schema'
 
 interface WorkspaceSidebarProps {
   workspaceId?: string
@@ -77,7 +77,7 @@ export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps)
     { skip: !currentWorkspaceId }
   )
 
-  const [allJoinedBoards, setAllJoinedBoards] = useState<BoardResType['result'][]>([])
+  const [allJoinedBoards, setAllJoinedBoards] = useState<BoardType[]>([])
 
   useEffect(() => {
     if (joinedWorkspaceBoardsData) {

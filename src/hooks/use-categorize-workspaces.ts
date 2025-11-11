@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useAppSelector } from '~/lib/redux/hooks'
-import { WorkspaceResType } from '~/schemas/workspace.schema'
+import { WorkspaceType } from '~/schemas/workspace.schema'
 
 /**
  * Custom hook for categorizing workspaces based on user membership
@@ -13,7 +13,7 @@ import { WorkspaceResType } from '~/schemas/workspace.schema'
  * const { memberWorkspaces, guestWorkspaces } = useCategorizeWorkspaces(workspaces)
  * ```
  */
-export const useCategorizeWorkspaces = (workspaces: WorkspaceResType['result'][]) => {
+export const useCategorizeWorkspaces = (workspaces: WorkspaceType[]) => {
   const { profile } = useAppSelector((state) => state.auth)
 
   const categorizedWorkspaces = useMemo(() => {
@@ -21,8 +21,8 @@ export const useCategorizeWorkspaces = (workspaces: WorkspaceResType['result'][]
       return { memberWorkspaces: [], guestWorkspaces: [] }
     }
 
-    const memberWorkspaces: WorkspaceResType['result'][] = []
-    const guestWorkspaces: WorkspaceResType['result'][] = []
+    const memberWorkspaces: WorkspaceType[] = []
+    const guestWorkspaces: WorkspaceType[] = []
 
     workspaces.forEach((workspace) => {
       // Filter out closed boards (_destroy === true) for each workspace

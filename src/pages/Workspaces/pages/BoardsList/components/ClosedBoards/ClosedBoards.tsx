@@ -26,14 +26,14 @@ import {
   useDeleteBoardMutation,
   useLazyGetBoardsQuery,
   useLeaveBoardMutation,
-  useUpdateBoardMutation
+  useReopenBoardMutation
 } from '~/queries/boards'
 import { workspaceApi } from '~/queries/workspaces'
-import { BoardResType } from '~/schemas/board.schema'
-import { WorkspaceResType } from '~/schemas/workspace.schema'
+import type { BoardType } from '~/schemas/board.schema'
+import { WorkspaceType } from '~/schemas/workspace.schema'
 
 interface ClosedBoardsProps {
-  workspaces: WorkspaceResType['result'][]
+  workspaces: WorkspaceType[]
 }
 
 export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
@@ -46,11 +46,11 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
 
   const [triggerGetBoards, { data: boardsData, isFetching }] = useLazyGetBoardsQuery()
 
-  const [updateBoardMutation] = useUpdateBoardMutation()
+  const [reopenBoardMutation] = useReopenBoardMutation()
   const [leaveBoardMutation] = useLeaveBoardMutation()
   const [deleteBoardMutation] = useDeleteBoardMutation()
 
-  const [allClosedBoards, setAllClosedBoards] = useState<BoardResType['result'][]>([])
+  const [allClosedBoards, setAllClosedBoards] = useState<BoardType[]>([])
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string>('')
   const [hasAdminClosedBoards, setHasAdminClosedBoards] = useState(false)
 
@@ -150,17 +150,9 @@ export default function ClosedBoards({ workspaces }: ClosedBoardsProps) {
   }
 
   const onReopenBoard = (boardId: string, workspaceId: string, newWorkspaceId?: string) => {
-    const body: { _destroy: boolean; workspace_id?: string } = { _destroy: false }
+    const payload = newWorkspaceId ? { workspace_id: newWorkspaceId } : undefined
 
-    // If newWorkspaceId is provided (for boards with deleted workspace), update workspace_id
-    if (newWorkspaceId !== undefined) {
-      body.workspace_id = newWorkspaceId
-    }
-
-    updateBoardMutation({
-      id: boardId,
-      body
-    }).then((res) => {
+    reopenBoardMutation({ id: boardId, body: payload }).then((res) => {
       if (!res.error) {
         if (boards.length === 1) {
           handleClosedBoardsClose()

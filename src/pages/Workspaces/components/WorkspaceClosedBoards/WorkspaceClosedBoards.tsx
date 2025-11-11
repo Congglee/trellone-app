@@ -23,10 +23,10 @@ import {
   useDeleteBoardMutation,
   useLazyGetBoardsQuery,
   useLeaveBoardMutation,
-  useUpdateBoardMutation
+  useReopenBoardMutation
 } from '~/queries/boards'
 import { workspaceApi } from '~/queries/workspaces'
-import { BoardResType } from '~/schemas/board.schema'
+import type { BoardType } from '~/schemas/board.schema'
 
 interface WorkspaceClosedBoardsProps {
   workspaceId: string
@@ -42,11 +42,11 @@ export default function WorkspaceClosedBoards({ workspaceId }: WorkspaceClosedBo
 
   const [triggerGetBoards, { data: boardsData, isFetching }] = useLazyGetBoardsQuery()
 
-  const [updateBoardMutation] = useUpdateBoardMutation()
+  const [reopenBoardMutation] = useReopenBoardMutation()
   const [leaveBoardMutation] = useLeaveBoardMutation()
   const [deleteBoardMutation] = useDeleteBoardMutation()
 
-  const [allClosedBoards, setAllClosedBoards] = useState<BoardResType['result'][]>([])
+  const [allClosedBoards, setAllClosedBoards] = useState<BoardType[]>([])
 
   const dispatch = useAppDispatch()
 
@@ -109,10 +109,7 @@ export default function WorkspaceClosedBoards({ workspaceId }: WorkspaceClosedBo
   }
 
   const onReopenBoard = (boardId: string) => {
-    updateBoardMutation({
-      id: boardId,
-      body: { _destroy: false }
-    }).then((res) => {
+    reopenBoardMutation({ id: boardId }).then((res) => {
       if (!res.error) {
         if (boards.length === 1) {
           handleClosedBoardsClose()

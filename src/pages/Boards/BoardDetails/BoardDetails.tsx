@@ -23,7 +23,7 @@ import WorkspaceDrawer from '~/pages/Boards/BoardDetails/components/WorkspaceDra
 import { boardApi, useUpdateBoardMutation } from '~/queries/boards'
 import { useMoveCardToDifferentColumnMutation } from '~/queries/cards'
 import { useUpdateColumnMutation } from '~/queries/columns'
-import { BoardResType } from '~/schemas/board.schema'
+import type { BoardType } from '~/schemas/board.schema'
 import { CardType } from '~/schemas/card.schema'
 import { ColumnType } from '~/schemas/column.schema'
 import { UserType } from '~/schemas/user.schema'
@@ -133,7 +133,7 @@ export default function BoardDetails() {
       onConnect()
     }
 
-    const onUpdateBoard = (board: BoardResType['result']) => {
+    const onUpdateBoard = (board: BoardType) => {
       dispatch(updateActiveBoard(board))
     }
 
@@ -325,7 +325,7 @@ export default function BoardDetails() {
     return <BoardErrorView />
   }
 
-  const getBoardBackgroundImage = (board: BoardResType['result']) => {
+  const getBoardBackgroundImage = (board: BoardType) => {
     if (board.cover_photo && board.cover_photo.trim() !== '') {
       return `url(${board.cover_photo})`
     }
@@ -337,7 +337,7 @@ export default function BoardDetails() {
     return 'none'
   }
 
-  const getBoardBgcolor = (board: BoardResType['result'], isDarkMode: boolean) => {
+  const getBoardBgcolor = (board: BoardType, isDarkMode: boolean) => {
     if (!board.cover_photo && board.background_color && !board.background_color.startsWith('linear-gradient')) {
       return board.background_color
     }

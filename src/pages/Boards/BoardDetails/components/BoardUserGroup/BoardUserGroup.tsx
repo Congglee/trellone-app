@@ -1,12 +1,12 @@
 import Avatar from '@mui/material/Avatar'
 import Tooltip from '@mui/material/Tooltip'
-import { BoardResType } from '~/schemas/board.schema'
+import type { BoardType } from '~/schemas/board.schema'
 import { useState } from 'react'
 import Box from '@mui/material/Box'
 import Popover from '@mui/material/Popover'
 
 interface BoardUserGroupProps {
-  boardUsers: BoardResType['result']['members']
+  boardUsers: BoardType['members']
   limit?: number
 }
 
