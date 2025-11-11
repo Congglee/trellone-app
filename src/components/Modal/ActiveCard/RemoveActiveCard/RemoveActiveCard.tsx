@@ -59,6 +59,8 @@ export default function RemoveActiveCard({ cardId, columnId }: RemoveActiveCardP
         dispatch(updateActiveBoard(newActiveBoard))
         dispatch(clearAndHideActiveCardModal())
 
+        handleRemoveActiveCardPopoverClose()
+
         socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
       }
     })

@@ -36,7 +36,7 @@ export default function PhotoSearch({
   onSearchQueryChange,
   searchPhotos
 }: PhotoSearchProps) {
-  const debounceSearchPhotos = useDebounce(onSearchQueryChange, 1500)
+  const debounceSearchPhotos = useDebounce(onSearchQueryChange, 1000)
 
   return (
     <Box

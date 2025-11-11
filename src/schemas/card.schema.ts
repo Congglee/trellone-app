@@ -91,8 +91,7 @@ export const UpdateCardBody = z.object({
   due_date: z.date().nullable().optional(),
   is_completed: z.boolean().nullable().optional(),
   description: z.string().optional(),
-  cover_photo: z.string().url().optional(),
-  _destroy: z.boolean().optional()
+  cover_photo: z.string().url().optional()
 })
 
 export type UpdateCardBodyType = z.TypeOf<typeof UpdateCardBody>
