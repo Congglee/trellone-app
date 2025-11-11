@@ -38,7 +38,7 @@ export default function WorkspaceBoards() {
 
   const debouncedUpdateSearch = useDebounce((value: string) => {
     setDebouncedSearchText(value)
-  }, 300)
+  }, 500)
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = event.target.value

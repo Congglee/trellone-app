@@ -16,6 +16,7 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useRef } from 'react'
+import { format } from 'date-fns'
 import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
 import AttachmentPopover from '~/components/Modal/ActiveCard/AttachmentPopover'
 import CardActivitySection from '~/components/Modal/ActiveCard/CardActivitySection'
@@ -207,6 +208,27 @@ export default function ActiveCard({ canEditCard }: ActiveCardProps) {
               onClick={handleActiveCardModalClose}
             />
           </Box>
+
+          {activeCard?._destroy && (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 1,
+                backgroundColor: (theme) => (theme.palette.mode === 'dark' ? '#3f3f46' : '#44546f'),
+                color: '#ffffff',
+                padding: '12px 16px',
+                mb: 3,
+                mx: -2.5
+              }}
+            >
+              <ArchiveOutlinedIcon fontSize='medium' />
+              <Typography variant='body2' component='span' sx={{ fontSize: '1rem' }}>
+                This card was archived on {format(new Date(activeCard.updated_at), "MMM dd, yyyy 'at' h:mm a")}
+              </Typography>
+            </Box>
+          )}
 
           {activeCard?.cover_photo && (
             <Box sx={{ mb: 4, position: 'relative' }}>
