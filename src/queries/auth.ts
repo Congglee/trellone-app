@@ -86,8 +86,8 @@ export const authApi = createApi({
       }
     }),
 
-    resendVerifyEmail: build.mutation<VerifyEmailResType, void>({
-      query: () => ({ url: `${AUTH_API_URL}/resend-verify-email`, method: 'POST' }),
+    resendVerifyEmail: build.mutation<VerifyEmailResType, { email: string }>({
+      query: (body) => ({ url: `${AUTH_API_URL}/resend-verify-email`, method: 'POST', data: body }),
       async onQueryStarted(_args, { queryFulfilled }) {
         try {
           const { data } = await queryFulfilled

@@ -2,7 +2,14 @@ import { createApi } from '@reduxjs/toolkit/query/react'
 import { toast } from 'react-toastify'
 import axiosBaseQuery from '~/lib/redux/helpers'
 import { authApi } from '~/queries/auth'
-import { ChangePasswordBodyType, ChangePasswordResType, UpdateMeBodyType, UserResType } from '~/schemas/user.schema'
+import {
+  ChangePasswordBodyType,
+  ChangePasswordResType,
+  EnablePasswordLoginBodyType,
+  EnablePasswordLoginResType,
+  UpdateMeBodyType,
+  UserResType
+} from '~/schemas/user.schema'
 import { setProfile } from '~/store/slices/auth.slice'
 
 export const USERS_API_URL = '/users' as const
@@ -49,11 +56,25 @@ export const userApi = createApi({
           console.error(error)
         }
       }
+    }),
+
+    enablePasswordLogin: build.mutation<EnablePasswordLoginResType, EnablePasswordLoginBodyType>({
+      query: (body) => ({ url: `${USERS_API_URL}/enable-password-login`, method: 'POST', data: body }),
+      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled
+          toast.success(data.message)
+
+          dispatch(authApi.endpoints.logout.initiate(undefined))
+        } catch (error: any) {
+          console.error(error)
+        }
+      }
     })
   })
 })
 
-export const { useGetMeQuery, useUpdateMeMutation, useChangePasswordMutation } = userApi
+export const { useGetMeQuery, useUpdateMeMutation, useChangePasswordMutation, useEnablePasswordLoginMutation } = userApi
 
 const userApiReducer = userApi.reducer
 

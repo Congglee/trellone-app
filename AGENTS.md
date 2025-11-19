@@ -49,8 +49,10 @@ npm run prettier:fix
 
 - Never commit `.env` files or API keys
 - Environment variables must use `VITE_` prefix for client-side access
-- JWT tokens stored in httpOnly cookies (handled by backend)
+- JWT tokens stored in httpOnly cookies (handled by backend) and localStorage (for client-side access)
+- Access tokens sent via Authorization header, refresh tokens via cookies
 - Never log sensitive data (passwords, tokens) to console
+- Token refresh handled automatically by HTTP interceptor when access token expires
 
 ## JIT Index - Directory Map
 

@@ -75,7 +75,7 @@ export default function AccountTab() {
   }, [profile, reset])
 
   const resendVerifyEmail = async () => {
-    await resendVerifyEmailMutation()
+    await resendVerifyEmailMutation({ email: profile?.email as string })
   }
 
   const handleChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {

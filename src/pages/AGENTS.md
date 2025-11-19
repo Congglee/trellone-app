@@ -97,6 +97,47 @@ useEffect(() => {
 }, [isError, error, setError])
 ```
 
+✅ **DO**: Handle OAuth callback flow
+```typescript
+// src/pages/Auth/OAuth/OAuth.tsx
+export default function OAuth() {
+  const { access_token, refresh_token, new_user, verify } = useQueryConfig<OAuthQueryParams>()
+  
+  useEffect(() => {
+    if (access_token && refresh_token) {
+      setAccessTokenToLS(access_token)
+      setRefreshTokenToLS(refresh_token)
+      // Fetch profile and update Redux state
+      dispatch(userApi.endpoints.getMe.initiate(undefined)).then((res) => {
+        if (!res.error) {
+          dispatch(setAuthenticated(true))
+          dispatch(setProfile(res.data?.result))
+          navigate(path.home)
+        }
+      })
+    }
+  }, [access_token, refresh_token])
+}
+```
+
+✅ **DO**: Use route protection components
+```typescript
+// Protected routes require authentication
+<Route element={<ProtectedRoute isAuthenticated={isAuthenticated} profile={profile} />}>
+  <Route path={path.home} element={<Home />} />
+</Route>
+
+// Rejected routes redirect if authenticated
+<Route element={<RejectedRoute isAuthenticated={isAuthenticated} profile={profile} />}>
+  <Route path={path.login} element={<Login />} />
+</Route>
+
+// Verified routes require email verification
+<Route element={<VerifiedRoute profile={profile} />}>
+  <Route path={path.boardDetails} element={<BoardDetails />} />
+</Route>
+```
+
 ### Board Pages
 
 ✅ **DO**: Use drag-and-drop with @dnd-kit
@@ -151,8 +192,10 @@ import SEO from '~/components/SEO'
 
 ## Touch Points / Key Files
 
-- **App Routing**: `src/App.tsx` - Main routing configuration
-- **Auth Pages**: `src/pages/Auth/` - Login, Register, OAuth, ForgotPassword, ResetPassword
+- **App Routing**: `src/App.tsx` - Main routing configuration with route protection
+- **Auth Pages**: `src/pages/Auth/` - Login, Register, OAuth, ForgotPassword, ResetPassword, AccountVerification
+- **Auth Layout**: `src/pages/Auth/layouts/AuthLayout/` - Shared layout for auth pages
+- **OAuth Handler**: `src/pages/Auth/OAuth/OAuth.tsx` - Google OAuth callback handler
 - **Board Pages**: `src/pages/Boards/BoardDetails/` - Main board view with drag-and-drop
 - **Workspace Pages**: `src/pages/Workspaces/` - Dashboard and board organization
 - **Settings**: `src/pages/Settings/` - User settings and account management

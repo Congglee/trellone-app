@@ -104,6 +104,47 @@ dispatch(
 )
 ```
 
+### Authentication Endpoints
+
+✅ **DO**: Handle authentication state updates in `onQueryStarted`
+```typescript
+login: build.mutation<AuthResType, LoginBodyType>({
+  query: (body) => ({ url: `${AUTH_API_URL}/login`, method: 'POST', data: body }),
+  async onQueryStarted(_args, { dispatch, queryFulfilled }) {
+    try {
+      await queryFulfilled
+      // Fetch user profile after successful login
+      dispatch(userApi.endpoints.getMe.initiate(undefined)).then((res) => {
+        if (!res.error) {
+          dispatch(setAuthenticated(true))
+          dispatch(setProfile(res.data?.result))
+        }
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+})
+```
+
+✅ **DO**: Reset API state on logout
+```typescript
+logout: build.mutation<LogoutResType, void>({
+  query: () => ({ url: `${AUTH_API_URL}/logout`, method: 'POST' }),
+  async onQueryStarted(_args, { dispatch, queryFulfilled }) {
+    try {
+      await queryFulfilled
+      dispatch(reset())
+      dispatch(disconnectSocket())
+      dispatch(authApi.util.resetApiState())
+      resetApiState(dispatch) // Reset related API slices
+    } catch (error) {
+      console.error(error)
+    }
+  }
+})
+```
+
 ### Error Handling
 
 ✅ **DO**: Handle errors consistently with try-catch
@@ -138,14 +179,41 @@ if (result) {
 ## Touch Points / Key Files
 
 - **Base Query**: `src/lib/redux/helpers.ts` - Custom `axiosBaseQuery()` implementation
-- **Auth API**: `src/queries/auth.ts` - Authentication endpoints
+- **Auth API**: `src/queries/auth.ts` - Authentication endpoints (login, register, logout, OAuth, password reset)
 - **Boards API**: `src/queries/boards.ts` - Board management endpoints
 - **Cards API**: `src/queries/cards.ts` - Card operations endpoints
 - **Columns API**: `src/queries/columns.ts` - Column management endpoints
 - **Workspaces API**: `src/queries/workspaces.ts` - Workspace management endpoints
-- **Users API**: `src/queries/users.ts` - User management endpoints
+- **Users API**: `src/queries/users.ts` - User management endpoints (includes `getMe` for profile)
 - **Medias API**: `src/queries/medias.ts` - File upload endpoints
 - **Invitations API**: `src/queries/invitations.ts` - Board invitation endpoints
+
+## Authentication Flow
+
+### Login Flow
+1. User submits login form → `useLoginMutation()` called
+2. RTK Query sends POST to `/auth/login`
+3. HTTP interceptor adds access token to Authorization header
+4. Backend validates credentials, sets httpOnly cookies
+5. Response contains tokens → stored in localStorage via HTTP interceptor
+6. `onQueryStarted` fetches user profile via `getMe`
+7. Redux state updated: `setAuthenticated(true)`, `setProfile(profile)`
+
+### Token Refresh Flow
+1. Access token expires → HTTP interceptor detects 401
+2. Interceptor checks for expired token error
+3. Calls `/auth/refresh-token` with refresh token from cookies
+4. Backend validates refresh token, issues new tokens
+5. New tokens stored in localStorage and cookies
+6. Original request retried with new access token
+
+### Logout Flow
+1. User clicks logout → `useLogoutMutation()` called
+2. POST to `/auth/logout` clears refresh token from database
+3. HTTP interceptor clears localStorage tokens
+4. `onQueryStarted` resets auth state, disconnects socket
+5. All API slices reset via `resetApiState()`
+6. User redirected to login page
 
 ## JIT Index Hints
 

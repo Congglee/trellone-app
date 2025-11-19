@@ -11,6 +11,7 @@ export interface AuthQueryParams {
   forgot_password_token?: string
   token?: string
   email?: string
+  password_reset_success?: string
 }
 
 export interface OAuthQueryParams {

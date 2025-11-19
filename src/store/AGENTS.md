@@ -122,6 +122,57 @@ dispatch(setSocket(socketInstance))
 dispatch(disconnectSocket())
 ```
 
+### Authentication State Management
+
+✅ **DO**: Manage authentication state in dedicated slice
+```typescript
+// src/store/slices/auth.slice.ts
+interface AuthSliceState {
+  isAuthenticated: boolean
+  profile: UserType | null
+}
+
+const initialState: AuthSliceState = {
+  profile: null,
+  isAuthenticated: false
+}
+
+export const authSlice = createSlice({
+  name: 'auth',
+  initialState,
+  reducers: {
+    setAuthenticated: (state, action) => {
+      state.isAuthenticated = action.payload
+    },
+    setProfile: (state, action) => {
+      state.profile = action.payload
+    },
+    reset: (state) => {
+      state.isAuthenticated = false
+      state.profile = null
+    }
+  }
+})
+```
+
+✅ **DO**: Update auth state after successful login
+```typescript
+// In queries/auth.ts onQueryStarted
+dispatch(userApi.endpoints.getMe.initiate(undefined)).then((res) => {
+  if (!res.error) {
+    dispatch(setAuthenticated(true))
+    dispatch(setProfile(res.data?.result))
+  }
+})
+```
+
+✅ **DO**: Reset auth state on logout
+```typescript
+// In queries/auth.ts logout onQueryStarted
+dispatch(reset())
+dispatch(disconnectSocket())
+```
+
 ### State Persistence
 
 ✅ **DO**: Only persist essential state (auth)

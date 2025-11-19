@@ -313,18 +313,6 @@ export default function BoardDetails() {
     })
   }
 
-  if (loading === 'pending') {
-    return <PageLoadingSpinner caption='Loading board...' />
-  }
-
-  if (error || !activeBoard) {
-    if (error?.includes('403')) {
-      return <BoardErrorView title='Access Denied' description='You do not have permission to access this board.' />
-    }
-
-    return <BoardErrorView />
-  }
-
   const getBoardBackgroundImage = (board: BoardType) => {
     if (board.cover_photo && board.cover_photo.trim() !== '') {
       return `url(${board.cover_photo})`
@@ -343,6 +331,18 @@ export default function BoardDetails() {
     }
 
     return isDarkMode ? 'grey.900' : 'primary.main'
+  }
+
+  if (loading === 'pending') {
+    return <PageLoadingSpinner caption='Loading board...' />
+  }
+
+  if (error || !activeBoard) {
+    if (error?.includes('403')) {
+      return <BoardErrorView title='Access Denied' description='You do not have permission to access this board.' />
+    }
+
+    return <BoardErrorView />
   }
 
   return (
