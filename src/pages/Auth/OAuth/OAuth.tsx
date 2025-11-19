@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import path from '~/constants/path'
+import { UserVerifyStatus } from '~/constants/type'
 import { useQueryConfig } from '~/hooks/use-query-config'
 import { useAppDispatch } from '~/lib/redux/hooks'
 import { userApi } from '~/queries/users'
@@ -10,12 +12,16 @@ import { OAuthQueryParams } from '~/types/query-params.type'
 import { getAccessTokenFromLS, setAccessTokenToLS, setRefreshTokenToLS } from '~/utils/storage'
 
 export default function OAuth() {
-  const { access_token, refresh_token } = useQueryConfig<OAuthQueryParams>()
+  const { access_token, refresh_token, new_user, verify } = useQueryConfig<OAuthQueryParams>()
 
   const [accessTokenFromLS, setAccessTokenFromLS] = useState('')
 
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+
+  // Parse query params (they come as strings from URL)
+  const newUserValue = new_user !== undefined ? Number(new_user) : undefined
+  const verifyValue = verify !== undefined ? Number(verify) : undefined
 
   useEffect(() => {
     // Once there is a token and refresh token on the URL
@@ -40,11 +46,25 @@ export default function OAuth() {
           dispatch(setAuthenticated(true))
           dispatch(setProfile(profile))
 
+          // Handle new user vs existing user flow
+          if (newUserValue === 1) {
+            toast.success(
+              '🎉 Welcome to Trellone! Your account has been successfully created with Google and a new workspace is ready for you.'
+            )
+            toast.success("Let's start organizing your projects!")
+          }
+
+          // Ensure user is verified (OAuth always sets verify to Verified)
+          if (verifyValue !== undefined && verifyValue !== UserVerifyStatus.Verified) {
+            // Future: handle non-verified OAuth users if needed
+            console.warn('OAuth user verify status is not Verified:', verifyValue)
+          }
+
           navigate(path.home)
         }
       })
     }
-  }, [accessTokenFromLS, dispatch, navigate])
+  }, [accessTokenFromLS, dispatch, navigate, newUserValue, verifyValue])
 
   return <PageLoadingSpinner caption='Redirecting...' />
 }

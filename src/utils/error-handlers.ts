@@ -1,5 +1,6 @@
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query'
 import axios, { AxiosError } from 'axios'
+import { AUTH_ERROR_CODES } from '~/constants/error-codes'
 import HttpStatusCode from '~/constants/http-status-code'
 import { EntityError } from '~/types/utils.type'
 
@@ -16,13 +17,16 @@ export function isAxiosForbiddenError<ForbiddenError>(error: unknown): error is 
 }
 
 export function isAxiosExpiredTokenError<UnauthorizedError>(error: unknown): error is AxiosError<UnauthorizedError> {
-  return isAxiosUnauthorizedError<{ message: string }>(error) && error.response?.data?.message === 'Jwt expired'
+  return (
+    isAxiosUnauthorizedError<{ error_code: string }>(error) &&
+    error.response?.data?.error_code === AUTH_ERROR_CODES.TOKEN_EXPIRED
+  )
 }
 
 export function isAxiosUnverifiedError<UnauthorizedError>(error: unknown): error is AxiosError<UnauthorizedError> {
   return (
-    isAxiosForbiddenError<{ message: string }>(error) &&
-    error.response?.data?.message === 'User not verified, please verify your account'
+    isAxiosForbiddenError<{ error_code: string }>(error) &&
+    error.response?.data?.error_code === AUTH_ERROR_CODES.USER_NOT_VERIFIED
   )
 }
 
@@ -37,5 +41,16 @@ export function isUnprocessableEntityError<FormError>(error: unknown): error is 
     typeof error.data === 'object' &&
     error.data !== null &&
     !(error.data instanceof Array)
+  )
+}
+
+export function isPasswordLoginNotEnabledError(error: unknown): error is FetchBaseQueryError {
+  return (
+    isFetchBaseQueryError(error) &&
+    error.status === HttpStatusCode.BadRequest &&
+    typeof error.data === 'object' &&
+    error.data !== null &&
+    'error_code' in error.data &&
+    (error.data as { error_code: string }).error_code === AUTH_ERROR_CODES.PASSWORD_LOGIN_DISABLED
   )
 }

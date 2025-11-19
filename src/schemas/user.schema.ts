@@ -9,6 +9,9 @@ export const UserSchema = z.object({
   avatar: z.string().optional(),
   is_active: z.boolean(),
   verify: z.nativeEnum(UserVerifyStatus),
+  auth_providers: z.array(z.string()),
+  is_password_login_enabled: z.boolean(),
+  google_id: z.string().optional(),
   _destroy: z.boolean(),
   created_at: z.date(),
   updated_at: z.date()
@@ -75,3 +78,37 @@ export const ChangePasswordRes = z.object({
 })
 
 export type ChangePasswordResType = z.TypeOf<typeof ChangePasswordRes>
+
+export const EnablePasswordLoginBody = z
+  .object({
+    password: z
+      .string()
+      .min(6, 'Password must be at least 6 characters')
+      .max(50, 'Password must be at most 50 characters')
+      .regex(/[a-z]/, { message: 'Password must contain at least 1 lowercase letter' })
+      .regex(/[A-Z]/, { message: 'Password must contain at least 1 uppercase letter' })
+      .regex(/[0-9]/, { message: 'Password must contain at least 1 number' })
+      .regex(/[^a-zA-Z0-9]/, { message: 'Password must contain at least 1 symbol' }),
+    confirm_password: z
+      .string()
+      .min(6, 'Confirm password must be at least 6 characters')
+      .max(50, 'Confirm password must be at most 50 characters')
+  })
+  .strict()
+  .superRefine(({ confirm_password, password }, ctx) => {
+    if (confirm_password !== password) {
+      ctx.addIssue({
+        code: 'custom',
+        message: "Passwords don't match",
+        path: ['confirm_password']
+      })
+    }
+  })
+
+export type EnablePasswordLoginBodyType = z.TypeOf<typeof EnablePasswordLoginBody>
+
+export const EnablePasswordLoginRes = z.object({
+  message: z.string()
+})
+
+export type EnablePasswordLoginResType = z.TypeOf<typeof EnablePasswordLoginRes>
