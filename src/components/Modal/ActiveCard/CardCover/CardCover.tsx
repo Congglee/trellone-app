@@ -28,18 +28,12 @@ export default function CardCover({ onUpdateCardCoverPhoto }: CardCoverProps) {
   const [showCoverPhoto, setShowCoverPhoto] = useState(false)
   const [showUnsplashPhotoSearch, setShowUnsplashPhotoSearch] = useState(false)
 
-  const [searchQuery, setSearchQuery] = useState('Wallpapers')
-
-  const { data: searchPhotosData } = useGetUnsplashSearchPhotosQuery(searchQuery || 'Wallpapers', {
+  const { data: searchPhotosData } = useGetUnsplashSearchPhotosQuery('Wallpapers', {
     skip: !showCoverPhoto
   })
   const searchPhotos = searchPhotosData?.result || []
 
   const [uploadImageMutation] = useUploadImageMutation()
-
-  const onSearchQueryChange = (query: string) => {
-    setSearchQuery(query)
-  }
 
   const toggleCoverPopover = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (!anchorCoverPopoverElement) {
@@ -296,9 +290,7 @@ export default function CardCover({ onUpdateCardCoverPhoto }: CardCoverProps) {
           <PhotoSearch
             onClose={handleCoverPopoverClose}
             onBackToCoverPhoto={onBackToCoverPhoto}
-            searchPhotos={searchPhotos}
             onUpdateCardCoverPhoto={onUpdateCardCoverPhoto}
-            onSearchQueryChange={onSearchQueryChange}
           />
         )}
       </Popover>
