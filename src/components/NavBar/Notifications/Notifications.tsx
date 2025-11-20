@@ -22,7 +22,8 @@ import { useAppDispatch, useAppSelector } from '~/lib/redux/hooks'
 import {
   useGetInvitationsQuery,
   useUpdateBoardInvitationMutation,
-  useUpdateWorkspaceInvitationMutation
+  useUpdateWorkspaceInvitationMutation,
+  invitationApi
 } from '~/queries/invitations'
 import { BoardInvitationType, InvitationType, UpdateWorkspaceInvitationBodyType } from '~/schemas/invitation.schema'
 import { addNotification, appendNotifications, setNotifications } from '~/store/slices/notification.slice'
@@ -132,6 +133,11 @@ export default function Notifications() {
     const onReceiveNewInvitation = (invitation: InvitationType) => {
       // If the invitation is for the current user, add it to the notifications and set the hasNewNotification state to true
       if (invitation.invitee_id === profile?._id) {
+        // Invalidate RTK Query cache to force refetch next time menu opens
+        dispatch(invitationApi.util.invalidateTags([{ type: 'Invitation', id: 'LIST' }]))
+
+        // Keep optimistic update for immediate UI feedback if needed,
+        // but invalidating ensures consistency when menu opens
         dispatch(addNotification(invitation))
         setHasNewNotification(true)
       }

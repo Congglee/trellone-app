@@ -116,6 +116,46 @@ export const useQueryConfig = <T = CommonQueryParams>(): T => {
 }
 ```
 
+### Socket Hooks
+
+✅ **DO**: Use `useSocketAutoRejoin` for automatic room rejoin on socket reconnect
+
+```typescript
+import { useSocketAutoRejoin } from '~/hooks/use-sockets'
+
+// Automatically rejoin board room when socket reconnects
+useSocketAutoRejoin(
+  socket,
+  (socketInstance) => {
+    if (boardId) {
+      socketInstance.emit('CLIENT_JOIN_BOARD', boardId)
+    }
+  },
+  [boardId] // Dependencies that trigger re-join if changed
+)
+```
+
+✅ **DO**: Include all dependencies that affect room membership in the dependencies array
+
+```typescript
+useSocketAutoRejoin(
+  socket,
+  (socketInstance) => {
+    if (boardId) {
+      socketInstance.emit('CLIENT_JOIN_BOARD', boardId)
+      if (workspaceId) {
+        socketInstance.emit('CLIENT_JOIN_WORKSPACE', workspaceId)
+      }
+    }
+  },
+  [boardId, workspaceId] // Both IDs trigger re-join if changed
+)
+```
+
+✅ **DO**: Handle initial connection state - hook checks `socket.connected` and joins immediately if already connected
+
+❌ **DON'T**: Manually handle reconnect events - `useSocketAutoRejoin` handles `connect` and `reconnect` events automatically
+
 ## Touch Points / Key Files
 
 - **Debounce**: `src/hooks/use-debounce.ts` - Debounce functionality
@@ -124,6 +164,7 @@ export const useQueryConfig = <T = CommonQueryParams>(): T => {
 - **Query Params**: `src/hooks/use-query-params.ts` - Search params management
 - **Permissions**: `src/hooks/use-permissions.ts` - Permission checking
 - **Categorize Workspaces**: `src/hooks/use-categorize-workspaces.ts` - Workspace categorization
+- **Socket Auto Rejoin**: `src/hooks/use-sockets.ts` - Socket room auto-rejoin on reconnect
 
 ## JIT Index Hints
 
@@ -139,6 +180,12 @@ rg -n "interface.*Options" src/hooks
 
 # Find useCallback usage
 rg -n "useCallback" src/hooks
+
+# Find socket hook usage
+rg -n "useSocketAutoRejoin" src
+
+# Find socket event handlers
+rg -n "socket\?\.(on|emit|off)" src
 ```
 
 ## Common Gotchas
@@ -148,6 +195,8 @@ rg -n "useCallback" src/hooks
 - **Cleanup functions** - Always return cleanup in useEffect
 - **Dependency arrays** - Include all dependencies in useEffect/useCallback
 - **Error handling** - Validate parameters and throw descriptive errors
+- **Socket auto-rejoin** - Use `useSocketAutoRejoin` instead of manually handling reconnect events
+- **Socket dependencies** - Include all IDs (boardId, workspaceId) that affect room membership in dependencies array
 
 ## Pre-PR Checks
 

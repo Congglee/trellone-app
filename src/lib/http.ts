@@ -10,6 +10,7 @@ import {
   clearLS,
   getAccessTokenFromLS,
   getRefreshTokenFromLS,
+  LocalStorageEventTarget,
   setAccessTokenToLS,
   setRefreshTokenToLS
 } from '~/utils/storage'
@@ -142,6 +143,8 @@ export class Http {
 
         this.accessToken = access_token
         this.refreshToken = refresh_token
+
+        LocalStorageEventTarget.dispatchEvent(new Event('token-refreshed'))
 
         return access_token
       })

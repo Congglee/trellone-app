@@ -36,6 +36,7 @@ import {
 } from '~/store/slices/board.slice'
 import { updateActiveCard } from '~/store/slices/card.slice'
 import { setWorkspaceDrawerOpen } from '~/store/slices/workspace.slice'
+import { useSocketAutoRejoin } from '~/hooks/use-sockets'
 
 export default function BoardDetails() {
   const theme = useTheme()
@@ -83,9 +84,6 @@ export default function BoardDetails() {
   useEffect(() => {
     if (boardId) {
       dispatch(getBoardDetails(boardId))
-
-      // Join the board room to receive updates
-      socket?.emit('CLIENT_JOIN_BOARD', boardId)
     }
 
     return () => {
@@ -98,26 +96,21 @@ export default function BoardDetails() {
     }
   }, [dispatch, boardId, socket])
 
-  // Rejoin the board room on socket reconnect
-  useEffect(() => {
-    if (!socket || !boardId) return
+  // Join and Rejoin the board room on socket reconnect
+  useSocketAutoRejoin(
+    socket,
+    (socketInstance) => {
+      if (boardId) {
+        socketInstance.emit('CLIENT_JOIN_BOARD', boardId)
 
-    const onReconnect = () => {
-      socket.emit('CLIENT_JOIN_BOARD', boardId)
-
-      const workspaceId = activeBoard?.workspace_id
-
-      if (workspaceId) {
-        socket.emit('CLIENT_JOIN_WORKSPACE', workspaceId)
+        const workspaceId = activeBoard?.workspace_id
+        if (workspaceId) {
+          socketInstance.emit('CLIENT_JOIN_WORKSPACE', workspaceId)
+        }
       }
-    }
-
-    socket.on('reconnect', onReconnect)
-
-    return () => {
-      socket.off('reconnect', onReconnect)
-    }
-  }, [socket, boardId, activeBoard?.workspace_id])
+    },
+    [boardId, activeBoard?.workspace_id]
+  )
 
   // Listen for board and card updates from other users
   useEffect(() => {

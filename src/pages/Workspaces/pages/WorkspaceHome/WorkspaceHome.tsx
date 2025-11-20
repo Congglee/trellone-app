@@ -26,6 +26,7 @@ import WorkspaceLogo from '~/pages/Workspaces/components/WorkspaceLogo'
 import EditWorkspaceDialog from '~/pages/Workspaces/pages/WorkspaceHome/components/EditWorkspaceDialog'
 
 import { useGetWorkspaceQuery, workspaceApi } from '~/queries/workspaces'
+import { useSocketAutoRejoin } from '~/hooks/use-sockets'
 
 export default function WorkspaceHome() {
   const { workspaceId } = useParams()
@@ -53,27 +54,21 @@ export default function WorkspaceHome() {
   useEffect(() => {
     if (!workspaceId || !socket) return
 
-    socket.emit('CLIENT_JOIN_WORKSPACE', workspaceId)
-
     return () => {
       socket.emit('CLIENT_LEAVE_WORKSPACE', workspaceId)
     }
   }, [socket, workspaceId])
 
   // Rejoin on reconnect
-  useEffect(() => {
-    if (!socket || !workspaceId) return
-
-    const onReconnect = () => {
-      socket.emit('CLIENT_JOIN_WORKSPACE', workspaceId)
-    }
-
-    socket.on('reconnect', onReconnect)
-
-    return () => {
-      socket.off('reconnect', onReconnect)
-    }
-  }, [socket, workspaceId])
+  useSocketAutoRejoin(
+    socket,
+    (socketInstance) => {
+      if (workspaceId) {
+        socketInstance.emit('CLIENT_JOIN_WORKSPACE', workspaceId)
+      }
+    },
+    [workspaceId]
+  )
 
   useEffect(() => {
     if (!socket || !workspaceId) return
