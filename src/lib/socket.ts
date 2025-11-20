@@ -1,12 +1,7 @@
 import { io } from 'socket.io-client'
 import { envConfig } from '~/constants/config'
-import {
-  getRefreshTokenFromLS,
-  LocalStorageEventTarget,
-  setAccessTokenToLS,
-  setRefreshTokenToLS
-} from '~/utils/storage'
-import http from '~/lib/http'
+import { getRefreshTokenFromLS, LocalStorageEventTarget } from '~/utils/storage'
+import { httpUtils } from '~/lib/http'
 
 export const generateSocketInstace = (accessToken: string) => {
   const socket = io(envConfig.baseUrl, {
@@ -28,19 +23,14 @@ export const generateSocketInstace = (accessToken: string) => {
     if (err.message === 'Unauthorized') {
       try {
         const refresh_token = getRefreshTokenFromLS()
+
         if (!refresh_token) return
 
-        // Attempt to refresh token
-        const res = await http.post('/auth/refresh-token', { refresh_token })
-        const { access_token, refresh_token: new_refresh_token } = res.data.result
+        // Attempt to refresh token using httpUtils to leverage deduplication logic
+        await httpUtils.callRefreshToken()
 
-        // Update Local Storage
-        setAccessTokenToLS(access_token)
-        setRefreshTokenToLS(new_refresh_token)
-
-        // Update socket auth and reconnect
-        socket.auth = { Authorization: `Bearer ${access_token}` }
-        socket.connect()
+        // Note: httpUtils.refreshToken() already updates localStorage and emits 'token-refreshed' event
+        // The 'token-refreshed' listener below will update socket.auth and reconnect
       } catch (error) {
         console.error('Socket refresh auth failed', error)
       }
@@ -60,7 +50,6 @@ export const generateSocketInstace = (accessToken: string) => {
   // Listen for token refresh events from HTTP client
   const onTokenRefresh = () => {
     const latestToken = localStorage.getItem('access_token')
-
     if (latestToken) {
       socket.auth = { Authorization: `Bearer ${latestToken}` }
       // If socket is disconnected, this might help, but usually it's for when it's connected/reconnecting
