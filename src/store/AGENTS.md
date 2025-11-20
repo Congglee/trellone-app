@@ -115,11 +115,48 @@ interface AppSliceState {
   socket: Socket | null
 }
 
-// Connect socket
-dispatch(setSocket(socketInstance))
+// Socket is created in App.tsx when user logs in
+// Socket instance is generated via generateSocketInstace(accessToken)
+dispatch(setSocket(generateSocketInstace(accessToken)))
 
-// Disconnect socket
+// Disconnect socket on logout
 dispatch(disconnectSocket())
+```
+
+✅ **DO**: Access socket from Redux store in components
+```typescript
+import { useAppSelector } from '~/lib/redux/hooks'
+
+const { socket } = useAppSelector((state) => state.app)
+
+// Use socket for real-time events
+socket?.emit('CLIENT_JOIN_BOARD', boardId)
+socket?.on('SERVER_BOARD_UPDATED', (board) => {
+  dispatch(updateActiveBoard(board))
+})
+```
+
+✅ **DO**: Socket lifecycle managed in App.tsx
+```typescript
+// Socket created when user authenticates
+useEffect(() => {
+  const accessToken = getAccessTokenFromLS()
+  if (isAuthenticated && profile) {
+    dispatch(setSocket(generateSocketInstace(accessToken)))
+  }
+}, [isAuthenticated, profile, dispatch])
+
+// Socket disconnected on logout
+useEffect(() => {
+  const onReset = () => {
+    dispatch(reset())
+    dispatch(disconnectSocket())
+  }
+  LocalStorageEventTarget.addEventListener('clearLS', onReset)
+  return () => {
+    LocalStorageEventTarget.removeEventListener('clearLS', onReset)
+  }
+}, [dispatch])
 ```
 
 ### Authentication State Management
@@ -212,9 +249,11 @@ rg -n "dispatch\(.*\)" src
 
 - **Direct mutation** - Mutate state directly in reducers (Immer handles immutability)
 - **Action naming** - Use clear, descriptive names: `set`, `update`, `clear` prefixes
-- **Persistence** - Only persist `auth` slice, not entire state
+- **Persistence** - Only persist `auth` slice, not entire state (socket is not persisted)
 - **Type safety** - Always use typed hooks (`useAppSelector`, `useAppDispatch`)
-- **Socket cleanup** - Always disconnect socket in logout actions
+- **Socket instance** - Socket is singleton stored in `app` slice, accessed via `state.app.socket`
+- **Socket lifecycle** - Socket created in `App.tsx` on login, disconnected on logout
+- **Socket cleanup** - Always disconnect socket in logout actions via `disconnectSocket()`
 
 ## Pre-PR Checks
 

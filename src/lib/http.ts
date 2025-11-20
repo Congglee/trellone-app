@@ -10,6 +10,7 @@ import {
   clearLS,
   getAccessTokenFromLS,
   getRefreshTokenFromLS,
+  LocalStorageEventTarget,
   setAccessTokenToLS,
   setRefreshTokenToLS
 } from '~/utils/storage'
@@ -85,7 +86,7 @@ export class Http {
         if (
           ![HttpStatusCode.UnprocessableEntity, HttpStatusCode.Unauthorized].includes(error.response?.status as number)
         ) {
-          const data: any | undefined = error.response?.data
+          const data: { message?: string } | undefined = error.response?.data as { message?: string } | undefined
           const message = data?.message || error.message
 
           // Override the unverified error message to show a custom message
@@ -101,15 +102,7 @@ export class Http {
           const { url } = config
 
           if (isAxiosExpiredTokenError(error) && url !== `${AUTH_API_URL}/refresh-token`) {
-            this.refreshTokenRequest = this.refreshTokenRequest
-              ? this.refreshTokenRequest
-              : this.handleRefreshToken().finally(() => {
-                  setTimeout(() => {
-                    this.refreshTokenRequest = null
-                  }, 10000)
-                })
-
-            return this.refreshTokenRequest.then((access_token) => {
+            return this.callRefreshToken().then((access_token: string) => {
               return this.instance({
                 ...config,
                 headers: { ...config.headers, authorization: access_token }
@@ -143,6 +136,8 @@ export class Http {
         this.accessToken = access_token
         this.refreshToken = refresh_token
 
+        LocalStorageEventTarget.dispatchEvent(new Event('token-refreshed'))
+
         return access_token
       })
       .catch((error) => {
@@ -156,8 +151,23 @@ export class Http {
         throw error
       })
   }
+
+  public callRefreshToken() {
+    this.refreshTokenRequest = this.refreshTokenRequest
+      ? this.refreshTokenRequest
+      : this.handleRefreshToken().finally(() => {
+          setTimeout(() => {
+            this.refreshTokenRequest = null
+          }, 10000)
+        })
+
+    return this.refreshTokenRequest
+  }
 }
 
-const http = new Http().instance
+const http = new Http()
 
-export default http
+export default http.instance
+
+// Export the http object itself to access the refreshToken method
+export const httpUtils = http

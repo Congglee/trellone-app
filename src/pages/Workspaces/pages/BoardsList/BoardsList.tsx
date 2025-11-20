@@ -20,6 +20,7 @@ import ClosedBoards from '~/pages/Workspaces/pages/BoardsList/components/ClosedB
 import { useGetWorkspacesQuery, workspaceApi } from '~/queries/workspaces'
 import { WorkspaceType } from '~/schemas/workspace.schema'
 import { appendWorkspaces, clearWorkspaces, setWorkspaces } from '~/store/slices/workspace.slice'
+import { useSocketAutoRejoin } from '~/hooks/use-sockets'
 
 export default function BoardsList() {
   const dispatch = useAppDispatch()
@@ -119,8 +120,6 @@ export default function BoardsList() {
   useEffect(() => {
     if (!socket) return
 
-    socket.emit('CLIENT_JOIN_WORKSPACES_INDEX')
-
     let timer: ReturnType<typeof setTimeout> | null = null
 
     const scheduleRefresh = () => {
@@ -133,22 +132,25 @@ export default function BoardsList() {
 
     const onUpdateWorkspace = () => scheduleRefresh()
 
-    const onReconnect = () => {
-      socket.emit('CLIENT_JOIN_WORKSPACES_INDEX')
-      scheduleRefresh()
-    }
-
     socket.on('SERVER_WORKSPACE_UPDATED', onUpdateWorkspace)
-    socket.on('reconnect', onReconnect)
 
     return () => {
       socket.emit('CLIENT_LEAVE_WORKSPACES_INDEX')
       socket.off('SERVER_WORKSPACE_UPDATED', onUpdateWorkspace)
-      socket.off('reconnect', onReconnect)
 
       if (timer) clearTimeout(timer)
     }
   }, [socket, dispatch])
+
+  useSocketAutoRejoin(
+    socket,
+    (socketInstance) => {
+      socketInstance.emit('CLIENT_JOIN_WORKSPACES_INDEX')
+      // Also refresh list on reconnect just in case
+      dispatch(workspaceApi.util.invalidateTags([{ type: 'Workspace', id: 'LIST' }]))
+    },
+    [dispatch]
+  )
 
   return (
     <Box>

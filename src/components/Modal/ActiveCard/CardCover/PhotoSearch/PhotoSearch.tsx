@@ -6,15 +6,14 @@ import IconButton from '@mui/material/IconButton'
 import MuiLink from '@mui/material/Link'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { useState } from 'react'
 import { useDebounce } from '~/hooks/use-debounce'
-import { UnsplashSearchPhotosType } from '~/schemas/media.schema'
+import { useGetUnsplashSearchPhotosQuery } from '~/queries/medias'
 
 interface PhotoSearchProps {
   onClose: () => void
   onBackToCoverPhoto: () => void
   onUpdateCardCoverPhoto: (cover_photo: string) => Promise<void>
-  onSearchQueryChange: (query: string) => void
-  searchPhotos: UnsplashSearchPhotosType['result']
 }
 
 const suggestedSearches = [
@@ -29,14 +28,27 @@ const suggestedSearches = [
   'Animals'
 ]
 
-export default function PhotoSearch({
-  onClose,
-  onBackToCoverPhoto,
-  onUpdateCardCoverPhoto,
-  onSearchQueryChange,
-  searchPhotos
-}: PhotoSearchProps) {
-  const debounceSearchPhotos = useDebounce(onSearchQueryChange, 1000)
+export default function PhotoSearch({ onClose, onBackToCoverPhoto, onUpdateCardCoverPhoto }: PhotoSearchProps) {
+  const [searchValue, setSearchValue] = useState('Wallpapers')
+  const [inputValue, setInputValue] = useState('')
+
+  const debounceUpdateSearchValue = useDebounce(setSearchValue, 800)
+
+  const { data } = useGetUnsplashSearchPhotosQuery(searchValue, {
+    skip: !searchValue
+  })
+  const searchPhotos = data?.result || []
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.target.value
+    setInputValue(newValue)
+    debounceUpdateSearchValue(newValue === '' ? 'Wallpapers' : newValue)
+  }
+
+  const handleSuggestionClick = (search: string) => {
+    setInputValue(search)
+    setSearchValue(search)
+  }
 
   return (
     <Box
@@ -91,6 +103,7 @@ export default function PhotoSearch({
         variant='outlined'
         size='small'
         fullWidth
+        value={inputValue}
         sx={{
           mb: 3,
           '& .MuiOutlinedInput-root': {
@@ -107,7 +120,7 @@ export default function PhotoSearch({
             opacity: 1
           }
         }}
-        onChange={(event) => debounceSearchPhotos(event.target.value)}
+        onChange={handleInputChange}
       />
 
       <Box sx={{ mb: 3 }}>
@@ -149,7 +162,7 @@ export default function PhotoSearch({
                   borderColor: (theme) => (theme.palette.mode === 'dark' ? '#7f8c8d' : '#9ca3af')
                 }
               }}
-              onClick={() => onSearchQueryChange(search)}
+              onClick={() => handleSuggestionClick(search)}
             >
               {search}
             </Button>
