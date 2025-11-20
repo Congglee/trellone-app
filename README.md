@@ -95,20 +95,24 @@ See [SETUP_GOOGLE_OAUTH.md](src/docs/SETUP_GOOGLE_OAUTH.md) for detailed, Trello
 
 ```
 📦trellone-app
- ┣ 📂src                    # source code
- ┃ ┣ 📂assets               # images, svgs
- ┃ ┣ 📂components           # reusable UI (MUI + sx)
- ┃ ┣ 📂constants            # config, paths, env
- ┃ ┣ 📂docs                 # documentation
- ┃ ┣ 📂hooks                # custom hooks
- ┃ ┣ 📂lib                  # libraries config
- ┃ ┣ 📂pages                # route pages (Auth, Boards, Workspaces...)
- ┃ ┣ 📂queries              # API callers / caching patterns
- ┃ ┣ 📂schemas              # zod schemas & types
- ┃ ┣ 📂store                # redux slices
- ┃ ┣ 📂types                # type definitions
- ┃ ┣ 📂utils                # utilities
- ┃ ┣ 📜theme.ts             # MUI theme
+ ┣ 📂src
+ ┃ ┣ 📂assets                                # Static assets: images, SVGs, logos
+ ┃ ┣ 📂components                            # Reusable UI components (Material-UI, `sx`-styled)
+ ┃ ┣ 📂constants                             # Static config, API/base paths, app-level constants
+ ┃ ┣ 📂docs                                  # Developer docs, onboarding, integration guides
+ ┃ ┣ 📂hooks                                 # Custom React hooks (typed, project-specific)
+ ┃ ┣ 📂lib                                   # Library configs, third-party adapters (e.g., RTK Query, MUI theme)
+ ┃ ┣ 📂pages                                 # Page-level components mapped to routes (Auth, Boards, Workspaces, ...)
+ ┃ ┣ 📂queries                               # API query/mutation logic (RTK Query endpoints and hooks)
+ ┃ ┣ 📂schemas                               # Zod schemas, schema types (validation, API contract)
+ ┃ ┣ 📂store                                 # Redux Toolkit slices and root store setup
+ ┃ ┣ 📂types                                 # Global and feature-specific type definitions
+ ┃ ┣ 📂utils                                 # Generic utility functions and helpers
+ ┃ ┣ 📜App.tsx                               # Root application component (routing, providers)
+ ┃ ┣ 📜index.css                             # Global CSS, resets, font imports
+ ┃ ┣ 📜main.tsx                              # SPA entry point (React root, hydration)
+ ┃ ┣ 📜theme.ts                              # Material-UI theme definition (design tokens, palettes, overrides)
+ ┃ ┣ 📜vite-env.d.ts                         # TypeScript type declarations for Vite environment variables
 ```
 
 ## Deploy 🚢
