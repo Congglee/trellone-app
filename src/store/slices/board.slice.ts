@@ -29,6 +29,8 @@ export const getBoardDetails = createAsyncThunk('board/getBoardDetails', async (
 
   const response = await http.get<BoardResType>(`${envConfig.baseUrl}/boards/${boardId}`, { signal: thunkAPI.signal })
 
+  console.log(response)
+
   return response.data
 })
 

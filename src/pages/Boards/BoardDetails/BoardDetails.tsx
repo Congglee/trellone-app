@@ -37,6 +37,7 @@ import {
 import { updateActiveCard } from '~/store/slices/card.slice'
 import { setWorkspaceDrawerOpen } from '~/store/slices/workspace.slice'
 import { useSocketAutoRejoin } from '~/hooks/use-sockets'
+import HttpStatusCode from '~/constants/http-status-code'
 
 export default function BoardDetails() {
   const theme = useTheme()
@@ -331,7 +332,7 @@ export default function BoardDetails() {
   }
 
   if (error || !activeBoard) {
-    if (error?.includes('403')) {
+    if (error?.includes(HttpStatusCode.Forbidden.toString())) {
       return <BoardErrorView title='Access Denied' description='You do not have permission to access this board.' />
     }
 
