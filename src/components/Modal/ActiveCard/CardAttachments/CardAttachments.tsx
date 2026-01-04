@@ -39,7 +39,7 @@ export default function CardAttachments({ cardAttachments, attachmentPopoverButt
 
   const fileAttachments = cardAttachments.filter((attachment) => attachment.type === AttachmentType.File)
 
-  const toggleMenuActionsPopover = (
+  const handleMenuActionsPopoverToggle = (
     event: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>,
     attachment: CardAttachmentType
   ) => {
@@ -106,12 +106,12 @@ export default function CardAttachments({ cardAttachments, attachmentPopoverButt
 
   const hasLinksAttachments = cardAttachments.some((attachment) => attachment.type === AttachmentType.Link)
 
-  const onBackToMenuActionsFromRemove = () => {
+  const handleBackToMenuActionsFromRemove = () => {
     setShowRemoveCardAttachmentConfirm(false)
     setShowMenuActions(true)
   }
 
-  const onBackToMenuActionsFromEdit = () => {
+  const handleBackToMenuActionsFromEdit = () => {
     setShowEditCardAttachmentForm(false)
     setShowMenuActions(true)
   }
@@ -123,7 +123,7 @@ export default function CardAttachments({ cardAttachments, attachmentPopoverButt
 
   const [removeCardAttachmentMutation] = useRemoveCardAttachmentMutation()
 
-  const onRemoveCardAttachment = () => {
+  const removeCardAttachment = () => {
     if (!activeAttachment) return
 
     removeCardAttachmentMutation({
@@ -160,11 +160,17 @@ export default function CardAttachments({ cardAttachments, attachmentPopoverButt
       </Box>
 
       {hasLinksAttachments && (
-        <LinkAttachments linkAttachments={linkAttachments} onToggleMenuActionsPopover={toggleMenuActionsPopover} />
+        <LinkAttachments
+          linkAttachments={linkAttachments}
+          onToggleMenuActionsPopover={handleMenuActionsPopoverToggle}
+        />
       )}
 
       {hasFilesAttachments && (
-        <FileAttachments fileAttachments={fileAttachments} onToggleMenuActionsPopover={toggleMenuActionsPopover} />
+        <FileAttachments
+          fileAttachments={fileAttachments}
+          onToggleMenuActionsPopover={handleMenuActionsPopoverToggle}
+        />
       )}
 
       <Popover
@@ -247,8 +253,8 @@ export default function CardAttachments({ cardAttachments, attachmentPopoverButt
 
         {showRemoveCardAttachmentConfirm && (
           <RemoveCardAttachmentConfirm
-            onBackToMenuActions={onBackToMenuActionsFromRemove}
-            onRemoveCardAttachment={onRemoveCardAttachment}
+            onBackToMenuActions={handleBackToMenuActionsFromRemove}
+            onRemoveCardAttachment={removeCardAttachment}
             onClose={handleMenuActionsPopoverClose}
           />
         )}
@@ -257,14 +263,14 @@ export default function CardAttachments({ cardAttachments, attachmentPopoverButt
           (activeAttachment?.type === AttachmentType.File ? (
             <EditCardFileAttachmentForm
               attachment={activeAttachment!}
-              onBackToMenuActions={onBackToMenuActionsFromEdit}
-              onClose={handleMenuActionsPopoverClose}
+              onBackToMenuActions={handleBackToMenuActionsFromEdit}
+              onEditCardFileAttachmentFormClose={handleMenuActionsPopoverClose}
             />
           ) : (
             <EditCardLinkAttachmentForm
               attachment={activeAttachment!}
-              onBackToMenuActions={onBackToMenuActionsFromEdit}
-              onClose={handleMenuActionsPopoverClose}
+              onBackToMenuActions={handleBackToMenuActionsFromEdit}
+              onEditCardLinkAttachmentFormClose={handleMenuActionsPopoverClose}
             />
           ))}
       </Popover>

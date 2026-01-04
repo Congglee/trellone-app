@@ -42,7 +42,7 @@ export default function ColumnMenuActions({ column }: ColumnMenuActionsProps) {
 
   const [deleteColumnMutation] = useDeleteColumnMutation()
 
-  const toggleMenuActionsPopover = (
+  const handleMenuActionsPopoverToggle = (
     event: React.MouseEvent<HTMLButtonElement | HTMLDivElement | SVGSVGElement, MouseEvent>
   ) => {
     if (!anchorMenuActionsPopoverElement) {
@@ -96,7 +96,7 @@ export default function ColumnMenuActions({ column }: ColumnMenuActionsProps) {
   return (
     <Box>
       <Tooltip title='More options'>
-        <IconButton onClick={toggleMenuActionsPopover} disableRipple size='small' sx={{ p: 0 }}>
+        <IconButton onClick={handleMenuActionsPopoverToggle} disableRipple size='small' sx={{ p: 0 }}>
           <ExpandMoreIcon sx={{ color: 'text.primary', cursor: 'pointer', verticalAlign: 'middle' }} />
         </IconButton>
       </Tooltip>

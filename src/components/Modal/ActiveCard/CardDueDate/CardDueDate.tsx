@@ -13,12 +13,12 @@ import Chip from '@mui/material/Chip'
 import Tooltip from '@mui/material/Tooltip'
 
 interface CardDueDateProps {
-  dueDate?: Date | null
+  cardDueDate?: Date | null
   isCompleted?: boolean | null
   onUpdateCardDueDateAndStatus: (dueDate: Date | null, isCompleted: boolean | null) => void
 }
 
-export default function CardDueDate({ dueDate, isCompleted, onUpdateCardDueDateAndStatus }: CardDueDateProps) {
+export default function CardDueDate({ cardDueDate, isCompleted, onUpdateCardDueDateAndStatus }: CardDueDateProps) {
   const theme = useTheme()
   const isSmallScreen = useMediaQuery(theme.breakpoints.only('xs'))
 
@@ -27,9 +27,9 @@ export default function CardDueDate({ dueDate, isCompleted, onUpdateCardDueDateA
   const [isOverdue, setIsOverdue] = useState<boolean>(false)
 
   useEffect(() => {
-    if (dueDate) {
+    if (cardDueDate) {
       const now = new Date()
-      const date = new Date(dueDate)
+      const date = new Date(cardDueDate)
 
       setDateValue(date)
       setIsOverdue(date < now && !isCompleted)
@@ -37,24 +37,24 @@ export default function CardDueDate({ dueDate, isCompleted, onUpdateCardDueDateA
       setDateValue(null)
       setIsOverdue(false)
     }
-  }, [dueDate, isCompleted])
+  }, [cardDueDate, isCompleted])
 
   useEffect(() => {
     setChecked(isCompleted || false)
   }, [isCompleted])
 
-  const updateCardDueDate = (newValue: Date | null) => {
+  const handleUpdateCardDueDate = (newValue: Date | null) => {
     setDateValue(newValue)
     onUpdateCardDueDateAndStatus(newValue, checked)
   }
 
-  const toggleCardCompletionStatus = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCardCompletionStatusToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newCheckedState = event.target.checked
     setChecked(newCheckedState)
     onUpdateCardDueDateAndStatus(dateValue, newCheckedState)
   }
 
-  const removeCardDueDate = () => {
+  const handleRemoveCardDueDate = () => {
     onUpdateCardDueDateAndStatus(null, false)
   }
 
@@ -75,7 +75,7 @@ export default function CardDueDate({ dueDate, isCompleted, onUpdateCardDueDateA
       <Stack direction='row' justifyContent='space-between' alignItems='center'>
         <Typography variant='caption'>Due Date</Typography>
         <Tooltip title='Remove due date' placement='top' arrow>
-          <IconButton onClick={removeCardDueDate}>
+          <IconButton onClick={handleRemoveCardDueDate}>
             <CloseIcon fontSize='small' />
           </IconButton>
         </Tooltip>
@@ -86,7 +86,7 @@ export default function CardDueDate({ dueDate, isCompleted, onUpdateCardDueDateA
           ampm
           orientation={isSmallScreen ? 'portrait' : 'landscape'}
           value={dateValue}
-          onAccept={(newValue) => updateCardDueDate(newValue)}
+          onAccept={(newValue) => handleUpdateCardDueDate(newValue)}
           slotProps={{
             textField: {
               multiline: true,
@@ -97,7 +97,7 @@ export default function CardDueDate({ dueDate, isCompleted, onUpdateCardDueDateA
                   <InputAdornment position='start'>
                     <Checkbox
                       onClick={(e) => e.stopPropagation()}
-                      onChange={toggleCardCompletionStatus}
+                      onChange={handleCardCompletionStatusToggle}
                       checked={checked}
                       inputProps={{ 'aria-label': 'controlled' }}
                       size='small'

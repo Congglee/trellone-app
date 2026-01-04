@@ -34,7 +34,7 @@ export default function BoardsList() {
 
   const guestWorkspaceInfoPopoverId = 'guest-workspace-info-popover'
 
-  const toggleGuestWorkspaceInfoPopover = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleGuestWorkspaceInfoPopoverToggle = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (isGuestWorkspaceInfoPopoverOpen) {
       setAnchorGuestWorkspaceInfoPopoverElement(null)
     } else {
@@ -96,7 +96,7 @@ export default function BoardsList() {
     }
   }, [workspacesData, dispatch])
 
-  const loadMoreWorkspaces = () => {
+  const handleLoadMoreWorkspaces = () => {
     if (pagination.page < pagination.total_page && !isFetching) {
       setIsLoadingMore(true)
       setPagination((prev) => ({ ...prev, page: prev.page + 1 }))
@@ -105,7 +105,7 @@ export default function BoardsList() {
 
   // Infinite scroll hook - using window scroll instead of container scroll
   useInfiniteScroll({
-    onLoadMore: loadMoreWorkspaces,
+    onLoadMore: handleLoadMoreWorkspaces,
     hasMore: pagination.page < pagination.total_page,
     isLoading: isFetching || isLoadingMore,
     threshold: 200, // Trigger when 200px from bottom
@@ -224,7 +224,7 @@ export default function BoardsList() {
           <>
             <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, mb: 2.5, gap: 1 }}>
               <Typography variant='h6'>Guest Workspaces</Typography>
-              <IconButton size='small' disableRipple sx={{ p: 0 }} onClick={toggleGuestWorkspaceInfoPopover}>
+              <IconButton size='small' disableRipple sx={{ p: 0 }} onClick={handleGuestWorkspaceInfoPopoverToggle}>
                 <InfoIcon />
               </IconButton>
 
@@ -232,7 +232,7 @@ export default function BoardsList() {
                 id={guestWorkspaceInfoPopoverId}
                 open={isGuestWorkspaceInfoPopoverOpen}
                 anchorEl={anchorGuestWorkspaceInfoPopoverElement}
-                onClose={toggleGuestWorkspaceInfoPopover}
+                onClose={handleGuestWorkspaceInfoPopoverToggle}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'left' }}
                 slotProps={{
@@ -254,7 +254,7 @@ export default function BoardsList() {
                     </Typography>
                     <IconButton
                       size='small'
-                      onClick={toggleGuestWorkspaceInfoPopover}
+                      onClick={handleGuestWorkspaceInfoPopoverToggle}
                       sx={{ position: 'absolute', right: 0 }}
                     >
                       <CloseIcon fontSize='small' />

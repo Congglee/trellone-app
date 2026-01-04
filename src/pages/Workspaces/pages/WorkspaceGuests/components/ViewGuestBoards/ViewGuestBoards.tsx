@@ -38,7 +38,7 @@ export default function ViewGuestBoards({
 
   const viewGuestBoardsPopoverId = 'view-guest-boards-popover'
 
-  const toggleViewGuestBoardsPopover = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleViewGuestBoardsPopoverToggle = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (isViewGuestBoardsPopoverOpen) {
       setAnchorViewGuestBoardsPopoverElement(null)
     } else {
@@ -79,7 +79,7 @@ export default function ViewGuestBoards({
         size='small'
         variant='outlined'
         disabled={totalGuestBoardCounts === 0}
-        onClick={toggleViewGuestBoardsPopover}
+        onClick={handleViewGuestBoardsPopoverToggle}
         sx={{ borderRadius: 1, textTransform: 'none', minWidth: 120 }}
       >
         View boards ({totalGuestBoardCounts || 0})
@@ -89,7 +89,7 @@ export default function ViewGuestBoards({
         id={viewGuestBoardsPopoverId}
         open={isViewGuestBoardsPopoverOpen}
         anchorEl={anchorViewGuestBoardsPopoverElement}
-        onClose={toggleViewGuestBoardsPopover}
+        onClose={handleViewGuestBoardsPopoverToggle}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         slotProps={{
           paper: { sx: { width: '320px', borderRadius: 2 } }
@@ -100,7 +100,11 @@ export default function ViewGuestBoards({
             <Typography variant='subtitle1' sx={{ fontWeight: 'medium' }}>
               Workspace boards
             </Typography>
-            <IconButton size='small' onClick={toggleViewGuestBoardsPopover} sx={{ position: 'absolute', right: 0 }}>
+            <IconButton
+              size='small'
+              onClick={handleViewGuestBoardsPopoverToggle}
+              sx={{ position: 'absolute', right: 0 }}
+            >
               <CloseIcon fontSize='small' />
             </IconButton>
           </Box>

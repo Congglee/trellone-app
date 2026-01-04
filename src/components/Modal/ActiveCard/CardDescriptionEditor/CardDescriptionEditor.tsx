@@ -7,34 +7,39 @@ import { hasHtmlContent, isMarkdownContent } from '~/utils/html-sanitizer'
 import { convertMarkdownToHtml } from '~/utils/markdown-to-html'
 
 interface CardDescriptionEditorProps {
-  description: string
-  onUpdateCardDescription: (description: string) => void
+  cardDescription: string
+  onUpdateCardDescription: (cardDescription: string) => void
 }
 
-export default function CardDescriptionEditor({ description, onUpdateCardDescription }: CardDescriptionEditorProps) {
+export default function CardDescriptionEditor({
+  cardDescription,
+  onUpdateCardDescription
+}: CardDescriptionEditorProps) {
   const [markdownEditMode, setMarkdownEditMode] = useState(false)
-  const [cardDescription, setCardDescription] = useState<string>('')
+  const [editableCardDescription, setEditableCardDescription] = useState<string>('')
 
   // Convert markdown to HTML on mount and when description changes
   useEffect(() => {
-    if (description !== undefined) {
+    if (cardDescription !== undefined) {
       // Check if content is markdown and convert to HTML
-      const htmlContent = isMarkdownContent(description) ? convertMarkdownToHtml(description) : description
+      const htmlContent = isMarkdownContent(cardDescription) ? convertMarkdownToHtml(cardDescription) : cardDescription
 
-      setCardDescription(htmlContent)
+      setEditableCardDescription(htmlContent)
     }
-  }, [description])
+  }, [cardDescription])
 
-  const updateCardDescription = () => {
+  const handleUpdateCardDescription = () => {
     setMarkdownEditMode(false)
-    onUpdateCardDescription(cardDescription)
+    onUpdateCardDescription(editableCardDescription)
   }
 
-  const reset = () => {
+  const handleCardDescriptionReset = () => {
     setMarkdownEditMode(false)
     // Reset to the prepared content
-    const htmlContent = isMarkdownContent(description) ? convertMarkdownToHtml(description) : description
-    setCardDescription(htmlContent)
+    const htmlContent = isMarkdownContent(editableCardDescription)
+      ? convertMarkdownToHtml(editableCardDescription)
+      : editableCardDescription
+    setEditableCardDescription(htmlContent)
   }
 
   return (
@@ -42,8 +47,8 @@ export default function CardDescriptionEditor({ description, onUpdateCardDescrip
       {markdownEditMode ? (
         <Box sx={{ mt: 5, display: 'flex', flexDirection: 'column', gap: 1 }}>
           <RichTextEditor
-            content={cardDescription}
-            onChange={(html) => setCardDescription(html)}
+            content={editableCardDescription}
+            onChange={(html) => setEditableCardDescription(html)}
             placeholder='Add a more detailed description...'
             height={400}
             editable={true}
@@ -51,7 +56,7 @@ export default function CardDescriptionEditor({ description, onUpdateCardDescrip
           />
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Button
-              onClick={updateCardDescription}
+              onClick={handleUpdateCardDescription}
               className='interceptor-loading'
               type='button'
               variant='contained'
@@ -60,7 +65,7 @@ export default function CardDescriptionEditor({ description, onUpdateCardDescrip
             >
               Save
             </Button>
-            <Button onClick={reset} type='button' size='small'>
+            <Button onClick={handleCardDescriptionReset} type='button' size='small'>
               Cancel
             </Button>
           </Box>
@@ -78,7 +83,7 @@ export default function CardDescriptionEditor({ description, onUpdateCardDescrip
           >
             Edit
           </Button>
-          {hasHtmlContent(cardDescription) ? (
+          {hasHtmlContent(editableCardDescription) ? (
             <Box
               sx={{
                 padding: '10px',
@@ -86,7 +91,7 @@ export default function CardDescriptionEditor({ description, onUpdateCardDescrip
                 borderRadius: '8px'
               }}
             >
-              <RichTextEditor content={cardDescription} editable={false} />
+              <RichTextEditor content={editableCardDescription} editable={false} />
             </Box>
           ) : (
             <Box sx={{ padding: '10px', color: 'text.disabled', fontStyle: 'italic' }}>No description yet</Box>

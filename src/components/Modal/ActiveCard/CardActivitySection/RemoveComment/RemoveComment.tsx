@@ -31,7 +31,10 @@ export default function RemoveComment({ activeComment, onSetActiveComment, comme
 
   const removeCommentPopoverId = isRemoveCommentPopoverOpen ? 'remove-comment-popover' : undefined
 
-  const toggleRemoveCommentPopover = (event: React.MouseEvent<HTMLSpanElement, MouseEvent>, comment: CommentType) => {
+  const handleRemoveCommentPopoverToggle = (
+    event: React.MouseEvent<HTMLSpanElement, MouseEvent>,
+    comment: CommentType
+  ) => {
     if (!anchorRemoveCommentPopoverElement) {
       setAnchorRemoveCommentPopoverElement(event.currentTarget)
       onSetActiveComment(comment)
@@ -78,7 +81,7 @@ export default function RemoveComment({ activeComment, onSetActiveComment, comme
             textDecoration: 'underline'
           }
         }}
-        onClick={(e) => toggleRemoveCommentPopover(e, comment)}
+        onClick={(e) => handleRemoveCommentPopoverToggle(e, comment)}
       >
         Delete
       </Typography>

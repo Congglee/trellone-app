@@ -37,7 +37,7 @@ export default function WorkspaceMembers() {
   const [searchText, setSearchText] = useState('')
   const [debouncedSearchText, setDebouncedSearchText] = useState('')
 
-  const debouncedUpdateSearch = useDebounce((value: string) => {
+  const debounceWorkspaceMembersSearch = useDebounce((value: string) => {
     setDebouncedSearchText(value)
   }, 500)
 
@@ -45,7 +45,7 @@ export default function WorkspaceMembers() {
     const value = event.target.value
     setSearchText(value)
     // Normalize once here to avoid repeating in filter
-    debouncedUpdateSearch(value.trim().toLowerCase())
+    debounceWorkspaceMembersSearch(value.trim().toLowerCase())
   }
 
   // Memoized filtering by username and display name (case-insensitive)

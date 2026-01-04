@@ -11,14 +11,6 @@ import { useState } from 'react'
 import NewBoardDialog from '~/components/Dialog/NewBoardDialog'
 import NewWorkspaceDialog from '~/components/Dialog/NewWorkspaceDialog'
 
-const MENU_ITEM_STYLES = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-start',
-  width: '350px',
-  whiteSpace: 'pre-line'
-}
-
 interface CreateProps {
   styles?: SxProps
 }
@@ -26,8 +18,8 @@ interface CreateProps {
 export default function Create({ styles }: CreateProps) {
   const [anchorCreateMenuElement, setAnchorCreateMenuElement] = useState<null | HTMLElement>(null)
 
-  const [newWorkspaceOpen, setNewWorkspaceOpen] = useState(false)
-  const [newBoardOpen, setNewBoardOpen] = useState(false)
+  const [newWorkspaceDialogOpen, setNewWorkspaceDialogOpen] = useState(false)
+  const [newBoardDialogOpen, setNewBoardDialogOpen] = useState(false)
 
   const isCreateMenuOpen = Boolean(anchorCreateMenuElement)
 
@@ -39,22 +31,22 @@ export default function Create({ styles }: CreateProps) {
     setAnchorCreateMenuElement(null)
   }
 
-  const handleNewWorkspaceOpen = () => {
-    setNewWorkspaceOpen(true)
+  const handleNewWorkspaceDialogOpen = () => {
+    setNewWorkspaceDialogOpen(true)
     handleCreateMenuClose()
   }
 
-  const handleNewBoardOpen = () => {
-    setNewBoardOpen(true)
+  const handleNewBoardDialogOpen = () => {
+    setNewBoardDialogOpen(true)
     handleCreateMenuClose()
   }
 
-  const onNewBoardClose = () => {
-    setNewBoardOpen(false)
+  const handleNewBoardDialogClose = () => {
+    setNewBoardDialogOpen(false)
   }
 
-  const onNewWorkspaceClose = () => {
-    setNewWorkspaceOpen(false)
+  const handleNewWorkspaceDialogClose = () => {
+    setNewWorkspaceDialogOpen(false)
   }
 
   return (
@@ -81,7 +73,16 @@ export default function Create({ styles }: CreateProps) {
           'aria-labelledby': 'basic-button-create'
         }}
       >
-        <MenuItem onClick={handleNewWorkspaceOpen} sx={MENU_ITEM_STYLES}>
+        <MenuItem
+          onClick={handleNewWorkspaceDialogOpen}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            width: '350px',
+            whiteSpace: 'pre-line'
+          }}
+        >
           <div style={{ display: 'flex', gap: '5px' }}>
             <WorkspacesIcon />
             <Typography variant='subtitle1'>Create Workspace</Typography>
@@ -92,7 +93,16 @@ export default function Create({ styles }: CreateProps) {
           </Typography>
         </MenuItem>
 
-        <MenuItem onClick={handleNewBoardOpen} sx={MENU_ITEM_STYLES}>
+        <MenuItem
+          onClick={handleNewBoardDialogOpen}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            width: '350px',
+            whiteSpace: 'pre-line'
+          }}
+        >
           <div style={{ display: 'flex', gap: '5px' }}>
             <DashboardIcon />
             <Typography variant='subtitle1'>Create Board</Typography>
@@ -104,9 +114,16 @@ export default function Create({ styles }: CreateProps) {
         </MenuItem>
       </Menu>
 
-      {newWorkspaceOpen && <NewWorkspaceDialog open={newWorkspaceOpen} onNewWorkspaceClose={onNewWorkspaceClose} />}
+      {newWorkspaceDialogOpen && (
+        <NewWorkspaceDialog
+          newWorkspaceDialogOpen={newWorkspaceDialogOpen}
+          onNewWorkspaceDialogClose={handleNewWorkspaceDialogClose}
+        />
+      )}
 
-      {newBoardOpen && <NewBoardDialog open={newBoardOpen} onNewBoardClose={onNewBoardClose} />}
+      {newBoardDialogOpen && (
+        <NewBoardDialog newBoardDialogOpen={newBoardDialogOpen} onNewBoardDialogClose={handleNewBoardDialogClose} />
+      )}
     </Box>
   )
 }

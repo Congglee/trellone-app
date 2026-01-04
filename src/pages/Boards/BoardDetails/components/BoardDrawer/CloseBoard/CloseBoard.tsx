@@ -24,7 +24,7 @@ export default function CloseBoard() {
 
   const closeBoardPopoverId = isCloseBoardPopoverOpen ? 'close-board-popover' : undefined
 
-  const toggleCloseBoardPopover = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const handleCloseBoardPopoverToggle = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (isCloseBoardPopoverOpen) {
       setAnchorCloseBoardPopoverElement(null)
     } else {
@@ -61,7 +61,7 @@ export default function CloseBoard() {
   return (
     <>
       <ListItem disablePadding>
-        <ListItemButton onClick={toggleCloseBoardPopover}>
+        <ListItemButton onClick={handleCloseBoardPopoverToggle}>
           <ListItemIcon>
             <RemoveIcon />
           </ListItemIcon>

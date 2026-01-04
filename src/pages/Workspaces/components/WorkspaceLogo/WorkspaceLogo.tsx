@@ -26,7 +26,7 @@ export default function WorkspaceLogo({ workspace, size }: WorkspaceLogoProps) {
 
   const logoPopoverId = isLogoPopoverOpen ? 'logo-popover' : undefined
 
-  const toggleLogoPopover = (event: React.MouseEvent<HTMLElement>) => {
+  const handleWorkspaceLogoPopoverToggle = (event: React.MouseEvent<HTMLElement>) => {
     if (!anchorLogoPopoverElement) {
       setAnchorLogoPopoverElement(event.currentTarget)
     } else {
@@ -70,7 +70,7 @@ export default function WorkspaceLogo({ workspace, size }: WorkspaceLogoProps) {
   return (
     <>
       <Box
-        onClick={toggleLogoPopover}
+        onClick={handleWorkspaceLogoPopoverToggle}
         sx={{
           position: 'relative',
           display: 'inline-block',
@@ -116,7 +116,7 @@ export default function WorkspaceLogo({ workspace, size }: WorkspaceLogoProps) {
         id={logoPopoverId}
         open={isLogoPopoverOpen}
         anchorEl={anchorLogoPopoverElement}
-        onClose={toggleLogoPopover}
+        onClose={handleWorkspaceLogoPopoverToggle}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         slotProps={{
           paper: {

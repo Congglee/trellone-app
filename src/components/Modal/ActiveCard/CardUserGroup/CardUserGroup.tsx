@@ -21,7 +21,7 @@ export default function CardUserGroup({ cardMembers, onAddCardMember, onRemoveCa
 
   const popoverId = isGroupActionsPopoverOpen ? 'group-actions-popover' : undefined
 
-  const toggleGroupActionsPopover = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const handleGroupActionsPopoverToggle = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (!anchorGroupActionsPopoverElement) {
       setAnchorGroupActionsPopoverElement(event.currentTarget)
     } else {
@@ -36,7 +36,7 @@ export default function CardUserGroup({ cardMembers, onAddCardMember, onRemoveCa
     [cardMembers, activeBoard?.members]
   )
 
-  const updateCardMembers = (user: UserType) => {
+  const handleUpdateCardMembers = (user: UserType) => {
     if (cardMembers.includes(user._id)) {
       onRemoveCardMember(user._id)
     } else {
@@ -55,7 +55,7 @@ export default function CardUserGroup({ cardMembers, onAddCardMember, onRemoveCa
       <Tooltip title='Add new member'>
         <Box
           aria-describedby={popoverId}
-          onClick={toggleGroupActionsPopover}
+          onClick={handleGroupActionsPopoverToggle}
           sx={{
             width: 36,
             height: 36,
@@ -82,7 +82,7 @@ export default function CardUserGroup({ cardMembers, onAddCardMember, onRemoveCa
         id={popoverId}
         open={isGroupActionsPopoverOpen}
         anchorEl={anchorGroupActionsPopoverElement}
-        onClose={toggleGroupActionsPopover}
+        onClose={handleGroupActionsPopoverToggle}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <Box
@@ -105,7 +105,7 @@ export default function CardUserGroup({ cardMembers, onAddCardMember, onRemoveCa
                     <CheckCircleIcon fontSize='small' sx={{ color: '#27ae60' }} />
                   ) : null
                 }
-                onClick={() => updateCardMembers(user)}
+                onClick={() => handleUpdateCardMembers(user)}
               >
                 <Avatar sx={{ width: 34, height: 34 }} alt={user?.display_name} src={user?.avatar} />
               </Badge>

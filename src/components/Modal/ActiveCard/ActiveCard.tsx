@@ -122,23 +122,23 @@ export default function ActiveCard({ canEditCard }: ActiveCardProps) {
     })
   }
 
-  const onUpdateCardTitle = (title: string) => {
+  const handleUpdateCardTitle = (title: string) => {
     handleUpdateActiveCard({ title })
   }
 
-  const onUpdateCardDescription = (description: string) => {
+  const handleUpdateCardDescription = (description: string) => {
     handleUpdateActiveCard({ description })
   }
 
-  const onUpdateCardCoverPhoto = async (coverPhoto: string) => {
+  const handleUpdateCardCoverPhoto = async (coverPhoto: string) => {
     handleUpdateActiveCard({ cover_photo: coverPhoto })
   }
 
-  const onUpdateCardDueDateAndStatus = (dueDate: Date | null, isCompleted: boolean | null) => {
+  const handleUpdateCardDueDateAndStatus = (dueDate: Date | null, isCompleted: boolean | null) => {
     handleUpdateActiveCard({ due_date: dueDate, is_completed: isCompleted })
   }
 
-  const onAddCardMember = (userId: string) => {
+  const addCardMember = (userId: string) => {
     addCardMemberMutation({
       card_id: activeCard?._id as string,
       body: { user_id: userId }
@@ -154,7 +154,7 @@ export default function ActiveCard({ canEditCard }: ActiveCardProps) {
     })
   }
 
-  const onRemoveCardMember = (userId: string) => {
+  const removeCardMember = (userId: string) => {
     removeCardMemberMutation({
       card_id: activeCard?._id as string,
       user_id: userId
@@ -250,7 +250,7 @@ export default function ActiveCard({ canEditCard }: ActiveCardProps) {
 
           <Box sx={{ mb: 1, mt: -3, pr: 2.5, display: 'flex', alignItems: 'center', gap: 1 }}>
             <CreditCardIcon />
-            <ToggleFocusInput inputFontSize='22px' value={activeCard?.title} onChangeValue={onUpdateCardTitle} />
+            <ToggleFocusInput inputFontSize='22px' value={activeCard?.title} onChangeValue={handleUpdateCardTitle} />
           </Box>
 
           <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -260,16 +260,16 @@ export default function ActiveCard({ canEditCard }: ActiveCardProps) {
 
                 <CardUserGroup
                   cardMembers={activeCard?.members || []}
-                  onAddCardMember={onAddCardMember}
-                  onRemoveCardMember={onRemoveCardMember}
+                  onAddCardMember={addCardMember}
+                  onRemoveCardMember={removeCardMember}
                 />
               </Box>
 
               {activeCard?.due_date && (
                 <CardDueDate
-                  dueDate={activeCard.due_date}
+                  cardDueDate={activeCard.due_date}
                   isCompleted={activeCard.is_completed}
-                  onUpdateCardDueDateAndStatus={onUpdateCardDueDateAndStatus}
+                  onUpdateCardDueDateAndStatus={handleUpdateCardDueDateAndStatus}
                 />
               )}
 
@@ -282,8 +282,8 @@ export default function ActiveCard({ canEditCard }: ActiveCardProps) {
                 </Box>
 
                 <CardDescriptionEditor
-                  description={activeCard?.description as string}
-                  onUpdateCardDescription={onUpdateCardDescription}
+                  cardDescription={activeCard?.description as string}
+                  onUpdateCardDescription={handleUpdateCardDescription}
                 />
               </Box>
 
@@ -324,13 +324,13 @@ export default function ActiveCard({ canEditCard }: ActiveCardProps) {
                       color: 'error.light',
                       '&:hover': { color: 'error.light' }
                     }}
-                    onClick={() => onRemoveCardMember(profile?._id as string)}
+                    onClick={() => removeCardMember(profile?._id as string)}
                   >
                     <ExitToAppIcon fontSize='small' />
                     Leave
                   </SidebarItem>
                 ) : (
-                  <SidebarItem className='active' onClick={() => onAddCardMember(profile?._id as string)}>
+                  <SidebarItem className='active' onClick={() => addCardMember(profile?._id as string)}>
                     <Box
                       sx={{
                         width: '100%',
@@ -351,7 +351,7 @@ export default function ActiveCard({ canEditCard }: ActiveCardProps) {
                 )}
 
                 <SidebarItem className='active' sx={{ p: 0 }}>
-                  <CardCover onUpdateCardCoverPhoto={onUpdateCardCoverPhoto} />
+                  <CardCover onUpdateCardCoverPhoto={handleUpdateCardCoverPhoto} />
                 </SidebarItem>
 
                 <SidebarItem className='active' sx={{ p: 0 }}>
@@ -359,9 +359,9 @@ export default function ActiveCard({ canEditCard }: ActiveCardProps) {
                 </SidebarItem>
                 <SidebarItem className='active' sx={{ p: 0 }}>
                   <DatesMenu
-                    dueDate={activeCard?.due_date}
+                    cardDueDate={activeCard?.due_date}
                     isCompleted={activeCard?.is_completed}
-                    onUpdateCardDueDate={onUpdateCardDueDateAndStatus}
+                    onUpdateCardDueDate={handleUpdateCardDueDateAndStatus}
                   />
                 </SidebarItem>
               </Stack>

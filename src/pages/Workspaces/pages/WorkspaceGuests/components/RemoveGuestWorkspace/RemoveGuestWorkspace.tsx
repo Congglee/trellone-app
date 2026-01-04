@@ -23,7 +23,7 @@ export default function RemoveGuestWorkspace({ userId, workspaceId, isDisabled }
 
   const removeGuestWorkspacePopoverId = 'remove-guest-workspace-popover'
 
-  const toggleRemoveGuestWorkspacePopover = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleRemoveGuestWorkspacePopoverToggle = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (isRemoveGuestWorkspacePopoverOpen) {
       setAnchorRemoveGuestWorkspacePopoverElement(null)
     } else {
@@ -61,7 +61,7 @@ export default function RemoveGuestWorkspace({ userId, workspaceId, isDisabled }
         variant='outlined'
         sx={{ borderRadius: 1, textTransform: 'none', minWidth: 120 }}
         startIcon={<ClearIcon />}
-        onClick={toggleRemoveGuestWorkspacePopover}
+        onClick={handleRemoveGuestWorkspacePopoverToggle}
         disabled={isDisabled}
       >
         Remove...

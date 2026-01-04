@@ -8,7 +8,7 @@ export const siteConfig: SiteConfig = {
     'Trellone is a modern, feature-rich Trello clone that provides project management and collaboration capabilities with real-time updates.',
   keywords: ['Trellone', 'Trello clone', 'Drag-and-Drop', 'Task Management', 'Project Management', 'Collaboration'],
   links: {
-    github: 'https://github.com/Congglee/trellone'
+    github: 'https://github.com/Congglee/trellone-app'
   },
   url: {
     base: envConfig.baseUrl,

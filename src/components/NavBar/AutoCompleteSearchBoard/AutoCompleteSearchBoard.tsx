@@ -32,7 +32,7 @@ export default function AutoCompleteSearchBoard({ styles }: AutoCompleteSearchBo
 
   const boards = boardsData?.result.boards || []
 
-  const handleInputSearchChange = (event: React.SyntheticEvent<Element, Event>) => {
+  const handleBoardSearchInputChange = (event: React.SyntheticEvent<Element, Event>) => {
     const value = (event.target as HTMLInputElement).value
     if (!value) return
 
@@ -40,7 +40,7 @@ export default function AutoCompleteSearchBoard({ styles }: AutoCompleteSearchBo
   }
 
   // Wrap the `handleBoardSelection` function above with useDebounceFn and set a delay of about 2 seconds after typing stops before executing the function
-  const debounceSearchBoard = useDebounce(handleInputSearchChange, 2000)
+  const debounceBoardSearch = useDebounce(handleBoardSearchInputChange, 2000)
 
   const handleBoardSelection = (_event: React.SyntheticEvent<Element, Event>, selectedBoard: BoardType | null) => {
     if (selectedBoard) {
@@ -60,7 +60,7 @@ export default function AutoCompleteSearchBoard({ styles }: AutoCompleteSearchBo
       options={boards || []}
       isOptionEqualToValue={(option, value) => option._id === value._id}
       loading={isLoading}
-      onInputChange={debounceSearchBoard}
+      onInputChange={debounceBoardSearch}
       onChange={handleBoardSelection}
       renderInput={(params) => (
         <TextField

@@ -47,7 +47,7 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
     setActiveComment(null)
   }
 
-  const toggleEditingCardComment = (commentIndex: number, content: string, comment: CommentType) => {
+  const handleEditingCardCommentToggle = (commentIndex: number, content: string, comment: CommentType) => {
     // Close other editors
     setIsMarkdownEditorOpen(false)
     setNewCommentContent('')
@@ -329,7 +329,7 @@ export default function CardActivitySection({ cardComments }: CardActivitySectio
                             textDecoration: 'underline'
                           }
                         }}
-                        onClick={() => toggleEditingCardComment(index, comment.content, comment)}
+                        onClick={() => handleEditingCardCommentToggle(index, comment.content, comment)}
                       >
                         Edit
                       </Typography>

@@ -1,0 +1,336 @@
+---
+globs: *.tsx,*.ts,src/**/*.tsx,src/**/*.ts
+description: React naming conventions for functions, handlers, props, and callbacks in components.
+---
+
+# React Naming Conventions (REQUIRED)
+
+Standardized naming conventions for functions, handlers, props, and callbacks in React components. Follow these rules to maintain consistency and readability throughout the codebase.
+
+---
+
+## 1. Handler Functions
+
+### 1.1. Logic/Data Handlers - Format: `handle` + `Action` + `DataModel`
+
+For functions that handle logic such as setting state, updating data, array operations, etc., always use the format:
+
+```
+handle + Action + DataModel
+```
+
+**Common actions**: `Update`, `Add`, `Remove`, `Reset`, `Back`, `Submit`, `Filter`, `Sort`, `Search`
+
+**GOOD Examples**:
+
+```tsx
+// Data updates
+const handleUpdateActiveCard = async (body: UpdateCardBodyType) => { ... }
+const handleUpdateCardTitle = (title: string) => { ... }
+const handleUpdateCardDescription = (description: string) => { ... }
+const handleUpdateCardCoverPhoto = (coverPhoto: string) => { ... }
+const handleUpdateCardDueDateAndStatus = (dueDate: Date | null, isCompleted: boolean | null) => { ... }
+const handleUpdateCardMembers = (user: UserType) => { ... }
+
+// Add/Remove items
+const handleAddListItem = (item: ItemType) => { ... }
+const handleRemoveListItem = (itemId: string) => { ... }
+
+// Reset state
+const handleResetFormData = () => { ... }
+const handleCardDescriptionReset = () => { ... }
+
+// Navigation logic
+const handleBackToCardCoverPhoto = () => { ... }
+```
+
+### 1.2. UI Event Handlers - Format: `handle` + `DataModel` + `Action`
+
+When `action` is one of the following: **click**, **change**, **open**, **close**, **toggle**, **select**, use the format:
+
+```
+handle + DataModel + Action
+```
+
+**GOOD Examples**:
+
+```tsx
+// Click events
+const handleDatesMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => { ... }
+const handleSuggestionClick = (search: string) => { ... }
+
+// Toggle events
+const handleGroupActionsPopoverToggle = (event: React.MouseEvent<HTMLDivElement>) => { ... }
+const handleCardCoverPopoverToggle = (event: React.MouseEvent<HTMLButtonElement>) => { ... }
+const handleRemoveActiveCardPopoverToggle = (event: React.MouseEvent<HTMLButtonElement>) => { ... }
+const handleCardCompletionStatusToggle = (event: React.ChangeEvent<HTMLInputElement>) => { ... }
+
+// Open/Close events
+const handleActiveCardModalClose = () => { ... }
+const handleDatesMenuClose = () => { ... }
+const handleCardCoverPopoverClose = () => { ... }
+const handleRemoveActiveCardPopoverClose = () => { ... }
+const handleDeleteBoardPopoverClose = () => { ... }
+const handleClosedBoardsOpen = () => { ... }
+
+// Change events
+const handleWorkspaceChange = (event: SelectChangeEvent) => { ... }
+const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => { ... }
+
+// Select events
+const handleMemberSelect = (memberId: string) => { ... }
+```
+
+**BAD Examples** (non-compliant):
+
+```tsx
+// ❌ BAD: Action comes before DataModel for UI events
+const handleCloseActiveCardModal = () => { ... }
+const handleToggleGroupActionsPopover = () => { ... }
+const handleOpenClosedBoards = () => { ... }
+
+// ✅ GOOD:
+const handleActiveCardModalClose = () => { ... }
+const handleGroupActionsPopoverToggle = () => { ... }
+const handleClosedBoardsOpen = () => { ... }
+```
+
+---
+
+## 2. API Functions
+
+### 2.1. Do NOT use the `handle` prefix
+
+API functions (queries or mutations) should **NOT** use the `handle` prefix. Name them directly by combining **verb** with **data model**.
+
+**Format**: `verb` + `DataModel`
+
+**Common verbs**: `add`, `create`, `update`, `delete`, `remove`, `archive`, `reopen`, `upload`, `fetch`, `get`
+
+**GOOD Examples**:
+
+```tsx
+// CRUD operations
+const addBoard = async (payload: CreateBoardBodyType) => { ... }
+const updateBoard = async (boardId: string, body: UpdateBoardBodyType) => { ... }
+const deleteBoard = async (boardId: string) => { ... }
+
+// Card operations
+const archiveCard = () => { ... }
+const reopenCard = () => { ... }
+const deleteActiveCard = () => { ... }
+
+// Member operations
+const addCardMember = (userId: string) => { ... }
+const removeCardMember = (userId: string) => { ... }
+
+// File operations
+const uploadCardCoverPhoto = async (event: React.ChangeEvent<HTMLInputElement>) => { ... }
+```
+
+**BAD Examples** (non-compliant):
+
+```tsx
+// ❌ BAD: Using handle prefix for API calls
+const handleArchiveCard = () => { ... }
+const handleAddCardMember = (userId: string) => { ... }
+
+// ✅ GOOD:
+const archiveCard = () => { ... }
+const addCardMember = (userId: string) => { ... }
+```
+
+---
+
+## 3. Props - State and Callbacks
+
+### 3.1. State Props - Use descriptive names, avoid short/generic names
+
+When passing state to child components, **DO NOT** use names that are too short or generic. Names must clearly describe their purpose and context.
+
+**GOOD Examples**:
+
+```tsx
+interface NewBoardDialogProps {
+  newBoardDialogOpen: boolean // ✅ Clear: new board dialog is open
+  defaultWorkspaceId?: string // ✅ Clear: default workspace ID
+}
+
+interface NewWorkspaceDialogProps {
+  newWorkspaceDialogOpen: boolean // ✅ Clear: new workspace dialog is open
+}
+
+interface CardDescriptionEditorProps {
+  cardDescription: string // ✅ Clear: card's description
+}
+
+interface CardDueDateProps {
+  cardDueDate?: Date | null // ✅ Clear: card's due date
+  isCompleted?: boolean | null // ✅ Clear: completion status
+}
+
+interface CardUserGroupProps {
+  cardMembers: string[] // ✅ Clear: card's member list
+}
+```
+
+**BAD Examples** (non-compliant):
+
+```tsx
+interface NewBoardDialogProps {
+  open: boolean // ❌ Too generic, unclear what is open
+  id?: string // ❌ Too short, unclear what ID this is
+}
+
+interface CardDescriptionEditorProps {
+  description: string // ❌ Missing context, should use cardDescription
+  value: string // ❌ Too generic
+}
+```
+
+### 3.2. Callback Props - Use `on` prefix
+
+Callback functions passed to child components must **ALWAYS** use the `on` prefix.
+
+**Format**: `on` + `Action` + `DataModel` or `on` + `DataModel` + `Action`
+
+**GOOD Examples**:
+
+```tsx
+interface NewBoardDialogProps {
+  newBoardDialogOpen: boolean
+  onNewBoardDialogClose: () => void // ✅ Callback with on prefix
+}
+
+interface CardDescriptionEditorProps {
+  cardDescription: string
+  onUpdateCardDescription: (cardDescription: string) => void // ✅
+}
+
+interface CardCoverProps {
+  onUpdateCardCoverPhoto: (coverPhoto: string) => Promise<void> // ✅
+}
+
+interface CardDueDateProps {
+  cardDueDate?: Date | null
+  isCompleted?: boolean | null
+  onUpdateCardDueDateAndStatus: (dueDate: Date | null, isCompleted: boolean | null) => void // ✅
+}
+
+interface CardUserGroupProps {
+  cardMembers: string[]
+  onAddCardMember: (userId: string) => void // ✅
+  onRemoveCardMember: (userId: string) => void // ✅
+}
+
+interface PhotoSearchProps {
+  onCardCoverPopoverClose: () => void // ✅
+  onBackToCardCoverPhoto: () => void // ✅
+  onUpdateCardCoverPhoto: (cover_photo: string) => Promise<void> // ✅
+}
+```
+
+**BAD Examples** (non-compliant):
+
+```tsx
+interface CardDescriptionEditorProps {
+  cardDescription: string
+  updateCardDescription: (cardDescription: string) => void // ❌ Missing on prefix
+  handleUpdateCardDescription: (cardDescription: string) => void // ❌ Using handle instead of on
+}
+
+interface CardUserGroupProps {
+  cardMembers: string[]
+  addMember: (userId: string) => void // ❌ Missing on prefix
+  removeMember: (userId: string) => void // ❌ Missing on prefix
+}
+```
+
+---
+
+## 4. Form Submit Handler
+
+### 4.1. Name the function `onSubmit`
+
+When handling form `onSubmit` events, **ALWAYS** name the function `onSubmit` and pass it directly to the form's `onSubmit` prop.
+
+**GOOD Examples**:
+
+```tsx
+export default function NewBoardDialog({ ... }: NewBoardDialogProps) {
+  const { handleSubmit, ... } = useForm<CreateBoardBodyType>({ ... })
+
+  // ✅ Named onSubmit
+  const onSubmit = handleSubmit((values) => {
+    addBoardMutation(payload).then((res) => {
+      if (!res.error) {
+        navigate(`/boards/${res.data?.result?._id}`)
+      }
+    })
+  })
+
+  return (
+    <Dialog>
+      {/* ✅ Passed directly to onSubmit prop */}
+      <form onSubmit={onSubmit}>
+        <DialogContent>
+          {/* ... form fields ... */}
+        </DialogContent>
+        <DialogActions>
+          <Button type='submit'>Create</Button>
+        </DialogActions>
+      </form>
+    </Dialog>
+  )
+}
+```
+
+**BAD Examples** (non-compliant):
+
+```tsx
+// ❌ BAD: Named something other than onSubmit
+const handleFormSubmit = handleSubmit((values) => { ... })
+const submitForm = handleSubmit((values) => { ... })
+
+// ❌ BAD: Using unnecessary wrapper function
+<form onSubmit={(e) => handleFormSubmit(e)}>
+```
+
+---
+
+## 5. Summary - Do / Don't
+
+### ✅ DO
+
+- **Handler functions**: Use `handle` prefix for all logic handler functions within components
+- **UI events (click, change, open, close, toggle, select)**: Format `handle` + `DataModel` + `Action`
+- **Logic/Data operations**: Format `handle` + `Action` + `DataModel`
+- **API functions**: Name directly with `verb` + `DataModel`, without `handle` prefix
+- **State props**: Use descriptive names with full context
+- **Callback props**: Always use `on` prefix
+- **Form submit**: Name the function `onSubmit`
+
+### ❌ DON'T
+
+- Don't use short or generic state prop names like `open`, `value`, `data`
+- Don't use `handle` prefix for API calls
+- Don't use `handle` prefix for callback props
+- Don't name form submit handlers anything other than `onSubmit`
+- Don't mix conventions within the same component
+
+---
+
+## 6. Quick Reference Table
+
+| Type                                                  | Format                            | Example                                 |
+| ----------------------------------------------------- | --------------------------------- | --------------------------------------- |
+| Logic handler                                         | `handle` + `Action` + `DataModel` | `handleUpdateCardTitle`                 |
+| UI event (click, change, toggle, open, close, select) | `handle` + `DataModel` + `Action` | `handleCardModalClose`                  |
+| API function                                          | `verb` + `DataModel`              | `addCardMember`, `deleteBoard`          |
+| State prop                                            | Descriptive name                  | `newBoardDialogOpen`, `cardDescription` |
+| Callback prop                                         | `on` + `Action` + `DataModel`     | `onUpdateCardDescription`               |
+| Form submit                                           | `onSubmit`                        | `const onSubmit = handleSubmit(...)`    |
+
+---
+
+When in doubt, refer to the example components in `src/components/Modal/ActiveCard/` and `src/components/Dialog/` to see how these conventions are applied in practice.

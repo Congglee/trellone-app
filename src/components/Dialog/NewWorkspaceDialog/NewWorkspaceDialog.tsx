@@ -17,11 +17,14 @@ import { useEffect } from 'react'
 import { useAddWorkspaceMutation } from '~/queries/workspaces'
 
 interface NewWorkspaceDialogProps {
-  open: boolean
-  onNewWorkspaceClose: () => void
+  newWorkspaceDialogOpen: boolean
+  onNewWorkspaceDialogClose: () => void
 }
 
-export default function NewWorkspaceDialog({ open, onNewWorkspaceClose }: NewWorkspaceDialogProps) {
+export default function NewWorkspaceDialog({
+  newWorkspaceDialogOpen,
+  onNewWorkspaceDialogClose
+}: NewWorkspaceDialogProps) {
   const {
     register,
     setError,
@@ -37,7 +40,7 @@ export default function NewWorkspaceDialog({ open, onNewWorkspaceClose }: NewWor
   const onSubmit = handleSubmit((values) => {
     addWorkspaceMutation(values).then((res) => {
       if (!res.error) {
-        onNewWorkspaceClose()
+        onNewWorkspaceDialogClose()
       }
     })
   })
@@ -60,8 +63,8 @@ export default function NewWorkspaceDialog({ open, onNewWorkspaceClose }: NewWor
   return (
     <Dialog
       scroll='body'
-      open={open}
-      onClose={onNewWorkspaceClose}
+      open={newWorkspaceDialogOpen}
+      onClose={onNewWorkspaceDialogClose}
       aria-labelledby='scroll-dialog-title'
       aria-describedby='scroll-dialog-description'
       PaperProps={{

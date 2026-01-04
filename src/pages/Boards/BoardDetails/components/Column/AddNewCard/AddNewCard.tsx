@@ -22,7 +22,7 @@ export default function AddNewCard({ column, canCreateCard }: AddNewCardProps) {
   const [newCardFormOpen, setNewCardFormOpen] = useState(false)
   const [cardTitle, setCardTitle] = useState('')
 
-  const toggleNewCardForm = () => {
+  const handleNewCardFormToggle = () => {
     if (!canCreateCard) return
     setNewCardFormOpen(!newCardFormOpen)
   }
@@ -38,8 +38,8 @@ export default function AddNewCard({ column, canCreateCard }: AddNewCardProps) {
 
   const [addCardMutation] = useAddCardMutation()
 
-  const reset = () => {
-    toggleNewCardForm()
+  const handleNewCardFormReset = () => {
+    handleNewCardFormToggle()
     setCardTitle('')
   }
 
@@ -75,7 +75,7 @@ export default function AddNewCard({ column, canCreateCard }: AddNewCardProps) {
 
         dispatch(updateActiveBoard(newActiveBoard))
 
-        reset()
+        handleNewCardFormReset()
 
         socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
       }
@@ -98,7 +98,7 @@ export default function AddNewCard({ column, canCreateCard }: AddNewCardProps) {
             justifyContent: 'space-between'
           }}
         >
-          <Button startIcon={<AddCardIcon />} onClick={toggleNewCardForm}>
+          <Button startIcon={<AddCardIcon />} onClick={handleNewCardFormToggle}>
             Add new card
           </Button>
           <Tooltip title='Drag to move'>
@@ -168,7 +168,7 @@ export default function AddNewCard({ column, canCreateCard }: AddNewCardProps) {
                 color: (theme) => theme.palette.warning.light,
                 cursor: 'pointer'
               }}
-              onClick={toggleNewCardForm}
+              onClick={handleNewCardFormToggle}
             />
           </Box>
         </Box>

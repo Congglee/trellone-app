@@ -2,7 +2,7 @@
 
 ## Package Identity
 
-Route-level page components for Trellone. Organized by feature (Auth, Boards, Workspaces, Settings). Uses React Router for navigation, lazy loading for code splitting, and Suspense boundaries.
+Route-level page components for Trellone. Organized by feature (Auth, Boards, Workspaces, Settings, Landing). Uses React Router for navigation, lazy loading for code splitting, and Suspense boundaries.
 
 ## Setup & Run
 
@@ -17,10 +17,11 @@ npm run dev
 
 ### File Organization
 
-- **Feature-based structure**: Group pages by domain (Auth, Boards, Workspaces)
+- **Feature-based structure**: Group pages by domain (Auth, Boards, Workspaces, Landing, Settings)
 - **Layout components**: Place in `layouts/` subdirectory (e.g., `Auth/layouts/AuthLayout/`)
 - **Page components**: Main page component in feature directory (e.g., `Auth/Login/`)
-- **Sub-pages**: Use `pages/` subdirectory for nested routes (e.g., `Workspaces/pages/Home/`)
+- **Sub-pages**: Use `pages/` subdirectory for nested routes (e.g., `Workspaces/pages/WorkspaceHome/`)
+- **Page-specific components**: Place in `components/` subdirectory (e.g., `Boards/BoardDetails/components/`)
 
 ✅ **DO**: Follow `src/pages/Auth/Login/` pattern
 
@@ -31,6 +32,53 @@ npm run dev
 
 - `src/pages/Auth/layouts/AuthLayout/`
 - `src/pages/Workspaces/layouts/HomeLayout/`
+- `src/pages/Workspaces/layouts/WorkspaceDetailsLayout/`
+- `src/pages/Workspaces/layouts/WorkspaceCollaboratorsLayout/`
+
+### Page Structure
+
+```
+src/pages/
+├── 404/
+│   └── NotFound/
+├── AccessDenied/
+├── Auth/
+│   ├── layouts/
+│   │   └── AuthLayout/
+│   ├── Login/
+│   ├── Register/
+│   ├── OAuth/
+│   ├── ForgotPassword/
+│   ├── ForgotPasswordVerification/
+│   ├── ResetPassword/
+│   └── AccountVerification/
+├── Boards/
+│   ├── BoardDetails/
+│   │   ├── components/
+│   │   │   ├── BoardBar/
+│   │   │   ├── BoardContent/
+│   │   │   ├── BoardDrawer/
+│   │   │   ├── Column/
+│   │   │   ├── Card/
+│   │   │   └── ...
+│   │   └── BoardDetails.tsx
+│   └── BoardInvitationVerification/
+├── Landing/
+│   └── components/
+├── Settings/
+│   └── components/
+└── Workspaces/
+    ├── layouts/
+    ├── components/
+    └── pages/
+        ├── Home/
+        ├── BoardsList/
+        ├── WorkspaceHome/
+        ├── WorkspaceBoards/
+        ├── WorkspaceMembers/
+        ├── WorkspaceGuests/
+        └── WorkspaceSettings/
+```
 
 ### Page Component Structure
 
@@ -47,6 +95,7 @@ export default function Login() {
 ```typescript
 // In App.tsx
 const Login = lazy(() => import('~/pages/Auth/Login'))
+const BoardDetails = lazy(() => import('~/pages/Boards/BoardDetails'))
 ```
 
 ✅ **DO**: Wrap lazy components with Suspense
@@ -59,6 +108,27 @@ const Login = lazy(() => import('~/pages/Auth/Login'))
 </Suspense>
 ```
 
+### Route Protection
+
+✅ **DO**: Use route protection components defined in `App.tsx`
+
+```typescript
+// Protected routes require authentication
+<Route element={<ProtectedRoute isAuthenticated={isAuthenticated} profile={profile} />}>
+  <Route path={path.home} element={<Home />} />
+</Route>
+
+// Rejected routes redirect if authenticated
+<Route element={<RejectedRoute isAuthenticated={isAuthenticated} profile={profile} />}>
+  <Route path={path.login} element={<Login />} />
+</Route>
+
+// Verified routes require email verification
+<Route element={<VerifiedRoute profile={profile} />}>
+  <Route path={path.boardDetails} element={<BoardDetails />} />
+</Route>
+```
+
 ### Authentication Pages
 
 ✅ **DO**: Use React Hook Form with Zod validation
@@ -66,7 +136,7 @@ const Login = lazy(() => import('~/pages/Auth/Login'))
 ```typescript
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { LoginBody } from '~/schemas/auth.schema'
+import { LoginBody, LoginBodyType } from '~/schemas/auth.schema'
 
 const {
   register,
@@ -98,6 +168,7 @@ useEffect(() => {
 ```
 
 ✅ **DO**: Handle OAuth callback flow
+
 ```typescript
 // src/pages/Auth/OAuth/OAuth.tsx
 export default function OAuth() {
@@ -120,24 +191,6 @@ export default function OAuth() {
 }
 ```
 
-✅ **DO**: Use route protection components
-```typescript
-// Protected routes require authentication
-<Route element={<ProtectedRoute isAuthenticated={isAuthenticated} profile={profile} />}>
-  <Route path={path.home} element={<Home />} />
-</Route>
-
-// Rejected routes redirect if authenticated
-<Route element={<RejectedRoute isAuthenticated={isAuthenticated} profile={profile} />}>
-  <Route path={path.login} element={<Login />} />
-</Route>
-
-// Verified routes require email verification
-<Route element={<VerifiedRoute profile={profile} />}>
-  <Route path={path.boardDetails} element={<BoardDetails />} />
-</Route>
-```
-
 ### Board Pages
 
 ✅ **DO**: Use drag-and-drop with @dnd-kit
@@ -158,6 +211,24 @@ const { attributes, listeners, setNodeRef, transform, transition } = useSortable
 dispatch(updateCard({ cardId, updates }))
 // Then sync with server
 updateCardMutation(updates)
+```
+
+✅ **DO**: Use socket events for real-time collaboration
+
+```typescript
+// Join board room
+socket?.emit('CLIENT_JOIN_BOARD', boardId)
+
+// Listen for updates
+socket?.on('SERVER_BOARD_UPDATED', (board) => {
+  dispatch(updateActiveBoard(board))
+})
+
+// Cleanup on unmount
+return () => {
+  socket?.emit('CLIENT_LEAVE_BOARD', boardId)
+  socket?.off('SERVER_BOARD_UPDATED', onUpdateBoard)
+}
 ```
 
 ### Workspace Pages
@@ -190,6 +261,29 @@ import SEO from '~/components/SEO'
 />
 ```
 
+### Naming Conventions (CRITICAL)
+
+Follow `.cursor/rules/react-naming-conventions.mdc`:
+
+✅ **DO**: Use correct handler naming in pages
+
+```typescript
+// UI events: handle + DataModel + Action
+const handleBoardDrawerToggle = () => { ... }
+const handleDeleteBoardPopoverClose = () => { ... }
+
+// Logic/Data: handle + Action + DataModel
+const handleUpdateBoardTitle = (title: string) => { ... }
+const handleResetFilters = () => { ... }
+
+// API functions: verb + DataModel (no handle)
+const archiveBoard = () => { ... }
+const deleteBoard = async () => { ... }
+
+// Form submit
+const onSubmit = handleSubmit((values) => { ... })
+```
+
 ## Touch Points / Key Files
 
 - **App Routing**: `src/App.tsx` - Main routing configuration with route protection
@@ -197,16 +291,19 @@ import SEO from '~/components/SEO'
 - **Auth Layout**: `src/pages/Auth/layouts/AuthLayout/` - Shared layout for auth pages
 - **OAuth Handler**: `src/pages/Auth/OAuth/OAuth.tsx` - Google OAuth callback handler
 - **Board Pages**: `src/pages/Boards/BoardDetails/` - Main board view with drag-and-drop
+- **Board Components**: `src/pages/Boards/BoardDetails/components/` - BoardBar, BoardContent, BoardDrawer, Column, Card, etc.
 - **Workspace Pages**: `src/pages/Workspaces/` - Dashboard and board organization
+- **Workspace Layouts**: `src/pages/Workspaces/layouts/` - HomeLayout, WorkspaceDetailsLayout
 - **Settings**: `src/pages/Settings/` - User settings and account management
 - **Landing**: `src/pages/Landing/` - Marketing/landing page
 - **404**: `src/pages/404/NotFound/` - Error page
+- **Access Denied**: `src/pages/AccessDenied/` - Access denied page
 
 ## JIT Index Hints
 
 ```bash
 # Find a page component
-rg -n "export default function.*" src/pages
+rg -n "export default function" src/pages
 
 # Find route definitions
 rg -n "path=.*element=" src/App.tsx
@@ -219,6 +316,12 @@ rg -n "useForm" src/pages
 
 # Find RTK Query hooks in pages
 rg -n "use.*Mutation|use.*Query" src/pages
+
+# Find socket usage in pages
+rg -n "socket\?\.(emit|on|off)" src/pages
+
+# Find handler functions
+rg -n "const handle" src/pages
 ```
 
 ## Common Gotchas
@@ -229,6 +332,9 @@ rg -n "use.*Mutation|use.*Query" src/pages
 - **Error handling** - Use `isUnprocessableEntityError` type guard for server errors
 - **Navigation** - Use `useNavigate` from react-router-dom, not direct window.location
 - **Loading states** - Add `className='interceptor-loading'` to submit buttons
+- **Route paths** - Import from `~/constants/path`, don't hardcode
+- **Socket cleanup** - Always remove event listeners and leave rooms on unmount
+- **Naming conventions** - Follow `.cursor/rules/react-naming-conventions.mdc`
 
 ## Pre-PR Checks
 

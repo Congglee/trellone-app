@@ -15,7 +15,7 @@ interface BoardGridProps {
 }
 
 export default function BoardGrid({ workspace, isLoading, showNewBoardCard = true }: BoardGridProps) {
-  const [newBoardOpen, setNewBoardOpen] = useState(false)
+  const [newBoardDialogOpen, setNewBoardDialogOpen] = useState(false)
 
   const boards = workspace.boards || []
 
@@ -29,7 +29,7 @@ export default function BoardGrid({ workspace, isLoading, showNewBoardCard = tru
             </Card>
           </Grid>
         ))}
-        {showNewBoardCard && <NewBoardCard onNewBoardOpen={() => setNewBoardOpen(true)} />}
+        {showNewBoardCard && <NewBoardCard onNewBoardOpen={() => setNewBoardDialogOpen(true)} />}
       </Grid>
     )
   }
@@ -40,13 +40,13 @@ export default function BoardGrid({ workspace, isLoading, showNewBoardCard = tru
         <Grid container spacing={2}>
           {boards?.length > 0 && boards.map((board) => <BoardCard key={board._id} board={board} />)}
 
-          {showNewBoardCard && <NewBoardCard onNewBoardOpen={() => setNewBoardOpen(true)} />}
+          {showNewBoardCard && <NewBoardCard onNewBoardOpen={() => setNewBoardDialogOpen(true)} />}
         </Grid>
       </Box>
 
       <NewBoardDialog
-        open={newBoardOpen}
-        onNewBoardClose={() => setNewBoardOpen(false)}
+        newBoardDialogOpen={newBoardDialogOpen}
+        onNewBoardDialogClose={() => setNewBoardDialogOpen(false)}
         defaultWorkspaceId={workspace._id}
       />
     </>

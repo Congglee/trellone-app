@@ -53,7 +53,7 @@ export default function Card({ card }: CardProps) {
   const now = new Date()
   const isOverdue = card.due_date ? new Date(card.due_date) < now : false
 
-  const formatDueDate = (date: Date) => {
+  const handleFormatDueDate = (date: Date) => {
     const currentYear = now.getFullYear()
     const dateYear = new Date(date).getFullYear()
 
@@ -97,7 +97,7 @@ export default function Card({ card }: CardProps) {
           <Box sx={{ mt: 1 }}>
             <Chip
               icon={<AccessTimeIcon fontSize='small' />}
-              label={formatDueDate(card.due_date)}
+              label={handleFormatDueDate(card.due_date)}
               size='small'
               color={getDueDateColor()}
               sx={{

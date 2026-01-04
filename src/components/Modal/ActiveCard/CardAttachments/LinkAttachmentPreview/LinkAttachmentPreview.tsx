@@ -17,8 +17,8 @@ import { CardAttachmentType } from '~/schemas/card.schema'
 import { getDomainFromUrl } from '~/utils/url'
 
 interface LinkAttachmentPreviewProps {
-  open: boolean
-  anchorEl: HTMLElement | null
+  linkAttachmentPreviewOpen: boolean
+  linkAttachmentPreviewAnchorElement: HTMLElement | null
   attachment: CardAttachmentType | null
   createdByUsername?: string
   onMouseEnter: () => void
@@ -26,8 +26,8 @@ interface LinkAttachmentPreviewProps {
 }
 
 export default function LinkAttachmentPreview({
-  open,
-  anchorEl,
+  linkAttachmentPreviewOpen,
+  linkAttachmentPreviewAnchorElement,
   attachment,
   createdByUsername,
   onMouseEnter,
@@ -49,8 +49,8 @@ export default function LinkAttachmentPreview({
 
   return (
     <Popper
-      open={open}
-      anchorEl={anchorEl}
+      open={linkAttachmentPreviewOpen}
+      anchorEl={linkAttachmentPreviewAnchorElement}
       placement='bottom-start'
       modifiers={[
         {

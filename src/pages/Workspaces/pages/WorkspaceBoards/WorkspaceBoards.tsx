@@ -23,7 +23,7 @@ import WorkspaceClosedBoards from '~/pages/Workspaces/components/WorkspaceClosed
 export default function WorkspaceBoards() {
   const { workspaceId } = useParams()
 
-  const [newBoardOpen, setNewBoardOpen] = useState(false)
+  const [newBoardDialogOpen, setNewBoardDialogOpen] = useState(false)
 
   const { data: workspaceData, isLoading, isError } = useGetWorkspaceQuery(workspaceId!)
   const workspace = workspaceData?.result
@@ -36,14 +36,14 @@ export default function WorkspaceBoards() {
   const [debouncedSearchText, setDebouncedSearchText] = useState('')
   const [sortBy, setSortBy] = useState('most-recently-active')
 
-  const debouncedUpdateSearch = useDebounce((value: string) => {
+  const debounceWorkspaceBoardsSearch = useDebounce((value: string) => {
     setDebouncedSearchText(value)
   }, 500)
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = event.target.value
     setSearchText(value)
-    debouncedUpdateSearch(value.trim().toLowerCase())
+    debounceWorkspaceBoardsSearch(value.trim().toLowerCase())
   }
 
   const filteredBoards = useMemo(() => {
@@ -169,7 +169,7 @@ export default function WorkspaceBoards() {
         <Grid container spacing={2}>
           {isLoading ? (
             <>
-              <NewBoardCard onNewBoardOpen={() => setNewBoardOpen(true)} />
+              <NewBoardCard onNewBoardOpen={() => setNewBoardDialogOpen(true)} />
               {Array.from({ length: 3 }).map((_, index) => (
                 <Grid xs={12} sm={6} md={4} lg={3} key={index}>
                   <Card variant='outlined' sx={{ height: 120 }}>
@@ -188,7 +188,7 @@ export default function WorkspaceBoards() {
             </>
           ) : (
             <>
-              <NewBoardCard onNewBoardOpen={() => setNewBoardOpen(true)} />
+              <NewBoardCard onNewBoardOpen={() => setNewBoardDialogOpen(true)} />
               {filteredBoards.length > 0 && filteredBoards.map((board) => <BoardCard key={board._id} board={board} />)}
             </>
           )}
@@ -197,8 +197,8 @@ export default function WorkspaceBoards() {
       </Box>
 
       <NewBoardDialog
-        open={newBoardOpen}
-        onNewBoardClose={() => setNewBoardOpen(false)}
+        newBoardDialogOpen={newBoardDialogOpen}
+        onNewBoardDialogClose={() => setNewBoardDialogOpen(false)}
         defaultWorkspaceId={workspaceId}
       />
     </Box>

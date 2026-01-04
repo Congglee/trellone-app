@@ -53,7 +53,7 @@ export default function ChangeBoardBackground({ canChangeBoardBackground }: Chan
     setQuery(value)
   }
 
-  const debounceSearchPhotos = useDebounce(handleInputSearchPhotosChange, 1000)
+  const debouncePhotosSearch = useDebounce(handleInputSearchPhotosChange, 1000)
 
   const dispatch = useAppDispatch()
   const { activeBoard } = useAppSelector((state) => state.board)
@@ -215,7 +215,7 @@ export default function ChangeBoardBackground({ canChangeBoardBackground }: Chan
                     </InputAdornment>
                   )
                 }}
-                onChange={debounceSearchPhotos}
+                onChange={debouncePhotosSearch}
               />
 
               <ImageList variant='standard' cols={3} gap={3} sx={{ mt: 1 }}>

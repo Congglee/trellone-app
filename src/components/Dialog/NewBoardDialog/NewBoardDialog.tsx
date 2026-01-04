@@ -30,12 +30,16 @@ import { CreateBoardBody, CreateBoardBodyType } from '~/schemas/board.schema'
 import { isUnprocessableEntityError } from '~/utils/error-handlers'
 
 interface NewBoardDialogProps {
-  open: boolean
-  onNewBoardClose: () => void
+  newBoardDialogOpen: boolean
+  onNewBoardDialogClose: () => void
   defaultWorkspaceId?: string
 }
 
-export default function NewBoardDialog({ open, onNewBoardClose, defaultWorkspaceId }: NewBoardDialogProps) {
+export default function NewBoardDialog({
+  newBoardDialogOpen,
+  onNewBoardDialogClose,
+  defaultWorkspaceId
+}: NewBoardDialogProps) {
   const {
     register,
     control,
@@ -79,7 +83,7 @@ export default function NewBoardDialog({ open, onNewBoardClose, defaultWorkspace
   })
 
   useEffect(() => {
-    if (defaultWorkspaceId && open) {
+    if (defaultWorkspaceId && newBoardDialogOpen) {
       reset({
         title: '',
         description: '',
@@ -87,7 +91,7 @@ export default function NewBoardDialog({ open, onNewBoardClose, defaultWorkspace
         workspace_id: defaultWorkspaceId || ''
       })
     }
-  }, [defaultWorkspaceId, reset, open])
+  }, [defaultWorkspaceId, reset, newBoardDialogOpen])
 
   useEffect(() => {
     if (isError && isUnprocessableEntityError<CreateBoardBodyType>(error)) {
@@ -107,8 +111,8 @@ export default function NewBoardDialog({ open, onNewBoardClose, defaultWorkspace
   return (
     <Dialog
       scroll='body'
-      open={open}
-      onClose={onNewBoardClose}
+      open={newBoardDialogOpen}
+      onClose={onNewBoardDialogClose}
       aria-labelledby='scroll-dialog-title'
       aria-describedby='scroll-dialog-description'
       PaperProps={{

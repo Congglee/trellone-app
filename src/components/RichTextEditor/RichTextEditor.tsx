@@ -38,10 +38,13 @@ export default function RichTextEditor({
   clearFormattingOnFocus
 }: RichTextEditorProps) {
   const { mode } = useColorScheme()
+
   const previousContentRef = useRef<string>('')
   const isInitialMount = useRef(true)
-  const [, forceUpdate] = useState({})
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const [, forceUpdate] = useState({})
+
   const [uploadImageMutation] = useUploadImageMutation()
 
   const editor = useEditor(
@@ -185,7 +188,7 @@ export default function RichTextEditor({
     return null
   }
 
-  const triggerImagePicker = () => {
+  const handleTriggerImagePicker = () => {
     if (!editable) return
     fileInputRef.current?.click()
   }
@@ -223,7 +226,7 @@ export default function RichTextEditor({
     }
   }
 
-  const onFileInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
 
     if (!files || files.length === 0) return
@@ -454,14 +457,14 @@ export default function RichTextEditor({
 
   return (
     <Box sx={editorContainerStyles} data-color-mode={mode}>
-      {editable && <RichTextEditorToolbar editor={editor} onInsertImage={triggerImagePicker} />}
+      {editable && <RichTextEditorToolbar editor={editor} onInsertImage={handleTriggerImagePicker} />}
       <Box sx={editorContentStyles}>
         {editable && (
           <VisuallyHiddenInput
             ref={fileInputRef}
             type='file'
             accept={config.allowedImageMimeTypes.join(',')}
-            onChange={onFileInputChange}
+            onChange={handleFileInputChange}
           />
         )}
         <EditorContent editor={editor} />

@@ -46,7 +46,7 @@ export default function ArchivedCards() {
 
   const removeCardPopoverId = 'remove-card-popover'
 
-  const toggleRemoveCardPopover = (event: ReactMouseEvent<HTMLElement>) => {
+  const handleRemoveCardPopoverToggle = (event: ReactMouseEvent<HTMLElement>) => {
     event.stopPropagation()
 
     if (isRemoveCardPopoverOpen) {
@@ -76,17 +76,17 @@ export default function ArchivedCards() {
   const [reopenCardMutation] = useReopenCardMutation()
   const [deleteCardMutation] = useDeleteCardMutation()
 
-  const updateDebouncedSearch = useCallback((value: string) => {
+  const handleArchivedCardsSearchChange = useCallback((value: string) => {
     setDebouncedSearchTerm(value.trim().toLowerCase())
   }, [])
 
-  const debouncedSearch = useDebounce(updateDebouncedSearch, 1000)
+  const debounceArchivedCardsSearch = useDebounce(handleArchivedCardsSearchChange, 1000)
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target
 
     setSearchTerm(value)
-    debouncedSearch(value)
+    debounceArchivedCardsSearch(value)
   }
 
   const handleSetActiveCard = (card: CardType) => {
@@ -305,7 +305,7 @@ export default function ArchivedCards() {
                               textDecoration: 'underline'
                             }
                           }}
-                          onClick={(event) => toggleRemoveCardPopover(event)}
+                          onClick={(event) => handleRemoveCardPopoverToggle(event)}
                         >
                           Delete
                         </Typography>

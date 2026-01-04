@@ -37,14 +37,14 @@ export default function WorkspaceGuests() {
   const [searchText, setSearchText] = useState('')
   const [debouncedSearchText, setDebouncedSearchText] = useState('')
 
-  const debouncedUpdateSearch = useDebounce((value: string) => {
+  const debounceWorkspaceGuestsSearch = useDebounce((value: string) => {
     setDebouncedSearchText(value)
   }, 500)
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = event.target.value
     setSearchText(value)
-    debouncedUpdateSearch(value.trim().toLowerCase())
+    debounceWorkspaceGuestsSearch(value.trim().toLowerCase())
   }
 
   const filteredGuests = useMemo(() => {

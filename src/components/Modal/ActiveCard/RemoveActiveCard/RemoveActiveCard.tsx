@@ -33,7 +33,7 @@ export default function RemoveActiveCard({ cardId, columnId }: RemoveActiveCardP
 
   const [deleteCardMutation] = useDeleteCardMutation()
 
-  const toggleRemoveActiveCardPopover = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleRemoveActiveCardPopoverToggle = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (isRemoveActiveCardPopoverOpen) {
       setAnchorRemoveActiveCardPopoverElement(null)
     } else {
@@ -70,7 +70,7 @@ export default function RemoveActiveCard({ cardId, columnId }: RemoveActiveCardP
     <>
       <Button
         fullWidth
-        onClick={toggleRemoveActiveCardPopover}
+        onClick={handleRemoveActiveCardPopoverToggle}
         sx={{
           p: '10px',
           fontWeight: '600',
@@ -126,7 +126,7 @@ export default function RemoveActiveCard({ cardId, columnId }: RemoveActiveCardP
         id={removeActiveCardPopoverId}
         open={isRemoveActiveCardPopoverOpen}
         anchorEl={anchorRemoveActiveCardPopoverElement}
-        onClose={toggleRemoveActiveCardPopover}
+        onClose={handleRemoveActiveCardPopoverClose}
         anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
         transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         slotProps={{

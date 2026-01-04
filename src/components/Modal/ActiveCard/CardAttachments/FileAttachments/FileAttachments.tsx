@@ -154,8 +154,8 @@ export default function FileAttachments({ fileAttachments, onToggleMenuActionsPo
       </Box>
 
       <FileAttachmentPreview
-        open={showFilePreviewModal}
-        onClose={handlePreviewModalClose}
+        fileAttachmentPreviewOpen={showFilePreviewModal}
+        onFileAttachmentPreviewClose={handlePreviewModalClose}
         attachment={filePreviewAttachment}
       />
     </>

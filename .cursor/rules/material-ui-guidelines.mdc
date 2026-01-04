@@ -1,8 +1,9 @@
 ---
-alwaysApply: true
+globs: *.tsx,src/**/*.tsx
+description: Strict Material‑UI UI policy; MUI‑only, tree‑shaking imports, icons, theming.
 ---
 
-# Material‑UI Usage & Styling Rules (Trellone App)
+# Material‑UI Usage & Styling Rules (REQUIRED)
 
 These rules codify the established Material‑UI (MUI) patterns in this project. Follow them for imports, theming, layout, styling, responsiveness, forms, dialogs, icons, animation, performance, and accessibility.
 

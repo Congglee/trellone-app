@@ -19,9 +19,22 @@ import { useGetBoardsQuery, useAddBoardMutation } from '~/queries/boards'
 
 - **One file per domain**: Each API domain has its own file (e.g., `boards.ts`, `auth.ts`)
 - **Naming**: Use kebab-case for files matching domain name
-- **Exports**: Export API instance and hooks
+- **Exports**: Export API instance, hooks, and reducer
+
+```
+src/queries/
+├── auth.ts         # Authentication (login, register, logout, OAuth, password reset)
+├── boards.ts       # Board CRUD operations
+├── cards.ts        # Card operations
+├── columns.ts      # Column management
+├── invitations.ts  # Board/Workspace invitations
+├── medias.ts       # File uploads
+├── users.ts        # User management (getMe, update profile)
+└── workspaces.ts   # Workspace management
+```
 
 ✅ **DO**: Follow `src/queries/boards.ts` pattern
+
 - Define constants: `reducerPath`, `tagTypes`, `API_URL`
 - Use `createApi` with `axiosBaseQuery()`
 - Export hooks and reducer
@@ -29,6 +42,7 @@ import { useGetBoardsQuery, useAddBoardMutation } from '~/queries/boards'
 ### API Slice Structure
 
 ✅ **DO**: Use consistent API slice structure
+
 ```typescript
 const BOARD_API_URL = '/boards' as const
 const reducerPath = 'board/api' as const
@@ -44,31 +58,49 @@ export const boardApi = createApi({
 })
 
 export const { useGetBoardsQuery, useAddBoardMutation } = boardApi
+
+const boardApiReducer = boardApi.reducer
+export default boardApiReducer
 ```
 
 ### Endpoint Patterns
 
 ✅ **DO**: Use descriptive endpoint names
+
 ```typescript
 addBoard: build.mutation<BoardResType, CreateBoardBodyType>({
   query: (body) => ({ url: BOARD_API_URL, method: 'POST', data: body })
 })
+
+getBoards: build.query<BoardListResType, BoardQueryParams>({
+  query: (params) => ({ url: BOARD_API_URL, method: 'GET', params })
+})
+
+updateBoard: build.mutation<BoardResType, { id: string; body: UpdateBoardBodyType }>({
+  query: ({ id, body }) => ({ url: `${BOARD_API_URL}/${id}`, method: 'PUT', data: body })
+})
 ```
 
 ✅ **DO**: Use proper TypeScript generics
+
 ```typescript
 build.mutation<ResponseType, RequestType>
 build.query<ResponseType, QueryParamsType>
 ```
 
 ✅ **DO**: Use `onQueryStarted` for side effects
+
 ```typescript
 async onQueryStarted(_args, { dispatch, queryFulfilled }) {
   try {
     const { data } = await queryFulfilled
-    // Handle success (toast, navigation, etc.)
+    // Handle success (toast, navigation, invalidate related tags)
+    dispatch(workspaceApi.util.invalidateTags([
+      { type: 'Workspace', id: data.result?.workspace_id }
+    ]))
   } catch (error) {
     toast.error('Error message')
+    console.error(error)
   }
 }
 ```
@@ -76,25 +108,28 @@ async onQueryStarted(_args, { dispatch, queryFulfilled }) {
 ### Cache Invalidation
 
 ✅ **DO**: Use `providesTags` for queries
+
 ```typescript
 providesTags: (result) =>
   result
     ? [
-        ...result.result.map(({ _id }) => ({ type: 'Board', id: _id })),
-        { type: 'Board', id: 'LIST' }
+        ...result.result.boards.map(({ _id }) => ({ type: 'Board' as const, id: _id })),
+        { type: 'Board' as const, id: 'LIST' }
       ]
-    : [{ type: 'Board', id: 'LIST' }]
+    : [{ type: 'Board' as const, id: 'LIST' }]
 ```
 
 ✅ **DO**: Use `invalidatesTags` for mutations
+
 ```typescript
-invalidatesTags: [
-  { type: 'Board', id: 'LIST' },
-  { type: 'Board', id: boardId }
+invalidatesTags: (_result, _error, { id }) => [
+  { type: 'Board', id },
+  { type: 'Board', id: 'LIST' }
 ]
 ```
 
-✅ **DO**: Invalidate related entities
+✅ **DO**: Invalidate related entities across APIs
+
 ```typescript
 dispatch(
   workspaceApi.util.invalidateTags([
@@ -104,9 +139,22 @@ dispatch(
 )
 ```
 
+✅ **DO**: Conditionally skip invalidation for specific updates
+
+```typescript
+invalidatesTags: (_result, _error, { id, body }) => {
+  const ignoreTags = ['column_order_ids']
+  if (ignoreTags.some((tag) => tag in body)) {
+    return []  // Skip invalidation for column reordering
+  }
+  return [{ type: 'Board', id }, { type: 'Board', id: 'LIST' }]
+}
+```
+
 ### Authentication Endpoints
 
 ✅ **DO**: Handle authentication state updates in `onQueryStarted`
+
 ```typescript
 login: build.mutation<AuthResType, LoginBodyType>({
   query: (body) => ({ url: `${AUTH_API_URL}/login`, method: 'POST', data: body }),
@@ -128,6 +176,7 @@ login: build.mutation<AuthResType, LoginBodyType>({
 ```
 
 ✅ **DO**: Reset API state on logout
+
 ```typescript
 logout: build.mutation<LogoutResType, void>({
   query: () => ({ url: `${AUTH_API_URL}/logout`, method: 'POST' }),
@@ -148,6 +197,7 @@ logout: build.mutation<LogoutResType, void>({
 ### Error Handling
 
 ✅ **DO**: Handle errors consistently with try-catch
+
 ```typescript
 async onQueryStarted(_args, { queryFulfilled }) {
   try {
@@ -163,12 +213,14 @@ async onQueryStarted(_args, { queryFulfilled }) {
 ### Component Integration
 
 ✅ **DO**: Use hooks directly in components
+
 ```typescript
-const { data, isLoading, error } = useGetBoardsQuery(params)
-const [addBoardMutation] = useAddBoardMutation()
+const { data, isLoading, error, isFetching } = useGetBoardsQuery(params)
+const [addBoardMutation, { isError, error }] = useAddBoardMutation()
 ```
 
 ✅ **DO**: Use `.unwrap()` for error handling in mutations
+
 ```typescript
 const result = await addBoardMutation(values).unwrap()
 if (result) {
@@ -176,21 +228,34 @@ if (result) {
 }
 ```
 
+✅ **DO**: Use `.then()` pattern for handling responses
+
+```typescript
+addBoardMutation(payload).then((res) => {
+  if (!res.error) {
+    const board = res.data?.result
+    socket?.emit('CLIENT_USER_CREATED_WORKSPACE_BOARD', values.workspace_id)
+    navigate(`/boards/${board?._id}`)
+  }
+})
+```
+
 ## Touch Points / Key Files
 
 - **Base Query**: `src/lib/redux/helpers.ts` - Custom `axiosBaseQuery()` implementation
-- **Auth API**: `src/queries/auth.ts` - Authentication endpoints (login, register, logout, OAuth, password reset)
-- **Boards API**: `src/queries/boards.ts` - Board management endpoints
-- **Cards API**: `src/queries/cards.ts` - Card operations endpoints
-- **Columns API**: `src/queries/columns.ts` - Column management endpoints
-- **Workspaces API**: `src/queries/workspaces.ts` - Workspace management endpoints
-- **Users API**: `src/queries/users.ts` - User management endpoints (includes `getMe` for profile)
+- **Auth API**: `src/queries/auth.ts` - Authentication endpoints (login, register, logout, OAuth, password reset, refresh token)
+- **Boards API**: `src/queries/boards.ts` - Board management (CRUD, archive, reopen, members)
+- **Cards API**: `src/queries/cards.ts` - Card operations (CRUD, archive, attachments, comments)
+- **Columns API**: `src/queries/columns.ts` - Column management (CRUD, reorder)
+- **Workspaces API**: `src/queries/workspaces.ts` - Workspace management (CRUD, members, invitations)
+- **Users API**: `src/queries/users.ts` - User management (getMe, update profile)
 - **Medias API**: `src/queries/medias.ts` - File upload endpoints
-- **Invitations API**: `src/queries/invitations.ts` - Board invitation endpoints
+- **Invitations API**: `src/queries/invitations.ts` - Board/Workspace invitation endpoints
 
 ## Authentication Flow
 
 ### Login Flow
+
 1. User submits login form → `useLoginMutation()` called
 2. RTK Query sends POST to `/auth/login`
 3. HTTP interceptor adds access token to Authorization header
@@ -200,6 +265,7 @@ if (result) {
 7. Redux state updated: `setAuthenticated(true)`, `setProfile(profile)`
 
 ### Token Refresh Flow
+
 1. Access token expires → HTTP interceptor detects 401
 2. Interceptor checks for expired token error
 3. Calls `/auth/refresh-token` with refresh token from cookies
@@ -208,6 +274,7 @@ if (result) {
 6. Original request retried with new access token
 
 ### Logout Flow
+
 1. User clicks logout → `useLogoutMutation()` called
 2. POST to `/auth/logout` clears refresh token from database
 3. HTTP interceptor clears localStorage tokens
@@ -229,6 +296,9 @@ rg -n "invalidatesTags|providesTags" src/queries
 
 # Find onQueryStarted handlers
 rg -n "onQueryStarted" src/queries
+
+# Find cross-API invalidation
+rg -n "\.util\.invalidateTags" src/queries
 ```
 
 ## Common Gotchas
@@ -238,6 +308,8 @@ rg -n "onQueryStarted" src/queries
 - **Side effects** - Use `onQueryStarted` for navigation, toasts, not in components
 - **Error handling** - Always wrap `queryFulfilled` in try-catch
 - **Type safety** - Use schema-derived types for Request/Response types
+- **Cross-API invalidation** - Import other APIs and use `otherApi.util.invalidateTags()`
+- **Conditional invalidation** - Return empty array `[]` to skip invalidation
 
 ## Pre-PR Checks
 
@@ -248,4 +320,3 @@ npm run build
 # Verify API calls work
 npm run dev
 ```
-

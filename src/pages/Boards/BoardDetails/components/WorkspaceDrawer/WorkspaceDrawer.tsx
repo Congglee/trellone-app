@@ -95,7 +95,7 @@ export default function WorkspaceDrawer({ open, onOpen, boardId, workspace, isBo
     prevWorkspaceIdRef.current = workspaceId
   }, [workspaceId])
 
-  const loadMoreBoards = () => {
+  const handleLoadMoreBoards = () => {
     if (pagination.page < pagination.total_page && !isFetching) {
       setIsLoadingMore(true)
       setPagination((prev) => ({ ...prev, page: prev.page + 1 }))
@@ -103,7 +103,7 @@ export default function WorkspaceDrawer({ open, onOpen, boardId, workspace, isBo
   }
 
   const { containerRef } = useInfiniteScroll({
-    onLoadMore: loadMoreBoards,
+    onLoadMore: handleLoadMoreBoards,
     hasMore: pagination.page < pagination.total_page,
     isLoading: isFetching || isLoadingMore,
     threshold: 200

@@ -23,13 +23,13 @@ import { updateActiveCard } from '~/store/slices/card.slice'
 interface EditCardFileAttachmentFormProps {
   attachment: CardAttachmentType
   onBackToMenuActions: () => void
-  onClose: () => void
+  onEditCardFileAttachmentFormClose: () => void
 }
 
 export default function EditCardFileAttachmentForm({
   attachment,
   onBackToMenuActions,
-  onClose
+  onEditCardFileAttachmentFormClose
 }: EditCardFileAttachmentFormProps) {
   const {
     register,
@@ -74,7 +74,7 @@ export default function EditCardFileAttachmentForm({
         dispatch(updateActiveCard(updatedCard))
         dispatch(updateCardInBoard(updatedCard))
 
-        onClose()
+        onEditCardFileAttachmentFormClose()
 
         socket?.emit('CLIENT_USER_UPDATED_CARD', updatedCard)
       }
@@ -90,7 +90,7 @@ export default function EditCardFileAttachmentForm({
         <Typography variant='subtitle1' sx={{ fontWeight: 'medium' }}>
           Edit attachment
         </Typography>
-        <IconButton size='small' onClick={onClose}>
+        <IconButton size='small' onClick={onEditCardFileAttachmentFormClose}>
           <CloseIcon fontSize='small' />
         </IconButton>
       </Box>

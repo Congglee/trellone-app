@@ -39,7 +39,7 @@ export default function ViewMemberBoards({
 
   const viewMemberBoardsPopoverId = 'view-member-boards-popover'
 
-  const toggleViewMemberBoardsPopover = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleViewMemberBoardsPopoverToggle = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (isViewMemberBoardsPopoverOpen) {
       setAnchorViewMemberBoardsPopoverElement(null)
     } else {
@@ -80,7 +80,7 @@ export default function ViewMemberBoards({
         size='small'
         variant='outlined'
         disabled={totalMemberBoardCounts === 0}
-        onClick={toggleViewMemberBoardsPopover}
+        onClick={handleViewMemberBoardsPopoverToggle}
         sx={{ borderRadius: 1, textTransform: 'none', minWidth: 120 }}
       >
         View boards ({totalMemberBoardCounts || 0})
@@ -90,7 +90,7 @@ export default function ViewMemberBoards({
         id={viewMemberBoardsPopoverId}
         open={isViewMemberBoardsPopoverOpen}
         anchorEl={anchorViewMemberBoardsPopoverElement}
-        onClose={toggleViewMemberBoardsPopover}
+        onClose={handleViewMemberBoardsPopoverToggle}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         slotProps={{
           paper: { sx: { width: 320, borderRadius: 2 } }
@@ -101,7 +101,11 @@ export default function ViewMemberBoards({
             <Typography variant='subtitle1' sx={{ fontWeight: 'medium' }}>
               Workspace boards
             </Typography>
-            <IconButton size='small' onClick={toggleViewMemberBoardsPopover} sx={{ position: 'absolute', right: 0 }}>
+            <IconButton
+              size='small'
+              onClick={handleViewMemberBoardsPopoverToggle}
+              sx={{ position: 'absolute', right: 0 }}
+            >
               <CloseIcon fontSize='small' />
             </IconButton>
           </Box>

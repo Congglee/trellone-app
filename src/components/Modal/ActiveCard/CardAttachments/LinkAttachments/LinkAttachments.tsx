@@ -135,8 +135,8 @@ export default function LinkAttachments({ linkAttachments, onToggleMenuActionsPo
       </Box>
 
       <LinkAttachmentPreview
-        open={Boolean(linkPreviewAnchor)}
-        anchorEl={linkPreviewAnchor}
+        linkAttachmentPreviewOpen={Boolean(linkPreviewAnchor)}
+        linkAttachmentPreviewAnchorElement={linkPreviewAnchor}
         attachment={linkPreviewAttachment}
         createdByUsername={linkPreviewAttachment ? getUserDisplayName(linkPreviewAttachment.uploaded_by) : undefined}
         onMouseEnter={handlePreviewMouseEnter}

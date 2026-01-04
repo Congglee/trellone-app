@@ -25,7 +25,7 @@ export default function ToggleFocusInput({
     }
   }, [value])
 
-  const triggerBlur = () => {
+  const handleTriggerBlur = () => {
     setLocalValue(localValue.trim())
 
     if (!localValue || localValue.trim() === value) {
@@ -39,7 +39,7 @@ export default function ToggleFocusInput({
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       event.preventDefault()
-      triggerBlur()
+      handleTriggerBlur()
 
       // Blur the input to remove focus after Enter
       event.currentTarget.blur()
@@ -54,7 +54,7 @@ export default function ToggleFocusInput({
       size='small'
       value={localValue}
       onChange={(e) => setLocalValue(e.target.value)}
-      onBlur={triggerBlur}
+      onBlur={handleTriggerBlur}
       onKeyDown={handleKeyDown}
       {...rest}
       sx={{

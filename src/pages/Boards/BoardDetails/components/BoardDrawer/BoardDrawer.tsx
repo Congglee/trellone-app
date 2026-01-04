@@ -39,8 +39,8 @@ import { BoardMemberType } from '~/schemas/board.schema'
 import { clearActiveBoard, updateActiveBoard } from '~/store/slices/board.slice'
 
 interface BoardDrawerProps {
-  open: boolean
-  onOpen: (open: boolean) => void
+  boardDrawerOpen: boolean
+  onBoardDrawerOpen: (open: boolean) => void
   boardMembers: BoardMemberType[]
   boardId: string
   isBoardAdmin: boolean
@@ -51,8 +51,8 @@ interface BoardDrawerProps {
 }
 
 export default function BoardDrawer({
-  open,
-  onOpen,
+  boardDrawerOpen,
+  onBoardDrawerOpen,
   boardMembers,
   canManageBoard,
   canEditBoardInfo,
@@ -80,7 +80,7 @@ export default function BoardDrawer({
   const [leaveBoardMutation] = useLeaveBoardMutation()
   const [reopenBoardMutation] = useReopenBoardMutation()
 
-  const { data: workspacesData } = useGetWorkspacesQuery({ page: 1, limit: 100 }, { skip: !open })
+  const { data: workspacesData } = useGetWorkspacesQuery({ page: 1, limit: 100 }, { skip: !boardDrawerOpen })
 
   const workspacesList = useMemo(() => workspacesData?.result.workspaces || [], [workspacesData])
 
@@ -220,10 +220,10 @@ export default function BoardDrawer({
       }}
       variant='persistent'
       anchor='right'
-      open={open}
+      open={boardDrawerOpen}
     >
       <DrawerHeader sx={{ justifyContent: 'space-between', minHeight: `${theme.trellone.navBarHeight}px!important` }}>
-        <IconButton color='inherit' onClick={() => onOpen(false)}>
+        <IconButton color='inherit' onClick={() => onBoardDrawerOpen(false)}>
           {theme.direction === 'rtl' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
 

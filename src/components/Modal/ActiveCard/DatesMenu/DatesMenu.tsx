@@ -7,12 +7,12 @@ import { StaticDateTimePicker } from '@mui/x-date-pickers/StaticDateTimePicker'
 import { useEffect, useState } from 'react'
 
 interface CardDatesMenuProps {
-  dueDate?: Date | null
+  cardDueDate?: Date | null
   isCompleted?: boolean | null
   onUpdateCardDueDate: (dueDate: Date | null, isCompleted: boolean | null) => void
 }
 
-export default function DatesMenu({ dueDate, onUpdateCardDueDate, isCompleted }: CardDatesMenuProps) {
+export default function DatesMenu({ cardDueDate, onUpdateCardDueDate, isCompleted }: CardDatesMenuProps) {
   const theme = useTheme()
   const isScreenMdAndAbove = useMediaQuery(theme.breakpoints.only('xs'))
 
@@ -23,13 +23,13 @@ export default function DatesMenu({ dueDate, onUpdateCardDueDate, isCompleted }:
   const [dateValue, setDateValue] = useState<Date | null>(null)
 
   useEffect(() => {
-    if (dueDate) {
-      const date = new Date(dueDate)
+    if (cardDueDate) {
+      const date = new Date(cardDueDate)
       setDateValue(date)
     } else {
       setDateValue(null)
     }
-  }, [dueDate])
+  }, [cardDueDate])
 
   const handleDatesMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setAnchorDatesMenuElement(event.currentTarget)
@@ -39,7 +39,7 @@ export default function DatesMenu({ dueDate, onUpdateCardDueDate, isCompleted }:
     setAnchorDatesMenuElement(null)
   }
 
-  const updateCardDueDate = () => {
+  const handleUpdateCardDueDate = () => {
     onUpdateCardDueDate(dateValue, isCompleted as boolean)
     handleDatesMenuClose()
   }
@@ -88,7 +88,7 @@ export default function DatesMenu({ dueDate, onUpdateCardDueDate, isCompleted }:
             actionBar: {
               actions: ['today', 'cancel', 'accept'],
               // @ts-expect-error - MUI types don't properly expose the onAccept and onCancel props
-              onAccept: updateCardDueDate,
+              onAccept: handleUpdateCardDueDate,
               onCancel: handleDatesMenuClose,
               sx: { justifyContent: isScreenMdAndAbove ? 'flex-start' : 'flex-end' }
             }

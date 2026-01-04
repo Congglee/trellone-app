@@ -30,7 +30,7 @@ export default function DeleteBoard({ boardId }: DeleteBoardProps) {
 
   const deleteBoardPopoverId = isDeleteBoardPopoverOpen ? 'delete-board-popover' : undefined
 
-  const toggleDeleteBoardPopover = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const handleDeleteBoardPopoverToggle = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (isDeleteBoardPopoverOpen) {
       setAnchorDeleteBoardPopoverElement(null)
     } else {
@@ -74,7 +74,7 @@ export default function DeleteBoard({ boardId }: DeleteBoardProps) {
   return (
     <>
       <ListItem disablePadding>
-        <ListItemButton onClick={toggleDeleteBoardPopover}>
+        <ListItemButton onClick={handleDeleteBoardPopoverToggle}>
           <ListItemIcon>
             <DeleteIcon color='error' />
           </ListItemIcon>

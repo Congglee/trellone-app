@@ -23,7 +23,7 @@ export default function LeaveWorkspace({ buttonText, workspaceId }: LeaveWorkspa
 
   const leaveWorkspacePopoverId = isLeaveWorkspacePopoverOpen ? 'leave-workspace-popover' : undefined
 
-  const toggleLeaveWorkspacePopover = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleLeaveWorkspacePopoverToggle = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (isLeaveWorkspacePopoverOpen) {
       setAnchorLeaveWorkspacePopoverElement(null)
     } else {
@@ -68,7 +68,7 @@ export default function LeaveWorkspace({ buttonText, workspaceId }: LeaveWorkspa
         size='small'
         variant='outlined'
         sx={{ borderRadius: 1, textTransform: 'none', minWidth: 120 }}
-        onClick={toggleLeaveWorkspacePopover}
+        onClick={handleLeaveWorkspacePopoverToggle}
       >
         {buttonText}
       </Button>

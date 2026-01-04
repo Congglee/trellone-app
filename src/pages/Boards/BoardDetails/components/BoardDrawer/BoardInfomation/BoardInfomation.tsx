@@ -96,7 +96,7 @@ export default function BoardInfomation({
     })
   }
 
-  const resetDescription = () => {
+  const handleDescriptionReset = () => {
     setDescriptionEditMode(false)
     // Reset to the actual content
     if (initialDescription && initialDescription.trim() !== '') {
@@ -113,7 +113,7 @@ export default function BoardInfomation({
   const handleBoardInformationDrawerClose = () => {
     setBoardInformationDrawerOpen(false)
     if (descriptionEditMode) {
-      resetDescription()
+      handleDescriptionReset()
     }
   }
 
@@ -295,7 +295,7 @@ export default function BoardInfomation({
                     >
                       Save
                     </Button>
-                    <Button onClick={resetDescription} type='button' size='small'>
+                    <Button onClick={handleDescriptionReset} type='button' size='small'>
                       Cancel
                     </Button>
                   </Box>

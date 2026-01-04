@@ -87,7 +87,7 @@ export default function RichTextEditorToolbar({ editor, onInsertImage }: RichTex
     }
   }
 
-  const setLink = () => {
+  const handleSetLink = () => {
     const previousUrl = editor.getAttributes('link').href
     const url = window.prompt('Enter URL:', previousUrl)
 
@@ -172,7 +172,7 @@ export default function RichTextEditorToolbar({ editor, onInsertImage }: RichTex
     {
       icon: <LinkIcon fontSize='small' />,
       title: 'Add Link',
-      action: setLink,
+      action: handleSetLink,
       isActive: editor.isActive('link'),
       disabled: false
     },

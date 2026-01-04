@@ -47,7 +47,7 @@ export default function ClosedBoardsListRow({
   const deleteBoardPopoverId = isDeleteBoardPopoverOpen ? 'delete-board-popover' : undefined
   const selectWorkspacePopoverId = isSelectWorkspacePopoverOpen ? 'select-workspace-popover' : undefined
 
-  const toggleDeleteBoardPopover = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleDeleteBoardPopoverToggle = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (isDeleteBoardPopoverOpen) {
       setAnchorDeleteBoardPopoverElement(null)
     } else {
@@ -78,18 +78,18 @@ export default function ClosedBoardsListRow({
     }
   }
 
-  const reopenBoard = () => {
+  const handleReopenBoard = () => {
     if (selectedWorkspaceId) {
       onReopenBoard(board._id, '', selectedWorkspaceId)
       handleSelectWorkspacePopoverClose()
     }
   }
 
-  const leaveBoard = () => {
+  const handleLeaveBoard = () => {
     onLeaveBoard(board._id, board.workspace_id as string)
   }
 
-  const deleteBoard = () => {
+  const handleDeleteBoard = () => {
     onDeleteBoard(board._id, board.workspace_id as string)
   }
 
@@ -236,7 +236,7 @@ export default function ClosedBoardsListRow({
                     ))}
                   </Select>
 
-                  <Button variant='contained' fullWidth disabled={!selectedWorkspaceId} onClick={reopenBoard}>
+                  <Button variant='contained' fullWidth disabled={!selectedWorkspaceId} onClick={handleReopenBoard}>
                     Reopen board
                   </Button>
                 </Box>
@@ -247,7 +247,7 @@ export default function ClosedBoardsListRow({
                 color='error'
                 size='small'
                 startIcon={<DeleteOutlineIcon />}
-                onClick={toggleDeleteBoardPopover}
+                onClick={handleDeleteBoardPopoverToggle}
                 sx={{ textTransform: 'none', fontWeight: 600, px: 2.25 }}
               >
                 Delete
@@ -290,7 +290,7 @@ export default function ClosedBoardsListRow({
                     no undo.
                   </Typography>
 
-                  <Button variant='contained' color='error' fullWidth onClick={deleteBoard}>
+                  <Button variant='contained' color='error' fullWidth onClick={handleDeleteBoard}>
                     Delete
                   </Button>
                 </Box>
@@ -302,7 +302,7 @@ export default function ClosedBoardsListRow({
               color='error'
               size='small'
               startIcon={<DeleteOutlineIcon />}
-              onClick={leaveBoard}
+              onClick={handleLeaveBoard}
               sx={{ textTransform: 'none', fontWeight: 600, px: 2.25 }}
             >
               Leave

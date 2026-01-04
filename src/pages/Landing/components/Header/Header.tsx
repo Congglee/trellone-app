@@ -79,7 +79,7 @@ export default function Header() {
     return <BrightnessAutoIcon />
   }
 
-  const scrollToSection = (href: string) => {
+  const handleScrollToSection = (href: string) => {
     handleMobileMenuClose()
     const element = document.querySelector(href)
     if (element) {
@@ -167,7 +167,7 @@ export default function Header() {
               {navItems.map((item) => (
                 <Button
                   key={item.label}
-                  onClick={() => scrollToSection(item.href)}
+                  onClick={() => handleScrollToSection(item.href)}
                   sx={{
                     color: 'info.main',
                     textTransform: 'uppercase',
@@ -362,7 +362,7 @@ export default function Header() {
           </Box>
 
           {navItems.map((item) => (
-            <MenuItem key={item.label} onClick={() => scrollToSection(item.href)}>
+            <MenuItem key={item.label} onClick={() => handleScrollToSection(item.href)}>
               {item.label}
             </MenuItem>
           ))}

@@ -121,7 +121,7 @@ export default function BoardContent({
     return sortedColumns.find((column) => column?.cards?.map((card) => card._id)?.includes(cardId as string))
   }
 
-  const moveCardBetweenDifferentColumns = ({
+  const handleMoveCardBetweenDifferentColumns = ({
     overColumn,
     overCardId,
     active,
@@ -270,7 +270,7 @@ export default function BoardContent({
     // Only handle the logic here when dragging a card between two different columns; if dragging the card within its original column, do nothing
     // Because this is the logic for handling during drag (handleDragOver), while handling after the drag is completed is a different matter (handleDragEnd)
     if (activeColumn._id !== overColumn._id) {
-      moveCardBetweenDifferentColumns({
+      handleMoveCardBetweenDifferentColumns({
         overColumn,
         overCardId,
         active,
@@ -322,7 +322,7 @@ export default function BoardContent({
       if (oldColumnWhenDraggingCard?._id !== overColumn._id) {
         // Drag-and-drop action for a card between two different columns
         // You must use activeDragItemData.columnId or oldColumnWhenDraggingCard (set in state from the handleDragStart step), not activeData in the handleDragEnd scope, because after passing through onDragOver and reaching this point, the card's state has already been updated once.
-        moveCardBetweenDifferentColumns({
+        handleMoveCardBetweenDifferentColumns({
           overColumn,
           overCardId,
           active,

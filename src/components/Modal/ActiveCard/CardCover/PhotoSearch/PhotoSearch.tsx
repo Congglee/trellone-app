@@ -11,8 +11,8 @@ import { useDebounce } from '~/hooks/use-debounce'
 import { useGetUnsplashSearchPhotosQuery } from '~/queries/medias'
 
 interface PhotoSearchProps {
-  onClose: () => void
-  onBackToCoverPhoto: () => void
+  onCardCoverPopoverClose: () => void
+  onBackToCardCoverPhoto: () => void
   onUpdateCardCoverPhoto: (cover_photo: string) => Promise<void>
 }
 
@@ -28,11 +28,15 @@ const suggestedSearches = [
   'Animals'
 ]
 
-export default function PhotoSearch({ onClose, onBackToCoverPhoto, onUpdateCardCoverPhoto }: PhotoSearchProps) {
+export default function PhotoSearch({
+  onCardCoverPopoverClose,
+  onBackToCardCoverPhoto,
+  onUpdateCardCoverPhoto
+}: PhotoSearchProps) {
   const [searchValue, setSearchValue] = useState('Wallpapers')
   const [inputValue, setInputValue] = useState('')
 
-  const debounceUpdateSearchValue = useDebounce(setSearchValue, 800)
+  const debouncePhotoSearch = useDebounce(setSearchValue, 800)
 
   const { data } = useGetUnsplashSearchPhotosQuery(searchValue, {
     skip: !searchValue
@@ -42,7 +46,7 @@ export default function PhotoSearch({ onClose, onBackToCoverPhoto, onUpdateCardC
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value
     setInputValue(newValue)
-    debounceUpdateSearchValue(newValue === '' ? 'Wallpapers' : newValue)
+    debouncePhotoSearch(newValue === '' ? 'Wallpapers' : newValue)
   }
 
   const handleSuggestionClick = (search: string) => {
@@ -68,7 +72,7 @@ export default function PhotoSearch({ onClose, onBackToCoverPhoto, onUpdateCardC
         }}
       >
         <IconButton
-          onClick={onBackToCoverPhoto}
+          onClick={onBackToCardCoverPhoto}
           size='small'
           sx={{
             color: (theme) => (theme.palette.mode === 'dark' ? '#bdc3c7' : '#7f8c8d')
@@ -89,7 +93,7 @@ export default function PhotoSearch({ onClose, onBackToCoverPhoto, onUpdateCardC
 
         <IconButton
           size='small'
-          onClick={onClose}
+          onClick={onCardCoverPopoverClose}
           sx={{
             color: (theme) => (theme.palette.mode === 'dark' ? '#bdc3c7' : '#7f8c8d')
           }}

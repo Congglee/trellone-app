@@ -19,7 +19,7 @@ import ComponentName from '~/components/ComponentName'
 
 - **Component Structure**: Each component has its own directory with `ComponentName/ComponentName.tsx` and `ComponentName/index.ts`
 - **Barrel Exports**: Use `index.ts` for clean imports
-- **Sub-components**: Place in subdirectories (e.g., `ActiveCard/CardAttachments/`)
+- **Sub-components**: Place in subdirectories (e.g., `Modal/ActiveCard/CardAttachments/`)
 
 ✅ **DO**: Follow `src/components/Form/TextFieldInput/` pattern
 
@@ -54,7 +54,112 @@ export default function TextFieldInput<TFieldValues extends FieldValues>({...}: 
 }
 ```
 
+### Naming Conventions (CRITICAL)
+
+Follow `.cursor/rules/react-naming-conventions.mdc`:
+
+#### Handler Functions
+
+✅ **DO**: Use `handle` + `DataModel` + `Action` for UI events
+
+```typescript
+// Click, Change, Toggle, Open, Close, Select events
+const handleCardModalClose = () => { ... }
+const handleDatesMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => { ... }
+const handleCardCoverPopoverToggle = (event: React.MouseEvent<HTMLButtonElement>) => { ... }
+```
+
+✅ **DO**: Use `handle` + `Action` + `DataModel` for logic/data handlers
+
+```typescript
+// Update, Add, Remove, Reset, Submit operations
+const handleUpdateCardTitle = (title: string) => { ... }
+const handleAddListItem = (item: ItemType) => { ... }
+const handleResetFormData = () => { ... }
+```
+
+❌ **DON'T**: Mix up the formats
+
+```typescript
+// ❌ BAD: Action comes before DataModel for UI events
+const handleCloseCardModal = () => { ... }
+
+// ✅ GOOD:
+const handleCardModalClose = () => { ... }
+```
+
+#### API Functions (No handle prefix)
+
+✅ **DO**: Use `verb` + `DataModel` directly
+
+```typescript
+const archiveCard = () => { ... }
+const addCardMember = (userId: string) => { ... }
+const deleteBoard = async (boardId: string) => { ... }
+```
+
+❌ **DON'T**: Use `handle` prefix for API calls
+
+```typescript
+// ❌ BAD
+const handleArchiveCard = () => { ... }
+```
+
+#### Props Interface
+
+✅ **DO**: Use descriptive state prop names
+
+```typescript
+interface NewBoardDialogProps {
+  newBoardDialogOpen: boolean  // ✅ Clear context
+  defaultWorkspaceId?: string  // ✅ Clear context
+}
+```
+
+❌ **DON'T**: Use generic prop names
+
+```typescript
+interface NewBoardDialogProps {
+  open: boolean  // ❌ Too generic
+  id?: string    // ❌ Unclear context
+}
+```
+
+✅ **DO**: Use `on` prefix for callback props
+
+```typescript
+interface NewBoardDialogProps {
+  newBoardDialogOpen: boolean
+  onNewBoardDialogClose: () => void  // ✅ on prefix
+  onUpdateCardDescription: (description: string) => void  // ✅ on prefix
+}
+```
+
+❌ **DON'T**: Use `handle` prefix for callback props
+
+```typescript
+// ❌ BAD
+handleNewBoardDialogClose: () => void
+updateCardDescription: (description: string) => void
+```
+
+#### Form Submit Handler
+
+✅ **DO**: Name the function `onSubmit`
+
+```typescript
+const onSubmit = handleSubmit((values) => {
+  addBoardMutation(payload).then((res) => {
+    // handle response
+  })
+})
+
+<form onSubmit={onSubmit}>
+```
+
 ### Material-UI Integration
+
+Follow `.cursor/rules/material-ui-guidelines.mdc`:
 
 ✅ **DO**: Use `sx` prop for styling (prefer over `styled`)
 
@@ -80,6 +185,16 @@ sx={{ backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#1A2027' : '#
 
 ```typescript
 import Grid from '@mui/material/Unstable_Grid2'
+```
+
+✅ **DO**: Use responsive object syntax
+
+```typescript
+sx={{
+  display: { xs: 'none', md: 'flex' },
+  width: { xs: 'auto', sm: 520 },
+  gap: { xs: 1, md: 2 }
+}}
 ```
 
 ### Form Components
@@ -123,32 +238,23 @@ import { Controller } from 'react-hook-form'
 ✅ **DO**: Use `Tooltip` for interactive elements
 ✅ **DO**: Use `IconButton` for clickable icons
 
-### Responsive Design
-
-✅ **DO**: Use Material-UI breakpoints consistently
-
-```typescript
-sx={{
-  display: { xs: 'none', md: 'flex' },
-  width: { xs: 'auto', sm: 520 },
-  gap: { xs: 1, md: 2 }
-}}
-```
-
 ## Touch Points / Key Files
 
-- **Form Components**: `src/components/Form/` - TextFieldInput, FieldErrorAlert, ToggleFocusInput
-- **Modal Components**: `src/components/Modal/ActiveCard/` - Complex card modal with attachments, comments
+- **Form Components**: `src/components/Form/` - TextFieldInput, FieldErrorAlert, ToggleFocusInput, VisuallyHiddenInput
+- **Modal Components**: `src/components/Modal/ActiveCard/` - Complex card modal with attachments, comments, due dates
 - **Dialog Components**: `src/components/Dialog/` - NewBoardDialog, NewWorkspaceDialog
+- **NavBar Components**: `src/components/NavBar/` - Navigation, search, notifications, profiles
 - **Loading States**: `src/components/Loading/PageLoadingSpinner/`
 - **Error Handling**: `src/components/ErrorBoundary/`
 - **SEO**: `src/components/SEO/`
+- **Rich Text Editor**: `src/components/RichTextEditor/` - TipTap integration
+- **Workspace**: `src/components/Workspace/WorkspaceAvatar/`
 
 ## JIT Index Hints
 
 ```bash
 # Find a component by name
-rg -n "export default function ComponentName" src/components
+rg -n "export default function" src/components
 
 # Find Material-UI component usage
 rg -n "from '@mui/material" src/components
@@ -158,15 +264,24 @@ rg -n "TextFieldInput|FieldErrorAlert" src/components
 
 # Find component props interfaces
 rg -n "interface.*Props" src/components
+
+# Find handler functions
+rg -n "const handle" src/components
+
+# Find callback props definitions
+rg -n "on[A-Z].*:" src/components
 ```
 
 ## Common Gotchas
 
-- **Always use `sx` prop** - Prefer over `styled` components (see memory ID: 8973239)
+- **Always use `sx` prop** - Prefer over `styled` components
 - **Import path alias** - Use `~` not relative paths (`~/components/` not `../../components/`)
 - **Default exports only** - Components use default exports, utilities use named exports
 - **Type generics** - Form components use generics: `TextFieldInput<TFieldValues>`
 - **Error prop pattern** - Use double negation: `error={!!errors['field']}`
+- **Naming conventions** - Follow `.cursor/rules/react-naming-conventions.mdc` strictly
+- **Form submit** - Always name the function `onSubmit`
+- **Callback props** - Always use `on` prefix, never `handle`
 
 ## Pre-PR Checks
 

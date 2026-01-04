@@ -214,7 +214,7 @@ export default function BoardDetails() {
     }
   }, [socket, activeBoard, dispatch, queryConfig])
 
-  const onMoveColumns = (dndOrderedColumns: ColumnType[]) => {
+  const moveColumns = (dndOrderedColumns: ColumnType[]) => {
     if (isClosed) return
 
     // Get the IDs of the columns in the order they are being moved
@@ -236,7 +236,7 @@ export default function BoardDetails() {
     })
   }
 
-  const onMoveCardInTheSameColumn = (dndOrderedCards: CardType[], dndOrderedCardsIds: string[], columnId: string) => {
+  const moveCardInTheSameColumn = (dndOrderedCards: CardType[], dndOrderedCardsIds: string[], columnId: string) => {
     if (isClosed) return
 
     updateColumnMutation({
@@ -259,7 +259,7 @@ export default function BoardDetails() {
     })
   }
 
-  const onMoveCardToDifferentColumn = (
+  const moveCardToDifferentColumn = (
     currentCardId: string,
     prevColumnId: string,
     nextColumnId: string,
@@ -421,9 +421,9 @@ export default function BoardDetails() {
 
             <BoardContent
               board={activeBoard}
-              onMoveColumns={onMoveColumns}
-              onMoveCardInTheSameColumn={onMoveCardInTheSameColumn}
-              onMoveCardToDifferentColumn={onMoveCardToDifferentColumn}
+              onMoveColumns={moveColumns}
+              onMoveCardInTheSameColumn={moveCardInTheSameColumn}
+              onMoveCardToDifferentColumn={moveCardToDifferentColumn}
               canDragAndDrop={canDragAndDrop}
               canCreateColumn={canCreateColumn}
               canEditColumn={canEditColumn}
@@ -432,8 +432,8 @@ export default function BoardDetails() {
           </Main>
 
           <BoardDrawer
-            open={boardDrawerOpen}
-            onOpen={handleBoardDrawerOpen}
+            boardDrawerOpen={boardDrawerOpen}
+            onBoardDrawerOpen={handleBoardDrawerOpen}
             boardMembers={activeBoard.members}
             boardId={boardId!}
             isBoardAdmin={isAdmin}

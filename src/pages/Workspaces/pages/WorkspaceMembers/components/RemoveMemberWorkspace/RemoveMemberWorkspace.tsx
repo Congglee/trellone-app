@@ -30,7 +30,7 @@ export default function RemoveMemberWorkspace({
 
   const removeMemberWorkspacePopoverId = 'remove-member-workspace-popover'
 
-  const toggleRemoveMemberWorkspacePopover = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleRemoveMemberWorkspacePopoverToggle = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (isRemoveMemberWorkspacePopoverOpen) {
       setAnchorRemoveMemberWorkspacePopoverElement(null)
     } else {
@@ -68,7 +68,7 @@ export default function RemoveMemberWorkspace({
         variant='outlined'
         disabled={isDisabled}
         sx={{ borderRadius: 1, textTransform: 'none', minWidth: 120 }}
-        onClick={toggleRemoveMemberWorkspacePopover}
+        onClick={handleRemoveMemberWorkspacePopoverToggle}
         startIcon={<ClearIcon />}
       >
         {buttonText}
@@ -78,7 +78,7 @@ export default function RemoveMemberWorkspace({
         id={removeMemberWorkspacePopoverId}
         open={isRemoveMemberWorkspacePopoverOpen}
         anchorEl={anchorRemoveMemberWorkspacePopoverElement}
-        onClose={toggleRemoveMemberWorkspacePopover}
+        onClose={handleRemoveMemberWorkspacePopoverToggle}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         slotProps={{
           paper: { sx: { width: 320, borderRadius: 2 } }
@@ -91,7 +91,7 @@ export default function RemoveMemberWorkspace({
             </Typography>
             <IconButton
               size='small'
-              onClick={toggleRemoveMemberWorkspacePopover}
+              onClick={handleRemoveMemberWorkspacePopoverToggle}
               sx={{ position: 'absolute', right: 0 }}
             >
               <CloseIcon fontSize='small' />

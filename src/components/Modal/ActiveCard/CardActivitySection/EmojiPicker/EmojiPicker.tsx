@@ -46,7 +46,7 @@ export default function EmojiPicker({ activeCard, activeComment, onSetActiveComm
     onSetActiveComment(null)
   }
 
-  const handleEmojiSelect = (emojiData: EmojiClickData) => {
+  const reactToCardComment = (emojiData: EmojiClickData) => {
     if (activeComment) {
       // Find the current user's existing reaction for this emoji
       const currentUserReaction = activeComment.reactions?.find(
@@ -93,7 +93,7 @@ export default function EmojiPicker({ activeCard, activeComment, onSetActiveComm
         }}
       >
         <Box sx={{ p: 1 }}>
-          <ReactEmojiPicker onEmojiClick={handleEmojiSelect} width={400} height={400} theme={emojiPickerTheme} />
+          <ReactEmojiPicker onEmojiClick={reactToCardComment} width={400} height={400} theme={emojiPickerTheme} />
         </Box>
       </Popover>
     </>

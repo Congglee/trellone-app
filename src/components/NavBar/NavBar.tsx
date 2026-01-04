@@ -25,7 +25,7 @@ export default function NavBar() {
   const theme = useTheme()
   const isScreenBelowMedium = useMediaQuery(theme.breakpoints.down('md'))
 
-  const toggleMenuDrawer = (newOpen: boolean) => {
+  const handleMenuDrawerToggle = (newOpen: boolean) => {
     setOpen(newOpen)
   }
 
@@ -47,7 +47,7 @@ export default function NavBar() {
           <IconButton
             size='small'
             sx={{ padding: 0, display: { xs: 'inline-flex', md: 'none' } }}
-            onClick={() => toggleMenuDrawer(true)}
+            onClick={() => handleMenuDrawerToggle(true)}
           >
             <MenuIcon />
           </IconButton>
@@ -95,8 +95,8 @@ export default function NavBar() {
 
       <Divider />
 
-      <Drawer open={open} onClose={() => toggleMenuDrawer(false)}>
-        <MenuDrawer onToggleDrawer={toggleMenuDrawer} />
+      <Drawer open={open} onClose={() => handleMenuDrawerToggle(false)}>
+        <MenuDrawer onToggleDrawer={handleMenuDrawerToggle} />
       </Drawer>
     </>
   )

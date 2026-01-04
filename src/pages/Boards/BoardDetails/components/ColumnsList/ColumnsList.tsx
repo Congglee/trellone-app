@@ -36,13 +36,13 @@ export default function ColumnsList({ columns, canCreateColumn, canEditColumn, c
     setColumnTitle('')
   })
 
-  const toggleNewColumnForm = () => {
+  const handleNewColumnFormToggle = () => {
     if (!canCreateColumn) return
     setNewColumnFormOpen(!newColumnFormOpen)
   }
 
-  const reset = () => {
-    toggleNewColumnForm()
+  const handleNewColumnFormReset = () => {
+    handleNewColumnFormToggle()
     setColumnTitle('')
   }
 
@@ -74,7 +74,7 @@ export default function ColumnsList({ columns, canCreateColumn, canEditColumn, c
 
         dispatch(updateActiveBoard(newActiveBoard))
 
-        reset()
+        handleNewColumnFormReset()
 
         socket?.emit('CLIENT_USER_UPDATED_BOARD', newActiveBoard)
       }
@@ -109,7 +109,7 @@ export default function ColumnsList({ columns, canCreateColumn, canEditColumn, c
                 py: 1,
                 bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgb(255 255 255 / 10%)' : 'rgb(0 0 0 / 10%)')
               }}
-              onClick={toggleNewColumnForm}
+              onClick={handleNewColumnFormToggle}
             >
               Add new column
             </Button>
@@ -162,7 +162,7 @@ export default function ColumnsList({ columns, canCreateColumn, canEditColumn, c
                   cursor: 'pointer',
                   '&:hover': { color: (theme) => theme.palette.warning.light }
                 }}
-                onClick={reset}
+                onClick={handleNewColumnFormReset}
               />
             </Box>
           </Box>

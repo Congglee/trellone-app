@@ -82,7 +82,7 @@ export default function WorkspaceClosedBoards({ workspaceId }: WorkspaceClosedBo
     })
   }
 
-  const loadMoreBoards = () => {
+  const handleLoadMoreBoards = () => {
     if (pagination.page < pagination.total_page && !isFetching) {
       setIsLoadingMore(true)
       const nextPage = pagination.page + 1
@@ -96,7 +96,7 @@ export default function WorkspaceClosedBoards({ workspaceId }: WorkspaceClosedBo
   }
 
   const { containerRef } = useInfiniteScroll({
-    onLoadMore: loadMoreBoards,
+    onLoadMore: handleLoadMoreBoards,
     hasMore: pagination.page < pagination.total_page,
     isLoading: isFetching || isLoadingMore,
     threshold: 200

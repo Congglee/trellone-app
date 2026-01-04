@@ -35,7 +35,7 @@ export default function CardCover({ onUpdateCardCoverPhoto }: CardCoverProps) {
 
   const [uploadImageMutation] = useUploadImageMutation()
 
-  const toggleCoverPopover = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleCardCoverPopoverToggle = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (!anchorCoverPopoverElement) {
       setAnchorCoverPopoverElement(event.currentTarget)
       setShowCoverPhoto(true)
@@ -45,13 +45,13 @@ export default function CardCover({ onUpdateCardCoverPhoto }: CardCoverProps) {
     }
   }
 
-  const handleCoverPopoverClose = () => {
+  const handleCardCoverPopoverClose = () => {
     setAnchorCoverPopoverElement(null)
     setShowCoverPhoto(false)
     setShowUnsplashPhotoSearch(false)
   }
 
-  const onBackToCoverPhoto = () => {
+  const handleBackToCardCoverPhoto = () => {
     setShowUnsplashPhotoSearch(false)
     setShowCoverPhoto(true)
   }
@@ -87,7 +87,7 @@ export default function CardCover({ onUpdateCardCoverPhoto }: CardCoverProps) {
       <Button
         color='inherit'
         fullWidth
-        onClick={toggleCoverPopover}
+        onClick={handleCardCoverPopoverToggle}
         sx={{
           p: '10px',
           fontWeight: '600',
@@ -105,7 +105,7 @@ export default function CardCover({ onUpdateCardCoverPhoto }: CardCoverProps) {
         id={popoverId}
         open={isCoverPopoverOpen}
         anchorEl={anchorCoverPopoverElement}
-        onClose={handleCoverPopoverClose}
+        onClose={handleCardCoverPopoverClose}
         anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
         transformOrigin={{ vertical: 'center', horizontal: 'center' }}
         slotProps={{
@@ -144,7 +144,7 @@ export default function CardCover({ onUpdateCardCoverPhoto }: CardCoverProps) {
               >
                 Cover
               </Typography>
-              <IconButton onClick={handleCoverPopoverClose} size='small'>
+              <IconButton onClick={handleCardCoverPopoverClose} size='small'>
                 <CloseIcon />
               </IconButton>
             </Box>
@@ -288,8 +288,8 @@ export default function CardCover({ onUpdateCardCoverPhoto }: CardCoverProps) {
 
         {showUnsplashPhotoSearch && (
           <PhotoSearch
-            onClose={handleCoverPopoverClose}
-            onBackToCoverPhoto={onBackToCoverPhoto}
+            onCardCoverPopoverClose={handleCardCoverPopoverClose}
+            onBackToCardCoverPhoto={handleBackToCardCoverPhoto}
             onUpdateCardCoverPhoto={onUpdateCardCoverPhoto}
           />
         )}

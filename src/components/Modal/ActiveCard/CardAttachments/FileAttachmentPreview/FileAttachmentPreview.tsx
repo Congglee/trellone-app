@@ -14,17 +14,19 @@ import { toast } from 'react-toastify'
 import { CardAttachmentType } from '~/schemas/card.schema'
 
 interface FileAttachmentPreviewProps {
-  open: boolean
-  onClose: () => void
+  fileAttachmentPreviewOpen: boolean
+  onFileAttachmentPreviewClose: () => void
   attachment: CardAttachmentType | null
 }
 
-export default function FileAttachmentPreview({ open, onClose, attachment }: FileAttachmentPreviewProps) {
+export default function FileAttachmentPreview({
+  fileAttachmentPreviewOpen,
+  onFileAttachmentPreviewClose,
+  attachment
+}: FileAttachmentPreviewProps) {
   const [imageError, setImageError] = useState(false)
 
-  if (!attachment) {
-    return null
-  }
+  if (!attachment) return null
 
   const handleDownload = async () => {
     try {
@@ -70,8 +72,8 @@ export default function FileAttachmentPreview({ open, onClose, attachment }: Fil
 
   return (
     <Dialog
-      open={open}
-      onClose={onClose}
+      open={fileAttachmentPreviewOpen}
+      onClose={onFileAttachmentPreviewClose}
       maxWidth='lg'
       fullWidth
       sx={{
@@ -121,7 +123,7 @@ export default function FileAttachmentPreview({ open, onClose, attachment }: Fil
             <DownloadIcon fontSize='small' />
           </IconButton>
           <IconButton
-            onClick={onClose}
+            onClick={onFileAttachmentPreviewClose}
             size='small'
             sx={{
               bgcolor: 'action.hover',

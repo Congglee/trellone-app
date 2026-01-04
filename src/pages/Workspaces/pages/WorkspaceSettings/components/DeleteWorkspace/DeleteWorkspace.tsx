@@ -35,7 +35,7 @@ export default function DeleteWorkspace({
 
   const deleteWorkspacePopoverId = isDeleteWorkspacePopoverOpen ? 'delete-workspace-popover' : undefined
 
-  const toggleDeleteWorkspacePopover = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleDeleteWorkspacePopoverToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (isDeleteWorkspacePopoverOpen) {
       setAnchorDeleteWorkspacePopoverElement(null)
       setConfirmWorkspaceName('')
@@ -78,7 +78,7 @@ export default function DeleteWorkspace({
         color='error'
         size='medium'
         sx={{ px: 2.5, fontWeight: 600 }}
-        onClick={toggleDeleteWorkspacePopover}
+        onClick={handleDeleteWorkspacePopoverToggle}
         disabled={!canDeleteWorkspace}
       >
         Delete this Workspace?

@@ -20,21 +20,6 @@ import type { BoardType } from '~/schemas/board.schema'
 import { UserType } from '~/schemas/user.schema'
 import { updateActiveBoard } from '~/store/slices/board.slice'
 
-const MENU_STYLES = {
-  bgcolor: 'transparent',
-  border: 'none',
-  paddingX: '5px',
-  borderRadius: '4px',
-  '.MuiSvgIcon-root': {
-    color: 'text.primary'
-  },
-  '&:hover': {
-    bgcolor: 'primary.50'
-  },
-  fontSize: '0.875rem',
-  fontWeight: 500
-}
-
 interface BoardBarProps {
   workspaceDrawerOpen: boolean
   onWorkspaceDrawerOpen: (open: boolean) => void
@@ -82,7 +67,7 @@ export default function BoardBar({
   const [updateBoardMutation] = useUpdateBoardMutation()
   const [joinWorkspaceBoardMutation] = useJoinWorkspaceBoardMutation()
 
-  const toggleEditBoardTitleForm = () => {
+  const handleEditBoardTitleFormToggle = () => {
     if (!canEditBoardInfo) {
       return
     }
@@ -220,10 +205,23 @@ export default function BoardBar({
             </Box>
           ) : (
             <Chip
-              sx={{ ...MENU_STYLES }}
+              sx={{
+                bgcolor: 'transparent',
+                border: 'none',
+                paddingX: '5px',
+                borderRadius: '4px',
+                '.MuiSvgIcon-root': {
+                  color: 'text.primary'
+                },
+                '&:hover': {
+                  bgcolor: 'primary.50'
+                },
+                fontSize: '0.875rem',
+                fontWeight: 500
+              }}
               icon={<SpaceDashboardIcon />}
               label={board.title}
-              onClick={toggleEditBoardTitleForm}
+              onClick={handleEditBoardTitleFormToggle}
             />
           )}
         </Box>

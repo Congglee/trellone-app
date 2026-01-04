@@ -31,7 +31,7 @@ import { useSocketAutoRejoin } from '~/hooks/use-sockets'
 export default function WorkspaceHome() {
   const { workspaceId } = useParams()
 
-  const [newBoardOpen, setNewBoardOpen] = useState(false)
+  const [newBoardDialogOpen, setNewBoardDialogOpen] = useState(false)
   const [editWorkspaceOpen, setEditWorkspaceOpen] = useState(false)
 
   const dispatch = useAppDispatch()
@@ -216,12 +216,12 @@ export default function WorkspaceHome() {
                   </Card>
                 </Grid>
               ))}
-              <NewBoardCard onNewBoardOpen={() => setNewBoardOpen(true)} />
+              <NewBoardCard onNewBoardOpen={() => setNewBoardDialogOpen(true)} />
             </>
           ) : (
             <>
               {joinedBoards.length > 0 && joinedBoards.map((board) => <BoardCard key={board._id} board={board} />)}
-              <NewBoardCard onNewBoardOpen={() => setNewBoardOpen(true)} />
+              <NewBoardCard onNewBoardOpen={() => setNewBoardDialogOpen(true)} />
             </>
           )}
         </Grid>
@@ -251,12 +251,12 @@ export default function WorkspaceHome() {
                   </Card>
                 </Grid>
               ))}
-              <NewBoardCard onNewBoardOpen={() => setNewBoardOpen(true)} />
+              <NewBoardCard onNewBoardOpen={() => setNewBoardDialogOpen(true)} />
             </>
           ) : (
             <>
               {otherBoards.length > 0 && otherBoards.map((board) => <BoardCard key={board._id} board={board} />)}
-              <NewBoardCard onNewBoardOpen={() => setNewBoardOpen(true)} />
+              <NewBoardCard onNewBoardOpen={() => setNewBoardDialogOpen(true)} />
             </>
           )}
         </Grid>
@@ -265,8 +265,8 @@ export default function WorkspaceHome() {
       </Box>
 
       <NewBoardDialog
-        open={newBoardOpen}
-        onNewBoardClose={() => setNewBoardOpen(false)}
+        newBoardDialogOpen={newBoardDialogOpen}
+        onNewBoardDialogClose={() => setNewBoardDialogOpen(false)}
         defaultWorkspaceId={workspaceId}
       />
 

@@ -78,7 +78,7 @@ export default function AccountTab() {
     await resendVerifyEmailMutation({ email: profile?.email as string })
   }
 
-  const handleChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
 
     if (file && (file.size >= config.maxSizeUploadAvatar || !file.type.includes('image'))) {
@@ -152,7 +152,7 @@ export default function AccountTab() {
           <Tooltip title='Upload a new image to update your avatar immediately.'>
             <Button component='label' variant='contained' size='small' startIcon={<CloudUploadIcon />}>
               Upload
-              <VisuallyHiddenInput type='file' accept='image/*' onChange={handleChangeFile} />
+              <VisuallyHiddenInput type='file' accept='image/*' onChange={handleFileChange} />
             </Button>
           </Tooltip>
         </Box>

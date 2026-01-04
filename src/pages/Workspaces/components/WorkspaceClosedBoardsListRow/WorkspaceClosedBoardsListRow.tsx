@@ -36,7 +36,7 @@ export default function WorkspaceClosedBoardsListRow({
 
   const deleteBoardPopoverId = isDeleteBoardPopoverOpen ? 'delete-board-popover' : undefined
 
-  const toggleDeleteBoardPopover = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleDeleteBoardPopoverToggle = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (isDeleteBoardPopoverOpen) {
       setAnchorDeleteBoardPopoverElement(null)
     } else {
@@ -143,7 +143,7 @@ export default function WorkspaceClosedBoardsListRow({
                   color='error'
                   size='small'
                   startIcon={<DeleteOutlineIcon />}
-                  onClick={toggleDeleteBoardPopover}
+                  onClick={handleDeleteBoardPopoverToggle}
                   sx={{ textTransform: 'none', fontWeight: 600, px: 2.25 }}
                 >
                   Delete

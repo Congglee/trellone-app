@@ -51,7 +51,7 @@ export default function WorkspaceVisibility({
 
   const workspaceVisibilityPopoverId = 'workspace-visibility-popover'
 
-  const toggleWorkspaceVisibilityPopover = (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleWorkspaceVisibilityPopoverToggle = (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (isWorkspaceVisibilityPopoverOpen) {
       setAnchorWorkspaceVisibilityPopoverElement(null)
     } else if (event) {
@@ -70,13 +70,13 @@ export default function WorkspaceVisibility({
 
   const changeWorkspaceVisibility = (nextType: WorkspaceVisibilityType) => {
     if (nextType === selectedVisibility) {
-      toggleWorkspaceVisibilityPopover()
+      handleWorkspaceVisibilityPopoverToggle()
       return
     }
 
     updateWorkspaceMutation({ id: workspaceId, body: { visibility: nextType } }).then((res) => {
       if (!res.error) {
-        toggleWorkspaceVisibilityPopover()
+        handleWorkspaceVisibilityPopoverToggle()
         socket?.emit('CLIENT_USER_UPDATED_WORKSPACE', workspaceId)
       }
     })
@@ -88,7 +88,7 @@ export default function WorkspaceVisibility({
         variant='outlined'
         size='small'
         className='interceptor-loading'
-        onClick={toggleWorkspaceVisibilityPopover}
+        onClick={handleWorkspaceVisibilityPopoverToggle}
         disabled={isDisabled}
       >
         Change
@@ -98,7 +98,7 @@ export default function WorkspaceVisibility({
         id={workspaceVisibilityPopoverId}
         open={isWorkspaceVisibilityPopoverOpen}
         anchorEl={anchorWorkspaceVisibilityPopoverElement}
-        onClose={() => toggleWorkspaceVisibilityPopover()}
+        onClose={() => handleWorkspaceVisibilityPopoverToggle()}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         slotProps={{
           paper: { sx: { width: 350, borderRadius: 2 } }
@@ -111,7 +111,7 @@ export default function WorkspaceVisibility({
             </Typography>
             <IconButton
               size='small'
-              onClick={() => toggleWorkspaceVisibilityPopover()}
+              onClick={() => handleWorkspaceVisibilityPopoverToggle()}
               sx={{ position: 'absolute', right: 0 }}
             >
               <CloseIcon fontSize='small' />

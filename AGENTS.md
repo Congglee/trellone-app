@@ -1,10 +1,10 @@
-﻿# Trellone - AI Agent Guide
+# Trellone - AI Agent Guide
 
 ## Project Snapshot
 
 Trellone is a React 18 + TypeScript SPA for Trello-style project management. Built with Material-UI, Redux Toolkit, RTK Query, Socket.IO, and Vite. Single project structure (not monorepo). Each `src/` subdirectory has its own detailed AGENTS.md file.
 
-**Tech Stack**: React 18.3.1, TypeScript 5.7.2, Material-UI 5.16.14, Redux Toolkit, RTK Query, Socket.IO, Vite 6.1.0
+**Tech Stack**: React 18.3.1, TypeScript 5.7.2, Material-UI 5.16.14, Redux Toolkit 2.6.0, RTK Query, Socket.IO Client 4.8.1, Vite 6.1.0, React Hook Form 7.54.2, Zod 3.24.2, TipTap 3.6.2
 
 ## Root Setup Commands
 
@@ -44,6 +44,38 @@ npm run prettier:fix
   - Schemas: kebab-case with `.schema.ts` suffix (`auth.schema.ts`)
 - **Component Exports**: Default exports for components, named exports for utilities/types
 - **Type Imports**: Use `import type` for type-only imports
+- **MUI Imports**: Tree-shaking friendly, one-per-line (`import Box from '@mui/material/Box'`)
+
+## Naming Conventions (CRITICAL)
+
+Follow the naming conventions defined in `.cursor/rules/react-naming-conventions.mdc`:
+
+### Handler Functions
+
+| Type | Format | Example |
+|------|--------|---------|
+| Logic/Data handler | `handle` + `Action` + `DataModel` | `handleUpdateCardTitle` |
+| UI event (click, change, toggle, open, close, select) | `handle` + `DataModel` + `Action` | `handleCardModalClose` |
+| API function | `verb` + `DataModel` | `addCardMember`, `deleteBoard` |
+| Form submit | `onSubmit` | `const onSubmit = handleSubmit(...)` |
+
+### Props
+
+| Type | Format | Example |
+|------|--------|---------|
+| State prop | Descriptive name | `newBoardDialogOpen`, `cardDescription` |
+| Callback prop | `on` + `Action` + `DataModel` | `onUpdateCardDescription`, `onNewBoardDialogClose` |
+
+## Material-UI Guidelines
+
+Follow the guidelines defined in `.cursor/rules/material-ui-guidelines.mdc`:
+
+- **Styling**: Prefer `sx` prop over `styled` components
+- **Imports**: Tree-shaking imports (`import Box from '@mui/material/Box'`)
+- **Icons**: Import individually (`import GoogleIcon from '@mui/icons-material/Google'`)
+- **Grid**: Use Grid v2 (`import Grid from '@mui/material/Unstable_Grid2'`)
+- **Theme**: Use `experimental_extendTheme` with light/dark color schemes
+- **Responsive**: Use MUI breakpoints (`{ xs, sm, md, lg, xl }`)
 
 ## Security & Secrets
 
@@ -71,11 +103,17 @@ Each directory has detailed patterns in its own AGENTS.md:
 - **Library Configs**: `src/lib/` → [see src/lib/AGENTS.md](src/lib/AGENTS.md)
 - **Constants**: `src/constants/` → [see src/constants/AGENTS.md](src/constants/AGENTS.md)
 
+### Cursor Rules
+
+- **React Naming Conventions**: `.cursor/rules/react-naming-conventions.mdc`
+- **Material-UI Guidelines**: `.cursor/rules/material-ui-guidelines.mdc`
+- **General Restrictions**: `.cursor/rules/general-restrictions.mdc`
+
 ### Quick Find Commands
 
 ```bash
 # Find a React component
-rg -n "export default function.*" src/components src/pages
+rg -n "export default function" src/components src/pages
 
 # Find a custom hook
 rg -n "export const use" src/hooks
@@ -94,6 +132,15 @@ rg -n "export (interface|type)" src/types
 
 # Find Material-UI component usage
 rg -n "from '@mui/material" src
+
+# Find handler functions
+rg -n "const handle" src/components src/pages
+
+# Find callback props
+rg -n "on[A-Z].*:" src/components
+
+# Find socket events
+rg -n "socket\?\.(emit|on|off)" src
 ```
 
 ## Definition of Done
@@ -106,5 +153,7 @@ Before creating a PR:
 - [ ] No console errors in browser dev tools
 - [ ] Follows patterns from relevant `src/*/AGENTS.md` file
 - [ ] Uses `~` alias for imports (not relative `../../`)
+- [ ] Follows naming conventions from `.cursor/rules/react-naming-conventions.mdc`
+- [ ] Follows Material-UI guidelines from `.cursor/rules/material-ui-guidelines.mdc`
 - [ ] Proper error handling for async operations
 - [ ] Loading states implemented where needed

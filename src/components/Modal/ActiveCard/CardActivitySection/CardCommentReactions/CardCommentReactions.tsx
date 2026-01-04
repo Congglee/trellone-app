@@ -21,7 +21,7 @@ export default function CardCommentReactions({ activeCard, comment }: CardCommen
 
   const [reactToCardCommentMutation] = useReactToCardCommentMutation()
 
-  const toggleCommentReaction = (comment: CommentType, emoji: string, hasCurrentUserReacted: boolean) => {
+  const reactToCardComment = (comment: CommentType, emoji: string, hasCurrentUserReacted: boolean) => {
     // Find the current user's existing reaction for this emoji
     const currentUserReaction = comment.reactions?.find(
       (reaction) => reaction.emoji === emoji && reaction.user_email === profile?.email
@@ -125,7 +125,7 @@ export default function CardCommentReactions({ activeCard, comment }: CardCommen
           return (
             <Tooltip key={reactionIndex} title={title}>
               <Box
-                onClick={() => toggleCommentReaction(comment, reactionGroup.emoji, reactionGroup.hasCurrentUserReacted)}
+                onClick={() => reactToCardComment(comment, reactionGroup.emoji, reactionGroup.hasCurrentUserReacted)}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',

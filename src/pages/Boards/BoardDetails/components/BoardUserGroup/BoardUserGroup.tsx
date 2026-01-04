@@ -16,7 +16,7 @@ export default function BoardUserGroup({ boardUsers = [], limit = 5 }: BoardUser
 
   const popoverId = isBoardUserGroupPopoverOpen ? 'board-all-users-popover' : undefined
 
-  const toggleBoardUserGroupPopover = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const handleBoardUserGroupPopoverToggle = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (!anchorBoardUserGroupPopoverElement) {
       setAnchorBoardUserGroupPopoverElement(event.currentTarget)
     } else {
@@ -40,7 +40,7 @@ export default function BoardUserGroup({ boardUsers = [], limit = 5 }: BoardUser
         <Tooltip title='Show more'>
           <Box
             aria-describedby={popoverId}
-            onClick={toggleBoardUserGroupPopover}
+            onClick={handleBoardUserGroupPopoverToggle}
             sx={{
               width: 36,
               height: 36,
@@ -64,7 +64,7 @@ export default function BoardUserGroup({ boardUsers = [], limit = 5 }: BoardUser
         id={popoverId}
         open={isBoardUserGroupPopoverOpen}
         anchorEl={anchorBoardUserGroupPopoverElement}
-        onClose={toggleBoardUserGroupPopover}
+        onClose={handleBoardUserGroupPopoverToggle}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <Box

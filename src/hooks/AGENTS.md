@@ -2,14 +2,17 @@
 
 ## Package Identity
 
-Custom React hooks for Trellone. Reusable hooks for debouncing, infinite scroll, query configuration, and URL parameter handling.
+Custom React hooks for Trellone. Reusable hooks for debouncing, infinite scroll, query configuration, URL parameter handling, permissions, and socket auto-rejoin.
 
 ## Setup & Run
 
 Hooks are imported directly. No separate build step needed.
 
 ```typescript
-import { useDebounce, useInfiniteScroll } from '~/hooks'
+import { useDebounce } from '~/hooks/use-debounce'
+import { useInfiniteScroll } from '~/hooks/use-infinite-scroll'
+import { useQueryConfig } from '~/hooks/use-query-config'
+import { useSocketAutoRejoin } from '~/hooks/use-sockets'
 ```
 
 ## Patterns & Conventions
@@ -19,6 +22,17 @@ import { useDebounce, useInfiniteScroll } from '~/hooks'
 - **One hook per file**: Each hook has its own file with `use-` prefix
 - **Naming**: Use kebab-case with `use-` prefix (e.g., `use-debounce.ts`)
 - **Exports**: Named exports only (no default exports)
+
+```
+src/hooks/
+├── use-categorize-workspaces.ts  # Workspace categorization
+├── use-debounce.ts               # Debounce value
+├── use-infinite-scroll.ts        # Infinite scroll
+├── use-permissions.ts            # Permission checking
+├── use-query-config.ts           # URL query params config
+├── use-query-params.ts           # Search params management
+└── use-sockets.ts                # Socket auto-rejoin
+```
 
 ✅ **DO**: Follow `src/hooks/use-debounce.ts` pattern
 
@@ -32,7 +46,19 @@ import { useDebounce, useInfiniteScroll } from '~/hooks'
 
 ```typescript
 export const useDebounce = <T>(value: T, delay: number): T => {
-  // implementation
+  const [debouncedValue, setDebouncedValue] = useState<T>(value)
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value)
+    }, delay)
+
+    return () => {
+      clearTimeout(handler)
+    }
+  }, [value, delay])
+
+  return debouncedValue
 }
 ```
 
@@ -42,6 +68,7 @@ export const useDebounce = <T>(value: T, delay: number): T => {
 interface UseInfiniteScrollOptions {
   onLoadMore: () => void
   hasMore: boolean
+  isLoading?: boolean
   threshold?: number
   useWindowScroll?: boolean
 }
@@ -49,6 +76,7 @@ interface UseInfiniteScrollOptions {
 export const useInfiniteScroll = ({
   onLoadMore,
   hasMore,
+  isLoading = false,
   threshold = 100,
   useWindowScroll = false
 }: UseInfiniteScrollOptions) => {
@@ -78,6 +106,7 @@ if (isNaN(delay)) {
 export const useInfiniteScroll = ({
   onLoadMore,
   hasMore,
+  isLoading = false,
   threshold = 100,
   useWindowScroll = false
 }: UseInfiniteScrollOptions) => {
@@ -91,7 +120,7 @@ export const useInfiniteScroll = ({
 
 ```typescript
 const handleScroll = useCallback(() => {
-  // implementation
+  // scroll handling logic
 }, [onLoadMore, isLoading, hasMore, threshold])
 ```
 
@@ -112,11 +141,18 @@ useEffect(() => {
 
 ```typescript
 export const useQueryConfig = <T = CommonQueryParams>(): T => {
-  // implementation
+  const [searchParams] = useSearchParams()
+  const queryParams: T = {} as T
+  
+  searchParams.forEach((value, key) => {
+    ;(queryParams as Record<string, string>)[key] = value
+  })
+  
+  return queryParams
 }
 ```
 
-### Socket Hooks
+### Socket Auto-Rejoin Hook
 
 ✅ **DO**: Use `useSocketAutoRejoin` for automatic room rejoin on socket reconnect
 
@@ -135,7 +171,7 @@ useSocketAutoRejoin(
 )
 ```
 
-✅ **DO**: Include all dependencies that affect room membership in the dependencies array
+✅ **DO**: Include all dependencies that affect room membership
 
 ```typescript
 useSocketAutoRejoin(
@@ -156,13 +192,43 @@ useSocketAutoRejoin(
 
 ❌ **DON'T**: Manually handle reconnect events - `useSocketAutoRejoin` handles `connect` and `reconnect` events automatically
 
+### useSocketAutoRejoin Implementation
+
+```typescript
+export const useSocketAutoRejoin = (
+  socket: Socket | null,
+  joinAction: (socket: Socket) => void,
+  dependencies: any[] = []
+) => {
+  useEffect(() => {
+    if (!socket) return
+
+    // Initial join if already connected
+    if (socket.connected) {
+      joinAction(socket)
+    }
+
+    const onConnect = () => joinAction(socket)
+    const onReconnect = () => joinAction(socket)
+
+    socket.on('connect', onConnect)
+    socket.on('reconnect', onReconnect)
+
+    return () => {
+      socket.off('connect', onConnect)
+      socket.off('reconnect', onReconnect)
+    }
+  }, [socket, ...dependencies])
+}
+```
+
 ## Touch Points / Key Files
 
-- **Debounce**: `src/hooks/use-debounce.ts` - Debounce functionality
-- **Infinite Scroll**: `src/hooks/use-infinite-scroll.ts` - Infinite scroll implementation
+- **Debounce**: `src/hooks/use-debounce.ts` - Debounce value for search inputs
+- **Infinite Scroll**: `src/hooks/use-infinite-scroll.ts` - Infinite scroll for lists
 - **Query Config**: `src/hooks/use-query-config.ts` - URL query parameter handling
 - **Query Params**: `src/hooks/use-query-params.ts` - Search params management
-- **Permissions**: `src/hooks/use-permissions.ts` - Permission checking
+- **Permissions**: `src/hooks/use-permissions.ts` - Permission checking for UI elements
 - **Categorize Workspaces**: `src/hooks/use-categorize-workspaces.ts` - Workspace categorization
 - **Socket Auto Rejoin**: `src/hooks/use-sockets.ts` - Socket room auto-rejoin on reconnect
 
@@ -197,6 +263,7 @@ rg -n "socket\?\.(on|emit|off)" src
 - **Error handling** - Validate parameters and throw descriptive errors
 - **Socket auto-rejoin** - Use `useSocketAutoRejoin` instead of manually handling reconnect events
 - **Socket dependencies** - Include all IDs (boardId, workspaceId) that affect room membership in dependencies array
+- **Generic types** - Use generics for hooks that return different types based on context
 
 ## Pre-PR Checks
 
