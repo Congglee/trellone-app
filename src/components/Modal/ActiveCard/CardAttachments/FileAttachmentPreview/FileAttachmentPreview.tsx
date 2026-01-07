@@ -135,30 +135,36 @@ export default function FileAttachmentPreview({
         </Box>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <DialogContent sx={{ p: 0 }}>
         {canPreview ? (
-          <Box
-            sx={{
-              width: '100%',
-              height: '70vh',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              bgcolor: 'grey.50'
-            }}
-          >
-            {isImage && !imageError ? (
+          isImage && !imageError ? (
+            <Box
+              sx={{
+                width: '100%',
+                maxHeight: '75vh',
+                overflowY: 'auto',
+                bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'grey.900' : 'grey.100')
+              }}
+            >
               <img
                 src={attachment.file.url}
                 alt={attachment.file.display_name}
                 style={{
-                  maxWidth: '100%',
-                  maxHeight: '100%',
-                  objectFit: 'contain'
+                  width: '100%',
+                  height: 'auto',
+                  display: 'block'
                 }}
                 onError={() => setImageError(true)}
               />
-            ) : isPdf ? (
+            </Box>
+          ) : isPdf ? (
+            <Box
+              sx={{
+                width: '100%',
+                height: '75vh',
+                overflow: 'hidden'
+              }}
+            >
               <iframe
                 src={attachment.file.url}
                 title={attachment.file.display_name}
@@ -168,8 +174,8 @@ export default function FileAttachmentPreview({
                   border: 'none'
                 }}
               />
-            ) : null}
-          </Box>
+            </Box>
+          ) : null
         ) : (
           <Box
             sx={{
