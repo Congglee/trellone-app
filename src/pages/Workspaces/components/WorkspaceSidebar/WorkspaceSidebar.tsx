@@ -306,12 +306,7 @@ export default function WorkspaceSidebar({ workspaceId }: WorkspaceSidebarProps)
 
       <Divider />
 
-      <Typography
-        variant='subtitle1'
-        p={2}
-        pb={1}
-        // sx={{ opacity: isWorkspaceSidebarExpanded ? 1 : 0, transition: 'opacity 0.2s' }}
-      >
+      <Typography variant='subtitle1' p={2} pb={1}>
         {isWorkspaceSidebarExpanded ? 'Your Boards' : ''}
       </Typography>
 
