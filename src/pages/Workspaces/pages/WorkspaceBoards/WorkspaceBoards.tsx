@@ -10,9 +10,9 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useMemo, useState, type ChangeEvent } from 'react'
-import { Helmet } from 'react-helmet-async'
 import { Navigate, useParams } from 'react-router-dom'
 import NewBoardDialog from '~/components/Dialog/NewBoardDialog'
+import SEO from '~/components/SEO'
 import BoardCard from '~/pages/Workspaces/components/BoardCard'
 import NewBoardCard from '~/pages/Workspaces/components/NewBoardCard'
 import { useGetWorkspaceQuery } from '~/queries/workspaces'
@@ -107,13 +107,12 @@ export default function WorkspaceBoards() {
         width: { xs: '100vw', sm: '100%' }
       }}
     >
-      <Helmet>
-        <title>{workspace?.title ? `${workspace.title} | Boards | Trellone` : 'Boards | Trellone'}</title>
-        <meta
-          name='description'
-          content='Organize anything, together. Trellone is a collaboration tool that organizes your projects into boards.'
-        />
-      </Helmet>
+      <SEO
+        title={workspace?.title ? `${workspace.title} - Boards` : 'Workspace Boards'}
+        description={`Boards in ${workspace?.title || 'your workspace'}: search, sort, and create boards in Trellone.`}
+        noIndex
+        noFollow
+      />
 
       <Typography variant='h6' sx={{ mb: 2.5 }}>
         Boards

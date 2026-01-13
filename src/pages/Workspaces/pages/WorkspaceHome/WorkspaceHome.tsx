@@ -11,9 +11,9 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Unstable_Grid2'
 import { useEffect, useState } from 'react'
-import { Helmet } from 'react-helmet-async'
 import { Navigate, useParams } from 'react-router-dom'
 import NewBoardDialog from '~/components/Dialog/NewBoardDialog'
+import SEO from '~/components/SEO'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
 import path from '~/constants/path'
 import { WorkspacePermission } from '~/constants/permissions'
@@ -102,13 +102,15 @@ export default function WorkspaceHome() {
 
   return (
     <Box>
-      <Helmet>
-        <title>{workspace?.title ? `${workspace.title} | Trellone` : 'Workspace | Trellone'}</title>
-        <meta
-          name='description'
-          content='Organize anything, together. Trellone is a collaboration tool that organizes your projects into boards.'
-        />
-      </Helmet>
+      <SEO
+        title={workspace?.title ? `${workspace.title} - Overview` : 'Workspace'}
+        description={
+          workspace?.description?.trim() ||
+          'Workspace overview in Trellone: browse boards, create new boards, and manage collaboration.'
+        }
+        noIndex
+        noFollow
+      />
 
       <Stack spacing={3} sx={{ p: 4, pt: { xs: 0, sm: 4 } }}>
         {isLoading ? (

@@ -3,13 +3,13 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import cloneDeep from 'lodash/cloneDeep'
 import { useEffect } from 'react'
-import { Helmet } from 'react-helmet-async'
 import { useParams } from 'react-router-dom'
 import DrawerHeader from '~/components/DrawerHeader'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import Main from '~/components/Main'
 import ActiveCard from '~/components/Modal/ActiveCard'
 import NavBar from '~/components/NavBar'
+import SEO from '~/components/SEO'
 import { BoardRole } from '~/constants/type'
 import { useBoardPermission } from '~/hooks/use-permissions'
 import { useQueryConfig } from '~/hooks/use-query-config'
@@ -341,13 +341,18 @@ export default function BoardDetails() {
 
   return (
     <Container disableGutters maxWidth={false} sx={{ height: '100vh' }}>
-      <Helmet>
-        <title>{activeBoard.title} | Trellone</title>
-        <meta
-          name='description'
-          content="Organize anything, together. Trellone is a collaboration tool that organizes your projects into boards. In one glance, know what's being worked on, who's working on what, and where something is in a process"
-        />
-      </Helmet>
+      <SEO
+        title={activeBoard.title}
+        description={
+          activeBoard.description?.trim() ||
+          `Board details for ${activeBoard.title} in Trellone — collaborate, track progress, and manage tasks.`
+        }
+        image={activeBoard.cover_photo}
+        imageAlt={activeBoard.cover_photo ? `Board cover for ${activeBoard.title}` : undefined}
+        noIndex
+        noFollow
+        canonicalPath={boardId ? `/boards/${boardId}` : undefined}
+      />
 
       <NavBar />
 

@@ -6,8 +6,8 @@ import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useMemo, useState, type ChangeEvent } from 'react'
-import { Helmet } from 'react-helmet-async'
 import { Navigate, useParams } from 'react-router-dom'
+import SEO from '~/components/SEO'
 import path from '~/constants/path'
 import { WorkspacePermission } from '~/constants/permissions'
 import { WorkspaceRole } from '~/constants/type'
@@ -68,13 +68,12 @@ export default function WorkspaceMembers() {
 
   return (
     <Box>
-      <Helmet>
-        <title>{workspace?.title ? `${workspace.title} | Members | Trellone` : 'Workspace | Members | Trellone'}</title>
-        <meta
-          name='description'
-          content='Organize anything, together. Trellone is a collaboration tool that organizes your projects into boards.'
-        />
-      </Helmet>
+      <SEO
+        title={workspace?.title ? `${workspace.title} - Members` : 'Workspace Members'}
+        description={`Manage workspace members for ${workspace?.title || 'your workspace'} in Trellone.`}
+        noIndex
+        noFollow
+      />
 
       <WorkspaceCollaboratorsHeader
         heading={isLoading ? 'Workspace members' : `Workspace members (${members.length})`}

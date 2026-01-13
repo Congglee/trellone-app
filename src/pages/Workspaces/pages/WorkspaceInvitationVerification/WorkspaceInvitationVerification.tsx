@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
+import SEO from '~/components/SEO'
 import path from '~/constants/path'
 import { WorkspaceInvitationStatus } from '~/constants/type'
 import { useQueryConfig } from '~/hooks/use-query-config'
@@ -87,8 +88,27 @@ export default function WorkspaceInvitationVerification() {
   }
 
   if (isLoading) {
-    return <PageLoadingSpinner caption='Verifying your workspace invitation...' />
+    return (
+      <>
+        <SEO
+          title='Verify Workspace Invitation'
+          description='Verifying your workspace invitation. Please wait…'
+          noIndex
+          noFollow
+          canonicalPath={path.workspaceInvitationVerification}
+        />
+        <PageLoadingSpinner caption='Verifying your workspace invitation...' />
+      </>
+    )
   }
 
-  return null
+  return (
+    <SEO
+      title='Verify Workspace Invitation'
+      description='Completing your workspace invitation verification.'
+      noIndex
+      noFollow
+      canonicalPath={path.workspaceInvitationVerification}
+    />
+  )
 }

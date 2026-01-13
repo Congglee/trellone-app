@@ -9,7 +9,13 @@ import path from '~/constants/path'
 export default function AccessDenied() {
   return (
     <>
-      <SEO title='Access Denied' description='You do not have permission to access this page.' />
+      <SEO
+        title='Access Denied'
+        description='You do not have permission to access this page.'
+        noIndex
+        noFollow
+        canonicalPath={path.accessDenied}
+      />
       <Container maxWidth='sm'>
         <Box
           sx={{

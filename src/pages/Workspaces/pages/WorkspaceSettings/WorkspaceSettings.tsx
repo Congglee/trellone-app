@@ -8,9 +8,9 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useState } from 'react'
-import { Helmet } from 'react-helmet-async'
 import { Navigate, useParams } from 'react-router-dom'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
+import SEO from '~/components/SEO'
 import path from '~/constants/path'
 import { WorkspacePermission } from '~/constants/permissions'
 import { WorkspaceVisibility as WorkspaceVisibilityEnum } from '~/constants/type'
@@ -43,10 +43,12 @@ export default function WorkspaceSettings() {
         width: { xs: '100vw', sm: '100%' }
       }}
     >
-      <Helmet>
-        <title>{workspace?.title ? `${workspace.title} | Settings | Trellone` : 'Workspace Settings | Trellone'}</title>
-        <meta name='description' content='Manage workspace settings, visibility and advanced actions in Trellone.' />
-      </Helmet>
+      <SEO
+        title={workspace?.title ? `${workspace.title} - Settings` : 'Workspace Settings'}
+        description='Manage workspace settings, visibility, and advanced actions in Trellone.'
+        noIndex
+        noFollow
+      />
 
       <Typography variant='h6' sx={{ mb: 2.5 }}>
         Workspace settings

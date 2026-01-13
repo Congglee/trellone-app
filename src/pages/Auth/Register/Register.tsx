@@ -73,6 +73,8 @@ export default function Register() {
       <SEO
         title='Sign Up'
         description='Create your free Trellone account to start managing projects, organizing tasks, and collaborating with your team.'
+        noIndex
+        noFollow
       />
 
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>

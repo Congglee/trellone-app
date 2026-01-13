@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
+import SEO from '~/components/SEO'
 import path from '~/constants/path'
 import { UserVerifyStatus } from '~/constants/type'
 import { useQueryConfig } from '~/hooks/use-query-config'
@@ -66,5 +67,10 @@ export default function OAuth() {
     }
   }, [accessTokenFromLS, dispatch, navigate, newUserValue, verifyValue])
 
-  return <PageLoadingSpinner caption='Redirecting...' />
+  return (
+    <>
+      <SEO title='OAuth Redirect' description='Signing you in via OAuth. Please wait…' noIndex noFollow canonicalPath={path.oauth} />
+      <PageLoadingSpinner caption='Redirecting...' />
+    </>
+  )
 }
