@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
+import SEO from '~/components/SEO'
+import path from '~/constants/path'
 import { useQueryConfig } from '~/hooks/use-query-config'
 import { useVerifyForgotPasswordMutation } from '~/queries/auth'
 import { AuthQueryParams } from '~/types/query-params.type'
@@ -23,7 +25,18 @@ export default function ForgotPasswordVerification() {
   }
 
   if (isLoading) {
-    return <PageLoadingSpinner caption='Verifying your forgot password request...' />
+    return (
+      <>
+        <SEO
+          title='Verify Password Reset Request'
+          description='Verifying your password reset request. Please wait…'
+          noIndex
+          noFollow
+          canonicalPath={path.forgotPasswordVerification}
+        />
+        <PageLoadingSpinner caption='Verifying your forgot password request...' />
+      </>
+    )
   }
 
   return <Navigate to={`/reset-password?forgot_password_token=${token}`} />

@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
+import SEO from '~/components/SEO'
 import path from '~/constants/path'
 import { useQueryConfig } from '~/hooks/use-query-config'
 import { useAppSelector } from '~/lib/redux/hooks'
@@ -39,7 +40,18 @@ export default function AccountVerification() {
   }
 
   if (isLoading) {
-    return <PageLoadingSpinner caption='Verifying your account...' />
+    return (
+      <>
+        <SEO
+          title='Verify Account'
+          description='Verifying your Trellone account. Please wait…'
+          noIndex
+          noFollow
+          canonicalPath={path.accountVerification}
+        />
+        <PageLoadingSpinner caption='Verifying your account...' />
+      </>
+    )
   }
 
   return isSuccess ? <Navigate to={`${path.login}?verified_email=${email}`} /> : <Navigate to={path.login} />

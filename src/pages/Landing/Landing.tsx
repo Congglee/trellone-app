@@ -14,7 +14,7 @@ import Footer from '~/pages/Landing/components/Footer'
 export default function Landing() {
   return (
     <>
-      <SEO />
+      <SEO description='Trellone is a modern Trello-style project management app with real-time collaboration, workspaces, and drag-and-drop boards.' />
       <Box component='main'>
         <Header />
         <Hero />

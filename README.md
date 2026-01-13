@@ -51,6 +51,10 @@ Create a `.env` at the project root:
 # API URL
 VITE_APP_API_URL='http://localhost:8000'
 
+# Frontend App URL (optional, for canonical / og:url in SEO)
+# If omitted, it falls back to `window.location.origin`.
+VITE_APP_URL='http://localhost:3000'
+
 # Google OAuth
 VITE_GOOGLE_CLIENT_ID='your-google-client-id'
 VITE_GOOGLE_REDIRECT_URI='http://localhost:8000/auth/oauth/google'

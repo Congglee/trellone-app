@@ -7,9 +7,9 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Tab from '@mui/material/Tab'
 import { useState } from 'react'
-import { Helmet } from 'react-helmet-async'
 import { Link, useLocation } from 'react-router-dom'
 import NavBar from '~/components/NavBar'
+import SEO from '~/components/SEO'
 import path from '~/constants/path'
 import AccountTab from '~/pages/Settings/components/AccountTab'
 import SecurityTab from '~/pages/Settings/components/SecurityTab'
@@ -32,15 +32,16 @@ export default function Settings() {
     setActiveSettingsTab(selectedSettingsTab)
   }
 
+  const seoTitle = activeSettingsTab === SETTINGS_TABS.SECURITY ? 'Security Settings' : 'Account Settings'
+
   return (
     <Container disableGutters maxWidth={false}>
-      <Helmet>
-        <title>Settings | Trellone</title>
-        <meta
-          name='description'
-          content="Organize anything, together. Trellone is a collaboration tool that organizes your projects into boards. In one glance, know what's being worked on, who's working on what, and where something is in a process"
-        />
-      </Helmet>
+      <SEO
+        title={seoTitle}
+        description='Manage your Trellone account details and security preferences.'
+        noIndex
+        noFollow
+      />
 
       <NavBar />
 

@@ -87,7 +87,13 @@ export default function ResetPassword() {
 
   return (
     <form onSubmit={onSubmit}>
-      <SEO title='Reset Your Password' description='Create a new password for your Trellone account.' />
+      <SEO
+        title='Reset Password'
+        description='Create a new password for your Trellone account.'
+        noIndex
+        noFollow
+        canonicalPath={path.resetPassword}
+      />
 
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>
         <Container

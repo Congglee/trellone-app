@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
+import SEO from '~/components/SEO'
 import path from '~/constants/path'
 import { BoardInvitationStatus } from '~/constants/type'
 import { useQueryConfig } from '~/hooks/use-query-config'
@@ -93,8 +94,27 @@ export default function BoardInvitationVerification() {
   }
 
   if (isLoading) {
-    return <PageLoadingSpinner caption='Verifying your board invitation...' />
+    return (
+      <>
+        <SEO
+          title='Verify Board Invitation'
+          description='Verifying your board invitation. Please wait…'
+          noIndex
+          noFollow
+          canonicalPath={path.boardInvitationVerification}
+        />
+        <PageLoadingSpinner caption='Verifying your board invitation...' />
+      </>
+    )
   }
 
-  return null
+  return (
+    <SEO
+      title='Verify Board Invitation'
+      description='Completing your board invitation verification.'
+      noIndex
+      noFollow
+      canonicalPath={path.boardInvitationVerification}
+    />
+  )
 }

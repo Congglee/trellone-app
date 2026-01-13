@@ -6,7 +6,7 @@ import ListSubheader from '@mui/material/ListSubheader'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useMemo } from 'react'
-import { Helmet } from 'react-helmet-async'
+import SEO from '~/components/SEO'
 import { INSPIRATIONAL_QUOTES } from '~/constants/mock-data'
 import RecentlyViewed from '~/pages/Workspaces/pages/Home/components/RecentlyViewed'
 
@@ -18,13 +18,12 @@ export default function Home() {
 
   return (
     <Stack direction='row' gap={2}>
-      <Helmet>
-        <title>Home | Trellone</title>
-        <meta
-          name='description'
-          content="Organize anything, together. Trellone is a collaboration tool that organizes your projects into boards. In one glance, know what's being worked on, who's working on what, and where something is in a process"
-        />
-      </Helmet>
+      <SEO
+        title='Home'
+        description='Your Trellone home dashboard for recently viewed boards and what’s next.'
+        noIndex
+        noFollow
+      />
 
       <List
         sx={{ mx: { xs: 1, md: 0 }, width: '100%', maxWidth: { xs: '100%', sm: 500 } }}

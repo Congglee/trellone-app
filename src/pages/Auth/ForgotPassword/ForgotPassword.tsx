@@ -62,6 +62,8 @@ export default function ForgotPassword() {
       <SEO
         title='Forgot Password'
         description='Recover your Trellone account password. Enter your email to receive instructions on how to reset your password.'
+        noIndex
+        noFollow
       />
 
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>

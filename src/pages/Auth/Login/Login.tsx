@@ -79,6 +79,8 @@ export default function Login() {
       <SEO
         title='Login'
         description='Log in to your Trellone account to continue managing your projects, tasks, and team collaboration.'
+        noIndex
+        noFollow
       />
 
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>

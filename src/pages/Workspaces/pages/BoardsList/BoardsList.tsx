@@ -9,7 +9,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useEffect, useMemo, useState } from 'react'
-import { Helmet } from 'react-helmet-async'
+import SEO from '~/components/SEO'
 import WorkspaceAvatar from '~/components/Workspace/WorkspaceAvatar'
 import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_PAGE } from '~/constants/pagination'
 import { useCategorizeWorkspaces } from '~/hooks/use-categorize-workspaces'
@@ -154,13 +154,7 @@ export default function BoardsList() {
 
   return (
     <Box>
-      <Helmet>
-        <title>Boards | Trellone</title>
-        <meta
-          name='description'
-          content="Organize anything, together. Trellone is a collaboration tool that organizes your projects into boards. In one glance, know what's being worked on, who's working on what, and where something is in a process"
-        />
-      </Helmet>
+      <SEO title='Boards' description='Browse and manage your workspaces and boards in Trellone.' noIndex noFollow />
 
       <Typography variant='h6' sx={{ pl: 1, mb: 2.5 }}>
         Your Workspaces
