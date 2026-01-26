@@ -34,7 +34,7 @@
     "@tiptap/react": "^3.6.2",
     "@tiptap/starter-kit": "^3.6.2",
     "@uidotdev/usehooks": "^2.4.1",
-    "axios": "^1.8.3",
+    "axios": "^1.12.0",
     "date-fns": "^2.30.0",
     "dompurify": "^3.2.7",
     "emoji-picker-react": "^4.12.3",
